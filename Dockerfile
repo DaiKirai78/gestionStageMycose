@@ -6,4 +6,4 @@ WORKDIR /app
 
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "/app/mycose.jar"]
+ENTRYPOINT ["java", "-jar", "mycose.jar"]
