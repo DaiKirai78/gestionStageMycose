@@ -3,8 +3,6 @@ package com.projet.mycose.service;
 import com.projet.mycose.modele.Etudiant;
 import com.projet.mycose.repository.EtudiantRepository;
 import com.projet.mycose.service.dto.EtudiantDTO;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
