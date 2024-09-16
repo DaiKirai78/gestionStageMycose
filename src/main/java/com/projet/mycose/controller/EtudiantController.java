@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@CrossOrigin(origins="http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("api/etudiant")
 public class EtudiantController {
     private final EtudiantService etudiantService;
@@ -17,9 +17,13 @@ public class EtudiantController {
     }
 
     @PostMapping("/nouveau-compte")
-    public ResponseEntity<HttpStatus> CreationCompte(@RequestBody EtudiantDTO etudiantDTO) {
-
-        EtudiantDTO etudiantResultat = etudiantService.creationDeCompte(etudiantDTO);
+    public ResponseEntity<HttpStatus> CreationDeCompte(@RequestBody EtudiantDTO etudiantDTO) {
+        EtudiantDTO etudiantResultat;
+        if (etudiantService.credentialsDejaPris(etudiantDTO.getCourriel(), etudiantDTO.getNumeroDeTelephone())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        } else {
+            etudiantResultat = etudiantService.creationDeCompte(etudiantDTO);
+        }
         return etudiantResultat != null ? ResponseEntity.status(HttpStatus.CREATED).build() : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 

@@ -3,6 +3,8 @@ package com.projet.mycose.service;
 import com.projet.mycose.modele.Etudiant;
 import com.projet.mycose.repository.EtudiantRepository;
 import com.projet.mycose.service.dto.EtudiantDTO;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -38,5 +40,9 @@ public class EtudiantService {
     public EtudiantDTO getEtudiantByTelephone(String numero) {
         Optional<Etudiant> optionalEtudiant = etudiantRepository.findEtudiantByNumeroDeTelephone(numero);
         return optionalEtudiant.map(EtudiantDTO::toDTO).orElse(null);
+    }
+
+    public boolean credentialsDejaPris(String courriel, String numero) {
+        return getEtudiantByCourriel(courriel) != null || getEtudiantByTelephone(numero) != null;
     }
 }
