@@ -1,5 +1,6 @@
 package com.projet.mycose.service.dto;
 
+import com.projet.mycose.modele.auth.Role;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,13 +15,15 @@ public abstract class UtilisateurDTO {
     private String courriel;
     private String motDePasse;
     private String numeroDeTelephone;
+    private Role role;
 
-    public UtilisateurDTO(Long id, String prenom, String nom, String courriel, String motDePasse, String numeroDeTelephone) {
+    public UtilisateurDTO(Long id, String prenom, String nom, String courriel, String motDePasse, String numeroDeTelephone, Role role) {
         this.id = id;
         this.prenom = prenom;
         this.nom = nom;
         this.courriel = courriel;
         this.motDePasse = motDePasse;
         this.numeroDeTelephone = numeroDeTelephone;
+        this.role = role;
     }
 }

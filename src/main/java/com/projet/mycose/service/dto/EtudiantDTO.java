@@ -1,6 +1,8 @@
 package com.projet.mycose.service.dto;
 
 import com.projet.mycose.modele.Etudiant;
+import com.projet.mycose.modele.auth.Role;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,30 +11,33 @@ import lombok.Setter;
 @Getter
 @Setter
 public class EtudiantDTO extends UtilisateurDTO {
-    public EtudiantDTO(Long id, String prenom, String nom, String courriel, String motDePasse, String numeroDeTelephone) {
-        super(id, prenom, nom, courriel, motDePasse, numeroDeTelephone);
+    @Builder
+    public EtudiantDTO(Long id, String prenom, String nom, String courriel, String motDePasse, String numeroDeTelephone, Role role) {
+        super(id, prenom, nom, courriel, motDePasse, numeroDeTelephone, role);
     }
 
     public static EtudiantDTO toDTO(Etudiant etudiant) {
-        EtudiantDTO etudiantDto = new EtudiantDTO();
-        etudiantDto.setId(etudiant.getId());
-        etudiantDto.setPrenom(etudiant.getPrenom());
-        etudiantDto.setNom(etudiant.getNom());
-        etudiantDto.setCourriel(etudiant.getCourriel());
-        etudiantDto.setMotDePasse(etudiant.getMotDePasse());
-        etudiantDto.setNumeroDeTelephone(etudiant.getNumeroDeTelephone());
-        return etudiantDto;
+        return EtudiantDTO.builder()
+                .id(etudiant.getId())
+                .prenom(etudiant.getPrenom())
+                .nom(etudiant.getNom())
+                .courriel(etudiant.getCourriel())
+                .numeroDeTelephone(etudiant.getNumeroDeTelephone())
+                .motDePasse(etudiant.getMotDePasse())
+                .role(etudiant.getRole())
+                .build();
+
     }
 
     public static Etudiant toEntity(EtudiantDTO etudiantDto) {
-        Etudiant etudiant = new Etudiant();
-        etudiant.setId(etudiantDto.getId());
-        etudiant.setPrenom(etudiantDto.getPrenom());
-        etudiant.setNom(etudiantDto.getNom());
-        etudiant.setCourriel(etudiantDto.getCourriel());
-        etudiant.setMotDePasse(etudiantDto.getMotDePasse());
-        etudiant.setNumeroDeTelephone(etudiantDto.getNumeroDeTelephone());
-        return etudiant;
+        return Etudiant.builder()
+                .id(etudiantDto.getId())
+                .prenom(etudiantDto.getPrenom())
+                .nom(etudiantDto.getNom())
+                .courriel(etudiantDto.getCourriel())
+                .numeroDeTelephone(etudiantDto.getNumeroDeTelephone())
+                .motDePasse(etudiantDto.getMotDePasse())
+                .build();
     }
 
     @Override

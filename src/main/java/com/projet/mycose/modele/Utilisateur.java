@@ -1,32 +1,51 @@
 package com.projet.mycose.modele;
 
+import com.projet.mycose.modele.auth.Credentials;
+import com.projet.mycose.modele.auth.Role;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+
+import java.util.Collection;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "type")
+@ToString
 public abstract class Utilisateur {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @Column(name = "prenom")
+
+    @Column(nullable = false)
     private String prenom;
+
+    @Column(nullable = false)
     private String nom;
-    private String courriel;
-    private String motDePasse;
+
+    @Column(nullable = false, unique = true)
     private String numeroDeTelephone;
 
-    public Utilisateur(String prenom, String nom, String courriel, String motDePasse, String numeroDeTelephone) {
-        this.prenom = prenom;
-        this.nom = nom;
-        this.courriel = courriel;
-        this.motDePasse = motDePasse;
-        this.numeroDeTelephone = numeroDeTelephone;
+    @Embedded
+    private Credentials credentials;
+
+    public String getCourriel(){
+        return credentials.getEmail();
+    }
+
+    public String getMotDePasse(){
+        return credentials.getPassword();
+    }
+
+    public Role getRole(){
+        return credentials.getRole();
+    }
+
+    public Collection<? extends GrantedAuthority> getAuthorities(){
+        return credentials.getAuthorities();
     }
 }
