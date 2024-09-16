@@ -18,7 +18,7 @@ public class EtudiantController {
 
     @PostMapping("/nouveau-compte")
     public ResponseEntity<HttpStatus> CreationCompte(@RequestBody EtudiantDTO etudiantDTO) {
-        EtudiantDTO etudiantResultat = etudiantService.CreationDeCompte(etudiantDTO);
+        EtudiantDTO etudiantResultat = etudiantService.creationDeCompte(etudiantDTO);
         return etudiantResultat != null ? ResponseEntity.status(HttpStatus.CREATED).build() : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 

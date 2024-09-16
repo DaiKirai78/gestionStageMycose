@@ -1,8 +1,11 @@
 package com.projet.mycose.service;
 
+import com.projet.mycose.modele.Etudiant;
 import com.projet.mycose.repository.EtudiantRepository;
 import com.projet.mycose.service.dto.EtudiantDTO;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 import static com.projet.mycose.service.dto.EtudiantDTO.toDTO;
 import static com.projet.mycose.service.dto.EtudiantDTO.toEntity;
@@ -16,9 +19,14 @@ public class EtudiantService {
         this.etudiantRepository = etudiantRepository;
     }
 
-    public EtudiantDTO CreationDeCompte(EtudiantDTO etudiantInformations) {
+    public EtudiantDTO creationDeCompte(EtudiantDTO etudiantInformations) {
         if (etudiantInformations != null)
             return toDTO(etudiantRepository.save(toEntity(etudiantInformations)));
         throw new IllegalArgumentException("Les informations de l'étudiant ne peuvent pas être nulles.");
+    }
+
+    public EtudiantDTO getEtudiantById(Long id) {
+        Optional<Etudiant> optionalEtudiant = etudiantRepository.findById(id);
+        return optionalEtudiant.map(EtudiantDTO::toDTO).orElse(null);
     }
 }
