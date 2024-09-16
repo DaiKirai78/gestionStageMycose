@@ -1,8 +1,8 @@
-package com.lacouf.rsbjwt.security;
+package com.projet.mycose.security;
 
-import com.lacouf.rsbjwt.model.UserApp;
-import com.lacouf.rsbjwt.repository.UserAppRepository;
-import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
+import com.projet.mycose.modele.Utilisateur;
+import com.projet.mycose.repository.UtilisateurRepository;
+import com.projet.mycose.security.exception.UserNotFoundException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,11 +17,11 @@ import java.io.IOException;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider tokenProvider;
-    private final UserAppRepository userRepository;
+    private final UtilisateurRepository utilisateurRepository;
 
-    public JwtAuthenticationFilter(JwtTokenProvider tokenProvider, UserAppRepository userRepository) {
+    public JwtAuthenticationFilter(JwtTokenProvider tokenProvider, UtilisateurRepository utilisateurRepository) {
         this.tokenProvider = tokenProvider;
-        this.userRepository = userRepository;
+        this.utilisateurRepository = utilisateurRepository;
     }
 
     @Override
@@ -35,10 +35,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         	token = token.startsWith("Bearer") ? token.substring(7) : token;
             try {
                 tokenProvider.validateToken(token);
-                String email = tokenProvider.getEmailFromJWT(token);
-                UserApp user = userRepository.findUserAppByEmail(email).orElseThrow(UserNotFoundException::new);
+                String courriel = tokenProvider.getEmailFromJWT(token);
+                Utilisateur user = utilisateurRepository.findUtilisateurByCourriel(courriel).orElseThrow(UserNotFoundException::new);
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                        user.getEmail(), null, user.getAuthorities()
+                        user.getCourriel(), null, user.getAuthorities()
                 );
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);

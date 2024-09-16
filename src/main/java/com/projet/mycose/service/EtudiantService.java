@@ -2,7 +2,9 @@ package com.projet.mycose.service;
 
 import com.projet.mycose.modele.Etudiant;
 import com.projet.mycose.repository.EtudiantRepository;
+import com.projet.mycose.security.SecurityConfiguration;
 import com.projet.mycose.service.dto.EtudiantDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -14,14 +16,15 @@ import static com.projet.mycose.service.dto.EtudiantDTO.toDTO;
 public class EtudiantService {
 
     private final EtudiantRepository etudiantRepository;
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-    public EtudiantService(EtudiantRepository etudiantRepository) {
+    public EtudiantService(EtudiantRepository etudiantRepository, PasswordEncoder passwordEncoder) {
         this.etudiantRepository = etudiantRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public EtudiantDTO creationDeCompte(String prenom, String nom, String numeroTelephone, String courriel, String motDePasse) {
-        return toDTO(etudiantRepository.save(new Etudiant(prenom, nom, numeroTelephone, courriel, passwordEncoder.encode(motDePasse))));
+        return toDTO(etudiantRepository.save(new Etudiant(prenom, nom, numeroTelephone, courriel,  passwordEncoder.encode(motDePasse))));
     }
 
     public EtudiantDTO getEtudiantById(Long id) {

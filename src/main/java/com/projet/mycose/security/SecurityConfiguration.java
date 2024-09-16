@@ -1,6 +1,6 @@
-package com.lacouf.rsbjwt.security;
+package com.projet.mycose.security;
 
-import com.lacouf.rsbjwt.repository.UserAppRepository;
+import com.projet.mycose.repository.UtilisateurRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,7 +10,6 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,7 +30,7 @@ import static org.springframework.http.HttpMethod.*;
 public class SecurityConfiguration {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final UserAppRepository userRepository;
+    private final UtilisateurRepository utilisateurRepository;
     private final JwtAuthenticationEntryPoint authenticationEntryPoint;
 
     @Bean
@@ -78,7 +77,7 @@ public class SecurityConfiguration {
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
-        return new JwtAuthenticationFilter(jwtTokenProvider, userRepository);
+        return new JwtAuthenticationFilter(jwtTokenProvider, utilisateurRepository);
     }
 
     @Bean

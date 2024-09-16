@@ -1,4 +1,4 @@
-package com.lacouf.rsbjwt.security.exception;
+package com.projet.mycose.security.exception;
 
 import org.springframework.http.HttpStatus;
 

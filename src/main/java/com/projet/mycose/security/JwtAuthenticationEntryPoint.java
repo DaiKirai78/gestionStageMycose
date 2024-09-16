@@ -1,4 +1,4 @@
-package com.lacouf.rsbjwt.security;
+package com.projet.mycose.security;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

@@ -33,6 +33,14 @@ public abstract class Utilisateur {
     private Credentials credentials;
 
 
+    public Utilisateur(Long id, String prenom, String nom, String numeroDeTelephone, Credentials credentials) {
+        this.id = id;
+        this.prenom = prenom;
+        this.nom = nom;
+        this.numeroDeTelephone = numeroDeTelephone;
+        this.credentials = credentials;
+    }
+
     public Utilisateur(String prenom, String nom, String numeroDeTelephone, Credentials credentials) {
         this.prenom = prenom;
         this.nom = nom;
