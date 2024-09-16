@@ -1,4 +1,4 @@
-package modele;
+package com.projet.mycose.modele;
 
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @DiscriminatorValue("Etudiant")
 public class Etudiant extends Utilisateur {
-    public Etudiant(String nom, String nomDeFamille, String courriel, String motDePasse, String numeroDeTelephone) {
-        super(nom, nomDeFamille, courriel, motDePasse, numeroDeTelephone);
+    public Etudiant(String prenom, String nom, String courriel, String motDePasse, String numeroDeTelephone) {
+        super(prenom, nom, courriel, motDePasse, numeroDeTelephone);
     }
 }
