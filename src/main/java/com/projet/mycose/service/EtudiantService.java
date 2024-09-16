@@ -29,4 +29,14 @@ public class EtudiantService {
         Optional<Etudiant> optionalEtudiant = etudiantRepository.findById(id);
         return optionalEtudiant.map(EtudiantDTO::toDTO).orElse(null);
     }
+
+    public EtudiantDTO getEtudiantByCourriel(String courriel) {
+        Optional<Etudiant> optionalEtudiant = etudiantRepository.findEtudiantByCourriel(courriel);
+        return optionalEtudiant.map(EtudiantDTO::toDTO).orElse(null);
+    }
+
+    public EtudiantDTO getEtudiantByTelephone(String numero) {
+        Optional<Etudiant> optionalEtudiant = etudiantRepository.findEtudiantByNumeroDeTelephone(numero);
+        return optionalEtudiant.map(EtudiantDTO::toDTO).orElse(null);
+    }
 }
