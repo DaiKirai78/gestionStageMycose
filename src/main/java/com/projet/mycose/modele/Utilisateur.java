@@ -11,7 +11,6 @@ import java.util.Collection;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "type")
@@ -32,6 +31,14 @@ public abstract class Utilisateur {
 
     @Embedded
     private Credentials credentials;
+
+
+    public Utilisateur(String prenom, String nom, String numeroDeTelephone, Credentials credentials) {
+        this.prenom = prenom;
+        this.nom = nom;
+        this.numeroDeTelephone = numeroDeTelephone;
+        this.credentials = credentials;
+    }
 
     public String getCourriel(){
         return credentials.getEmail();

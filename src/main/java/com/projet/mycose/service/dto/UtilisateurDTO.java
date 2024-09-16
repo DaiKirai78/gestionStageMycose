@@ -13,16 +13,14 @@ public abstract class UtilisateurDTO {
     private String prenom;
     private String nom;
     private String courriel;
-    private String motDePasse;
     private String numeroDeTelephone;
     private Role role;
 
-    public UtilisateurDTO(Long id, String prenom, String nom, String courriel, String motDePasse, String numeroDeTelephone, Role role) {
+    public UtilisateurDTO(Long id, String prenom, String nom, String courriel, String numeroDeTelephone, Role role) {
         this.id = id;
         this.prenom = prenom;
         this.nom = nom;
         this.courriel = courriel;
-        this.motDePasse = motDePasse;
         this.numeroDeTelephone = numeroDeTelephone;
         this.role = role;
     }

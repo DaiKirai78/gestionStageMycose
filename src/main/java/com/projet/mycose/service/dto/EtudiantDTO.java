@@ -12,8 +12,8 @@ import lombok.Setter;
 @Setter
 public class EtudiantDTO extends UtilisateurDTO {
     @Builder
-    public EtudiantDTO(Long id, String prenom, String nom, String courriel, String motDePasse, String numeroDeTelephone, Role role) {
-        super(id, prenom, nom, courriel, motDePasse, numeroDeTelephone, role);
+    public EtudiantDTO(Long id, String prenom, String nom, String courriel, String numeroDeTelephone, Role role) {
+        super(id, prenom, nom, courriel, numeroDeTelephone, role);
     }
 
     public static EtudiantDTO toDTO(Etudiant etudiant) {
@@ -23,7 +23,6 @@ public class EtudiantDTO extends UtilisateurDTO {
                 .nom(etudiant.getNom())
                 .courriel(etudiant.getCourriel())
                 .numeroDeTelephone(etudiant.getNumeroDeTelephone())
-                .motDePasse(etudiant.getMotDePasse())
                 .role(etudiant.getRole())
                 .build();
 
@@ -36,7 +35,6 @@ public class EtudiantDTO extends UtilisateurDTO {
                 .nom(etudiantDto.getNom())
                 .courriel(etudiantDto.getCourriel())
                 .numeroDeTelephone(etudiantDto.getNumeroDeTelephone())
-                .motDePasse(etudiantDto.getMotDePasse())
                 .build();
     }
 
@@ -47,7 +45,6 @@ public class EtudiantDTO extends UtilisateurDTO {
                 getPrenom() + ", " +
                 getNom() + ", " +
                 getCourriel() + ", " +
-                getMotDePasse() + ", " +
                 getNumeroDeTelephone() +
                 ")";
     }
