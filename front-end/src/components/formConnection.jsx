@@ -9,11 +9,19 @@ const FormConnection = () => {
         '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$'
     );
 
+    const validPassword = new RegExp(
+        "[a-zA-Z0-9$&+,:;=?@#|'<>.^*()%!-]{8,}"
+    )
+
     const [email, setEmail] = useState()
     const [errorKeyEmail, setErrorKeyEmail] = useState("")
 
+    const [password, setPassword] = useState()
+    const [errorKeyPassword, setErrorKeyPassword] = useState("")
+
     function verifierInputs() {
         verifierCourriel()
+        verifierMotDePasse()
     }
 
     function verifierCourriel() {
@@ -25,6 +33,17 @@ const FormConnection = () => {
     function changeEmaiLValue(e) {
         setEmail(e.target.value)
         setErrorKeyEmail("")
+    }
+
+    function verifierMotDePasse() {
+        if (!validPassword.test(password)) {
+            setErrorKeyPassword("errorMessagePassword")
+        }
+    }
+
+    function changePasswordValue(e) {
+        setPassword(e.target.value)
+        setErrorKeyPassword("")
     }
 
     return (
@@ -41,8 +60,11 @@ const FormConnection = () => {
                 </div>
                 <div>
                     <div className="w-full">
-                        <Input label="Mot de passe" color='black' size='lg'/>
+                        <Input label="Mot de passe" color='black' size='lg'
+                        onChange={(e) => {changePasswordValue(e)}}
+                        type='password'/>
                     </div>
+                    <InputErrorMessage messageKey={errorKeyPassword}/>
                 </div>
             </div>
             <a href="#" className='text-orange mt-2 mb-4 self-end text-xs'>Mot de passe oublié ?</a>
