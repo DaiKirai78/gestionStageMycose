@@ -18,7 +18,7 @@ const FormConnection = () => {
 
     const [password, setPassword] = useState()
     const [errorKeyPassword, setErrorKeyPassword] = useState("")
-
+    
     function verifierInputs() {
         verifierCourriel()
         verifierMotDePasse()
@@ -30,7 +30,7 @@ const FormConnection = () => {
         }
     }
 
-    function changeEmaiLValue(e) {
+    function changeEmailValue(e) {
         setEmail(e.target.value)
         setErrorKeyEmail("")
     }
@@ -52,7 +52,7 @@ const FormConnection = () => {
                 <div>
                     <div className="w-full">
                         <Input label="Courriel" color='black' size='lg' 
-                        onChange={(e) => {changeEmaiLValue(e)}}
+                        onChange={(e) => {changeEmailValue(e)}}
                         type='email'
                         />
                     </div>
