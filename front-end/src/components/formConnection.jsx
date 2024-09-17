@@ -10,7 +10,7 @@ const FormConnection = () => {
     );
 
     const [email, setEmail] = useState()
-    const [errorMessageEmail, setErrorMessageEmail] = useState("")
+    const [errorKeyEmail, setErrorKeyEmail] = useState("")
 
     function verifierInputs() {
         verifierCourriel()
@@ -18,13 +18,13 @@ const FormConnection = () => {
 
     function verifierCourriel() {
         if (!validEmail.test(email)) {
-            setErrorMessageEmail("errorMessageEmail")            
+            setErrorKeyEmail("errorMessageEmail")
         }
     }
 
     function changeEmaiLValue(e) {
         setEmail(e.target.value)
-        setErrorMessageEmail("")
+        setErrorKeyEmail("")
     }
 
     return (
@@ -37,7 +37,7 @@ const FormConnection = () => {
                         type='email'
                         />
                     </div>
-                    <InputErrorMessage message={errorMessageEmail}/>
+                    <InputErrorMessage messageKey={errorKeyEmail}/>
                 </div>
                 <div>
                     <div className="w-full">

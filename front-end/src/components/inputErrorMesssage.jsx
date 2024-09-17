@@ -1,13 +1,13 @@
 import React from 'react';
 import { useTranslation } from "react-i18next"
 
-const InputErrorMessage = ({ message }) => {
+const InputErrorMessage = ({ messageKey }) => {
 
     const { t } = useTranslation()
 
     return (
         <div className='px-2'>
-            <p className={`${message.length > 0 ? "" : "hidden"} text-red-600 text-xs`}>{t(message)}</p>
+            <p className={`${messageKey.length > 0 ? "" : "hidden"} text-red-600 text-xs`}>{t(messageKey)}</p>
         </div>
     );
 };
