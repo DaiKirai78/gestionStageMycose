@@ -1,4 +1,5 @@
 import './App.css'
+import FormConnection from './components/formConnection'
 import FormContainer from './components/formContainer'
 
 /*
@@ -30,7 +31,9 @@ const langues = {
 function App() {
   return (
     <>
-      <FormContainer></FormContainer>
+      <FormContainer>
+        <FormConnection/>
+      </FormContainer>
     </>
   )
 }
