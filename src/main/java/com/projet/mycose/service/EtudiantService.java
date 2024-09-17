@@ -24,6 +24,12 @@ public class EtudiantService {
     }
 
     public EtudiantDTO creationDeCompte(String prenom, String nom, String numeroTelephone, String courriel, String motDePasse) {
+        if (numeroTelephone == null || !numeroTelephone.matches("\\d{10}")) {
+            throw new IllegalArgumentException("Le numéro de téléphone est invalide");
+        }
+        if (courriel == null || !courriel.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")) {
+            throw new IllegalArgumentException("Le courriel est invalide");
+        }
         return toDTO(etudiantRepository.save(new Etudiant(prenom, nom, numeroTelephone, courriel,  passwordEncoder.encode(motDePasse))));
     }
 
