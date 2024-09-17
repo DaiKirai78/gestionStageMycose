@@ -27,11 +27,6 @@ public class EtudiantService {
         return toDTO(etudiantRepository.save(new Etudiant(prenom, nom, numeroTelephone, courriel,  passwordEncoder.encode(motDePasse))));
     }
 
-    public EtudiantDTO getEtudiantById(Long id) {
-        Optional<Etudiant> optionalEtudiant = etudiantRepository.findById(id);
-        return optionalEtudiant.map(EtudiantDTO::toDTO).orElse(null);
-    }
-
     public EtudiantDTO getEtudiantByCourriel(String courriel) {
         Optional<Etudiant> optionalEtudiant = etudiantRepository.findEtudiantByCourriel(courriel);
         return optionalEtudiant.map(EtudiantDTO::toDTO).orElse(null);
