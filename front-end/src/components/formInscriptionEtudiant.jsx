@@ -25,8 +25,14 @@ const FormInscriptionEtudiant = () => {
         setTelephone('')
     }
 
-    function inscriptionInfo(inscriptionInfo) {
-
+    async function inscriptionInfo(inscriptionInfo) {
+        const res = await fetch('url', {
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/json',
+            },
+            body: JSON.stringify(inscriptionInfo)
+        });
     }
 
     function changeNomValue(e) {
