@@ -13,10 +13,10 @@ const FormConnection = () => {
         "[a-zA-Z0-9$&+,:;=?@#|'<>.^*()%!-]{8,}"
     );
 
-    const [email, setEmail] = useState();
+    const [email, setEmail] = useState("");
     const [errorKeyEmail, setErrorKeyEmail] = useState("");
 
-    const [password, setPassword] = useState();
+    const [password, setPassword] = useState("");
     const [errorKeyPassword, setErrorKeyPassword] = useState("");
     
     function onLogin(e) {
@@ -40,7 +40,10 @@ const FormConnection = () => {
     }
 
     function verifierInputs() {
-        return verifierCourriel() && verifierMotDePasse();
+        const emailValide = verifierCourriel()
+        const passwordValide = verifierMotDePasse()
+        
+        return emailValide && passwordValide;
     }
 
     function verifierCourriel() {
@@ -71,9 +74,9 @@ const FormConnection = () => {
 
     return (
         <div className='flex flex-col px-10'>
-            <form method="get" className='flex flex-col'>
+            <form method="get" className='flex flex-col sm:gap-5 gap-3'>
                 <div>
-                    <div className="w-full sm:mb-5 mb-3">
+                    <div className="w-full">
                         <Input label="Courriel" color='black' size='lg' 
                         onChange={(e) => {changeEmailValue(e);}}
                         type='email'
