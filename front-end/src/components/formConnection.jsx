@@ -11,28 +11,28 @@ const FormConnection = () => {
 
     const validPassword = new RegExp(
         "[a-zA-Z0-9$&+,:;=?@#|'<>.^*()%!-]{8,}"
-    )
+    );
 
-    const [email, setEmail] = useState()
-    const [errorKeyEmail, setErrorKeyEmail] = useState("")
+    const [email, setEmail] = useState();
+    const [errorKeyEmail, setErrorKeyEmail] = useState("");
 
-    const [password, setPassword] = useState()
-    const [errorKeyPassword, setErrorKeyPassword] = useState("")
+    const [password, setPassword] = useState();
+    const [errorKeyPassword, setErrorKeyPassword] = useState("");
     
     function onLogin(e) {
-        e.preventDefault()
+        e.preventDefault();
 
         if(!verifierInputs()) {
-            return
+            return;
         }
         
-        sendLogin({email, password})
+        sendLoginInfo({email, password});
 
-        setEmail('')
-        setPassword('')
+        setEmail('');
+        setPassword('');
     }
 
-    async function sendLogin(loginInfo) {
+    async function sendLoginInfo(loginInfo) {
         //Url temporaire
         const res = await fetch(`urlLoginController/api?email=${loginInfo["email"]}&pass=${loginInfo["email"]}`);
 
@@ -40,33 +40,33 @@ const FormConnection = () => {
     }
 
     function verifierInputs() {
-        return verifierCourriel() && verifierMotDePasse()
+        return verifierCourriel() && verifierMotDePasse();
     }
 
     function verifierCourriel() {
         if (!validEmail.test(email)) {
-            setErrorKeyEmail("errorMessageEmail")
-            return false
+            setErrorKeyEmail("errorMessageEmail");
+            return false;
         }
-        return true
+        return true;
     }
 
     function verifierMotDePasse() {
         if (!validPassword.test(password)) {
-            setErrorKeyPassword("errorMessagePassword")
-            return false
+            setErrorKeyPassword("errorMessagePassword");
+            return false;
         }
-        return true
+        return true;
     }
 
     function changeEmailValue(e) {
-        setEmail(e.target.value)
-        setErrorKeyEmail("")
+        setEmail(e.target.value);
+        setErrorKeyEmail("");
     }
 
     function changePasswordValue(e) {
-        setPassword(e.target.value)
-        setErrorKeyPassword("")
+        setPassword(e.target.value);
+        setErrorKeyPassword("");
     }
 
     return (
@@ -75,7 +75,7 @@ const FormConnection = () => {
                 <div>
                     <div className="w-full sm:mb-5 mb-3">
                         <Input label="Courriel" color='black' size='lg' 
-                        onChange={(e) => {changeEmailValue(e)}}
+                        onChange={(e) => {changeEmailValue(e);}}
                         type='email'
                         />
                         <InputErrorMessage messageKey={errorKeyEmail}/>
@@ -84,7 +84,7 @@ const FormConnection = () => {
                 <div>
                     <div className="w-full">
                         <Input label="Mot de passe" color='black' size='lg'
-                        onChange={(e) => {changePasswordValue(e)}}
+                        onChange={(e) => {changePasswordValue(e);}}
                         type='password'/>
                         <InputErrorMessage messageKey={errorKeyPassword}/>
                     </div>
