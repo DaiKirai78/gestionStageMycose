@@ -30,6 +30,9 @@ public class EtudiantService {
         if (courriel == null || !courriel.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")) {
             throw new IllegalArgumentException("Le courriel est invalide");
         }
+        if (motDePasse == null || !motDePasse.matches("[a-zA-Z0-9$&+,:;=?@#|'<>.^*()%!-]{8,}")) {
+            throw new IllegalArgumentException("Le mot de passe est invalide");
+        }
         return toDTO(etudiantRepository.save(new Etudiant(prenom, nom, numeroTelephone, courriel,  passwordEncoder.encode(motDePasse))));
     }
 
