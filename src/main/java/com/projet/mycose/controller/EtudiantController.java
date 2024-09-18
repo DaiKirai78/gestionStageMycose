@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
-@RequestMapping("api/etudiant")
+@RequestMapping("etudiant")
 public class EtudiantController {
     private final EtudiantService etudiantService;
 
@@ -19,17 +19,21 @@ public class EtudiantController {
 
     @PostMapping("/register")
     public ResponseEntity<HttpStatus> CreationDeCompte(@RequestBody RegisterEtudiantDTO nouveauCompteEtudiant) {
-        EtudiantDTO etudiantResultat;
-        if (etudiantService.credentialsDejaPris(nouveauCompteEtudiant.getCourriel(), nouveauCompteEtudiant.getNumeroTelephone())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        } else {
-            etudiantResultat = etudiantService.creationDeCompte(nouveauCompteEtudiant.getPrenom(),
-                    nouveauCompteEtudiant.getNom(),
-                    nouveauCompteEtudiant.getNumeroTelephone(),
-                    nouveauCompteEtudiant.getCourriel(),
-                    nouveauCompteEtudiant.getMotDePasse());
+        try {
+            EtudiantDTO etudiantResultat;
+            if (etudiantService.credentialsDejaPris(nouveauCompteEtudiant.getCourriel(), nouveauCompteEtudiant.getNumeroDeTelephone())) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            } else {
+                etudiantResultat = etudiantService.creationDeCompte(nouveauCompteEtudiant.getPrenom(),
+                        nouveauCompteEtudiant.getNom(),
+                        nouveauCompteEtudiant.getNumeroDeTelephone(),
+                        nouveauCompteEtudiant.getCourriel(),
+                        nouveauCompteEtudiant.getMotDePasse());
+            }
+            return etudiantResultat != null ? ResponseEntity.status(HttpStatus.CREATED).build() : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-        return etudiantResultat != null ? ResponseEntity.status(HttpStatus.CREATED).build() : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
 }

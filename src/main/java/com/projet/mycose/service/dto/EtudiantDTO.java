@@ -1,6 +1,7 @@
 package com.projet.mycose.service.dto;
 
 import com.projet.mycose.modele.Etudiant;
+import com.projet.mycose.modele.auth.Credentials;
 import com.projet.mycose.modele.auth.Role;
 import lombok.Builder;
 import lombok.Getter;
