@@ -3,14 +3,30 @@ import {Input} from '@material-tailwind/react';
 
 const FormInscriptionEtudiant = () => {
 
+    const validePhone = new RegExp("[0-9]{3}-? ?[0-9]{3}-? ?[0-9]{4}");
+    const valideName = new RegExp("[a-zA-Z -'éÉàÀ]");
+
     const [prenom, setPrenom] = useState("");
     const [nom, setNom] = useState("");
     const [telephone, setTelephone] = useState("");
 
     function onInscription(e) {
         e.preventDefault();
+
+        if(!validerChamps()) {
+            console.log("ERREUUUUUR!!!")
+            return;
+        }
         
-        console.log(prenom + nom + telephone);
+        inscriptionInfo({prenom, nom, telephone});
+
+        setNom('');
+        setPrenom('');
+        setTelephone('')
+    }
+
+    function inscriptionInfo(inscriptionInfo) {
+
     }
 
     function changeNomValue(e) {
@@ -23,6 +39,29 @@ const FormInscriptionEtudiant = () => {
 
     function changeTelephoneValue(e) {
         setTelephone(e.target.value);
+    }
+
+    function validerChamps() {
+        const nameValid = validerName();
+        const phoneValid = validerPhone();
+
+        return nameValid && phoneValid;
+    }
+
+    function validerName() {
+        if(!valideName.test(nom) || !valideName.test(prenom)) {
+            //setErrorKey
+            return false;
+        }
+        return true;
+    }
+
+    function validerPhone() {
+        if(!validePhone.test(telephone)) {
+            //setErrorKey
+            return false;
+        }
+        return true;
     }
 
     return (
@@ -48,7 +87,7 @@ const FormInscriptionEtudiant = () => {
                         <div className="w-full">
                             <Input label="Téléphone" color='black' size='lg'
                             onChange={(e) => {changeTelephoneValue(e);}}
-                            type='text'/>
+                            type='tel'/>
                         </div>
                     </div>
                     <button className='border p-2 border-black rounded-[7px]' onClick={onInscription}>S'inscrire</button>
