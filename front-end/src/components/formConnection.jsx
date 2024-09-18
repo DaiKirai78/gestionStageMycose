@@ -89,7 +89,6 @@ const FormConnection = () => {
                         <InputErrorMessage messageKey={errorKeyPassword}/>
                     </div>
                 </div>
-                <a href="#" className='text-orange mt-2 mb-4 self-end text-xs'>Mot de passe oublié ?</a>
                 <button className='border p-2 border-black rounded-[7px]' onClick={onLogin}>Connexion</button>
             </form>
             <Divider texte="Nouveau sur Mycose ?"/>
