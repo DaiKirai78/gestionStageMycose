@@ -16,6 +16,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -45,25 +46,6 @@ public class EtudiantControllerTest {
                         .with(csrf())
                         .with(user("karim").password("Mimi827$").roles("ETUDIANT")))
                 .andExpect(status().isCreated());
-    }
-
-    @Test
-    public void testCreationDeCompte_EchecAvecConflit() throws Exception {
-        RegisterEtudiantDTO newEtudiant = new RegisterEtudiantDTO(
-                "Michel", "Genereux", "4379302483", "mihoubi@gmail.com", "Mimi827$"
-        );
-
-        when(etudiantService.credentialsDejaPris("mihoubi@gmail.com", "4379302483")).thenReturn(true);
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        String etudiantJson = objectMapper.writeValueAsString(newEtudiant);
-
-        this.mockMvc.perform(post("/etudiant/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(etudiantJson)
-                        .with(csrf())
-                        .with(user("michel").password("Mimi827$").roles("ETUDIANT")))
-                .andExpect(status().isConflict());
     }
 
     @Test
@@ -105,6 +87,27 @@ public class EtudiantControllerTest {
                         .content(etudiantJson)
                         .with(csrf())
                         .with(user("michel").password("Mimi827$").roles("ETUDIANT")))
+                .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    public void testCreationDeCompte_EchecAvecConflit() throws Exception {
+        when(etudiantService.credentialsDejaPris("mihoubi@gmail.com", "4379302483")).thenReturn(true);
+
+        this.mockMvc.perform(get("/etudiant/register/check-for-conflict/mihoubi@gmail.com_4379302483")
+                        .with(csrf())
+                        .with(user("karim").password("Mimi123$").roles("ETUDIANT")))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    public void testCheckForConflict_EchecInternalServerError() throws Exception {
+        when(etudiantService.credentialsDejaPris("mihoubi@gmail.com", "4379302483"))
+                .thenThrow(new RuntimeException("Erreur en provenance du serveur"));
+
+        this.mockMvc.perform(get("/etudiant/register/check-for-conflict/mihoubi@gmail.com_4379302483")
+                        .with(csrf())
+                        .with(user("karim").password("Mimi123$").roles("ETUDIANT")))
                 .andExpect(status().isInternalServerError());
     }
 }
