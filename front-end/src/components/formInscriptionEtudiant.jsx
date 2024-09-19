@@ -98,7 +98,7 @@ const FormInscriptionEtudiant = () => {
                     </div>
                     <button className='border p-2 border-black rounded-[7px]' onClick={onInscription}>S'inscrire</button>
                 </form>
-                <p>Déjà un compte</p>
+                <p>Déjà un compte?</p>
                 <button className='p-2 border border-black bg-black rounded-[7px] text-white'>Connexion</button>
             </div>	
         </>

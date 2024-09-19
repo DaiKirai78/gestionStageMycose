@@ -1,9 +1,11 @@
 import FormInscriptionEtudiant from '../components/formInscriptionEtudiant.jsx'
+import FormInscriptionMain from '../components/formInscriptionMain.jsx';
 
 const InscriptionPage = () => {
     return (
         <>
-            <FormInscriptionEtudiant/>
+            <FormInscriptionMain/>
+            {/* <FormInscriptionEtudiant/> */}
         </>
     );
 };
