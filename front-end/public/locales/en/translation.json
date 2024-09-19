@@ -1,0 +1,4 @@
+{
+    "errorMessageEmail": "Enter a valid email address",
+    "errorMessagePassword": "Enter a valid password with a minimum of 8 letters"
+}
