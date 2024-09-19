@@ -1,8 +1,12 @@
 package com.projet.mycose.modele;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "fichiersOffresStage")
+@Getter
+@Setter
 public class FichierOffreStage {
 
     @Id
