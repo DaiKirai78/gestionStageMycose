@@ -1,9 +1,8 @@
-import {useState} from "react";
-import {useTranslation} from "react-i18next";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 function UploadForm() {
-
-    const{t} = useTranslation()
+    const { t } = useTranslation();
 
     const [file, setFile] = useState(null);
     const [formData, setFormData] = useState({
@@ -28,14 +27,22 @@ function UploadForm() {
         });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmitFile = (e) => {
         e.preventDefault();
-        console.log("Form submitted", formData, file);
+        console.log(file);
+    };
+
+    const handleSubmitForm = (e) => {
+        e.preventDefault();
+        console.log(formData);
     };
 
     const handleRemoveFile = () => {
         setFile(null);
-        document.querySelector("input[type=file]").value = "";
+        // Reset the file input
+        if (document.getElementById("file")) {
+            document.getElementById("file").value = "";
+        }
     };
 
     const [showUpload, setShowUpload] = useState(true);
@@ -62,22 +69,28 @@ function UploadForm() {
                 </div>
 
                 {showUpload ? (
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        <div>
-                            <label className="block text-sm font-medium text-orange">
+                    <form onSubmit={handleSubmitFile} className="space-y-4">
+                        <div className="relative">
+                            <label htmlFor="file" className="block text-sm font-medium text-orange">
                                 {t("uploadAFile")}
                             </label>
-                            <input
-                                type="file"
-                                onChange={handleFileChange}
-                                className="mt-1 p-2 block w-full border border-orange rounded-md"
-                                disabled={file !== null}
-                            />
+                            <div className="custom-file-input">
+                                <input
+                                    type="file"
+                                    id="file"
+                                    onChange={handleFileChange}
+                                    className="hidden-file-input"
+                                    disabled={file !== null}
+                                />
+                            </div>
                             {file && (
                                 <div className="mt-2 flex items-center">
                                     <span className="text-sm text-gray-700">{file.name}</span>
-                                    <button type="button" onClick={handleRemoveFile}
-                                            className="ml-2 text-red-500 bg-gray-200 p-0.5 rounded hover:text-red-700 hover:bg-gray-300">
+                                    <button
+                                        type="button"
+                                        onClick={handleRemoveFile}
+                                        className="ml-2 text-red-500 bg-gray-200 p-0.5 rounded hover:text-red-700 hover:bg-gray-300"
+                                    >
                                         <span className="text-xl">✖</span>
                                     </button>
                                 </div>
@@ -85,110 +98,142 @@ function UploadForm() {
                         </div>
 
                         <div className="flex justify-center">
-                        <button
+                            <button
                                 type="submit"
                                 className="max-w-xs w-full bg-orange text-white p-2 rounded-lg hover:bg-orange-dark"
                                 disabled={file === null}
                             >
-                            {t("submit")}
+                                {t("submit")}
                             </button>
                         </div>
                     </form>
                 ) : (
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                    <form onSubmit={handleSubmitForm} className="space-y-4">
                         {/* Formulaire */}
                         <div>
-                            <label className="block text-sm font-medium text-orange">{t("companyName")}</label>
+                            <label htmlFor="entrepriseName" className="block text-sm font-medium text-orange">
+                                {t("companyName")}
+                            </label>
                             <input
                                 type="text"
+                                id="entrepriseName"
                                 name="entrepriseName"
                                 value={formData.entrepriseName}
                                 onChange={handleInputChange}
                                 className="mt-1 p-2 block w-full border border-orange rounded-md"
                                 required
+                                autoComplete="organization"
                             />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-orange">{t("employerName")}</label>
+                            <label htmlFor="employerName" className="block text-sm font-medium text-orange">
+                                {t("employerName")}
+                            </label>
                             <input
                                 type="text"
+                                id="employerName"
                                 name="employerName"
-                                value={formData.employerName}
+                                value={formData.employerName }
                                 onChange={handleInputChange}
                                 className="mt-1 p-2 block w-full border border-orange rounded-md"
                                 required
+                                autoComplete="name"
                             />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-orange">{t("email")}</label>
+                            <label htmlFor="email" className="block text-sm font-medium text-orange">
+                                {t("email")}
+                            </label>
                             <input
                                 type="email"
+                                id="email"
                                 name="email"
                                 value={formData.email}
                                 onChange={handleInputChange}
                                 className="mt-1 p-2 block w-full border border-orange rounded-md"
                                 required
+                                autoComplete="email"
                             />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-orange">{t("website")}</label>
+                            <label htmlFor="website" className="block text-sm font-medium text-orange">
+                                {t("website")}
+                            </label>
                             <input
                                 type="url"
+                                id="website"
                                 name="website"
                                 value={formData.website}
                                 onChange={handleInputChange}
                                 className="mt-1 p-2 block w-full border border-orange rounded-md"
+                                autoComplete="url"
                             />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-orange">{t("title")}</label>
+                            <label htmlFor="title" className="block text-sm font-medium text-orange">
+                                {t("title")}
+                            </label>
                             <input
                                 type="text"
+                                id="title"
                                 name="title"
                                 value={formData.title}
                                 onChange={handleInputChange}
                                 className="mt-1 p-2 block w-full border border-orange rounded-md"
                                 required
+                                autoComplete="off"
                             />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-orange">{t("location")}</label>
+                            <label htmlFor="location" className="block text-sm font-medium text-orange">
+                                {t("location")}
+                            </label>
                             <input
                                 type="text"
+                                id="location"
                                 name="location"
                                 value={formData.location}
                                 onChange={handleInputChange}
                                 className="mt-1 p-2 block w-full border border-orange rounded-md"
                                 required
+                                autoComplete="off"
                             />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-orange">{t("salary")}</label>
+                            <label htmlFor="salary" className="block text-sm font-medium text-orange">
+                                {t("salary")}
+                            </label>
                             <input
                                 type="text"
+                                id="salary"
                                 name="salary"
                                 value={formData.salary}
                                 onChange={handleInputChange}
                                 className="mt-1 p-2 block w-full border border-orange rounded-md"
                                 required
+                                autoComplete="off"
                             />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-orange">{t("description")}</label>
+                            <label htmlFor="description" className="block text-sm font-medium text-orange">
+                                {t("description")}
+                            </label>
                             <textarea
+                                id="description"
                                 name="description"
                                 value={formData.description}
                                 onChange={handleInputChange}
                                 className="mt-1 p-2 block w-full border border-orange rounded-md"
                                 rows={10}
                                 required
+                                autoComplete="off"
                             />
                         </div>
 
