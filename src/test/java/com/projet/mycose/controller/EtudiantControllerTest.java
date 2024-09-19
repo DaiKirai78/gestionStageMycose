@@ -31,11 +31,11 @@ public class EtudiantControllerTest {
     @Test
     public void testCreationDeCompte_Succes() throws Exception {
         RegisterEtudiantDTO newEtudiant = new RegisterEtudiantDTO(
-                "Karim", "Mihoubi", "4385322729", "mihoubi@gmail.com", "Mimi827$"
+                "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi827$"
         );
 
         when(etudiantService.creationDeCompte(any(), any(), any(), any(), any()))
-                .thenReturn(new EtudiantDTO(1L, "Karim", "Mihoubi", "4385322729", "mihoubi@gmail.com", Role.ETUDIANT));
+                .thenReturn(new EtudiantDTO(1L, "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", Role.ETUDIANT));
 
         ObjectMapper objectMapper = new ObjectMapper();
         String etudiantJson = objectMapper.writeValueAsString(newEtudiant);
@@ -51,11 +51,11 @@ public class EtudiantControllerTest {
     @Test
     public void testCreationDeCompte_EchecBadRequest() throws Exception {
         RegisterEtudiantDTO newEtudiant = new RegisterEtudiantDTO(
-                "Michel", "Genereux", "4379302483", "mihoubi@gmail.com", "Mimi827$"
+                "Michel", "Genereux", "437-930-2483", "mihoubi@gmail.com", "Mimi827$"
         );
 
         when(etudiantService.creationDeCompte(
-                "Michel", "Genereux", "4379302483", "mihoubi@gmail.com", "Mimi827$"))
+                "Michel", "Genereux", "437-930-2483", "mihoubi@gmail.com", "Mimi827$"))
                 .thenReturn(null);
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -72,11 +72,11 @@ public class EtudiantControllerTest {
     @Test
     public void testCreationDeCompte_EchecInternalServerError() throws Exception {
         RegisterEtudiantDTO newEtudiant = new RegisterEtudiantDTO(
-                "Michel", "Genereux", "4379302483", "mihoubi@gmail.com", "Mimi827$"
+                "Michel", "Genereux", "437-930-2483", "mihoubi@gmail.com", "Mimi827$"
         );
 
         when(etudiantService.creationDeCompte(
-                "Michel", "Genereux", "4379302483", "mihoubi@gmail.com", "Mimi827$"))
+                "Michel", "Genereux", "437-930-2483", "mihoubi@gmail.com", "Mimi827$"))
                 .thenThrow(new RuntimeException("Erreur en provenance du serveur"));
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -92,9 +92,9 @@ public class EtudiantControllerTest {
 
     @Test
     public void testCreationDeCompte_EchecAvecConflit() throws Exception {
-        when(etudiantService.credentialsDejaPris("mihoubi@gmail.com", "4379302483")).thenReturn(true);
+        when(etudiantService.credentialsDejaPris("mihoubi@gmail.com", "437-930-2483")).thenReturn(true);
 
-        this.mockMvc.perform(get("/etudiant/register/check-for-conflict/mihoubi@gmail.com_4379302483")
+        this.mockMvc.perform(get("/etudiant/register/check-for-conflict/mihoubi@gmail.com_437-930-2483")
                         .with(csrf())
                         .with(user("karim").password("Mimi123$").roles("ETUDIANT")))
                 .andExpect(status().isConflict());
@@ -102,10 +102,10 @@ public class EtudiantControllerTest {
 
     @Test
     public void testCheckForConflict_EchecInternalServerError() throws Exception {
-        when(etudiantService.credentialsDejaPris("mihoubi@gmail.com", "4379302483"))
+        when(etudiantService.credentialsDejaPris("mihoubi@gmail.com", "437-930-2483"))
                 .thenThrow(new RuntimeException("Erreur en provenance du serveur"));
 
-        this.mockMvc.perform(get("/etudiant/register/check-for-conflict/mihoubi@gmail.com_4379302483")
+        this.mockMvc.perform(get("/etudiant/register/check-for-conflict/mihoubi@gmail.com_437-930-2483")
                         .with(csrf())
                         .with(user("karim").password("Mimi123$").roles("ETUDIANT")))
                 .andExpect(status().isInternalServerError());

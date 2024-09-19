@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 
+import javax.validation.constraints.Pattern;
 import java.util.Collection;
 
 @Getter

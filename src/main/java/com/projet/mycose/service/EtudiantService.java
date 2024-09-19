@@ -2,9 +2,7 @@ package com.projet.mycose.service;
 
 import com.projet.mycose.modele.Etudiant;
 import com.projet.mycose.repository.EtudiantRepository;
-import com.projet.mycose.security.SecurityConfiguration;
 import com.projet.mycose.service.dto.EtudiantDTO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -24,15 +22,17 @@ public class EtudiantService {
     }
 
     public EtudiantDTO creationDeCompte(String prenom, String nom, String numeroTelephone, String courriel, String motDePasse) {
-        if (numeroTelephone == null || !numeroTelephone.matches("\\d{10}")) {
-            throw new IllegalArgumentException("Le numéro de téléphone est invalide");
-        }
-        if (courriel == null || !courriel.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")) {
-            throw new IllegalArgumentException("Le courriel est invalide");
-        }
-        if (motDePasse == null || !motDePasse.matches("[a-zA-Z0-9$&+,:;=?@#|'<>.^*()%!-]{8,}")) {
-            throw new IllegalArgumentException("Le mot de passe est invalide");
-        }
+        if (prenom == null || prenom.isEmpty() || !prenom.matches("[a-zA-ZéÉàÀ\\-']+"))
+            throw new IllegalArgumentException("Le prénom de l'utilisateur est invalide");
+        if (nom == null || nom.isEmpty() || !nom.matches("[a-zA-ZéÉàÀ\\-']+"))
+            throw new IllegalArgumentException("Le nom de l'utilisateur est invalide");
+        if (numeroTelephone == null || numeroTelephone.isEmpty() || !numeroTelephone.matches("[0-9]{3}-? ?[0-9]{3}-? ?[0-9]{4}"))
+            throw new IllegalArgumentException("Le numéro de téléphone de l'utilisateur est invalide");
+        if (courriel == null || courriel.isEmpty() || !courriel.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"))
+            throw new IllegalArgumentException("Le courriel de l'utilisateur est invalide");
+        if (motDePasse == null || motDePasse.isEmpty() || !motDePasse.matches("[a-zA-Z0-9$&+,:;=?@#|'<>.^*()%!-]{8,}"))
+            throw new IllegalArgumentException("Le mot de passe de l'utilisateur est invalide");
+
         return toDTO(etudiantRepository.save(new Etudiant(prenom, nom, numeroTelephone, courriel,  passwordEncoder.encode(motDePasse))));
     }
 
