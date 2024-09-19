@@ -22,9 +22,9 @@ public class EtudiantService {
     }
 
     public EtudiantDTO creationDeCompte(String prenom, String nom, String numeroTelephone, String courriel, String motDePasse) {
-        if (prenom == null || prenom.isEmpty() || !prenom.matches("[a-zA-Z -'éÉàÀ]"))
+        if (prenom == null || prenom.isEmpty() || !prenom.matches("[a-zA-ZéÉàÀ\\-']+"))
             throw new IllegalArgumentException("Le prénom de l'utilisateur est invalide");
-        if (nom == null || nom.isEmpty() || !nom.matches("[a-zA-Z -'éÉàÀ]"))
+        if (nom == null || nom.isEmpty() || !nom.matches("[a-zA-ZéÉàÀ\\-']+"))
             throw new IllegalArgumentException("Le nom de l'utilisateur est invalide");
         if (numeroTelephone == null || numeroTelephone.isEmpty() || !numeroTelephone.matches("[0-9]{3}-? ?[0-9]{3}-? ?[0-9]{4}"))
             throw new IllegalArgumentException("Le numéro de téléphone de l'utilisateur est invalide");

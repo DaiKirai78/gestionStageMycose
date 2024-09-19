@@ -4,8 +4,7 @@ import com.projet.mycose.modele.Etudiant;
 import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.repository.EtudiantRepository;
 import com.projet.mycose.service.dto.EtudiantDTO;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -209,14 +208,14 @@ public class EtudiantServiceTest {
         EtudiantService etudiantService = new EtudiantService(etudiantRepositoryMock, passwordEncoderMock);
 
         Etudiant etudiant = new Etudiant(1L, "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi828$");
-        when(etudiantRepositoryMock.findEtudiantByNumeroDeTelephone("4385322729")).thenReturn(Optional.of(etudiant));
+        when(etudiantRepositoryMock.findEtudiantByNumeroDeTelephone("438-532-2729")).thenReturn(Optional.of(etudiant));
 
         // Act
-        EtudiantDTO etudiantDTO = etudiantService.getEtudiantByTelephone("4385322729");
+        EtudiantDTO etudiantDTO = etudiantService.getEtudiantByTelephone("438-532-2729");
 
         // Assert
         Assertions.assertNotNull(etudiantDTO);
-        Assertions.assertEquals(etudiantDTO.getNumeroDeTelephone(), "4385322729");
+        Assertions.assertEquals(etudiantDTO.getNumeroDeTelephone(), "438-532-2729");
     }
 
     @Test
@@ -260,7 +259,7 @@ public class EtudiantServiceTest {
 
         Etudiant etudiant = new Etudiant(1L, "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi828$");
         when(etudiantRepositoryMock.findEtudiantByCourriel(any())).thenReturn(Optional.empty());
-        when(etudiantRepositoryMock.findEtudiantByNumeroDeTelephone("4385322729")).thenReturn(Optional.of(etudiant));
+        when(etudiantRepositoryMock.findEtudiantByNumeroDeTelephone("438-532-2729")).thenReturn(Optional.of(etudiant));
 
         // Act
         boolean result = etudiantService.credentialsDejaPris("email@inexistant.com", "438-532-2729");
