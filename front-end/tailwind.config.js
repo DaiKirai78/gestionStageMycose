@@ -10,7 +10,7 @@ export default withMT({
   theme: {
     colors: {
       "orange": "#FB7813",
-        "orange-dark": "#ea6f14",
+      "orange-dark": "#ea6f14",
       "orange-light": "#FFF8F2",
       "gris": "#A7A7A7"
     },

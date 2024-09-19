@@ -1,4 +1,19 @@
 {
     "errorMessageEmail": "Enter a valid email address",
-    "errorMessagePassword": "Enter a valid password with a minimum of 8 letters"
+    "errorMessagePassword": "Enter a valid password with a minimum of 8 letters",
+    "uploadFile": "Upload File",
+    "fillForm": "Fill the Form",
+    "showUpload": "Upload",
+    "showForm": "Form",
+    "submit": "Submit",
+    "uploadAFile": "Upload a file",
+    "removeFile": "Remove File",
+    "companyName": "Company Name",
+    "employerName": "Employer Name",
+    "email": "Email",
+    "website": "Company website",
+    "title": "Title of the internship offer",
+    "location": "Internship location",
+    "salary": "Salary",
+    "description": "Description"
 }
