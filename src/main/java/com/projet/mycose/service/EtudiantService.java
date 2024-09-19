@@ -14,11 +14,9 @@ import static com.projet.mycose.service.dto.EtudiantDTO.toDTO;
 public class EtudiantService {
 
     private final EtudiantRepository etudiantRepository;
-    private final PasswordEncoder passwordEncoder;
 
-    public EtudiantService(EtudiantRepository etudiantRepository, PasswordEncoder passwordEncoder) {
+    public EtudiantService(EtudiantRepository etudiantRepository) {
         this.etudiantRepository = etudiantRepository;
-        this.passwordEncoder = passwordEncoder;
     }
 
     public EtudiantDTO creationDeCompte(String prenom, String nom, String numeroTelephone, String courriel, String motDePasse) {
@@ -33,7 +31,7 @@ public class EtudiantService {
         if (motDePasse == null || motDePasse.isEmpty() || !motDePasse.matches("[a-zA-Z0-9$&+,:;=?@#|'<>.^*()%!-]{8,}"))
             throw new IllegalArgumentException("Le mot de passe de l'utilisateur est invalide");
 
-        return toDTO(etudiantRepository.save(new Etudiant(prenom, nom, numeroTelephone, courriel,  passwordEncoder.encode(motDePasse))));
+        return toDTO(etudiantRepository.save(new Etudiant(prenom, nom, numeroTelephone, courriel, motDePasse)));
     }
 
     public EtudiantDTO getEtudiantByCourriel(String courriel) {
