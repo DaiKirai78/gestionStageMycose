@@ -10,6 +10,7 @@ import ConnectionPage from "./pages/connectionPage.jsx"
 import AcceuilPage from './pages/acceuilPage.jsx';
 
 import "./i18n"
+import UploadForm from "./components/uploadForm.jsx";
 
 const router = createBrowserRouter([
   {
@@ -19,6 +20,10 @@ const router = createBrowserRouter([
   {
     path: "/acceuil",
     element: <AcceuilPage />
+  },
+  {
+    path: "/televerserOffreStage",
+    element: <UploadForm/>
   }
 ]);
 

@@ -1,10 +1,20 @@
 import {useState} from "react";
+import {useTranslation} from "react-i18next";
 
 function UploadForm() {
+
+    const{t} = useTranslation()
+
     const [file, setFile] = useState(null);
     const [formData, setFormData] = useState({
-        name: "",
+        entrepriseName: "",
+        employerName: "",
         email: "",
+        website: "",
+        title: "",
+        location: "",
+        salary: "",
+        description: ""
     });
 
     const handleFileChange = (e) => {
@@ -34,20 +44,20 @@ function UploadForm() {
         <div className="flex items-center justify-center min-h-screen bg-orange-light">
             <div className="w-[70%] max-w-screen-lg mx-auto bg-white p-6 rounded-lg shadow-md">
                 <h2 className="text-xl font-bold mb-4 text-orange">
-                    {showUpload ? "Upload File" : "Fill the Form"}
+                    {showUpload ? t("uploadFile") : t("fillForm")}
                 </h2>
                 <div className="mb-4 flex justify-center space-x-4">
                     <button
                         className={`px-4 py-2 rounded-md ${showUpload ? "bg-orange text-white" : "bg-white border border-orange text-orange"} hover:bg-orange hover:text-white`}
                         onClick={() => setShowUpload(true)}
                     >
-                        Show Upload
+                        {t("showUpload")}
                     </button>
                     <button
                         className={`px-4 py-2 rounded-md ${!showUpload ? "bg-orange text-white" : "bg-white border border-orange text-orange"} hover:bg-orange hover:text-white`}
                         onClick={() => setShowUpload(false)}
                     >
-                        Show Form
+                        {t("showForm")}
                     </button>
                 </div>
 
@@ -55,7 +65,7 @@ function UploadForm() {
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div>
                             <label className="block text-sm font-medium text-orange">
-                                Upload a file
+                                {t("uploadAFile")}
                             </label>
                             <input
                                 type="file"
@@ -80,7 +90,7 @@ function UploadForm() {
                                 className="max-w-xs w-full bg-orange text-white p-2 rounded-lg hover:bg-orange-dark"
                                 disabled={file === null}
                             >
-                                Submit
+                            {t("submit")}
                             </button>
                         </div>
                     </form>
@@ -88,7 +98,7 @@ function UploadForm() {
                     <form onSubmit={handleSubmit} className="space-y-4">
                         {/* Formulaire */}
                         <div>
-                            <label className="block text-sm font-medium text-orange">Nom de l'entreprise</label>
+                            <label className="block text-sm font-medium text-orange">{t("companyName")}</label>
                             <input
                                 type="text"
                                 name="entrepriseName"
@@ -100,7 +110,7 @@ function UploadForm() {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-orange">Nom de l'employeur</label>
+                            <label className="block text-sm font-medium text-orange">{t("employerName")}</label>
                             <input
                                 type="text"
                                 name="employerName"
@@ -112,7 +122,7 @@ function UploadForm() {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-orange">Courriel</label>
+                            <label className="block text-sm font-medium text-orange">{t("email")}</label>
                             <input
                                 type="email"
                                 name="email"
@@ -124,7 +134,7 @@ function UploadForm() {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-orange">Site internet de l'entreprise</label>
+                            <label className="block text-sm font-medium text-orange">{t("website")}</label>
                             <input
                                 type="url"
                                 name="website"
@@ -135,7 +145,7 @@ function UploadForm() {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-orange">Titre de l'offre de stage</label>
+                            <label className="block text-sm font-medium text-orange">{t("title")}</label>
                             <input
                                 type="text"
                                 name="title"
@@ -147,7 +157,7 @@ function UploadForm() {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-orange">Emplacement du stage</label>
+                            <label className="block text-sm font-medium text-orange">{t("location")}</label>
                             <input
                                 type="text"
                                 name="location"
@@ -159,7 +169,7 @@ function UploadForm() {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-orange">Salaire</label>
+                            <label className="block text-sm font-medium text-orange">{t("salary")}</label>
                             <input
                                 type="text"
                                 name="salary"
@@ -171,7 +181,7 @@ function UploadForm() {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-orange">Description</label>
+                            <label className="block text-sm font-medium text-orange">{t("description")}</label>
                             <textarea
                                 name="description"
                                 value={formData.description}
@@ -187,7 +197,7 @@ function UploadForm() {
                                 type="submit"
                                 className="max-w-xs w-full bg-orange text-white p-2 rounded-lg hover:bg-orange-dark"
                             >
-                                Submit
+                                {t("submit")}
                             </button>
                         </div>
                     </form>

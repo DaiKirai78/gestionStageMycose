@@ -4,7 +4,6 @@ import UploadForm from "./components/uploadForm";
 function App() {
   return (
     <>
-        <UploadForm/>
     </>
   )
 }

@@ -1,4 +1,19 @@
 {
     "errorMessageEmail": "Saisissez une adresse courriel valide",
-    "errorMessagePassword": "Saisissez un mot de passe valide avec un minimum de 8 lettres"
+    "errorMessagePassword": "Saisissez un mot de passe valide avec un minimum de 8 lettres",
+    "uploadFile": "Téléverser un fichier",
+    "fillForm": "Remplir le formulaire",
+    "showUpload": "Téléverser",
+    "showForm": "Formulaire",
+    "submit": "Soumettre",
+    "uploadAFile": "Téléverser un fichier",
+    "removeFile": "Supprimer le fichier",
+    "companyName": "Nom de l'entreprise",
+    "employerName": "Nom de l'employeur",
+    "email": "Courriel",
+    "website": "Site internet de l'entreprise",
+    "title": "Titre de l'offre de stage",
+    "location": "Emplacement du stage",
+    "salary": "Salaire",
+    "description": "Description"
 }
