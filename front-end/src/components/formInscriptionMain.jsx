@@ -2,24 +2,38 @@ import { useState } from "react";
 import {Input} from '@material-tailwind/react';
 
 const FormInscriptionMain = () => {
+
+    const valideEmail = new RegExp('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z]{2,}$');
+    const valideName = new RegExp("[a-zA-Z -'éÉàÀ]");
+    const validePassword = new RegExp("[a-zA-Z0-9$&+,:;=?@#|'<>.^*()%!-]{8,}");
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [telephone, setTelephone] = useState('');
 
     function onNext(e) {
+        e.preventDefault();
 
+        if(!validerChamps()) {
+            console.log("Erreur inscription main")
+            return;
+        }
+    }
+
+    function validerChamps() {
+        
     }
 
     function changeEmailValue(e) {
-
+        setEmail(e.target.value);
     }
 
     function changePasswordValue(e) {
-
+        setTelephone(e.target.value);
     }
 
     function changeTelephoneValue(e) {
-
+        setPassword(e.target.value);
     }
 
     return (
@@ -36,7 +50,7 @@ const FormInscriptionMain = () => {
                     </div>
                     <div>
                         <div className="w-full">
-                            <Input label="Nom" color='black' size='lg'
+                            <Input label="Mot de Passe" color='black' size='lg'
                             onChange={(e) => {changePasswordValue(e);}}
                             type='password'/>
                         </div>
@@ -48,9 +62,9 @@ const FormInscriptionMain = () => {
                             type='tel'/>
                         </div>
                     </div>
-                    <button className='border p-2 border-black rounded-[7px]' onClick={onNext}>S'inscrire</button>
+                    <button className='border p-2 border-black rounded-[7px]' onClick={onNext}>Suivant</button>
                 </form>
-                <p>Déjà un compte</p>
+                <p>Déjà un compte?</p>
                 <button className='p-2 border border-black bg-black rounded-[7px] text-white'>Connexion</button>
             </div>	
         </>
