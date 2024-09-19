@@ -1,21 +1,21 @@
 import { useState } from "react";
 import {Input} from '@material-tailwind/react';
 
-const FormInscriptionMain = () => {
+const FormInscription1 = () => {
 
-    const valideEmail = new RegExp('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z]{2,}$');
+    // const valideEmail = new RegExp('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z]{2,}$');
     const valideName = new RegExp("[a-zA-Z -'éÉàÀ]");
-    const validePassword = new RegExp("[a-zA-Z0-9$&+,:;=?@#|'<>.^*()%!-]{8,}");
+    //const validePassword = new RegExp("[a-zA-Z0-9$&+,:;=?@#|'<>.^*()%!-]{8,}");
 
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [telephone, setTelephone] = useState('');
+    const [prenom, setPrenom] = useState('');
+    const [nom, setNom] = useState('');
+    const [nomEntreprise, setNomEntreprise] = useState('');
 
     function onNext(e) {
         e.preventDefault();
 
         if(!validerChamps()) {
-            console.log("Erreur inscription main")
+            console.log("Erreur inscription un")
             return;
         }
     }
@@ -24,16 +24,16 @@ const FormInscriptionMain = () => {
         
     }
 
-    function changeEmailValue(e) {
-        setEmail(e.target.value);
+    function changePrenomValue(e) {
+        setPrenom(e.target.value);
     }
 
-    function changePasswordValue(e) {
-        setTelephone(e.target.value);
+    function changeNomValue(e) {
+        setNom(e.target.value);
     }
 
-    function changeTelephoneValue(e) {
-        setPassword(e.target.value);
+    function changeNomEntrepriseValue(e) {
+        setNomEntreprise(e.target.value);
     }
 
     return (
@@ -42,22 +42,22 @@ const FormInscriptionMain = () => {
                 <form method="get" className='flex flex-col sm:gap-5 gap-3'>
                     <div>
                         <div className="w-full">
-                            <Input label="Courriel" color='black' size='lg' 
+                            <Input label="Prénom" color='black' size='lg' 
                             onChange={(e) => {changeEmailValue(e);}}
-                            type='email'
+                            type='text'
                             />
                         </div>
                     </div>
                     <div>
                         <div className="w-full">
-                            <Input label="Mot de Passe" color='black' size='lg'
+                            <Input label="Nom" color='black' size='lg'
                             onChange={(e) => {changePasswordValue(e);}}
-                            type='password'/>
+                            type='text'/>
                         </div>
                     </div>
                     <div>
                         <div className="w-full">
-                            <Input label="Téléphone" color='black' size='lg'
+                            <Input label="Nom de l'entreprise" color='black' size='lg'
                             onChange={(e) => {changeTelephoneValue(e);}}
                             type='tel'/>
                         </div>
@@ -71,4 +71,4 @@ const FormInscriptionMain = () => {
     );
 }
 
-export default FormInscriptionMain;
+export default FormInscription1;

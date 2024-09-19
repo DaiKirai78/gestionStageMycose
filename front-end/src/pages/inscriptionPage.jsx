@@ -1,10 +1,10 @@
-import FormInscriptionEtudiant from '../components/formInscriptionEtudiant.jsx'
-import FormInscriptionMain from '../components/formInscriptionMain.jsx';
+import FormInscriptionEtudiant from '../components/formInscription2.jsx'
+import FormInscription1 from '../components/formInscription1.jsx';
 
 const InscriptionPage = () => {
     return (
         <>
-            <FormInscriptionMain/>
+            <FormInscription1/>
             {/* <FormInscriptionEtudiant/> */}
         </>
     );
