@@ -21,7 +21,6 @@ public class MycoseApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) {
-		//Etudiant etudiant2 = new Etudiant("Karim", "Mihoubi", "4385372039", "mihoubi@gmail.com", "Mimi123$");
-		//etudiantService.creationDeCompte(etudiant2.getPrenom(), etudiant2.getNom(), etudiant2.getNumeroDeTelephone(), etudiant2.getCourriel(), etudiant2.getMotDePasse());
+
 	}
 }
