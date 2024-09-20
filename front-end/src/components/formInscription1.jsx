@@ -3,7 +3,7 @@ import Divider from './divider';
 import InputErrorMessage from './inputErrorMesssage';
 import { useState } from "react";
 
-function FormInscription1({prenom, nom, setPrenom, setNom}) {
+function FormInscription1({prenom, nom, setPrenom, setNom, setStep}) {
 
     const [errorKeyPrenom, setErrorKeyPrenom] = useState('');
     const [errorKeyNom, setErrorKeyNom] = useState('');
@@ -16,20 +16,16 @@ function FormInscription1({prenom, nom, setPrenom, setNom}) {
         e.preventDefault();
 
         if(!validerChamps()) {
-            console.log("Erreur inscription un")
             return;
-        }        
+        }
+
+        setStep('deuxiemeEtape');
     }
 
     function validerChamps() {
         const prenomValide = verifierPrenom();
         const nomValide = verifierNom();
 
-        console.log(prenom);
-        console.log(prenomValide);
-        console.log(nom);
-        console.log(nomValide);
-        
         return prenomValide && nomValide;
     }
 
