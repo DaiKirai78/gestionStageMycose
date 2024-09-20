@@ -7,6 +7,8 @@ import FormInscription2 from '../components/formInscription2.jsx';
 const InscriptionPage = () => {
     const [prenom, setPrenom] = useState('');
     const [nom, setNom] = useState('');
+    const [email, setEmail] = useState('');
+    const [telephone, setTelephone] = useState('');
     const [step, setStep] = useState('premiereEtape')
 
     function switchComponent(param) {
@@ -14,7 +16,7 @@ const InscriptionPage = () => {
             case 'premiereEtape':
                 return <FormInscription1 prenom={prenom} nom={nom} setNom={setNom} setPrenom={setPrenom} setStep={setStep}/>;
             case 'deuxiemeEtape':
-                return <FormInscription2/>
+                return <FormInscription2 email={email} setEmail={setEmail} telephone={telephone} setTelelphone={setTelephone} />
         
             //default:
                 //return <FormInscription1 prenom={prenom} nom={nom} setNom={setNom} setPrenom={setPrenom} setStep={setStep}/>;

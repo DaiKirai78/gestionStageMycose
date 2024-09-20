@@ -1,65 +1,41 @@
 import React, {useState} from 'react'
 import {Input} from '@material-tailwind/react';
+import Divider from './divider';
 
-const FormInscriptionEtudiant = () => {
+function FormInscription2({email, setEmail, telephone, setTelelphone}) {
 
     const validePhone = new RegExp("[0-9]{3}-? ?[0-9]{3}-? ?[0-9]{4}");
-    const valideName = new RegExp("[a-zA-Z -'éÉàÀ]");
 
-    const [prenom, setPrenom] = useState("");
-    const [nom, setNom] = useState("");
-    const [telephone, setTelephone] = useState("");
-
-    function onInscription(e) {
+    function onNext(e) {
         e.preventDefault();
 
-        if(!validerChamps()) {
-            console.log("ERREUUUUUR!!!")
-            return;
-        }
+        // if(!validerChamps()) {
+        //     console.log("ERREUUUUUR!!!")
+        //     return;
+        // }
+
+        console.log(email);
+        console.log(telephone);
         
-        inscriptionInfo({prenom, nom, telephone});
-
-        setNom('');
-        setPrenom('');
-        setTelephone('')
+        
+        //inscriptionInfo({prenom, nom, telephone});
     }
 
-    async function inscriptionInfo(inscriptionInfo) {
-        const res = await fetch('url', {
-            method: 'POST',
-            headers: {
-                'Content-type': 'application/json',
-            },
-            body: JSON.stringify(inscriptionInfo)
-        });
-    }
-
-    function changeNomValue(e) {
-        setNom(e.target.value);
-    }
-
-    function changePrenomValue(e) {
-        setPrenom(e.target.value);
-    }
-
-    function changeTelephoneValue(e) {
-        setTelephone(e.target.value);
-    }
+    // async function inscriptionInfo(inscriptionInfo) {
+    //     const res = await fetch('url', {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-type': 'application/json',
+    //         },
+    //         body: JSON.stringify(inscriptionInfo)
+    //     });
+    // }
 
     function validerChamps() {
-        const nameValid = validerName();
-        const phoneValid = validerPhone();
+        // const nameValid = validerName();
+        // const phoneValid = validerPhone();
 
-        return nameValid && phoneValid;
-    }
-
-    function validerName() {
-        if(!valideName.test(nom) || !valideName.test(prenom)) {
-            //setErrorKey
-            return false;
-        }
-        return true;
+        // return nameValid && phoneValid;
     }
 
     function validerPhone() {
@@ -70,23 +46,26 @@ const FormInscriptionEtudiant = () => {
         return true;
     }
 
+    function changeEmailValue(e) {
+        setEmail(e.target.value);
+        //setErrorKey
+    }
+
+    function changeTelephoneValue(e) {
+        setTelelphone(e.target.value);
+        //setErrorKey
+    }
+
     return (
         <>
             <div className='flex flex-col px-10'>
                 <form method="get" className='flex flex-col sm:gap-5 gap-3'>
                     <div>
                         <div className="w-full">
-                            <Input label="Prénom" color='black' size='lg' 
-                            onChange={(e) => {changePrenomValue(e);}}
-                            type='text'
+                            <Input label="Courriel" color='black' size='lg' 
+                            onChange={(e) => {changeEmailValue(e);}}
+                            type='email'
                             />
-                        </div>
-                    </div>
-                    <div>
-                        <div className="w-full">
-                            <Input label="Nom" color='black' size='lg'
-                            onChange={(e) => {changeNomValue(e);}}
-                            type='text'/>
                         </div>
                     </div>
                     <div>
@@ -96,13 +75,14 @@ const FormInscriptionEtudiant = () => {
                             type='tel'/>
                         </div>
                     </div>
-                    <button className='border p-2 border-black rounded-[7px]' onClick={onInscription}>S'inscrire</button>
+                    <button className='border p-2 border-black rounded-[7px]' onClick={onNext}>S'inscrire</button>
                 </form>
-                <p>Déjà un compte?</p>
+                <p className="text-center mt-3 text-sm text-gray-800">2/3</p>
+                <Divider texte={"Déjà un compte ?"}/>
                 <button className='p-2 border border-black bg-black rounded-[7px] text-white'>Connexion</button>
             </div>	
         </>
     );
 };
 
-export default FormInscriptionEtudiant;
+export default FormInscription2;
