@@ -20,7 +20,7 @@ function FileOffreStage() {
                     "Content-Type": "multipart/form-data",
                 },
             });
-            console.log("Fichier envoyé avec succès :", response.data);
+            console.log("Fichier envoyé avec succès :", response.status);
         } catch (error) {
             console.error("Erreur lors de l'envoi du fichier :", error);
         }
