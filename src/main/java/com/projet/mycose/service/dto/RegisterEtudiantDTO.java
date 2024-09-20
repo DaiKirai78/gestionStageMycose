@@ -28,6 +28,6 @@ public class RegisterEtudiantDTO {
     private String courriel;
 
     @NotBlank
-    @Pattern(regexp = "[a-zA-Z0-9$&+,:;=?@#|'<>.^*()%!-]{8,}")
+    @Pattern(regexp = "^\\$2[abxy]?\\$\\d{2}\\$[./A-Za-z0-9]{53}$")
     private String motDePasse;
 }
