@@ -15,7 +15,7 @@ public class FichierOffreStage {
 
     private String filename;
 
-    @Lob
     @Column(name = "data", columnDefinition = "BYTEA")
     private byte[] data;
+
 }
