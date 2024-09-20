@@ -26,12 +26,9 @@ function FormOffreStage() {
         e.preventDefault();
 
         try {
-            const response = await axios.post("http://localhost:8080/api/forms/upload", formData, {
-                headers: {
-                    "Content-Type": "application/json",
-                },
+            const response = await axios.post("http://localhost:8080/api/offres/upload", formData, {
             });
-            console.log("Formulaire envoyé avec succès :", response.data);
+            console.log("Formulaire envoyé avec succès :", response.status);
         } catch (error) {
             console.error("Erreur lors de l'envoi du formulaire :", error);
         }
