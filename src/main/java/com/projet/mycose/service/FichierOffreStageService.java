@@ -2,17 +2,42 @@ package com.projet.mycose.service;
 
 import com.projet.mycose.modele.FichierOffreStage;
 import com.projet.mycose.repository.FichierOffreStageRepository;
+import com.projet.mycose.service.dto.FichierOffreStageDTO;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Base64;
 
 @Service
 public class FichierOffreStageService {
     private final FichierOffreStageRepository fileRepository;
+    private final ModelMapper modelMapper;
 
-    public FichierOffreStageService(FichierOffreStageRepository fileRepository) {
+    public FichierOffreStageService(FichierOffreStageRepository fileRepository, ModelMapper modelMapper) {
         this.fileRepository = fileRepository;
+        this.modelMapper = modelMapper;
+    }
+
+    // Convert Entity to DTO
+    public FichierOffreStageDTO convertToDTO(FichierOffreStage fichierOffreStage) {
+        FichierOffreStageDTO fichierOffreStageDTO = modelMapper.map(fichierOffreStage, FichierOffreStageDTO.class);
+
+        // Convert byte[] data to Base64 string
+        fichierOffreStageDTO.setFileData(Base64.getEncoder().encodeToString(fichierOffreStage.getData()));
+
+        return fichierOffreStageDTO;
+    }
+
+    // Convert DTO to Entity
+    public FichierOffreStage convertToEntity(FichierOffreStageDTO dto) {
+        FichierOffreStage fichierOffreStage = modelMapper.map(dto, FichierOffreStage.class);
+
+        // Convert Base64 string back to byte[]
+        fichierOffreStage.setData(Base64.getDecoder().decode(dto.getFileData()));
+
+        return fichierOffreStage;
     }
 
     public FichierOffreStage saveFile(MultipartFile file) throws IOException {
