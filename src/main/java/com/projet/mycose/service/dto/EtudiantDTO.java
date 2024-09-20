@@ -36,4 +36,8 @@ public class EtudiantDTO extends UtilisateurDTO {
                 .numeroDeTelephone(etudiantDto.getNumeroDeTelephone())
                 .build();
     }
+
+    public static EtudiantDTO empty() {
+        return new EtudiantDTO();
+    }
 }
