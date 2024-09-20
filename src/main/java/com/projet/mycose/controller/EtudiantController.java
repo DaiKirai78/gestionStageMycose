@@ -4,20 +4,17 @@ import com.projet.mycose.service.EtudiantService;
 import com.projet.mycose.service.dto.CourrielTelephoneDTO;
 import com.projet.mycose.service.dto.EtudiantDTO;
 import com.projet.mycose.service.dto.RegisterDTO;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
+@RequiredArgsConstructor
 @RequestMapping("etudiant")
 public class EtudiantController {
     private final EtudiantService etudiantService;
-
-    public EtudiantController(EtudiantService etudiantService) {
-        this.etudiantService = etudiantService;
-    }
-
 
     @PostMapping("/register")
     public ResponseEntity<HttpStatus> CreationDeCompte(@RequestBody RegisterDTO nouveauCompteEtudiant) {
