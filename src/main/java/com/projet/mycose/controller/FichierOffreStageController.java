@@ -4,6 +4,7 @@ package com.projet.mycose.controller;
 import com.projet.mycose.modele.FichierOffreStage;
 import com.projet.mycose.service.FichierOffreStageService;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +14,7 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/files")
+@CrossOrigin(origins = "http://localhost:5173")
 public class FichierOffreStageController {
 
     private final FichierOffreStageService fichierOffreStageService;
@@ -22,9 +24,13 @@ public class FichierOffreStageController {
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<FichierOffreStage> uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
-        FichierOffreStage savedFile = fichierOffreStageService.saveFile(file);
-        return ResponseEntity.ok(savedFile);
+    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
+        try {
+            FichierOffreStage savedFile = fichierOffreStageService.saveFile(file);
+            return ResponseEntity.status(HttpStatus.CREATED).body("File uploaded successfully");
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload file");
+        }
     }
 
     @GetMapping("/download/{id}")
