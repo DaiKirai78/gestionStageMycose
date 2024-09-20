@@ -1,23 +1,25 @@
-import React, {useState} from 'react'
 import {Input} from '@material-tailwind/react';
 import Divider from './divider';
+import { useState } from "react";
+import InputErrorMessage from './inputErrorMesssage';
 
 function FormInscription2({email, setEmail, telephone, setTelelphone}) {
 
-    const validePhone = new RegExp("[0-9]{3}-? ?[0-9]{3}-? ?[0-9]{4}");
+    const validePhone = new RegExp(String.raw`[0-9]{3}-? ?[0-9]{3}-? ?[0-9]{4}`)
+    const valideEmail = new RegExp(String.raw`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$`);
+
+    const [errorKeyEmail, setErrorKeyEmail] = useState('');
+    const [errorKeyTelephone, setErrorKeyTelephone] = useState('');
 
     function onNext(e) {
         e.preventDefault();
 
-        // if(!validerChamps()) {
-        //     console.log("ERREUUUUUR!!!")
-        //     return;
-        // }
+        if(!validerChamps()) {
+            console.log("Erreur Formulaire 2")
+            return;
+        }
 
-        console.log(email);
-        console.log(telephone);
-        
-        
+        console.log("c good")        
         //inscriptionInfo({prenom, nom, telephone});
     }
 
@@ -32,15 +34,23 @@ function FormInscription2({email, setEmail, telephone, setTelelphone}) {
     // }
 
     function validerChamps() {
-        // const nameValid = validerName();
-        // const phoneValid = validerPhone();
+        const emailValid = validerEmail();
+        const phoneValid = validerPhone();
 
-        // return nameValid && phoneValid;
+        return emailValid && phoneValid;
+    }
+
+    function validerEmail() {
+        if(!valideEmail.test(email)) {
+            setErrorKeyEmail("L'email est invalide")
+            return false;
+        }
+        return true;
     }
 
     function validerPhone() {
         if(!validePhone.test(telephone)) {
-            //setErrorKey
+            setErrorKeyTelephone("Le téléphone est invalide")
             return false;
         }
         return true;
@@ -48,12 +58,12 @@ function FormInscription2({email, setEmail, telephone, setTelelphone}) {
 
     function changeEmailValue(e) {
         setEmail(e.target.value);
-        //setErrorKey
+        setErrorKeyEmail("")
     }
 
     function changeTelephoneValue(e) {
         setTelelphone(e.target.value);
-        //setErrorKey
+        setErrorKeyTelephone("")
     }
 
     return (
@@ -66,6 +76,7 @@ function FormInscription2({email, setEmail, telephone, setTelelphone}) {
                             onChange={(e) => {changeEmailValue(e);}}
                             type='email'
                             />
+                            <InputErrorMessage messageKey={errorKeyEmail}/>
                         </div>
                     </div>
                     <div>
@@ -73,6 +84,7 @@ function FormInscription2({email, setEmail, telephone, setTelelphone}) {
                             <Input label="Téléphone" color='black' size='lg'
                             onChange={(e) => {changeTelephoneValue(e);}}
                             type='tel'/>
+                            <InputErrorMessage messageKey={errorKeyTelephone}/>
                         </div>
                     </div>
                     <button className='border p-2 border-black rounded-[7px]' onClick={onNext}>S'inscrire</button>
