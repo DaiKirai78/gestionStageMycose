@@ -2,6 +2,7 @@ import {Input} from '@material-tailwind/react';
 import Divider from './divider';
 import InputErrorMessage from './inputErrorMesssage';
 import { useState } from "react";
+import {sha256} from 'js-sha256';
 
 function FormInscription3() {
     const [password, setPassword] = useState('');
@@ -19,6 +20,12 @@ function FormInscription3() {
         }
 
         // hasher password
+        
+        //const passwordHash = sha256.create().update(password).hex();
+        //console.log(passwordHash);
+
+
+        
         // faire post
         // if post successful(réponse ok), renvoyer acceuil
     }
