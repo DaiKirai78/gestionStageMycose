@@ -21,17 +21,16 @@ function FormInscription2({email, setEmail, telephone, setTelelphone, setStep}) 
 
         setStep("troisiemeEtape");
 
-        //console.log("c good")        
+        console.log("c good")        
         //verifierEtudiantExiste();
     }
 
     // async function verifierEtudiantExiste() {
-    //     const res = await fetch(`http://localhost:3000/etudiant/register/check-for-conflict/${email}_${telephone}`, {
+    //     const res = await fetch(`http://localhost:8080/etudiant/register/check-for-conflict/${email}_${telephone}`, {
     //         method: 'GET',
     //         headers: {
     //             'Content-type': 'application/json',
-    //         },
-    //         body: JSON.stringify(infosAVerif)
+    //         }
     //     });
     // }
 

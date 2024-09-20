@@ -7,25 +7,53 @@ function FormInscription3() {
     const [password, setPassword] = useState('');
     const [passwordConf, setPasswordConf] = useState('');
 
+    const [errorKeyPassword, setErrorKeyPassword] = useState('');
+    const validePassword = new RegExp(String.raw`[a-zA-Z0-9$&+,:;=?@#|'<>.^*()%!-]{8,}`);
+
     function onSumbit(e) {
         e.preventDefault();
 
-        if(!validerChamps()) {
+        if(!validerPasswordsInputs()) {
             console.log("Erreur Form Inscription 3");
             return;
         }
+
+        // hasher password
+        // faire post
+        // if post successful(réponse ok), renvoyer acceuil
     }
 
-    function validerChamps() {
+    function validerPasswordsInputs() {
+        if(!champsPassRegex()) {
+            setErrorKeyPassword("Le mot de passe doit contenir minimum 8 charactères");
+        }
 
+        if(!isPasswordsSame()) {
+            setErrorKeyPassword("Les mots de passes doivent être les mêmes");
+        }
+
+        return true;
+    }
+
+    function champsPassRegex() {
+        const passwordValid = validePassword.test(password);
+        const passwordConfValid = validePassword.test(passwordConf);
+
+        return passwordValid && passwordConfValid;
+    }
+
+    function isPasswordsSame() {
+        return password === passwordConf;
     }
 
     function changePasswordValue(e) {
-
+        setPassword(e.target.value);
+        setErrorKeyPassword("");
     }
 
     function changePasswordConfValue(e) {
-
+        setPasswordConf(e.target.value);
+        setErrorKeyPassword("");
     }
 
     return (
@@ -38,7 +66,7 @@ function FormInscription3() {
                             onChange={(e) => {changePasswordValue(e);}}
                             type='password'
                             />
-                            <InputErrorMessage messageKey={"errorPlaceholder"}/>
+                            <InputErrorMessage messageKey={errorKeyPassword}/>
                         </div>
                     </div>
                     <div>
@@ -46,7 +74,7 @@ function FormInscription3() {
                             <Input label="Confirmation du mot de passe" color='black' size='lg'
                             onChange={(e) => {changePasswordConfValue(e);}}
                             type='password'/>
-                            <InputErrorMessage messageKey={"errorPlaceholder"}/>
+                            <InputErrorMessage messageKey={errorKeyPassword}/>
                         </div>
                     </div>
                     <button className='border p-2 border-black rounded-[7px]' onClick={onSumbit}>Suivant</button>
