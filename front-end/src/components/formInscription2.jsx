@@ -3,7 +3,7 @@ import Divider from './divider';
 import { useState } from "react";
 import InputErrorMessage from './inputErrorMesssage';
 
-function FormInscription2({email, setEmail, telephone, setTelelphone}) {
+function FormInscription2({email, setEmail, telephone, setTelelphone, setStep}) {
 
     const validePhone = new RegExp(String.raw`[0-9]{3}-? ?[0-9]{3}-? ?[0-9]{4}`)
     const valideEmail = new RegExp(String.raw`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$`);
@@ -19,17 +19,19 @@ function FormInscription2({email, setEmail, telephone, setTelelphone}) {
             return;
         }
 
-        console.log("c good")        
-        //inscriptionInfo({prenom, nom, telephone});
+        setStep("troisiemeEtape");
+
+        //console.log("c good")        
+        //verifierEtudiantExiste();
     }
 
-    // async function inscriptionInfo(inscriptionInfo) {
-    //     const res = await fetch('url', {
-    //         method: 'POST',
+    // async function verifierEtudiantExiste() {
+    //     const res = await fetch(`http://localhost:3000/etudiant/register/check-for-conflict/${email}_${telephone}`, {
+    //         method: 'GET',
     //         headers: {
     //             'Content-type': 'application/json',
     //         },
-    //         body: JSON.stringify(inscriptionInfo)
+    //         body: JSON.stringify(infosAVerif)
     //     });
     // }
 
