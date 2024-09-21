@@ -15,5 +15,6 @@
     "title": "Titre de l'offre de stage",
     "location": "Emplacement du stage",
     "salary": "Salaire",
-    "description": "Description"
+    "description": "Description",
+    "wrongFileExtension": "Mauvaise extension de fichier"
 }

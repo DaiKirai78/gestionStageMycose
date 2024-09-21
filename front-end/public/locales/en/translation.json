@@ -15,5 +15,6 @@
     "title": "Title of the internship offer",
     "location": "Internship location",
     "salary": "Salary",
-    "description": "Description"
+    "description": "Description",
+    "wrongFileExtension": "Wring file extension"
 }
