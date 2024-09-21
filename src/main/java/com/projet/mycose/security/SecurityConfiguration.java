@@ -46,7 +46,9 @@ public class SecurityConfiguration {
                         .requestMatchers("/etudiant/**").hasAuthority("ETUDIANT")
                         .requestMatchers("/enseignant/**").hasAuthority("ENSEIGNANT")
                         .requestMatchers("/employeur/**").hasAuthority("EMPLOYEUR")
+                        .requestMatchers("/enseignant/**").hasAuthority("ENSEIGNANT")
                         .requestMatchers("/gestionnaire-stage/**").hasAuthority("GESTIONNAIRE_STAGE")
+                        .requestMatchers("/**").permitAll()
                         .anyRequest().denyAll()
                 )
                 .sessionManagement((secuManagement) -> {
@@ -55,7 +57,6 @@ public class SecurityConfiguration {
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(configurer -> configurer.authenticationEntryPoint(authenticationEntryPoint))
         ;
-
         return http.build();
     }
 
