@@ -1,6 +1,7 @@
 package com.projet.mycose.controller;
 
 import com.projet.mycose.service.EtudiantService;
+import com.projet.mycose.service.dto.CourrielTelephoneDTO;
 import com.projet.mycose.service.dto.EtudiantDTO;
 import com.projet.mycose.service.dto.RegisterEtudiantDTO;
 import org.springframework.data.repository.query.Param;
@@ -9,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("etudiant")
 public class EtudiantController {
     private final EtudiantService etudiantService;
@@ -34,10 +35,10 @@ public class EtudiantController {
         }
     }
 
-    @GetMapping("/register/check-for-conflict/{courriel}_{telephone}")
-    public ResponseEntity<HttpStatus> CreationDeCompte_CheckForConflict(@PathVariable String courriel, @PathVariable String telephone) {
+    @PostMapping("/register/check-for-conflict")
+    public ResponseEntity<HttpStatus> CreationDeCompte_CheckForConflict(@RequestBody CourrielTelephoneDTO courrielTelephoneDTO) {
         try {
-            if (etudiantService.credentialsDejaPris(courriel, telephone))
+            if (etudiantService.credentialsDejaPris(courrielTelephoneDTO.getCourriel(), courrielTelephoneDTO.getTelephone()))
                 return ResponseEntity.status(HttpStatus.CONFLICT).build();
             else
                 return ResponseEntity.status(HttpStatus.OK).build();
@@ -46,5 +47,4 @@ public class EtudiantController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
 }
