@@ -24,6 +24,11 @@ public class EtudiantService {
 
     public EtudiantDTO creationDeCompte(String prenom, String nom, String numeroTelephone, String courriel, String motDePasse) {
         System.out.println(motDePasse);
+        System.out.println(" ");
+        System.out.println(prenom);
+        System.out.println(nom);
+        System.out.println(numeroTelephone);
+        System.out.println(courriel);
         if (prenom == null || prenom.isEmpty() || !prenom.matches("[a-zA-ZéÉàÀ\\-']+"))
             throw new IllegalArgumentException("Le prénom de l'utilisateur est invalide");
         if (nom == null || nom.isEmpty() || !nom.matches("[a-zA-ZéÉàÀ\\-']+"))
@@ -32,7 +37,7 @@ public class EtudiantService {
             throw new IllegalArgumentException("Le numéro de téléphone de l'utilisateur est invalide");
         if (courriel == null || courriel.isEmpty() || !courriel.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"))
             throw new IllegalArgumentException("Le courriel de l'utilisateur est invalide");
-        if (motDePasse == null || motDePasse.isEmpty() || !motDePasse.matches("^\\$2[abxy]?\\$\\d{2}\\$[./A-Za-z0-9]{53}$"))
+        if (motDePasse == null || motDePasse.isEmpty() || !motDePasse.matches("[a-f0-9]{64}$"))
             throw new IllegalArgumentException("Le mot de passe de l'utilisateur est invalide");
 
         return toDTO(etudiantRepository.save(new Etudiant(prenom, nom, numeroTelephone, courriel, motDePasse)));

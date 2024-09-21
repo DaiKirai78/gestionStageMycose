@@ -38,12 +38,13 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(POST, "/user/login").permitAll()
+                        .requestMatchers(POST, "/utilisateur/login").permitAll()
                         .requestMatchers(POST, "/etudiant/register").permitAll()
-                        .requestMatchers(POST, "register/check-for-conflict").permitAll()
+                        .requestMatchers(POST, "/etudiant/register/check-for-conflict").permitAll()
 
-                        .requestMatchers(GET, "/user/*").hasAnyAuthority("GESTIONNAIRE_STAGE", "ETUDIANT", "EMPLOYEUR", "ENSEIGNANT")
+                        .requestMatchers(GET, "/utilisateur/*").hasAnyAuthority("GESTIONNAIRE_STAGE", "ETUDIANT", "EMPLOYEUR", "ENSEIGNANT")
                         .requestMatchers("/etudiant/**").hasAuthority("ETUDIANT")
+                        .requestMatchers("/enseignant/**").hasAuthority("ENSEIGNANT")
                         .requestMatchers("/employeur/**").hasAuthority("EMPLOYEUR")
                         .requestMatchers("/gestionnaire-stage/**").hasAuthority("GESTIONNAIRE_STAGE")
                         .anyRequest().denyAll()
