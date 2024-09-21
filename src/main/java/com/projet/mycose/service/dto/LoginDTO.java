@@ -20,6 +20,6 @@ public class LoginDTO {
     private String courriel;
 
     @NotBlank
-    @Pattern(regexp = "[a-f0-9]{64}$")
+    @Pattern(regexp = "^\\$2[abxy]?\\$\\d{2}\\$[./A-Za-z0-9]{53}$")
     private String motDePasse;
 }

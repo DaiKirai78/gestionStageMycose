@@ -9,10 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
@@ -23,15 +20,16 @@ public class UtilisateurController {
     private final UtilisateurService utilisateurService;
 
     @PostMapping("/login")
-    public ResponseEntity<JWTAuthResponse> authentifierUtilisateur(LoginDTO loginDTO) {
+    public ResponseEntity<JWTAuthResponse> authentifierUtilisateur(@RequestBody LoginDTO loginDTO) {
         try {
-            String accessToken = utilisateurService.authentificationEtudiant(loginDTO);
+            String accessToken = utilisateurService.authentificationUtilisateur(loginDTO);
+            System.out.println(accessToken);
             final JWTAuthResponse authResponse= new JWTAuthResponse(accessToken);
             return ResponseEntity.accepted()
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(authResponse);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println("Erreur : " + e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new JWTAuthResponse());
         }
     }
