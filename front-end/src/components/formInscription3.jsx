@@ -3,6 +3,7 @@ import Divider from './divider';
 import InputErrorMessage from './inputErrorMesssage';
 import { useState } from "react";
 import {sha256} from 'js-sha256';
+import {redirect} from "react-router-dom";
 
 function FormInscription3({prenom, nom, email, telephone}) {
     const [password, setPassword] = useState('');
@@ -10,6 +11,9 @@ function FormInscription3({prenom, nom, email, telephone}) {
 
     const [errorKeyPassword, setErrorKeyPassword] = useState('');
     const validePassword = new RegExp(String.raw`[a-zA-Z0-9$&+,:;=?@#|'<>.^*()%!-]{8,}`);
+
+    const RESPONSE_OK = 200;
+    const [errorKeyResponse, setErrorKeyResponse] = useState('');
 
     async function onSumbit(e) {
         e.preventDefault();
@@ -21,11 +25,14 @@ function FormInscription3({prenom, nom, email, telephone}) {
 
         const passwordHash = sha256.create().update(password).hex();
         
-        reponseStatus = await envoyerInfos(passwordHash);
-        console.log(reponseStatus);
-            
-        // faire post
-        // if post successful(réponse ok), renvoyer acceuil
+        const reponseStatus = await envoyerInfos(passwordHash);
+
+        if(reponseStatus != RESPONSE_OK) {
+            setErrorKeyResponse("Une erreur est survenue, Code: " + reponseStatus)
+        }
+
+        
+        redirect("/acceuil");
     }
 
     async function envoyerInfos(passwordHash) {
@@ -73,11 +80,25 @@ function FormInscription3({prenom, nom, email, telephone}) {
     function changePasswordValue(e) {
         setPassword(e.target.value);
         setErrorKeyPassword("");
+        resetResponseError();
     }
 
     function changePasswordConfValue(e) {
         setPasswordConf(e.target.value);
         setErrorKeyPassword("");
+        resetResponseError();
+    }
+
+    function resetResponseError() {
+        setErrorKeyResponse("");
+    }
+
+    function renderMessageErreur() {
+        return(
+            <div className="text-center mb-5 rounded bg-red-200 py-3 bg-opacity-30">
+                <InputErrorMessage messageKey={errorKeyResponse}/>
+            </div>
+        );
     }
 
     return (
@@ -85,6 +106,7 @@ function FormInscription3({prenom, nom, email, telephone}) {
             <div className='flex flex-col px-10'>
                 <form method="get" className='flex flex-col sm:gap-5 gap-3'>
                     <div>
+                        {(errorKeyResponse != "") ? renderMessageErreur() : null}
                         <div className="w-full">
                             <Input label="Mot de Passe" color='black' size='lg' 
                             onChange={(e) => {changePasswordValue(e);}}
