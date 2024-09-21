@@ -7,11 +7,12 @@ import com.projet.mycose.service.dto.RegisterEtudiantDTO;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
-@RequestMapping("etudiant")
+@RequestMapping("/etudiant")
 public class EtudiantController {
     private final EtudiantService etudiantService;
 

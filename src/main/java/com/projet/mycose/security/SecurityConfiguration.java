@@ -40,7 +40,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(POST, "/user/login").permitAll()
                         .requestMatchers(POST, "/etudiant/register").permitAll()
-                        .requestMatchers(POST, "register/check-for-conflict").permitAll()
+                        .requestMatchers(POST, "/etudiant/register/check-for-conflict").permitAll()
 
                         .requestMatchers(GET, "/user/*").hasAnyAuthority("GESTIONNAIRE_STAGE", "ETUDIANT", "EMPLOYEUR", "ENSEIGNANT")
                         .requestMatchers("/etudiant/**").hasAuthority("ETUDIANT")
