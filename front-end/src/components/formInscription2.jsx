@@ -13,18 +13,25 @@ function FormInscription2({email, setEmail, telephone, setTelephone, setStep}) {
     const [errorKeyTelephone, setErrorKeyTelephone] = useState('');
     
     const RESPONSE_OK = 200
+    const RESPONSE_CONFLICT = 409;
+    const RESPONSE_SERVER_ERROR = 500;
     const [errorKeyEtudiantExiste, setErrorKeyEtudiantExiste] = useState('');
 
     async function onNext(e) {
         e.preventDefault();
 
         if(!validerChamps()) {
-            //console.log("Erreur Formulaire 2")
             return;
         }
 
-        if(!(await verifierEtudiantExiste())) {
+        const reponseStatus = await verifierEtudiantExiste();
+
+        if(reponseStatus === RESPONSE_CONFLICT) {
             setErrorKeyEtudiantExiste("Ces informations existent déjà");
+            return;
+        }
+        else if(reponseStatus !== RESPONSE_OK) {
+            setErrorKeyEtudiantExiste("Une erreur est survenur, Code:" + reponseStatus);
             return;
         }
     
@@ -34,21 +41,25 @@ function FormInscription2({email, setEmail, telephone, setTelephone, setStep}) {
 
     async function verifierEtudiantExiste() {
         const telFormate = telephone.replace(getDigitsOnTelephone, '$1-$2-$3')
-
-        const res = await fetch("http://localhost:8080/etudiant/register/check-for-conflict", {
-            method: 'POST',
-            headers: {
-                    'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                'courriel': email,
-                'telephone': telFormate
-            })
-        })
+        var res;
+        try {
+            res = await fetch("http://localhost:8080/etudiant/register/check-for-conflict", {
+                method: 'POST',
+                headers: {
+                        'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    'courriel': email,
+                    'telephone': telFormate
+                })
+            });
+        } catch {
+            return RESPONSE_SERVER_ERROR;
+        }
 
         setTelephone(telFormate);
 
-        return res.status === RESPONSE_OK;
+        return res.status;
     }
 
     function resetEtudiantExisteMessage() {
@@ -81,13 +92,13 @@ function FormInscription2({email, setEmail, telephone, setTelephone, setStep}) {
     function changeEmailValue(e) {
         setEmail(e.target.value);
         setErrorKeyEmail("")
-        setErrorKeyEtudiantExiste("");
+        resetEtudiantExisteMessage();
     }
 
     function changeTelephoneValue(e) {
         setTelephone(e.target.value);
         setErrorKeyTelephone("")
-        setErrorKeyEtudiantExiste("");
+        resetEtudiantExisteMessage();
     }
 
     function renderMessageErreur() {

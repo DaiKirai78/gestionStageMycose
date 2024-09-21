@@ -36,7 +36,6 @@ function FormInscription3({prenom, nom, email, telephone}) {
     }
 
     async function envoyerInfos(passwordHash) {
-        console.log(telephone);
         const res = await fetch("http://localhost:8080/etudiant/register", {
             method: 'POST',
             headers: {
