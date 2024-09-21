@@ -7,6 +7,7 @@ function FormInscription2({email, setEmail, telephone, setTelelphone, setStep}) 
 
     const validePhone = new RegExp(String.raw`[0-9]{3}-? ?[0-9]{3}-? ?[0-9]{4}`)
     const valideEmail = new RegExp(String.raw`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$`);
+    const getDigitsOnTelephone = new RegExp(String.raw`(\d{3})[- ]?(\d{3})[- ]?(\d{4})`);
 
     const [errorKeyEmail, setErrorKeyEmail] = useState('');
     const [errorKeyTelephone, setErrorKeyTelephone] = useState('');
@@ -14,7 +15,7 @@ function FormInscription2({email, setEmail, telephone, setTelelphone, setStep}) 
     const RESPONSE_OK = 200
     const [errorKeyEtudiantExiste, setErrorKeyEtudiantExiste] = useState('');
 
-    function onNext(e) {
+    async function onNext(e) {
         e.preventDefault();
 
         if(!validerChamps()) {
@@ -22,16 +23,18 @@ function FormInscription2({email, setEmail, telephone, setTelelphone, setStep}) 
             return;
         }
 
-        if(verifierEtudiantExiste()) {
-            setErrorKeyEtudiantExiste("Ces informations existent déjà")
+        if(!(await verifierEtudiantExiste())) {
+            setErrorKeyEtudiantExiste("Ces informations existent déjà");
             return;
         }
-
-        //setStep("troisiemeEtape");
+    
+        setStep("troisiemeEtape");
     }
 
 
     async function verifierEtudiantExiste() {
+        const telFormate = telephone.replace(getDigitsOnTelephone, '$1-$2-$3')
+
         const res = await fetch("http://localhost:8080/etudiant/register/check-for-conflict", {
             method: 'POST',
             headers: {
@@ -39,15 +42,17 @@ function FormInscription2({email, setEmail, telephone, setTelelphone, setStep}) 
             },
             body: JSON.stringify({
                 'courriel': email,
-                'telephone': telephone
+                'telephone': telFormate
             })
         })
 
-        return res.status == RESPONSE_OK;
+        await setTelelphone(telFormate);
+
+        return res.status === RESPONSE_OK;
     }
 
     function resetEtudiantExisteMessage() {
-
+        setErrorKeyEtudiantExiste("");
     }
 
     function validerChamps() {
@@ -76,11 +81,13 @@ function FormInscription2({email, setEmail, telephone, setTelelphone, setStep}) 
     function changeEmailValue(e) {
         setEmail(e.target.value);
         setErrorKeyEmail("")
+        setErrorKeyEtudiantExiste("");
     }
 
     function changeTelephoneValue(e) {
         setTelelphone(e.target.value);
         setErrorKeyTelephone("")
+        setErrorKeyEtudiantExiste("");
     }
 
     function renderMessageErreur() {
