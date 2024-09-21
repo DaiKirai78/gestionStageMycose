@@ -3,7 +3,7 @@ import Divider from './divider';
 import { useState } from "react";
 import InputErrorMessage from './inputErrorMesssage';
 
-function FormInscription2({email, setEmail, telephone, setTelelphone, setStep}) {
+function FormInscription2({email, setEmail, telephone, setTelephone, setStep}) {
 
     const validePhone = new RegExp(String.raw`[0-9]{3}-? ?[0-9]{3}-? ?[0-9]{4}`)
     const valideEmail = new RegExp(String.raw`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$`);
@@ -19,7 +19,7 @@ function FormInscription2({email, setEmail, telephone, setTelelphone, setStep}) 
         e.preventDefault();
 
         if(!validerChamps()) {
-            console.log("Erreur Formulaire 2")
+            //console.log("Erreur Formulaire 2")
             return;
         }
 
@@ -46,7 +46,7 @@ function FormInscription2({email, setEmail, telephone, setTelelphone, setStep}) 
             })
         })
 
-        await setTelelphone(telFormate);
+        setTelephone(telFormate);
 
         return res.status === RESPONSE_OK;
     }
@@ -85,7 +85,7 @@ function FormInscription2({email, setEmail, telephone, setTelelphone, setStep}) 
     }
 
     function changeTelephoneValue(e) {
-        setTelelphone(e.target.value);
+        setTelephone(e.target.value);
         setErrorKeyTelephone("")
         setErrorKeyEtudiantExiste("");
     }

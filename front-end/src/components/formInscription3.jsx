@@ -4,14 +4,14 @@ import InputErrorMessage from './inputErrorMesssage';
 import { useState } from "react";
 import {sha256} from 'js-sha256';
 
-function FormInscription3() {
+function FormInscription3({prenom, nom, email, telephone}) {
     const [password, setPassword] = useState('');
     const [passwordConf, setPasswordConf] = useState('');
 
     const [errorKeyPassword, setErrorKeyPassword] = useState('');
     const validePassword = new RegExp(String.raw`[a-zA-Z0-9$&+,:;=?@#|'<>.^*()%!-]{8,}`);
 
-    function onSumbit(e) {
+    async function onSumbit(e) {
         e.preventDefault();
 
         if(!validerPasswordsInputs()) {
@@ -19,15 +19,32 @@ function FormInscription3() {
             return;
         }
 
-        // hasher password
+        const passwordHash = sha256.create().update(password).hex();
         
-        //const passwordHash = sha256.create().update(password).hex();
-        //console.log(passwordHash);
-
-
-        
+        reponseStatus = await envoyerInfos(passwordHash);
+        console.log(reponseStatus);
+            
         // faire post
         // if post successful(réponse ok), renvoyer acceuil
+    }
+
+    async function envoyerInfos(passwordHash) {
+        console.log(telephone);
+        const res = await fetch("http://localhost:8080/etudiant/register", {
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                'prenom': prenom,
+                'nom': nom,
+                'numeroDeTelephone': telephone,
+                'courriel': email,
+                'motDePasse': passwordHash
+            })
+        })
+
+        return res.status;
     }
 
     function validerPasswordsInputs() {

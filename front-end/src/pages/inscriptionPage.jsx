@@ -17,9 +17,9 @@ const InscriptionPage = () => {
             case 'premiereEtape':
                 return <FormInscription1 prenom={prenom} nom={nom} setNom={setNom} setPrenom={setPrenom} setStep={setStep}/>;
             case 'deuxiemeEtape':
-                return <FormInscription2 email={email} setEmail={setEmail} telephone={telephone} setTelelphone={setTelephone} setStep={setStep} />
+                return <FormInscription2 email={email} setEmail={setEmail} telephone={telephone} setTelephone={setTelephone} setStep={setStep} />
             case 'troisiemeEtape':
-                return <FormInscription3/>
+                return <FormInscription3 prenom={prenom} nom={nom} email={email} telephone={telephone}/>
             //default:
                 //return <FormInscription1 prenom={prenom} nom={nom} setNom={setNom} setPrenom={setPrenom} setStep={setStep}/>;
         }
