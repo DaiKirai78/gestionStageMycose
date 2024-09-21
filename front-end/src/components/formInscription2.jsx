@@ -10,6 +10,9 @@ function FormInscription2({email, setEmail, telephone, setTelelphone, setStep}) 
 
     const [errorKeyEmail, setErrorKeyEmail] = useState('');
     const [errorKeyTelephone, setErrorKeyTelephone] = useState('');
+    
+    const RESPONSE_OK = 200
+    const [errorKeyEtudiantExiste, setErrorKeyEtudiantExiste] = useState('');
 
     function onNext(e) {
         e.preventDefault();
@@ -19,20 +22,33 @@ function FormInscription2({email, setEmail, telephone, setTelelphone, setStep}) 
             return;
         }
 
-        setStep("troisiemeEtape");
+        if(verifierEtudiantExiste()) {
+            setErrorKeyEtudiantExiste("Ces informations existent déjà")
+            return;
+        }
 
-        console.log("c good")        
-        //verifierEtudiantExiste();
+        //setStep("troisiemeEtape");
     }
 
-    // async function verifierEtudiantExiste() {
-    //     const res = await fetch(`http://localhost:8080/etudiant/register/check-for-conflict/${email}_${telephone}`, {
-    //         method: 'GET',
-    //         headers: {
-    //             'Content-type': 'application/json',
-    //         }
-    //     });
-    // }
+
+    async function verifierEtudiantExiste() {
+        const res = await fetch("http://localhost:8080/etudiant/register/check-for-conflict", {
+            method: 'POST',
+            headers: {
+                    'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                'courriel': email,
+                'telephone': telephone
+            })
+        })
+
+        return res.status == RESPONSE_OK;
+    }
+
+    function resetEtudiantExisteMessage() {
+
+    }
 
     function validerChamps() {
         const emailValid = validerEmail();
@@ -67,11 +83,21 @@ function FormInscription2({email, setEmail, telephone, setTelelphone, setStep}) 
         setErrorKeyTelephone("")
     }
 
+    function renderMessageErreur() {
+        return(
+            <div className="text-center mb-5 rounded bg-red-200 py-3 bg-opacity-30">
+                <InputErrorMessage messageKey={errorKeyEtudiantExiste}/>
+            </div>
+        );
+    }
+
     return (
         <>
             <div className='flex flex-col px-10'>
                 <form method="get" className='flex flex-col sm:gap-5 gap-3'>
                     <div>
+                        {(errorKeyEtudiantExiste != "") ? renderMessageErreur() : null}
+
                         <div className="w-full">
                             <Input label="Courriel" color='black' size='lg' 
                             onChange={(e) => {changeEmailValue(e);}}
