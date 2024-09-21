@@ -35,9 +35,9 @@ function FormOffreStage() {
     };
 
     return (
-        <form onSubmit={handleSubmitForm} className="space-y-4">
+        <form onSubmit={handleSubmitForm} className="space-y-4 w-full">
             <div>
-                <label htmlFor="entrepriseName" className="block text-sm font-medium text-orange">
+                <label htmlFor="entrepriseName" className="block text-sm font-medium text-black">
                     {t("companyName")}
                 </label>
                 <input
@@ -46,14 +46,14 @@ function FormOffreStage() {
                     name="entrepriseName"
                     value={formData.entrepriseName}
                     onChange={handleInputChange}
-                    className="mt-1 p-2 block w-full border border-orange rounded-md"
+                    className="mt-1 p-2 block w-full border border-black rounded-md bg-transparent"
                     required
                     autoComplete="organization"
                 />
             </div>
 
             <div>
-                <label htmlFor="employerName" className="block text-sm font-medium text-orange">
+                <label htmlFor="employerName" className="block text-sm font-medium text-black">
                     {t("employerName")}
                 </label>
                 <input
@@ -62,14 +62,14 @@ function FormOffreStage() {
                     name="employerName"
                     value={formData.employerName}
                     onChange={handleInputChange}
-                    className="mt-1 p-2 block w-full border border-orange rounded-md"
+                    className="mt-1 p-2 block w-full border border-black rounded-md bg-transparent"
                     required
                     autoComplete="name"
                 />
             </div>
 
             <div>
-                <label htmlFor="email" className="block text-sm font-medium text-orange">
+                <label htmlFor="email" className="block text-sm font-medium text-black">
                     {t("email")}
                 </label>
                 <input
@@ -78,14 +78,14 @@ function FormOffreStage() {
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    className="mt-1 p-2 block w-full border border-orange rounded-md"
+                    className="mt-1 p-2 block w-full border border-black rounded-md bg-transparent"
                     required
                     autoComplete="email"
                 />
             </div>
 
             <div>
-                <label htmlFor="website" className="block text-sm font-medium text-orange">
+                <label htmlFor="website" className="block text-sm font-medium text-black">
                     {t("website")}
                 </label>
                 <input
@@ -94,13 +94,13 @@ function FormOffreStage() {
                     name="website"
                     value={formData.website}
                     onChange={handleInputChange}
-                    className="mt-1 p-2 block w-full border border-orange rounded-md"
+                    className="mt-1 p-2 block w-full border border-black rounded-md bg-transparent"
                     autoComplete="url"
                 />
             </div>
 
             <div>
-                <label htmlFor="title" className="block text-sm font-medium text-orange">
+                <label htmlFor="title" className="block text-sm font-medium text-black">
                     {t("title")}
                 </label>
                 <input
@@ -109,14 +109,14 @@ function FormOffreStage() {
                     name="title"
                     value={formData.title}
                     onChange={handleInputChange}
-                    className="mt-1 p-2 block w-full border border-orange rounded-md"
+                    className="mt-1 p-2 block w-full border border-black rounded-md bg-transparent"
                     required
                     autoComplete="off"
                 />
             </div>
 
             <div>
-                <label htmlFor="location" className="block text-sm font-medium text-orange">
+                <label htmlFor="location" className="block text-sm font-medium text-black">
                     {t("location")}
                 </label>
                 <input
@@ -125,14 +125,14 @@ function FormOffreStage() {
                     name="location"
                     value={formData.location}
                     onChange={handleInputChange}
-                    className="mt-1 p-2 block w-full border border-orange rounded-md"
+                    className="mt-1 p-2 block w-full border border-black rounded-md bg-transparent"
                     required
                     autoComplete="off"
                 />
             </div>
 
             <div>
-                <label htmlFor="salary" className="block text-sm font-medium text-orange">
+                <label htmlFor="salary" className="block text-sm font-medium text-black">
                     {t("salary")}
                 </label>
                 <input
@@ -141,14 +141,14 @@ function FormOffreStage() {
                     name="salary"
                     value={formData.salary}
                     onChange={handleInputChange}
-                    className="mt-1 p-2 block w-full border border-orange rounded-md"
+                    className="mt-1 p-2 block w-full border border-black rounded-md bg-transparent"
                     required
                     autoComplete="off"
                 />
             </div>
 
             <div>
-                <label htmlFor="description" className="block text-sm font-medium text-orange">
+                <label htmlFor="description" className="block text-sm font-medium text-black">
                     {t("description")}
                 </label>
                 <textarea
@@ -156,7 +156,7 @@ function FormOffreStage() {
                     name="description"
                     value={formData.description}
                     onChange={handleInputChange}
-                    className="mt-1 p-2 block w-full border border-orange rounded-md"
+                    className="mt-1 p-2 block w-full border border-black rounded-md bg-transparent resize-none"
                     rows={10}
                     required
                 />
@@ -165,7 +165,7 @@ function FormOffreStage() {
             <div className="flex justify-center">
                 <button
                     type="submit"
-                    className="max-w-xs w-full bg-orange text-white p-2 rounded-lg hover:bg-orange-dark"
+                    className="max-w-xs w-full bg-[#FE872B] p-2 rounded-lg hover:bg-orange text-white"
                 >
                     {t("submit")}
                 </button>
