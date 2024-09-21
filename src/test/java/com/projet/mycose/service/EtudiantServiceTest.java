@@ -7,7 +7,6 @@ import com.projet.mycose.service.dto.EtudiantDTO;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 

@@ -38,8 +38,13 @@ public class UtilisateurController {
 
     @PostMapping("/me")
     public ResponseEntity<UtilisateurDTO> getMe(HttpServletRequest request) {
-        return ResponseEntity.accepted().contentType(MediaType.APPLICATION_JSON).body(
-                utilisateurService.getMe(request.getHeader("Authorization"))
-        );
+        try {
+            return ResponseEntity.accepted().contentType(MediaType.APPLICATION_JSON).body(
+                    utilisateurService.getMe(request.getHeader("Authorization"))
+            );
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }
