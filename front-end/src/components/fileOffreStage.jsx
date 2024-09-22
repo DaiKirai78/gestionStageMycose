@@ -28,9 +28,10 @@ function FileOffreStage() {
 
     const handleSubmitFile = async (e) => {
         e.preventDefault();
-        if (file) {
-            await handleFileUpload();
+        if (!file) {
+            setFileExtensionError("fileRequired");
         }
+        await handleFileUpload();
     };
 
     function dropHandler(e) {
@@ -62,6 +63,7 @@ function FileOffreStage() {
 
     const handleRemoveFile = () => {
         setFile(null);
+        setFileExtensionError("");
         document.getElementById("file").value = "";
     };
 
@@ -78,13 +80,16 @@ function FileOffreStage() {
                     <span className="flex items-center space-x-2">
                         <BsCloudArrowUpFill></BsCloudArrowUpFill>
                         <span className="font-medium text-gray-600">
-                            Drop files to Attach, or&nbsp;
-                            <span className="text-blue-600 underline">browse</span>
+                            {t("dropFile")}&nbsp;
+                            <span className="text-blue-600 underline">{t("browse")}</span>
                         </span>
                     </span>
                     <input type="file" name="file_upload" id="file" className="hidden" onChange={handleFileChange} accept="application/pdf"/>
                 </label>
                 <InputErrorMessage messageKey={fileExtensionError}></InputErrorMessage>
+                {fileExtensionError === (
+                    <p className={"text-red-500 text-sm"}>{t("fileRequired")}</p>
+                )}
                 {file && (
                     <div className="mt-4 flex items-center justify-between py-2 px-4 w-full bg-[#FFF8F2] shadow-md border-2 border-gray-400 rounded-md">
                         <div className="flex gap-2 items-center justify-center">
@@ -105,9 +110,7 @@ function FileOffreStage() {
             <div className="flex justify-center">
                 <button
                     type="submit"
-                    className="max-w-xs w-full bg-[#FE872B] text-white p-2 rounded-lg hover:bg-orange cursor-pointer disabled:hover:bg-[#FE872B] disabled:cursor-auto"
-                    disabled={file === null}
-                >
+                    className="max-w-xs w-full bg-[#FE872B] text-white p-2 rounded-lg hover:bg-orange cursor-pointer disabled:hover:bg-[#FE872B] disabled:cursor-auto">
                     {t("submit")}
                 </button>
             </div>
