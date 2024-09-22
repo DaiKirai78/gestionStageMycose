@@ -33,5 +33,9 @@
     "salaryRequired": "Le salaire est requis.",
     "salaryInvalid": "Le salaire doit seulement contenir un nombre.",
     "descriptionRequired": "La description est requise.",
-    "or": "Ou"
+    "or": "Ou",
+    "formSubmissionSuccess": "Formulaire soumis avec succès!",
+    "formSubmissionError": "Échec de la soumission du formulaire. Veuillez réessayer.",
+    "fileUploadSuccess": "Fichier téléversé avec succès!",
+    "fileUploadError": "Échec du téléversement du fichier. Veuillez réessayer."
 }

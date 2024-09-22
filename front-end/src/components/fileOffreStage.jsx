@@ -9,6 +9,8 @@ function FileOffreStage() {
     const { t } = useTranslation();
     const [file, setFile] = useState(null);
     const [fileExtensionError, setFileExtensionError] = useState("")
+    const [successMessage, setSuccessMessage] = useState("");
+    const [uploadError, setUploadError] = useState("");
     
     const handleFileUpload = async () => {
         const formData = new FormData();
@@ -21,8 +23,12 @@ function FileOffreStage() {
                 },
             });
             console.log("Fichier envoyé avec succès :", response.data);
+            setSuccessMessage(t("fileUploadSuccess"));
+            setUploadError("");
         } catch (error) {
             console.error("Erreur lors de l'envoi du fichier :", error);
+            setUploadError(t("fileUploadError"));
+            setSuccessMessage("");
         }
     };
 
@@ -30,6 +36,7 @@ function FileOffreStage() {
         e.preventDefault();
         if (!file) {
             setFileExtensionError("fileRequired");
+            return;
         }
         await handleFileUpload();
     };
@@ -106,6 +113,9 @@ function FileOffreStage() {
                     </div>
                 )}
             </div>
+
+            {successMessage && <p className="text-green-500 text-sm mt-4">{successMessage}</p>}
+            {uploadError && <p className="text-red-500 text-sm mt-4">{uploadError}</p>}
 
             <div className="flex justify-center">
                 <button
