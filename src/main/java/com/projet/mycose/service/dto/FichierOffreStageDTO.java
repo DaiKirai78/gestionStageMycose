@@ -15,7 +15,7 @@ public class FichierOffreStageDTO {
 
     @NotBlank(message = "Filename is required.")
     @Size(max = 255, message = "Filename cannot exceed 255 characters.")
-    @Pattern(regexp = "^[\\w,\\s-]+\\.pdf$",
+    @Pattern(regexp = "^[\\p{L}0-9\\s,_.-]+\\.pdf$",
             message = "Invalid filename format. Only PDF files are allowed.")
     private String filename;
 
