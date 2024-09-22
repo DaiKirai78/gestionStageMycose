@@ -1,10 +1,8 @@
 package com.projet.mycose.service.dto;
 
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -35,7 +33,8 @@ public class FormulaireOffreStageDTO {
     private String location;
 
     @NotBlank(message = "Salary is required.")
-    private String salary;  // Consider using a numeric type for better validation
+    @Digits(integer = 10, fraction =2, message = "Salary must be a valid number with up to 10 digits and 2 decimal places.")
+    private String salary;
 
     @NotBlank(message = "Description is required.")
     @Size(max = 500, message = "Description cannot exceed 500 characters.")

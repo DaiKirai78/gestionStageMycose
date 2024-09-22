@@ -131,8 +131,12 @@ function FormOffreStage() {
         }
 
         try {
-            const response = await axios.post("http://localhost:8080/api/offres/upload", formData);
-            console.log("Formulaire envoyé avec succès :", response.status);
+            const response = await axios.post("http://localhost:8080/api/offres/upload", formData, {
+                headers: {
+                    "Content-Type": "application/json",
+            }}
+            );
+            console.log("Formulaire envoyé avec succès :", response.data);
         } catch (error) {
             console.error("Erreur lors de l'envoi du formulaire :", error);
         }
