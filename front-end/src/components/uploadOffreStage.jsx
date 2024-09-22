@@ -23,7 +23,7 @@ function UploadOffreStage() {
                         {showFileUpload ? t("showForm") : t("showUpload")}
                     </button>
                 </div>
-                <Divider texte="Ou"></Divider>
+                <Divider texte={t("or")}></Divider>
                 {showFileUpload ? <FileOffreStage /> : <FormOffreStage />}
             </div>
         </div>

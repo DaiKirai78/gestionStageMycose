@@ -1,9 +1,19 @@
-import { useState } from "react";
+import {useRef, useState} from "react";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
 
 function FormOffreStage() {
     const { t } = useTranslation();
+
+    const entrepriseNameRef = useRef(null);
+    const employerNameRef = useRef(null);
+    const emailRef = useRef(null);
+    const websiteRef = useRef(null);
+    const titleRef = useRef(null);
+    const locationRef = useRef(null);
+    const salaryRef = useRef(null);
+    const descriptionRef = useRef(null);
+
     const [formData, setFormData] = useState({
         entrepriseName: "",
         employerName: "",
@@ -15,6 +25,18 @@ function FormOffreStage() {
         description: "",
     });
 
+    const [error, setError] = useState({
+        entrepriseName: "",
+        employerName: "",
+        email: "",
+        website: "",
+        title: "",
+        location: "",
+        salary: "",
+        description: "",
+    });
+
+
     const handleInputChange = (e) => {
         setFormData({
             ...formData,
@@ -25,19 +47,105 @@ function FormOffreStage() {
     const handleSubmitForm = async (e) => {
         e.preventDefault();
 
+        let valid = true;
+        let errors = {
+            entrepriseName: "",
+            employerName: "",
+            email: "",
+            website: "",
+            title: "",
+            location: "",
+            salary: "",
+            description: "",
+        };
+
+        // Validation pour 'entrepriseName'
+        if (!formData.entrepriseName) {
+            errors.entrepriseName = t("entrepriseNameRequired");
+            valid = false;
+        }
+
+        // Validation pour 'employerName'
+        if (!formData.employerName) {
+            errors.employerName = t("employerNameRequired");
+            valid = false;
+        }
+
+        // Validation pour 'email'
+        if (!/\S+@\S+\.\S+/.test(formData.email)) {
+            errors.email = t("emailInvalid");
+            valid = false;
+        }
+
+        if (!formData.email) {
+            errors.email = t("emailRequired");
+            valid = false;
+        }
+
+        // Validation pour 'website'
+        if (formData.website && !/^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(formData.website)) {
+            errors.website = t("websiteInvalid");
+            valid = false;
+        }
+
+        if (!formData.website) {
+            errors.website = t("websiteRequired");
+            valid = false;
+        }
+
+        // Validation pour 'title'
+        if (!formData.title) {
+            errors.title = t("titleRequired");
+            valid = false;
+        }
+
+        // Validation pour 'location'
+        if (!formData.location) {
+            errors.location = t("locationRequired");
+            valid = false;
+        }
+
+        // Validation pour 'salary'
+        if (!formData.salary) {
+            errors.salary = t("salaryRequired");
+
+            valid = false;
+        }
+
+        if (formData.salary && isNaN(formData.salary)) {
+            errors.salary = t("salaryInvalid");
+            valid = false;
+        }
+
+        // Validation pour 'description'
+        if (!formData.description) {
+            errors.description = t("descriptionRequired");
+            valid = false;
+        }
+
+
+        setError(errors);
+
+        if (!valid) {
+            return;
+        }
+
         try {
-            const response = await axios.post("http://localhost:8080/api/offres/upload", formData, {
-            });
+            const response = await axios.post("http://localhost:8080/api/offres/upload", formData);
             console.log("Formulaire envoyé avec succès :", response.status);
         } catch (error) {
             console.error("Erreur lors de l'envoi du formulaire :", error);
         }
     };
 
+
+
     return (
-        <form onSubmit={handleSubmitForm} className="space-y-4 w-full">
-            <div>
-                <label htmlFor="entrepriseName" className="block text-sm font-medium text-black">
+        <form onSubmit={handleSubmitForm} className="w-full">
+            <h1 className="text-2xl text-black">{t("companyDetails")}</h1>
+            <hr className="border-1 border-black"/>
+            <div className="space-y-2">
+                <label htmlFor="entrepriseName" className="block text-sm font-medium text-black mt-4">
                     {t("companyName")}
                 </label>
                 <input
@@ -47,13 +155,13 @@ function FormOffreStage() {
                     value={formData.entrepriseName}
                     onChange={handleInputChange}
                     className="mt-1 p-2 block w-full border border-black rounded-md bg-transparent"
-                    required
                     autoComplete="organization"
                 />
+                {error.entrepriseName && <p className="text-red-500 text-sm mt-1">{error.entrepriseName}</p>}
             </div>
 
-            <div>
-                <label htmlFor="employerName" className="block text-sm font-medium text-black">
+            <div className="space-y-2">
+                <label htmlFor="employerName" className="block text-sm font-medium text-black mt-4">
                     {t("employerName")}
                 </label>
                 <input
@@ -63,44 +171,50 @@ function FormOffreStage() {
                     value={formData.employerName}
                     onChange={handleInputChange}
                     className="mt-1 p-2 block w-full border border-black rounded-md bg-transparent"
-                    required
                     autoComplete="name"
                 />
+                {error.employerName && <p className="text-red-500 text-sm mt-1">{error.employerName}</p>}
             </div>
 
-            <div>
-                <label htmlFor="email" className="block text-sm font-medium text-black">
+            <div className="space-y-2">
+                <label htmlFor="email" className="block text-sm font-medium text-black mt-4">
                     {t("email")}
                 </label>
                 <input
-                    type="email"
+                    type="text"
                     id="email"
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    className="mt-1 p-2 block w-full border border-black rounded-md bg-transparent"
-                    required
+                    className={`mt-1 p-2 block w-full border ${error.email ? 'border-red-500' : 'border-black'} rounded-md bg-transparent`}
                     autoComplete="email"
                 />
+                {error.email && <p className="text-red-500 text-sm mt-1">{error.email}</p>}
             </div>
 
-            <div>
-                <label htmlFor="website" className="block text-sm font-medium text-black">
+
+            <div className="space-y-2">
+                <label htmlFor="website" className="block text-sm font-medium text-black mt-4">
                     {t("website")}
                 </label>
                 <input
-                    type="url"
+                    type="text"
                     id="website"
                     name="website"
                     value={formData.website}
                     onChange={handleInputChange}
-                    className="mt-1 p-2 block w-full border border-black rounded-md bg-transparent"
+                    className={`mt-1 p-2 block w-full border ${error.website ? 'border-red-500' : 'border-black'} rounded-md bg-transparent`}
                     autoComplete="url"
                 />
+                {error.website && <p className="text-red-500 text-sm mt-1">{error.website}</p>}
             </div>
 
-            <div>
-                <label htmlFor="title" className="block text-sm font-medium text-black">
+
+            <h1 className="text-2xl text-black mt-4">{t("internshipDetails")}</h1>
+            <hr className="border-1 border-black"/>
+
+            <div className="space-y-2">
+                <label htmlFor="title" className="block text-sm font-medium text-black mt-4">
                     {t("title")}
                 </label>
                 <input
@@ -110,13 +224,13 @@ function FormOffreStage() {
                     value={formData.title}
                     onChange={handleInputChange}
                     className="mt-1 p-2 block w-full border border-black rounded-md bg-transparent"
-                    required
                     autoComplete="off"
                 />
+                {error.title && <p className="text-red-500 text-sm mt-1">{error.title}</p>}
             </div>
 
-            <div>
-                <label htmlFor="location" className="block text-sm font-medium text-black">
+            <div className="space-y-2">
+                <label htmlFor="location" className="block text-sm font-medium text-black mt-4">
                     {t("location")}
                 </label>
                 <input
@@ -126,13 +240,13 @@ function FormOffreStage() {
                     value={formData.location}
                     onChange={handleInputChange}
                     className="mt-1 p-2 block w-full border border-black rounded-md bg-transparent"
-                    required
                     autoComplete="off"
                 />
+                {error.location && <p className="text-red-500 text-sm mt-1">{error.location}</p>}
             </div>
 
-            <div>
-                <label htmlFor="salary" className="block text-sm font-medium text-black">
+            <div className="space-y-2">
+                <label htmlFor="salary" className="block text-sm font-medium text-black mt-4">
                     {t("salary")}
                 </label>
                 <input
@@ -142,13 +256,13 @@ function FormOffreStage() {
                     value={formData.salary}
                     onChange={handleInputChange}
                     className="mt-1 p-2 block w-full border border-black rounded-md bg-transparent"
-                    required
                     autoComplete="off"
                 />
+                {error.salary && <p className="text-red-500 text-sm mt-1">{error.salary}</p>}
             </div>
 
-            <div>
-                <label htmlFor="description" className="block text-sm font-medium text-black">
+            <div className="space-y-2">
+                <label htmlFor="description" className="block text-sm font-medium text-black mt-4">
                     {t("description")}
                 </label>
                 <textarea
@@ -158,11 +272,11 @@ function FormOffreStage() {
                     onChange={handleInputChange}
                     className="mt-1 p-2 block w-full border border-black rounded-md bg-transparent resize-none"
                     rows={10}
-                    required
                 />
+                {error.description && <p className="text-red-500 text-sm mt-1">{error.description}</p>}
             </div>
 
-            <div className="flex justify-center">
+            <div className="flex justify-center mt-12">
                 <button
                     type="submit"
                     className="max-w-xs w-full bg-[#FE872B] p-2 rounded-lg hover:bg-orange text-white"
