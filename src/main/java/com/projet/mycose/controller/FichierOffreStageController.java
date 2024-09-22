@@ -28,19 +28,12 @@ public class FichierOffreStageController {
         this.modelMapper = modelMapper;
     }
 
-    @PostMapping("/upload")
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<FichierOffreStageDTO> uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
         try {
-            // Save the file entity
-            FichierOffreStage savedFile = fichierOffreStageService.saveFile(file);
+            FichierOffreStageDTO savedFileDTO = fichierOffreStageService.saveFile(file);
 
-            // Convert the entity to DTO
-            FichierOffreStageDTO fileDTO = modelMapper.map(savedFile, FichierOffreStageDTO.class);
-
-            // Optionally, encode byte[] data to Base64 string
-            fileDTO.setFileData(Base64.getEncoder().encodeToString(savedFile.getData()));
-
-            return ResponseEntity.status(HttpStatus.CREATED).body(fileDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedFileDTO);
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
