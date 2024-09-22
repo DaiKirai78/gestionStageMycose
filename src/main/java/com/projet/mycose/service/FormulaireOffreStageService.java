@@ -26,9 +26,9 @@ public class FormulaireOffreStageService {
         return modelMapper.map(savedForm, FormulaireOffreStageDTO.class);
     }
 
-    public List<FormulaireOffreStageDTO> findAll() {
-        return formulaireOffreStageRepository.findAll().stream()
-                .map(form -> modelMapper.map(form, FormulaireOffreStageDTO.class))
-                .collect(Collectors.toList());
-    }
+//    public List<FormulaireOffreStageDTO> findAll() {
+//        return formulaireOffreStageRepository.findAll().stream()
+//                .map(form -> modelMapper.map(form, FormulaireOffreStageDTO.class))
+//                .collect(Collectors.toList());
+//    }
 }

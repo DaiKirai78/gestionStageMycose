@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -20,14 +21,15 @@ public class FormulaireOffreStageController {
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<FormulaireOffreStageDTO> uploadForm(@RequestBody FormulaireOffreStageDTO formulaireOffreStageDTO) {
+    public ResponseEntity<FormulaireOffreStageDTO> uploadForm(
+        @Valid @RequestBody FormulaireOffreStageDTO formulaireOffreStageDTO) {
         FormulaireOffreStageDTO savedForm = formulaireOffreStageService.save(formulaireOffreStageDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedForm);
     }
 
-    @GetMapping
-    public ResponseEntity<List<FormulaireOffreStageDTO>> getAllForms() {
-        List<FormulaireOffreStageDTO> forms = formulaireOffreStageService.findAll();
-        return ResponseEntity.ok(forms);
-    }
+//    @GetMapping
+//    public ResponseEntity<List<FormulaireOffreStageDTO>> getAllForms() {
+//        List<FormulaireOffreStageDTO> forms = formulaireOffreStageService.findAll();
+//        return ResponseEntity.ok(forms);
+//    }
 }
