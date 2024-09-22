@@ -6,9 +6,6 @@ import com.projet.mycose.service.dto.FormulaireOffreStageDTO;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Service
 public class FormulaireOffreStageService {
 

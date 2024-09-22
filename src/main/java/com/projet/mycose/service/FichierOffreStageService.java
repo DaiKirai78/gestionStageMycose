@@ -52,7 +52,7 @@ public class FichierOffreStageService {
         return convertToDTO(fileRepository.save(fichierOffreStage));
     }
 
-    public FichierOffreStage getFile(Long id) {
-        return fileRepository.findById(id).orElseThrow(() -> new RuntimeException("Fichier non trouvé"));
-    }
+//    public FichierOffreStage getFile(Long id) {
+//        return fileRepository.findById(id).orElseThrow(() -> new RuntimeException("Fichier non trouvé"));
+//    }
 }
