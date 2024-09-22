@@ -7,7 +7,6 @@ import com.projet.mycose.repository.UtilisateurRepository;
 import com.projet.mycose.security.JwtTokenProvider;
 import com.projet.mycose.service.dto.EtudiantDTO;
 import com.projet.mycose.service.dto.LoginDTO;
-import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -39,7 +38,7 @@ public class UtilisateurService {
     }
 
     public EtudiantDTO getMe(String token) throws AccessDeniedException {
-        if (token != null) {
+        if (token != null && token.startsWith("Bearer")) {
             token = token.startsWith("Bearer") ? token.substring(7) : token;
             String courriel = jwtTokenProvider.getEmailFromJWT(token);
             Utilisateur utilisateur = utilisateurRepository.findUtilisateurByCourriel(courriel).orElseThrow(UserNotFoundException::new);
