@@ -36,6 +36,8 @@ function FormOffreStage() {
         description: "",
     });
 
+    const [successMessage, setSuccessMessage] = useState("");
+    const [submitError, setSubmitError] = useState("");
 
     const handleInputChange = (e) => {
         setFormData({
@@ -131,14 +133,24 @@ function FormOffreStage() {
         }
 
         try {
-            const response = await axios.post("http://localhost:8080/api/offres/upload", formData, {
-                headers: {
-                    "Content-Type": "application/json",
-            }}
-            );
+            const response = await axios.post("http://localhost:8080/api/offres/upload", formData);
             console.log("Formulaire envoyé avec succès :", response.data);
+            setSuccessMessage(t("formSubmissionSuccess"));
+            setSubmitError("");
+            setFormData({
+                entrepriseName: "",
+                employerName: "",
+                email: "",
+                website: "",
+                title: "",
+                location: "",
+                salary: "",
+                description: "",
+            });
         } catch (error) {
             console.error("Erreur lors de l'envoi du formulaire :", error);
+            setSubmitError(t("formSubmissionError"));
+            setSuccessMessage("");
         }
     };
 
@@ -158,7 +170,7 @@ function FormOffreStage() {
                     name="entrepriseName"
                     value={formData.entrepriseName}
                     onChange={handleInputChange}
-                    className="mt-1 p-2 block w-full border border-black rounded-md bg-transparent"
+                    className={`mt-1 p-2 block w-full border ${error.entrepriseName ? 'border-red-500' : 'border-black'} rounded-md bg-transparent`}
                     autoComplete="organization"
                 />
                 {error.entrepriseName && <p className="text-red-500 text-sm mt-1">{error.entrepriseName}</p>}
@@ -174,7 +186,7 @@ function FormOffreStage() {
                     name="employerName"
                     value={formData.employerName}
                     onChange={handleInputChange}
-                    className="mt-1 p-2 block w-full border border-black rounded-md bg-transparent"
+                    className={`mt-1 p-2 block w-full border ${error.employerName ? 'border-red-500' : 'border-black'} rounded-md bg-transparent`}
                     autoComplete="name"
                 />
                 {error.employerName && <p className="text-red-500 text-sm mt-1">{error.employerName}</p>}
@@ -227,7 +239,7 @@ function FormOffreStage() {
                     name="title"
                     value={formData.title}
                     onChange={handleInputChange}
-                    className="mt-1 p-2 block w-full border border-black rounded-md bg-transparent"
+                    className={`mt-1 p-2 block w-full border ${error.title ? 'border-red-500' : 'border-black'} rounded-md bg-transparent`}
                     autoComplete="off"
                 />
                 {error.title && <p className="text-red-500 text-sm mt-1">{error.title}</p>}
@@ -243,7 +255,7 @@ function FormOffreStage() {
                     name="location"
                     value={formData.location}
                     onChange={handleInputChange}
-                    className="mt-1 p-2 block w-full border border-black rounded-md bg-transparent"
+                    className={`mt-1 p-2 block w-full border ${error.location ? 'border-red-500' : 'border-black'} rounded-md bg-transparent`}
                     autoComplete="off"
                 />
                 {error.location && <p className="text-red-500 text-sm mt-1">{error.location}</p>}
@@ -259,7 +271,7 @@ function FormOffreStage() {
                     name="salary"
                     value={formData.salary}
                     onChange={handleInputChange}
-                    className="mt-1 p-2 block w-full border border-black rounded-md bg-transparent"
+                    className={`mt-1 p-2 block w-full border ${error.salary ? 'border-red-500' : 'border-black'} rounded-md bg-transparent`}
                     autoComplete="off"
                 />
                 {error.salary && <p className="text-red-500 text-sm mt-1">{error.salary}</p>}
@@ -274,13 +286,16 @@ function FormOffreStage() {
                     name="description"
                     value={formData.description}
                     onChange={handleInputChange}
-                    className="mt-1 p-2 block w-full border border-black rounded-md bg-transparent resize-none"
+                    className={`mt-1 p-2 block w-full border ${error.description ? 'border-red-500' : 'border-black'} rounded-md bg-transparent`}
                     rows={10}
                 />
                 {error.description && <p className="text-red-500 text-sm mt-1">{error.description}</p>}
             </div>
 
-            <div className="flex justify-center mt-12">
+            {successMessage && <p className="text-green-500 text-sm mt-4">{successMessage}</p>}
+            {submitError && <p className="text-red-500 text-sm mt-4">{submitError}</p>}
+
+            <div className="flex justify-center mt-4">
                 <button
                     type="submit"
                     className="max-w-xs w-full bg-[#FE872B] p-2 rounded-lg hover:bg-orange text-white"

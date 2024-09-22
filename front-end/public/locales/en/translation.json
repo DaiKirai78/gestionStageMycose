@@ -33,5 +33,9 @@
     "salaryRequired": "The salary is required.",
     "salaryInvalid": "The salary must only contain a number.",
     "descriptionRequired": "The description is required.",
-    "or": "Or"
+    "or": "Or",
+    "formSubmissionSuccess": "Form submitted successfully!",
+    "formSubmissionError": "Form submission failed. Please try again.",
+    "fileUploadSuccess": "File uploaded successfully!",
+    "fileUploadError": "File upload failed. Please try again."
 }
