@@ -15,12 +15,12 @@ function FileOffreStage() {
         formData.append("file", file);
 
         try {
-            const response = await axios.post("http://localhost:8080/api/files/upload", 1, {
+            const response = await axios.post("http://localhost:8080/api/files/upload", formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },
             });
-            console.log("Fichier envoyé avec succès :", response.status);
+            console.log("Fichier envoyé avec succès :", response.data);
         } catch (error) {
             console.error("Erreur lors de l'envoi du fichier :", error);
         }

@@ -40,11 +40,16 @@ public class FichierOffreStageService {
         return fichierOffreStage;
     }
 
-    public FichierOffreStage saveFile(MultipartFile file) throws IOException {
-        FichierOffreStage fichierOffreStage = new FichierOffreStage();
-        fichierOffreStage.setFilename(file.getOriginalFilename());
-        fichierOffreStage.setData(file.getBytes());
-        return fileRepository.save(fichierOffreStage);
+    public FichierOffreStageDTO saveFile(MultipartFile file) throws IOException {
+
+        FichierOffreStageDTO fichierOffreStageDTO = new FichierOffreStageDTO();
+
+        fichierOffreStageDTO.setFilename(file.getOriginalFilename());
+        fichierOffreStageDTO.setFileData(Base64.getEncoder().encodeToString(file.getBytes()));
+
+        FichierOffreStage fichierOffreStage = convertToEntity(fichierOffreStageDTO);
+
+        return convertToDTO(fileRepository.save(fichierOffreStage));
     }
 
     public FichierOffreStage getFile(Long id) {
