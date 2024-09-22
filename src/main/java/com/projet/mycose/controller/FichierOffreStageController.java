@@ -3,6 +3,8 @@ package com.projet.mycose.controller;
 
 import com.projet.mycose.service.FichierOffreStageService;
 import com.projet.mycose.service.dto.FichierOffreStageDTO;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -11,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/files")
@@ -26,12 +30,20 @@ public class FichierOffreStageController {
     }
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<FichierOffreStageDTO> uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
+    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) {
         try {
             FichierOffreStageDTO savedFileDTO = fichierOffreStageService.saveFile(file);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(savedFileDTO);
+        } catch (ConstraintViolationException e) {
+        Map<String, String> errors = new HashMap<>();
+        e.getConstraintViolations().forEach(violation ->
+                errors.put(violation.getPropertyPath().toString(), violation.getMessage()));
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+
         } catch (IOException e) {
+            // Handle IOException for file-related issues
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
