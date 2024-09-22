@@ -1,4 +1,12 @@
 {
     "errorMessageEmail": "Saisissez une adresse courriel valide",
-    "errorMessagePassword": "Saisissez un mot de passe valide avec un minimum de 8 lettres"
+    "errorMessagePassword": "Saisissez un mot de passe valide avec un minimum de 8 lettres",
+    "newOnMycose": "Nouveau sur Mycose ?",
+    "signin": "S'inscrire",
+    "login": "Connexion",
+    "password": "Mot de passe",
+    "email": "Courriel",
+    "errorOccurredNotCode": "Une erreur est survenue",
+    "wrongEmailOrPassword": "Le courriel ou le mot de passe contient une erreur",
+    "loading": "Chargement"
 }
