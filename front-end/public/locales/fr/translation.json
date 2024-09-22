@@ -7,5 +7,10 @@
     "inputLabelNom": "Nom",
     "suivant": "Suivant",
     "connexion": "Connexion",
-    "dejaCompte": "Déjà un compte ?"
+    "dejaCompte": "Déjà un compte ?",
+    "userExisteError": "Ces informations existent dèjà",
+    "errorOccurred": "Une erreur est survenue avec code: ",
+    "errorMessageTelephone" : "Le téléphone est invalide",
+    "inputLabelEmail": "Courriel",
+    "telephone": "Numéro de téléphone"
 }

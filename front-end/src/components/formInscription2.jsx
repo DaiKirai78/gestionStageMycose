@@ -2,6 +2,7 @@ import {Input} from '@material-tailwind/react';
 import Divider from './divider';
 import { useState } from "react";
 import InputErrorMessage from './inputErrorMesssage';
+import { useTranslation } from 'react-i18next';
 
 function FormInscription2({email, setEmail, telephone, setTelephone, setStep}) {
 
@@ -17,6 +18,8 @@ function FormInscription2({email, setEmail, telephone, setTelephone, setStep}) {
     const RESPONSE_SERVER_ERROR = 500;
     const [errorKeyEtudiantExiste, setErrorKeyEtudiantExiste] = useState('');
 
+    const { t } = useTranslation();
+
     async function onNext(e) {
         e.preventDefault();
 
@@ -27,11 +30,11 @@ function FormInscription2({email, setEmail, telephone, setTelephone, setStep}) {
         const reponseStatus = await verifierEtudiantExiste();
 
         if(reponseStatus === RESPONSE_CONFLICT) {
-            setErrorKeyEtudiantExiste("Ces informations existent déjà");
+            setErrorKeyEtudiantExiste("userExisteError");
             return;
         }
         else if(reponseStatus !== RESPONSE_OK) {
-            setErrorKeyEtudiantExiste("Une erreur est survenur, Code:" + reponseStatus);
+            setErrorKeyEtudiantExiste("errorOccurred");
             return;
         }
     
@@ -75,7 +78,7 @@ function FormInscription2({email, setEmail, telephone, setTelephone, setStep}) {
 
     function validerEmail() {
         if(!valideEmail.test(email)) {
-            setErrorKeyEmail("L'email est invalide")
+            setErrorKeyEmail("errorMessageEmail")
             return false;
         }
         return true;
@@ -83,7 +86,7 @@ function FormInscription2({email, setEmail, telephone, setTelephone, setStep}) {
 
     function validerPhone() {
         if(!validePhone.test(telephone)) {
-            setErrorKeyTelephone("Le téléphone est invalide")
+            setErrorKeyTelephone("errorMessageTelephone")
             return false;
         }
         return true;
@@ -105,6 +108,7 @@ function FormInscription2({email, setEmail, telephone, setTelephone, setStep}) {
         return(
             <div className="text-center mb-5 rounded bg-red-200 py-3 bg-opacity-30">
                 <InputErrorMessage messageKey={errorKeyEtudiantExiste}/>
+                <p className="text-red-600 text-xs">{RESPONSE_SERVER_ERROR}</p>
             </div>
         );
     }
@@ -117,7 +121,7 @@ function FormInscription2({email, setEmail, telephone, setTelephone, setStep}) {
                         {(errorKeyEtudiantExiste != "") ? renderMessageErreur() : null}
 
                         <div className="w-full">
-                            <Input label="Courriel" color='black' size='lg' 
+                            <Input label={t("inputLabelEmail")} color='black' size='lg' 
                             onChange={(e) => {changeEmailValue(e);}}
                             type='email'
                             />
@@ -126,17 +130,17 @@ function FormInscription2({email, setEmail, telephone, setTelephone, setStep}) {
                     </div>
                     <div>
                         <div className="w-full">
-                            <Input label="Téléphone" color='black' size='lg'
+                            <Input label={t("telephone")} color='black' size='lg'
                             onChange={(e) => {changeTelephoneValue(e);}}
                             type='tel'/>
                             <InputErrorMessage messageKey={errorKeyTelephone}/>
                         </div>
                     </div>
-                    <button className='border p-2 border-black rounded-[7px]' onClick={onNext}>S'inscrire</button>
+                    <button className='border p-2 border-black rounded-[7px]' onClick={onNext}>{t("suivant")}</button>
                 </form>
                 <p className="text-center mt-3 text-sm text-gray-800">2/3</p>
-                <Divider texte={"Déjà un compte ?"}/>
-                <button className='p-2 border border-black bg-black rounded-[7px] text-white'>Connexion</button>
+                <Divider texte={t("dejaCompte")}/>
+                <button className='p-2 border border-black bg-black rounded-[7px] text-white'>{t("connexion")}</button>
             </div>	
         </>
     );

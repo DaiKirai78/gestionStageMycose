@@ -7,5 +7,10 @@
     "inputLabelNom": "Last Name",
     "suivant": "Next",
     "connexion": "Login",
-    "dejaCompte": "Already have an account ?"
+    "dejaCompte": "Already have an account ?",
+    "userExisteError": "This information already exists",
+    "errorOccurred": "An error occurred with code: ",
+    "errorMessageTelephone": "The phone number is invalid",
+    "inputLabelEmail": "Email",
+    "telephone": "Phone number"
 }
