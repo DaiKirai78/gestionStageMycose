@@ -2,6 +2,7 @@ import {Input} from '@material-tailwind/react';
 import Divider from './divider';
 import InputErrorMessage from './inputErrorMesssage';
 import { useState } from "react";
+import { useTranslation } from 'react-i18next';
 
 function FormInscription1({prenom, nom, setPrenom, setNom, setStep}) {
 
@@ -11,6 +12,8 @@ function FormInscription1({prenom, nom, setPrenom, setNom, setStep}) {
     // const valideEmail = new RegExp('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z]{2,}$');
     const valideName = new RegExp(String.raw`\D`);
     //const validePassword = new RegExp("[a-zA-Z0-9$&+,:;=?@#|'<>.^*()%!-]{8,}");
+
+    const { t } = useTranslation();
 
     function onNext(e) {
         e.preventDefault();
@@ -31,7 +34,7 @@ function FormInscription1({prenom, nom, setPrenom, setNom, setStep}) {
 
     function verifierPrenom() {
         if(!valideName.test(prenom)) {
-            setErrorKeyPrenom("Le prénom est invalide");
+            setErrorKeyPrenom("errorMessagePrenom");
             return false
         }
         return true
@@ -39,7 +42,7 @@ function FormInscription1({prenom, nom, setPrenom, setNom, setStep}) {
 
     function verifierNom() {
         if(!valideName.test(nom)) {
-            setErrorKeyNom("Le nom est invalide");
+            setErrorKeyNom("errorMessageNom");
             return false
         }
         return true
@@ -61,7 +64,7 @@ function FormInscription1({prenom, nom, setPrenom, setNom, setStep}) {
                 <form method="get" className='flex flex-col sm:gap-5 gap-3'>
                     <div>
                         <div className="w-full">
-                            <Input label="Prénom" color='black' size='lg' 
+                            <Input label={t("inputLabelPrenom")} color='black' size='lg' 
                             onChange={(e) => {changePrenomValue(e);}}
                             type='text'
                             />
@@ -70,17 +73,17 @@ function FormInscription1({prenom, nom, setPrenom, setNom, setStep}) {
                     </div>
                     <div>
                         <div className="w-full">
-                            <Input label="Nom" color='black' size='lg'
+                            <Input label={t("inputLabelNom")} color='black' size='lg'
                             onChange={(e) => {changeNomValue(e);}}
                             type='text'/>
                             <InputErrorMessage messageKey={errorKeyNom}/>
                         </div>
                     </div>
-                    <button className='border p-2 border-black rounded-[7px]' onClick={onNext}>Suivant</button>
+                    <button className='border p-2 border-black rounded-[7px]' onClick={onNext}>{t("suivant")}</button>
                 </form>
                 <p className="text-center mt-3 text-sm text-gray-800">1/3</p>
-                <Divider texte={"Déjà un compte ?"}/>
-                <button className='p-2 border border-black bg-black rounded-[7px] text-white'>Connexion</button>
+                <Divider texte={t("dejaCompte")}/>
+                <button className='p-2 border border-black bg-black rounded-[7px] text-white'>{t("connexion")}</button>
                
             </div>
         </>

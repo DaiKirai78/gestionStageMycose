@@ -1,4 +1,11 @@
 {
     "errorMessageEmail": "Enter a valid email address",
-    "errorMessagePassword": "Enter a valid password with a minimum of 8 letters"
+    "errorMessagePassword": "Enter a valid password with a minimum of 8 letters",
+    "errorMessagePrenom": "The first name is invalid",
+    "errorMessageNom": "The last name is invalid",
+    "inputLabelPrenom": "First Name",
+    "inputLabelNom": "Last Name",
+    "suivant": "Next",
+    "connexion": "Login",
+    "dejaCompte": "Already have an account ?"
 }
