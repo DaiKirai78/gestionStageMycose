@@ -108,7 +108,6 @@ function FormInscription2({email, setEmail, telephone, setTelephone, setStep}) {
         return(
             <div className="text-center mb-5 rounded bg-red-200 py-3 bg-opacity-30">
                 <InputErrorMessage messageKey={errorKeyEtudiantExiste}/>
-                <p className="text-red-600 text-xs">{RESPONSE_SERVER_ERROR}</p>
             </div>
         );
     }

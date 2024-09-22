@@ -4,6 +4,7 @@ import InputErrorMessage from './inputErrorMesssage';
 import { useState } from "react";
 import {sha256} from 'js-sha256';
 import {redirect} from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 
 function FormInscription3({prenom, nom, email, telephone}) {
     const [password, setPassword] = useState('');
@@ -14,6 +15,8 @@ function FormInscription3({prenom, nom, email, telephone}) {
 
     const RESPONSE_OK = 200;
     const [errorKeyResponse, setErrorKeyResponse] = useState('');
+
+    const { t } = useTranslation();
 
     async function onSumbit(e) {
         e.preventDefault();
@@ -28,7 +31,7 @@ function FormInscription3({prenom, nom, email, telephone}) {
         const reponseStatus = await envoyerInfos(passwordHash);
 
         if(reponseStatus != RESPONSE_OK) {
-            setErrorKeyResponse("Une erreur est survenue, Code: " + reponseStatus)
+            setErrorKeyResponse("errorOccurred")
         }
 
         
@@ -55,11 +58,11 @@ function FormInscription3({prenom, nom, email, telephone}) {
 
     function validerPasswordsInputs() {
         if(!champsPassRegex()) {
-            setErrorKeyPassword("Le mot de passe doit contenir minimum 8 charactères");
+            setErrorKeyPassword("errorMessagePassword");
         }
 
         if(!isPasswordsSame()) {
-            setErrorKeyPassword("Les mots de passes doivent être les mêmes");
+            setErrorKeyPassword("errorPasswordNotSame");
         }
 
         return true;
@@ -107,7 +110,7 @@ function FormInscription3({prenom, nom, email, telephone}) {
                     <div>
                         {(errorKeyResponse != "") ? renderMessageErreur() : null}
                         <div className="w-full">
-                            <Input label="Mot de Passe" color='black' size='lg' 
+                            <Input label={t("inputLabelPassword")} color='black' size='lg' 
                             onChange={(e) => {changePasswordValue(e);}}
                             type='password'
                             />
@@ -116,17 +119,17 @@ function FormInscription3({prenom, nom, email, telephone}) {
                     </div>
                     <div>
                         <div className="w-full">
-                            <Input label="Confirmation du mot de passe" color='black' size='lg'
+                            <Input label={t("inputLabelPasswordConfirmation")} color='black' size='lg'
                             onChange={(e) => {changePasswordConfValue(e);}}
                             type='password'/>
                             <InputErrorMessage messageKey={errorKeyPassword}/>
                         </div>
                     </div>
-                    <button className='border p-2 border-black rounded-[7px]' onClick={onSumbit}>Suivant</button>
+                    <button className='border p-2 border-black rounded-[7px]' onClick={onSumbit}>{t("suivant")}</button>
                 </form>
                 <p className="text-center mt-3 text-sm text-gray-800">3/3</p>
-                <Divider texte={"Déjà un compte ?"}/>
-                <button className='p-2 border border-black bg-black rounded-[7px] text-white'>Connexion</button>
+                <Divider texte={t("dejaCompte")}/>
+                <button className='p-2 border border-black bg-black rounded-[7px] text-white'>{t("connexion")}</button>
                
             </div>
         </>

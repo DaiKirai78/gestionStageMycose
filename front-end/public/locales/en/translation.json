@@ -9,8 +9,11 @@
     "connexion": "Login",
     "dejaCompte": "Already have an account ?",
     "userExisteError": "This information already exists",
-    "errorOccurred": "An error occurred with code: ",
+    "errorOccurred": "An error occurred with code: 500",
     "errorMessageTelephone": "The phone number is invalid",
     "inputLabelEmail": "Email",
-    "telephone": "Phone number"
+    "telephone": "Phone number",
+    "errorPasswordNotSame": "The passwords must be the same",
+    "inputLabelPassword": "Password",
+    "inputLabelPasswordConfirmation": "Password Confirmation"
 }

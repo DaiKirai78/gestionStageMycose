@@ -9,8 +9,11 @@
     "connexion": "Connexion",
     "dejaCompte": "Déjà un compte ?",
     "userExisteError": "Ces informations existent dèjà",
-    "errorOccurred": "Une erreur est survenue avec code: ",
+    "errorOccurred": "Une erreur est survenue avec code: 500",
     "errorMessageTelephone" : "Le téléphone est invalide",
     "inputLabelEmail": "Courriel",
-    "telephone": "Numéro de téléphone"
+    "telephone": "Numéro de téléphone",
+    "errorPasswordNotSame" : "Les mots de passes doivenet être les mêmes",
+    "inputLabelPassword": "Mot de Passe",
+    "inputLabelPasswordConfirmation": "Confirmation du mot de passe"
 }
