@@ -6,9 +6,6 @@ import com.projet.mycose.service.dto.FormulaireOffreStageDTO;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Service
 public class FormulaireOffreStageService {
 
@@ -26,9 +23,9 @@ public class FormulaireOffreStageService {
         return modelMapper.map(savedForm, FormulaireOffreStageDTO.class);
     }
 
-    public List<FormulaireOffreStageDTO> findAll() {
-        return formulaireOffreStageRepository.findAll().stream()
-                .map(form -> modelMapper.map(form, FormulaireOffreStageDTO.class))
-                .collect(Collectors.toList());
-    }
+//    public List<FormulaireOffreStageDTO> findAll() {
+//        return formulaireOffreStageRepository.findAll().stream()
+//                .map(form -> modelMapper.map(form, FormulaireOffreStageDTO.class))
+//                .collect(Collectors.toList());
+//    }
 }
