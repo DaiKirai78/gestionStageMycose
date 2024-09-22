@@ -113,6 +113,8 @@ function FormInscription3({prenom, nom, email, telephone}) {
                             <Input label={t("inputLabelPassword")} color='black' size='lg' 
                             onChange={(e) => {changePasswordValue(e);}}
                             type='password'
+                            autoFocus="true"
+                            error={errorKeyPassword.length > 0}
                             />
                             <InputErrorMessage messageKey={errorKeyPassword}/>
                         </div>
@@ -121,15 +123,17 @@ function FormInscription3({prenom, nom, email, telephone}) {
                         <div className="w-full">
                             <Input label={t("inputLabelPasswordConfirmation")} color='black' size='lg'
                             onChange={(e) => {changePasswordConfValue(e);}}
-                            type='password'/>
+                            type='password'
+                            error={errorKeyPassword.length > 0}
+                            />
                             <InputErrorMessage messageKey={errorKeyPassword}/>
                         </div>
                     </div>
-                    <button className='border p-2 border-black rounded-[7px]' onClick={onSumbit}>{t("suivant")}</button>
+                    <button className='border p-2 border-black rounded-[7px] hover:shadow-lg' onClick={onSumbit}>{t("suivant")}</button>
                 </form>
                 <p className="text-center mt-3 text-sm text-gray-800">3/3</p>
                 <Divider texte={t("dejaCompte")}/>
-                <button className='p-2 border border-black bg-black rounded-[7px] text-white'>{t("connexion")}</button>
+                <button className='p-2 border border-black bg-black rounded-[7px] text-white hover:bg-gray-900 hover:shadow-lg'>{t("connexion")}</button>
                
             </div>
         </>

@@ -67,6 +67,7 @@ function FormInscription1({prenom, nom, setPrenom, setNom, setStep}) {
                             <Input label={t("inputLabelPrenom")} color='black' size='lg' 
                             onChange={(e) => {changePrenomValue(e);}}
                             type='text'
+                            error={errorKeyPrenom.length > 0}
                             />
                             <InputErrorMessage messageKey={errorKeyPrenom}/>
                         </div>
@@ -75,15 +76,17 @@ function FormInscription1({prenom, nom, setPrenom, setNom, setStep}) {
                         <div className="w-full">
                             <Input label={t("inputLabelNom")} color='black' size='lg'
                             onChange={(e) => {changeNomValue(e);}}
-                            type='text'/>
+                            type='text'
+                            error={errorKeyPrenom.length > 0}
+                            />
                             <InputErrorMessage messageKey={errorKeyNom}/>
                         </div>
                     </div>
-                    <button className='border p-2 border-black rounded-[7px]' onClick={onNext}>{t("suivant")}</button>
+                    <button className='border p-2 border-black rounded-[7px] hover:shadow-lg' onClick={onNext}>{t("suivant")}</button>
                 </form>
                 <p className="text-center mt-3 text-sm text-gray-800">1/3</p>
                 <Divider texte={t("dejaCompte")}/>
-                <button className='p-2 border border-black bg-black rounded-[7px] text-white'>{t("connexion")}</button>
+                <button className='p-2 border border-black bg-black rounded-[7px] text-white  hover:bg-gray-900 hover:shadow-lg'>{t("connexion")}</button>
                
             </div>
         </>
