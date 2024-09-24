@@ -124,4 +124,21 @@ public class EtudiantControllerTest {
                         .with(user("karim").password("$2a$10$e0NRkvT7RRr3z8hDVoPYPOz1VsKUPF9EJb/Mc8SOP68GQkecCnIvO").roles("ETUDIANT")))
                 .andExpect(status().isInternalServerError());
     }
+
+    @Test
+    public void testCheckForConflict_Succes() throws Exception {
+        CourrielTelephoneDTO courrielTelephoneDTO = new CourrielTelephoneDTO("mihoubi@gmail.com", "438-639-2638");
+
+        when(etudiantService.credentialsDejaPris(any(), any())).thenReturn(false);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String courrielTelephoneString = objectMapper.writeValueAsString(courrielTelephoneDTO);
+
+        this.mockMvc.perform(post("/etudiant/register/check-for-conflict")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(courrielTelephoneString)
+                        .with(csrf())
+                        .with(user("karim").password("$2a$10$e0NRkvT7RRr3z8hDVoPYPOz1VsKUPF9EJb/Mc8SOP68GQkecCnIvO").roles("ETUDIANT")))
+                .andExpect(status().isOk());
+    }
 }
