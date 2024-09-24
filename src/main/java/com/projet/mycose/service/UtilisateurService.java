@@ -7,6 +7,7 @@ import com.projet.mycose.repository.UtilisateurRepository;
 import com.projet.mycose.security.JwtTokenProvider;
 import com.projet.mycose.service.dto.EtudiantDTO;
 import com.projet.mycose.service.dto.LoginDTO;
+import com.projet.mycose.service.dto.UtilisateurDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,7 +28,6 @@ public class UtilisateurService {
     private final JwtTokenProvider jwtTokenProvider;
 
     public String authentificationUtilisateur(LoginDTO loginDTO) {
-        System.out.println(loginDTO.getCourriel() + " " + loginDTO.getMotDePasse());
         if (loginDTO.getCourriel() == null || loginDTO.getMotDePasse() == null) {
             throw new IllegalArgumentException("Le courriel et le mot de passe ne doivent pas être null");
         }
@@ -37,13 +37,13 @@ public class UtilisateurService {
         return jwtTokenProvider.generateToken(authentication);
     }
 
-    public EtudiantDTO getMe(String token) throws AccessDeniedException {
+    public UtilisateurDTO getMe(String token) throws AccessDeniedException {
         if (token != null && token.startsWith("Bearer")) {
             token = token.startsWith("Bearer") ? token.substring(7) : token;
             String courriel = jwtTokenProvider.getEmailFromJWT(token);
             Utilisateur utilisateur = utilisateurRepository.findUtilisateurByCourriel(courriel).orElseThrow(UserNotFoundException::new);
             return switch (utilisateur.getRole()) {
-                case GESTIONNAIRE_STAGE -> null; // TODO: RETOURNER UN getUtilisateurDTO
+                case GESTIONNAIRE_STAGE -> null; // TODO: RETOURNER UN getGestionnaireDTO
                 case ETUDIANT -> getEtudiantDTO(utilisateur.getId());
                 // TODO: AJOUTER LES AUTRES TYPES D'UTILISATEUR
             };
@@ -57,4 +57,5 @@ public class UtilisateurService {
                 EtudiantDTO.toDTO(etudiantOptional.get()) :
                 EtudiantDTO.empty();
     }
+    // TODO: AJOUTER LES AUTRES MÉTHODES GET POUR CHAQUE ROLES
 }

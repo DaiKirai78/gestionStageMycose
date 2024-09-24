@@ -7,6 +7,7 @@ import com.projet.mycose.security.JwtTokenProvider;
 import com.projet.mycose.security.exception.UserNotFoundException;
 import com.projet.mycose.service.dto.EtudiantDTO;
 import com.projet.mycose.service.dto.LoginDTO;
+import com.projet.mycose.service.dto.UtilisateurDTO;
 import io.jsonwebtoken.JwtException;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -163,10 +164,11 @@ public class UtilisateurServiceTest {
         when(etudiantRepository.save(any(Etudiant.class))).thenReturn(etudiant);
         when(jwtTokenProvider.getEmailFromJWT(anyString())).thenReturn(email);
         when(utilisateurRepository.findUtilisateurByCourriel(anyString())).thenReturn(Optional.of(etudiant));
+        when(etudiantRepository.findById(anyLong())).thenReturn(Optional.of(etudiant));
 
         // Act
         etudiantService.creationDeCompte("Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "$2y$10$iXgJopQP9JaxKujH2nOgn.S8BCNEdhKQwRcC/7DxDRu3G6SMShC3G");
-        EtudiantDTO result = utilisateurService.getMe(token);
+        UtilisateurDTO result = utilisateurService.getMe(token);
 
         // Assert
         assertNotNull(result);
