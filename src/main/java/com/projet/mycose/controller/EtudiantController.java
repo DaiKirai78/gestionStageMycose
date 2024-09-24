@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
 @RequiredArgsConstructor
@@ -17,7 +19,7 @@ public class EtudiantController {
     private final EtudiantService etudiantService;
 
     @PostMapping("/register")
-    public ResponseEntity<HttpStatus> CreationDeCompte(@RequestBody RegisterDTO nouveauCompteEtudiant) {
+    public ResponseEntity<HttpStatus> CreationDeCompte(@Valid @RequestBody RegisterDTO nouveauCompteEtudiant) {
         try {
             EtudiantDTO etudiantResultat = etudiantService.creationDeCompte(nouveauCompteEtudiant.getPrenom(),
                     nouveauCompteEtudiant.getNom(),
@@ -32,7 +34,7 @@ public class EtudiantController {
     }
 
     @PostMapping("/register/check-for-conflict")
-    public ResponseEntity<HttpStatus> CreationDeCompte_CheckForConflict(@RequestBody CourrielTelephoneDTO courrielTelephoneDTO) {
+    public ResponseEntity<HttpStatus> CreationDeCompte_CheckForConflict(@Valid @RequestBody CourrielTelephoneDTO courrielTelephoneDTO) {
         try {
             if (etudiantService.credentialsDejaPris(courrielTelephoneDTO.getCourriel(), courrielTelephoneDTO.getTelephone()))
                 return ResponseEntity.status(HttpStatus.CONFLICT).build();
