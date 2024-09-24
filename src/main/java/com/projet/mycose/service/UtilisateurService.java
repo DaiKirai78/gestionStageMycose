@@ -28,9 +28,7 @@ public class UtilisateurService {
     private final JwtTokenProvider jwtTokenProvider;
 
     public String authentificationUtilisateur(LoginDTO loginDTO) {
-        if (loginDTO.getCourriel() == null || loginDTO.getMotDePasse() == null) {
-            throw new IllegalArgumentException("Le courriel et le mot de passe ne doivent pas être null");
-        }
+        infosValidation(loginDTO.getCourriel(), loginDTO.getMotDePasse());
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginDTO.getCourriel(), loginDTO.getMotDePasse())
         );
@@ -58,4 +56,11 @@ public class UtilisateurService {
                 EtudiantDTO.empty();
     }
     // TODO: AJOUTER LES AUTRES MÉTHODES GET POUR CHAQUE ROLES
+
+    public void infosValidation(String courriel, String motDePasse) {
+        if (courriel == null || courriel.isEmpty() || !courriel.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"))
+            throw new IllegalArgumentException("Le courriel de l'utilisateur est invalide");
+        if (motDePasse == null || motDePasse.isEmpty() || !motDePasse.matches("^\\$2[abxy]?\\$\\d{2}\\$[./A-Za-z0-9]{53}$"))
+            throw new IllegalArgumentException("Le mot de passe de l'utilisateur est invalide");
+    }
 }
