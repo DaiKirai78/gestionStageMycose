@@ -38,12 +38,16 @@ public class EtudiantService {
     public void infosValidation(String prenom, String nom, String numeroTelephone, String courriel, String motDePasse) {
         if (prenom == null || prenom.isEmpty() || !prenom.matches("[a-zA-ZéÉàÀ\\-']+"))
             throw new IllegalArgumentException("Le prénom de l'utilisateur est invalide");
+
         if (nom == null || nom.isEmpty() || !nom.matches("[a-zA-ZéÉàÀ\\-']+"))
             throw new IllegalArgumentException("Le nom de l'utilisateur est invalide");
+
         if (numeroTelephone == null || numeroTelephone.isEmpty() || !numeroTelephone.matches("[0-9]{3}-? ?[0-9]{3}-? ?[0-9]{4}"))
             throw new IllegalArgumentException("Le numéro de téléphone de l'utilisateur est invalide");
+
         if (courriel == null || courriel.isEmpty() || !courriel.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"))
             throw new IllegalArgumentException("Le courriel de l'utilisateur est invalide");
+
         if (motDePasse == null || motDePasse.isEmpty() || !motDePasse.matches("^\\$2[abxy]?\\$\\d{2}\\$[./A-Za-z0-9]{53}$"))
             throw new IllegalArgumentException("Le mot de passe de l'utilisateur est invalide");
     }

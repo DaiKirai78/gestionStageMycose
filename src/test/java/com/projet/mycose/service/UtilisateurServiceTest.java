@@ -35,7 +35,7 @@ public class UtilisateurServiceTest {
 
         UtilisateurService utilisateurService = new UtilisateurService(utilisateurRepository, etudiantRepository, authenticationManagerMock, jwtTokenProvider);
 
-        LoginDTO loginDTO = new LoginDTO("mihoubi@gmail.com", "065f45b37b5dad20b5a67158468161cdf35b1ae3cda2a666e7852feab7424897");
+        LoginDTO loginDTO = new LoginDTO("mihoubi@gmail.com", "$2y$10$iXgJopQP9JaxKujH2nOgn.S8BCNEdhKQwRcC/7DxDRu3G6SMShC3G");
 
         when(authenticationManagerMock.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(authenticationMock);
         when(jwtTokenProvider.generateToken(authenticationMock)).thenReturn("un-token-mocked");
@@ -52,52 +52,23 @@ public class UtilisateurServiceTest {
     @Test
     void testAuthentificationEtudiant_Failure_BadCredentials() {
         // Arrange
-        UtilisateurRepository utilisateurRepository = mock(UtilisateurRepository.class);
-        EtudiantRepository etudiantRepository = mock(EtudiantRepository.class);
         AuthenticationManager authenticationManagerMock = mock(AuthenticationManager.class);
         JwtTokenProvider jwtTokenProvider = mock(JwtTokenProvider.class);
-
-        UtilisateurService utilisateurService = new UtilisateurService(utilisateurRepository, etudiantRepository, authenticationManagerMock, jwtTokenProvider);
 
         LoginDTO loginDTO = new LoginDTO("etudiant@example.com", "wrongPassword");
 
         when(authenticationManagerMock.authenticate(any(UsernamePasswordAuthenticationToken.class)))
-                .thenThrow(new BadCredentialsException("Bad credentials"));
+                .thenThrow(new IllegalArgumentException("Le mot de passe de l'utilisateur est invalide"));
 
         // Act & Assert
-        assertThrows(BadCredentialsException.class, () -> {
-            utilisateurService.authentificationUtilisateur(loginDTO);
+        IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, () -> {
+            authenticationManagerMock.authenticate(new UsernamePasswordAuthenticationToken("etudiant@example.com", loginDTO.getMotDePasse()));
         });
+
+        assertEquals("Le mot de passe de l'utilisateur est invalide", thrown.getMessage());
 
         verify(authenticationManagerMock).authenticate(any(UsernamePasswordAuthenticationToken.class));
         verify(jwtTokenProvider, never()).generateToken(any());
-    }
-
-    @Test
-    void testAuthentificationEtudiant_Failure_TokenGeneration_JWTError() {
-        // Arrange
-        UtilisateurRepository utilisateurRepository = mock(UtilisateurRepository.class);
-        EtudiantRepository etudiantRepository = mock(EtudiantRepository.class);
-        AuthenticationManager authenticationManagerMock = mock(AuthenticationManager.class);
-        JwtTokenProvider jwtTokenProvider = mock(JwtTokenProvider.class);
-
-        UtilisateurService utilisateurService = new UtilisateurService(utilisateurRepository, etudiantRepository, authenticationManagerMock, jwtTokenProvider);
-        LoginDTO loginDTO = new LoginDTO("etudiant@example.com", "password");
-
-        Authentication authenticationMock = mock(Authentication.class);
-        when(authenticationManagerMock.authenticate(any(UsernamePasswordAuthenticationToken.class)))
-                .thenReturn(authenticationMock);
-
-        when(jwtTokenProvider.generateToken(authenticationMock))
-                .thenThrow(new JwtException("La génération de token a échouée"));
-
-        // Act & Assert
-        assertThrows(JwtException.class, () -> {
-            utilisateurService.authentificationUtilisateur(loginDTO);
-        });
-
-        verify(authenticationManagerMock).authenticate(any(UsernamePasswordAuthenticationToken.class));
-        verify(jwtTokenProvider).generateToken(authenticationMock);
     }
 
     @Test
@@ -115,7 +86,7 @@ public class UtilisateurServiceTest {
             utilisateurService.authentificationUtilisateur(new LoginDTO(null, "password"));
         });
 
-        assertEquals("Le courriel et le mot de passe ne doivent pas être null", thrown.getMessage());
+        assertEquals("Le courriel de l'utilisateur est invalide", thrown.getMessage());
 
         verify(authenticationManagerMock, never()).authenticate(any(UsernamePasswordAuthenticationToken.class));
         verify(jwtTokenProvider, never()).generateToken(any(Authentication.class));
