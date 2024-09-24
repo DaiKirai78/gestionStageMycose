@@ -10,6 +10,8 @@ import lombok.Setter;
 @Setter
 public class FormulaireOffreStageDTO {
 
+    private Long id;
+
     @NotBlank(message = "Enterprise name is required.")
     private String entrepriseName;
 
