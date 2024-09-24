@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next"
 const FormConnection = () => {
 
     const  ERROR_CODE_UNAUTHORIZED = 401
-    const  REPSONSE_CODE_OK = 200
+    const  REPSONSE_CODE_ACCEPTED = 202
 
     const { t } = useTranslation()
 
@@ -30,7 +30,8 @@ const FormConnection = () => {
     
     function onLogin(e) {
         e.preventDefault();
-
+        emptyErrorKeys()
+        
         if(!verifierInputs()) {
             return;
         }
@@ -48,23 +49,26 @@ const FormConnection = () => {
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
-                        "courriel": "robyking@gmail.com",
-                        "motDePasse": "$2a$10$puJ.SglyQgU3SwtZacWxJuWTflHBW5ZieT9oQ5d39mn377T8PLhL2"
+                        "courriel": loginInfo.email,
+                        "motDePasse": loginInfo.password
                     })
                 }
             );
 
-            if (res.status === REPSONSE_CODE_OK) {
-                console.log("LETS GOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
+            if (res.status === REPSONSE_CODE_ACCEPTED) {
+                const data = await res.json();
+                localStorage.setItem('token', data.accessToken);
                 
             } else if (res.status === ERROR_CODE_UNAUTHORIZED) {
                 setErrorKeyResponse("wrongEmailOrPassword")
             } else {
                 setErrorKeyResponse("errorOccurredNotCode")
+                
             }
 
         } catch (e) {
             setErrorKeyResponse("errorOccurredNotCode")
+            console.log(e);
         }
 
         setIsFetching(false)
@@ -95,12 +99,18 @@ const FormConnection = () => {
 
     function changeEmailValue(e) {
         setEmail(e.target.value);
-        setErrorKeyEmail("");
+        emptyErrorKeys()
     }
 
     function changePasswordValue(e) {
         setPassword(e.target.value);
+        emptyErrorKeys()
+    }
+
+    function emptyErrorKeys() {
+        setErrorKeyEmail("");
         setErrorKeyPassword("");
+        setErrorKeyResponse("");
     }
 
     function renderMessageErreur() {
