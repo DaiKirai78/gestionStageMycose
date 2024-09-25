@@ -3,8 +3,11 @@ import Divider from './divider';
 import { Input } from '@material-tailwind/react';
 import InputErrorMessage from './inputErrorMesssage';
 import { useTranslation } from "react-i18next"
+import { useNavigate } from 'react-router-dom';
 
 const FormConnection = () => {
+
+    const navigate = useNavigate()
 
     const  ERROR_CODE_UNAUTHORIZED = 401
     const  REPSONSE_CODE_ACCEPTED = 202
@@ -58,6 +61,7 @@ const FormConnection = () => {
             if (res.status === REPSONSE_CODE_ACCEPTED) {
                 const data = await res.json();
                 localStorage.setItem('token', data.accessToken);
+                navigate("/acceuil")
                 
             } else if (res.status === ERROR_CODE_UNAUTHORIZED) {
                 setErrorKeyResponse("wrongEmailOrPassword")
