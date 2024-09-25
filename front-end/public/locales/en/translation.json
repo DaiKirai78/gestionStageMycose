@@ -16,4 +16,13 @@
     "errorPasswordNotSame": "The passwords must be the same",
     "inputLabelPassword": "Password",
     "inputLabelPasswordConfirmation": "Password Confirmation"
+    "errorMessagePassword": "Enter a valid password with a minimum of 8 letters",
+    "newOnMycose": "New on Mycose ?",
+    "signin": "Signin",
+    "login": "Login",
+    "password": "Password",
+    "email": "Email",
+    "errorOccurredNotCode": "An error has occurred",
+    "wrongEmailOrPassword": "The email or password have an error",
+    "loading": "Loading"
 }

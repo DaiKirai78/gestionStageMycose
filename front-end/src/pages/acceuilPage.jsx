@@ -1,10 +1,15 @@
 import React from 'react';
-
+import TokenPageContainer from './tokenPageContainer';
 const AccueilPage = () => {
+
+
+
     return (
-        <div>
-            <h1>Accueil</h1>
-        </div>
+        <TokenPageContainer>
+            <div>
+                <p>Acceuil</p>
+            </div>
+        </TokenPageContainer>
     );
 };
 
