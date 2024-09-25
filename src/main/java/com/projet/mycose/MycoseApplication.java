@@ -21,6 +21,5 @@ public class MycoseApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) {
-
 	}
 }

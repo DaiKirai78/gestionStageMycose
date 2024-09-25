@@ -38,14 +38,17 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(POST, "/user/login").permitAll()
+                        .requestMatchers(POST, "/utilisateur/login").permitAll()
                         .requestMatchers(POST, "/etudiant/register").permitAll()
                         .requestMatchers(POST, "/etudiant/register/check-for-conflict").permitAll()
 
-                        .requestMatchers(GET, "/user/*").hasAnyAuthority("GESTIONNAIRE_STAGE", "ETUDIANT", "EMPLOYEUR", "ENSEIGNANT")
+                        .requestMatchers(GET, "/utilisateur/*").hasAnyAuthority("GESTIONNAIRE_STAGE", "ETUDIANT", "EMPLOYEUR", "ENSEIGNANT")
                         .requestMatchers("/etudiant/**").hasAuthority("ETUDIANT")
+                        .requestMatchers("/enseignant/**").hasAuthority("ENSEIGNANT")
                         .requestMatchers("/employeur/**").hasAuthority("EMPLOYEUR")
+                        .requestMatchers("/enseignant/**").hasAuthority("ENSEIGNANT")
                         .requestMatchers("/gestionnaire-stage/**").hasAuthority("GESTIONNAIRE_STAGE")
+                        .requestMatchers("/**").permitAll()
                         .anyRequest().denyAll()
                 )
                 .sessionManagement((secuManagement) -> {
@@ -54,7 +57,6 @@ public class SecurityConfiguration {
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(configurer -> configurer.authenticationEntryPoint(authenticationEntryPoint))
         ;
-
         return http.build();
     }
 

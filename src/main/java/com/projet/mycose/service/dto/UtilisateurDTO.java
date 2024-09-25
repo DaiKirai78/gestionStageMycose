@@ -1,6 +1,8 @@
 package com.projet.mycose.service.dto;
 
+import com.projet.mycose.modele.Utilisateur;
 import com.projet.mycose.modele.auth.Role;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

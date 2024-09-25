@@ -7,7 +7,6 @@ import com.projet.mycose.service.dto.EtudiantDTO;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
@@ -22,11 +21,11 @@ public class EtudiantServiceTest {
         EtudiantRepository etudiantRepositoryMock = Mockito.mock(EtudiantRepository.class);
         EtudiantService etudiantService = new EtudiantService(etudiantRepositoryMock);
 
-        Etudiant etudiant = new Etudiant(1L, "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "$2a$10$e0NRkvT7RRr3z8hDVoPYPOz1VsKUPF9EJb/Mc8SOP68GQkecCnIvO");
+        Etudiant etudiant = new Etudiant(1L, "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "$2y$10$iXgJopQP9JaxKujH2nOgn.S8BCNEdhKQwRcC/7DxDRu3G6SMShC3G");
         when(etudiantRepositoryMock.save(any(Etudiant.class))).thenReturn(etudiant);
 
         //Act
-        EtudiantDTO etudiantDTO = etudiantService.creationDeCompte("Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "$2a$10$e0NRkvT7RRr3z8hDVoPYPOz1VsKUPF9EJb/Mc8SOP68GQkecCnIvO");
+        EtudiantDTO etudiantDTO = etudiantService.creationDeCompte("Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "$2y$10$iXgJopQP9JaxKujH2nOgn.S8BCNEdhKQwRcC/7DxDRu3G6SMShC3G");
 
         //Assert
         Assertions.assertEquals(etudiantDTO.getId(), 1);
@@ -49,7 +48,7 @@ public class EtudiantServiceTest {
         //Act & Assert
         DataIntegrityViolationException exception = Assertions.assertThrows(
                 DataIntegrityViolationException.class,
-                () -> etudiantService.creationDeCompte("Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "$2a$10$e0NRkvT7RRr3z8hDVoPYPOz1VsKUPF9EJb/Mc8SOP68GQkecCnIvO")
+                () -> etudiantService.creationDeCompte("Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "$2y$10$iXgJopQP9JaxKujH2nOgn.S8BCNEdhKQwRcC/7DxDRu3G6SMShC3G")
         );
 
         Assertions.assertEquals("Courriel déjà utilisé", exception.getMessage());
@@ -66,7 +65,7 @@ public class EtudiantServiceTest {
         //Act & Assert
         IllegalArgumentException exception = Assertions.assertThrows(
                 IllegalArgumentException.class,
-                () -> etudiantService.creationDeCompte("Karim", "Mihoubi", numeroDeTelephoneInvalide, "mihoubi@gmail.com", "$2a$10$e0NRkvT7RRr3z8hDVoPYPOz1VsKUPF9EJb/Mc8SOP68GQkecCnIvO")
+                () -> etudiantService.creationDeCompte("Karim", "Mihoubi", numeroDeTelephoneInvalide, "mihoubi@gmail.com", "$2y$10$iXgJopQP9JaxKujH2nOgn.S8BCNEdhKQwRcC/7DxDRu3G6SMShC3G")
         );
 
         Assertions.assertEquals("Le numéro de téléphone de l'utilisateur est invalide", exception.getMessage());
@@ -83,7 +82,7 @@ public class EtudiantServiceTest {
         //Act & Assert
         IllegalArgumentException exception = Assertions.assertThrows(
                 IllegalArgumentException.class,
-                () -> etudiantService.creationDeCompte("Karim", "Mihoubi", "450-389-2628", courrielInvalide, "$2a$10$e0NRkvT7RRr3z8hDVoPYPOz1VsKUPF9EJb/Mc8SOP68GQkecCnIvO")
+                () -> etudiantService.creationDeCompte("Karim", "Mihoubi", "450-389-2628", courrielInvalide, "$2y$10$iXgJopQP9JaxKujH2nOgn.S8BCNEdhKQwRcC/7DxDRu3G6SMShC3G")
         );
 
         Assertions.assertEquals("Le courriel de l'utilisateur est invalide", exception.getMessage());
@@ -134,7 +133,7 @@ public class EtudiantServiceTest {
         //Act & Assert
         IllegalArgumentException exception = Assertions.assertThrows(
                 IllegalArgumentException.class,
-                () -> etudiantService.creationDeCompte(prenomInvalide, "Mihoubi", "450-389-2628", "mihoubi@gmail.com", "$2a$10$e0NRkvT7RRr3z8hDVoPYPOz1VsKUPF9EJb/Mc8SOP68GQkecCnIvO")
+                () -> etudiantService.creationDeCompte(prenomInvalide, "Mihoubi", "450-389-2628", "mihoubi@gmail.com", "$2y$10$iXgJopQP9JaxKujH2nOgn.S8BCNEdhKQwRcC/7DxDRu3G6SMShC3G")
         );
 
         Assertions.assertEquals("Le prénom de l'utilisateur est invalide", exception.getMessage());
@@ -151,7 +150,7 @@ public class EtudiantServiceTest {
         //Act & Assert
         IllegalArgumentException exception = Assertions.assertThrows(
                 IllegalArgumentException.class,
-                () -> etudiantService.creationDeCompte("Karim", nomInvalide, "450-389-2628", "mihoubi@gmail.com", "$2a$10$e0NRkvT7RRr3z8hDVoPYPOz1VsKUPF9EJb/Mc8SOP68GQkecCnIvO")
+                () -> etudiantService.creationDeCompte("Karim", nomInvalide, "450-389-2628", "mihoubi@gmail.com", "$2y$10$iXgJopQP9JaxKujH2nOgn.S8BCNEdhKQwRcC/7DxDRu3G6SMShC3G")
         );
 
         Assertions.assertEquals("Le nom de l'utilisateur est invalide", exception.getMessage());
@@ -163,7 +162,7 @@ public class EtudiantServiceTest {
         EtudiantRepository etudiantRepositoryMock = Mockito.mock(EtudiantRepository.class);
         EtudiantService etudiantService = new EtudiantService(etudiantRepositoryMock);
 
-        Etudiant etudiant = new Etudiant(1L, "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "$2a$10$e0NRkvT7RRr3z8hDVoPYPOz1VsKUPF9EJb/Mc8SOP68GQkecCnIvO");
+        Etudiant etudiant = new Etudiant(1L, "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "$2y$10$iXgJopQP9JaxKujH2nOgn.S8BCNEdhKQwRcC/7DxDRu3G6SMShC3G");
         when(etudiantRepositoryMock.findEtudiantByCourriel("mihoubi@gmail.com")).thenReturn(Optional.of(etudiant));
 
         // Act
@@ -196,7 +195,7 @@ public class EtudiantServiceTest {
         EtudiantRepository etudiantRepositoryMock = Mockito.mock(EtudiantRepository.class);
         EtudiantService etudiantService = new EtudiantService(etudiantRepositoryMock);
 
-        Etudiant etudiant = new Etudiant(1L, "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "$2a$10$e0NRkvT7RRr3z8hDVoPYPOz1VsKUPF9EJb/Mc8SOP68GQkecCnIvO");
+        Etudiant etudiant = new Etudiant(1L, "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "$2y$10$iXgJopQP9JaxKujH2nOgn.S8BCNEdhKQwRcC/7DxDRu3G6SMShC3G");
         when(etudiantRepositoryMock.findEtudiantByNumeroDeTelephone("438-532-2729")).thenReturn(Optional.of(etudiant));
 
         // Act
@@ -228,7 +227,7 @@ public class EtudiantServiceTest {
         EtudiantRepository etudiantRepositoryMock = Mockito.mock(EtudiantRepository.class);
         EtudiantService etudiantService = new EtudiantService(etudiantRepositoryMock);
 
-        Etudiant etudiant = new Etudiant(1L, "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "$2a$10$e0NRkvT7RRr3z8hDVoPYPOz1VsKUPF9EJb/Mc8SOP68GQkecCnIvO");
+        Etudiant etudiant = new Etudiant(1L, "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "$2y$10$iXgJopQP9JaxKujH2nOgn.S8BCNEdhKQwRcC/7DxDRu3G6SMShC3G");
         when(etudiantRepositoryMock.findEtudiantByCourriel("mihoubi@gmail.com")).thenReturn(Optional.of(etudiant));
         when(etudiantRepositoryMock.findEtudiantByNumeroDeTelephone(any())).thenReturn(Optional.empty());
 
@@ -245,7 +244,7 @@ public class EtudiantServiceTest {
         EtudiantRepository etudiantRepositoryMock = Mockito.mock(EtudiantRepository.class);
         EtudiantService etudiantService = new EtudiantService(etudiantRepositoryMock);
 
-        Etudiant etudiant = new Etudiant(1L, "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "$2a$10$e0NRkvT7RRr3z8hDVoPYPOz1VsKUPF9EJb/Mc8SOP68GQkecCnIvO");
+        Etudiant etudiant = new Etudiant(1L, "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "$2y$10$iXgJopQP9JaxKujH2nOgn.S8BCNEdhKQwRcC/7DxDRu3G6SMShC3G");
         when(etudiantRepositoryMock.findEtudiantByCourriel(any())).thenReturn(Optional.empty());
         when(etudiantRepositoryMock.findEtudiantByNumeroDeTelephone("438-532-2729")).thenReturn(Optional.of(etudiant));
 

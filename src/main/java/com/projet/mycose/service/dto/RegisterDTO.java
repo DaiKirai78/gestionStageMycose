@@ -9,7 +9,7 @@ import javax.validation.constraints.Pattern;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class RegisterEtudiantDTO {
+public class RegisterDTO {
     @NotBlank
     @Pattern(regexp = "[a-zA-ZéÉàÀ\\-']+")
     private String prenom;
