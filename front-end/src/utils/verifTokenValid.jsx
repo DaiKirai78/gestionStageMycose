@@ -1,8 +1,8 @@
-export default function verifToken(navigate, token) {
+export default async function verifToken(token) {
     if (!token) {
-        navigate("/");
         return false;
     }
+    
 
     try {
         fetch('http://localhost:8080/utilisateur/me', {
@@ -11,22 +11,19 @@ export default function verifToken(navigate, token) {
         })
           .then(async (res) => {
               if (!res.ok) {
-                navigate("/");
-                return false
+                return false;
               }
               const data = await res.json();
               let newUser = {...data, isLoggedIn: true};
               console.log(newUser);
-              return true
-              
             }
-          ).catch(async (err) => {
-            navigate('/');
+          ).catch(async () => {
             return false;
         })
 
       } catch (err) {
-        navigate('/');
         return false;
       }
+
+      return true
 }

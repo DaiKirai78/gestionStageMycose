@@ -62,6 +62,8 @@ const FormConnection = () => {
                 const data = await res.json();
                 localStorage.setItem('token', data.accessToken);
                 navigate("/acceuil")
+                console.log("HEHEHE");
+                
                 
             } else if (res.status === ERROR_CODE_UNAUTHORIZED) {
                 setErrorKeyResponse("wrongEmailOrPassword")
