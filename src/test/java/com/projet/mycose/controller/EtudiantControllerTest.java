@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -23,6 +24,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(EtudiantController.class)
 public class EtudiantControllerTest {
 
+    @MockBean
+    private EtudiantController etudiantController;
     @Autowired
     private MockMvc mockMvc;
     @MockBean
@@ -30,6 +33,9 @@ public class EtudiantControllerTest {
 
     @Test
     public void testCreationDeCompte_Succes() throws Exception {
+        mockMvc = MockMvcBuilders.standaloneSetup(etudiantController)
+                .setControllerAdvice(new GlobalExceptionHandler())
+                .build();
         RegisterDTO newEtudiant = new RegisterDTO(
                 "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "$2a$10$e0NRkvT7RRr3z8hDVoPYPOz1VsKUPF9EJb/Mc8SOP68GQkecCnIvO"
         );
@@ -50,6 +56,9 @@ public class EtudiantControllerTest {
 
     @Test
     public void testCreationDeCompte_EchecBadRequest() throws Exception {
+        mockMvc = MockMvcBuilders.standaloneSetup(etudiantController)
+                .setControllerAdvice(new GlobalExceptionHandler())
+                .build();
         RegisterDTO newEtudiant = new RegisterDTO(
                 "Michel", "Genereux", "437-930-2483", "mihoubi@gmail.com", "$2a$10$e0NRkvT7RRr3z8hDVoPYPOz1VsKUPF9EJb/Mc8SOP68GQkecCnIvO"
         );
@@ -71,6 +80,9 @@ public class EtudiantControllerTest {
 
     @Test
     public void testCreationDeCompte_EchecInternalServerError() throws Exception {
+        mockMvc = MockMvcBuilders.standaloneSetup(etudiantController)
+                .setControllerAdvice(new GlobalExceptionHandler())
+                .build();
         RegisterDTO newEtudiant = new RegisterDTO(
                 "Michel", "Genereux", "437-930-2483", "mihoubi@gmail.com", "$2a$10$e0NRkvT7RRr3z8hDVoPYPOz1VsKUPF9EJb/Mc8SOP68GQkecCnIvO"
         );
@@ -92,6 +104,9 @@ public class EtudiantControllerTest {
 
     @Test
     public void testCreationDeCompte_EchecAvecConflit() throws Exception {
+        mockMvc = MockMvcBuilders.standaloneSetup(etudiantController)
+                .setControllerAdvice(new GlobalExceptionHandler())
+                .build();
         CourrielTelephoneDTO courrielTelephoneDTO = new CourrielTelephoneDTO("mihoubi@gmail.com", "438-639-2638");
 
         when(etudiantService.credentialsDejaPris("mihoubi@gmail.com", "438-639-2638")).thenReturn(true);
@@ -109,6 +124,9 @@ public class EtudiantControllerTest {
 
     @Test
     public void testCheckForConflict_EchecInternalServerError() throws Exception {
+        mockMvc = MockMvcBuilders.standaloneSetup(etudiantController)
+                .setControllerAdvice(new GlobalExceptionHandler())
+                .build();
         CourrielTelephoneDTO courrielTelephoneDTO = new CourrielTelephoneDTO("mihoubi@gmail.com", "438-639-2638");
 
         when(etudiantService.credentialsDejaPris(any(), any()))
@@ -127,6 +145,9 @@ public class EtudiantControllerTest {
 
     @Test
     public void testCheckForConflict_Succes() throws Exception {
+        mockMvc = MockMvcBuilders.standaloneSetup(etudiantController)
+                .setControllerAdvice(new GlobalExceptionHandler())
+                .build();
         CourrielTelephoneDTO courrielTelephoneDTO = new CourrielTelephoneDTO("mihoubi@gmail.com", "438-639-2638");
 
         when(etudiantService.credentialsDejaPris(any(), any())).thenReturn(false);

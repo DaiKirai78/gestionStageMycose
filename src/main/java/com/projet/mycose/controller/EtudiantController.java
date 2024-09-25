@@ -19,23 +19,21 @@ public class EtudiantController {
     private final EtudiantService etudiantService;
 
     @PostMapping("/register")
-    public ResponseEntity<EtudiantDTO> CreationDeCompte(@Valid @RequestBody RegisterDTO nouveauCompteEtudiant) {
+    public ResponseEntity<Object> CreationDeCompte(@Valid @RequestBody RegisterDTO nouveauCompteEtudiant) {
             EtudiantDTO etudiantResultat = etudiantService.creationDeCompte(nouveauCompteEtudiant.getPrenom(),
                     nouveauCompteEtudiant.getNom(),
                     nouveauCompteEtudiant.getNumeroDeTelephone(),
                     nouveauCompteEtudiant.getCourriel(),
                     nouveauCompteEtudiant.getMotDePasse());
-            return etudiantResultat != null ? ResponseEntity.status(HttpStatus.CREATED).body(etudiantResultat) : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return etudiantResultat != null ? ResponseEntity.status(HttpStatus.CREATED).body(etudiantResultat) : ResponseEntity.status(HttpStatus.BAD_REQUEST).body("");
         }
 
 
     @PostMapping("/register/check-for-conflict")
-    public ResponseEntity<CourrielTelephoneDTO> CreationDeCompte_CheckForConflict(@Valid @RequestBody CourrielTelephoneDTO courrielTelephoneDTO) {
+    public ResponseEntity<Object> CreationDeCompte_CheckForConflict(@Valid @RequestBody CourrielTelephoneDTO courrielTelephoneDTO) {
             if (etudiantService.credentialsDejaPris(courrielTelephoneDTO.getCourriel(), courrielTelephoneDTO.getTelephone()))
-                return ResponseEntity.status(HttpStatus.CONFLICT).build();
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Courriel ou numéro de téléphone déjà pris");
             else
-                return ResponseEntity.status(HttpStatus.OK).build();
+                return ResponseEntity.status(HttpStatus.OK).body(courrielTelephoneDTO);
         }
-
-
     }
