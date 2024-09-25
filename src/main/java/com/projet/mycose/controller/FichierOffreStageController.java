@@ -4,7 +4,6 @@ package com.projet.mycose.controller;
 import com.projet.mycose.service.FichierOffreStageService;
 import com.projet.mycose.service.dto.FichierOffreStageDTO;
 import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -17,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/files")
+@RequestMapping("/api/offres-stage")
 @CrossOrigin(origins = "http://localhost:5173")
 public class FichierOffreStageController {
 

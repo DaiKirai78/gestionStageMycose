@@ -59,7 +59,7 @@ public class FichierOffreStageControllerTest {
                 .thenReturn(validFichierOffreStageDTO);
 
         // Act & Assert
-        mockMvc.perform(multipart("/api/files/upload")
+        mockMvc.perform(multipart("/api/offres-stage/upload")
                         .file(mockFile)
                         .contentType(MediaType.MULTIPART_FORM_DATA))
                 .andExpect(status().isCreated())
@@ -97,7 +97,7 @@ public class FichierOffreStageControllerTest {
                 .thenThrow(mockConstraintViolationException);
 
         // Act & Assert: Perform the request and check for BadRequest (400) response and validate error messages
-        mockMvc.perform(multipart("/api/files/upload")
+        mockMvc.perform(multipart("/api/offres-stage/upload")
                         .file(mockFile)
                         .contentType(MediaType.MULTIPART_FORM_DATA))
                 .andExpect(status().isBadRequest())
@@ -116,7 +116,7 @@ public class FichierOffreStageControllerTest {
                 .thenThrow(new IOException("File error"));
 
         // Act & Assert: Perform the request and expect InternalServerError (500)
-        mockMvc.perform(multipart("/api/files/upload")
+        mockMvc.perform(multipart("/api/offres-stage/upload")
                         .file(mockFile)
                         .contentType(MediaType.MULTIPART_FORM_DATA))
                 .andExpect(status().isInternalServerError());
