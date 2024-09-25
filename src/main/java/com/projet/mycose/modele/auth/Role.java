@@ -6,6 +6,7 @@ import java.util.Set;
 public enum Role {
     GESTIONNAIRE_STAGE("ROLE_GESTIONNAIRE_STAGE"),
     ETUDIANT("ROLE_ETUDIANT"),
+    EMPLOYEUR("ROLE_EMPLOYEUR"),
     ;
 
     //TODO: AJOUTER LES AUTRES ROLES

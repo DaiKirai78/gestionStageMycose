@@ -20,7 +20,7 @@ public class Etudiant extends Utilisateur {
                 Credentials.builder().email(courriel).password(motDePasse).role(Role.ETUDIANT).build());
     }
 
-    //Constructeur classique
+    // Sans Id
     public Etudiant(String prenom, String nom, String numeroDeTelephone, String courriel, String motDePasse) {
         super(prenom,
                 nom,
