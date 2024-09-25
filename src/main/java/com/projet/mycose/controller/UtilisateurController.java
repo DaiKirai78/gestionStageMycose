@@ -11,6 +11,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
+
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
 @RequiredArgsConstructor
@@ -20,16 +22,14 @@ public class UtilisateurController {
     private final UtilisateurService utilisateurService;
 
     @PostMapping("/login")
-    public ResponseEntity<JWTAuthResponse> authentifierUtilisateur(@RequestBody LoginDTO loginDTO) {
+    public ResponseEntity<JWTAuthResponse> authentifierUtilisateur(@Valid @RequestBody LoginDTO loginDTO) {
         try {
             String accessToken = utilisateurService.authentificationUtilisateur(loginDTO);
-            System.out.println(accessToken);
             final JWTAuthResponse authResponse= new JWTAuthResponse(accessToken);
-            return ResponseEntity.accepted()
+            return ResponseEntity.status(HttpStatus.ACCEPTED)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(authResponse);
         } catch (Exception e) {
-            System.out.println("Erreur : " + e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new JWTAuthResponse());
         }
     }
@@ -37,12 +37,11 @@ public class UtilisateurController {
     @PostMapping("/me")
     public ResponseEntity<UtilisateurDTO> getMe(HttpServletRequest request) {
         try {
-            return ResponseEntity.accepted().contentType(MediaType.APPLICATION_JSON).body(
+            return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
                     utilisateurService.getMe(request.getHeader("Authorization"))
             );
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
 }

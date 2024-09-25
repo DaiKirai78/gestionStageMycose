@@ -1,7 +1,6 @@
 package com.projet.mycose.service.dto;
 
 import com.projet.mycose.modele.Etudiant;
-import com.projet.mycose.modele.auth.Credentials;
 import com.projet.mycose.modele.auth.Role;
 import lombok.*;
 
@@ -16,6 +15,7 @@ public class EtudiantDTO extends UtilisateurDTO {
     }
 
     public static EtudiantDTO toDTO(Etudiant etudiant) {
+        System.out.println(etudiant);
         return EtudiantDTO.builder()
                 .id(etudiant.getId())
                 .prenom(etudiant.getPrenom())
