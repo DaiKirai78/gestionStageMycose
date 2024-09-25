@@ -11,6 +11,7 @@ import AcceuilPage from './pages/acceuilPage.jsx';
 
 import "./i18n"
 import UploadOffreStage from "./components/uploadOffreStage.jsx";
+import UploadCV from "./components/uploadCV.jsx";
 
 const router = createBrowserRouter([
   {
@@ -24,6 +25,10 @@ const router = createBrowserRouter([
   {
     path: "/televerserOffreStage",
     element: <UploadOffreStage />
+  },
+  {
+    path: "/televerserCV",
+    element: <UploadCV />
   }
 ]);
 
