@@ -1,7 +1,10 @@
 import React, {useState} from 'react'
 import {Input} from '@material-tailwind/react';
+import { useTranslation } from "react-i18next"
 
 const FormInscriptionEtudiant = () => {
+
+    const { t } = useTranslation()
 
     const validePhone = new RegExp("[0-9]{3}-? ?[0-9]{3}-? ?[0-9]{4}");
     const valideName = new RegExp("[a-zA-Z -'éÉàÀ]");
@@ -96,10 +99,10 @@ const FormInscriptionEtudiant = () => {
                             type='tel'/>
                         </div>
                     </div>
-                    <button className='border p-2 border-black rounded-[7px]' onClick={onInscription}>S'inscrire</button>
+                    <button className='border p-2 border-black rounded-[7px]' onClick={onInscription}>{t("signin")}</button>
                 </form>
                 <p>Déjà un compte?</p>
-                <button className='p-2 border border-black bg-black rounded-[7px] text-white'>Connexion</button>
+                <button className='p-2 border border-black bg-black rounded-[7px] text-white'>{t(login)}</button>
             </div>	
         </>
     );

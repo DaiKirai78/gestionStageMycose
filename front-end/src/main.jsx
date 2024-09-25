@@ -24,7 +24,7 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <React.Suspense fallback="loading">
+    <React.Suspense fallback="Translating">
       <RouterProvider router={router} />
     </React.Suspense>
   </StrictMode>
