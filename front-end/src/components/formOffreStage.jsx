@@ -5,15 +5,6 @@ import { useTranslation } from "react-i18next";
 function FormOffreStage() {
     const { t } = useTranslation();
 
-    const entrepriseNameRef = useRef(null);
-    const employerNameRef = useRef(null);
-    const emailRef = useRef(null);
-    const websiteRef = useRef(null);
-    const titleRef = useRef(null);
-    const locationRef = useRef(null);
-    const salaryRef = useRef(null);
-    const descriptionRef = useRef(null);
-
     const [formData, setFormData] = useState({
         entrepriseName: "",
         employerName: "",

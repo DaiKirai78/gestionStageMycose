@@ -17,7 +17,8 @@ function FileOffreStage() {
         formData.append("file", file);
 
         try {
-            const response = await axios.post("http://localhost:8080/api/files/upload", formData, {
+            const response = await axios.post("http://localhost:8080/api/files/upload", formData, 
+            {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },
@@ -85,7 +86,7 @@ function FileOffreStage() {
                     onDragEnter={(e) => {e.preventDefault()}}
                     className="flex justify-center w-full h-32 px-4 transition border-2 border-gray-300 border-dashed rounded-md appearance-none cursor-pointer hover:border-gray-400 focus:outline-none">
                     <span className="flex items-center space-x-2">
-                        <BsCloudArrowUpFill></BsCloudArrowUpFill>
+                        <BsCloudArrowUpFill />
                         <span className="font-medium text-gray-600">
                             {t("dropFile")}&nbsp;
                             <span className="text-blue-600 underline">{t("browse")}</span>
@@ -93,7 +94,7 @@ function FileOffreStage() {
                     </span>
                     <input type="file" name="file_upload" id="file" className="hidden" onChange={handleFileChange} accept="application/pdf"/>
                 </label>
-                <InputErrorMessage messageKey={fileExtensionError}></InputErrorMessage>
+                <InputErrorMessage messageKey={fileExtensionError} />
                 {fileExtensionError === (
                     <p className={"text-red-500 text-sm"}>{t("fileRequired")}</p>
                 )}

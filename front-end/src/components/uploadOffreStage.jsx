@@ -14,6 +14,7 @@ function UploadOffreStage() {
                 <h2 className="text-4xl font-bold mb-4 text-black">
                     {showFileUpload ? t("uploadFile") : t("fillForm")}
                 </h2>
+                <p>{showFileUpload ? "télversé un pdf offre de stage" : "Remplire les inputs"}</p>
 
                 <div className="flex justify-center space-x-4 w-full">
                     <button
