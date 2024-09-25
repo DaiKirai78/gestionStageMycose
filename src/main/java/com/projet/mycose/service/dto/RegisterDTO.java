@@ -28,6 +28,6 @@ public class RegisterDTO {
     private String courriel;
 
     @NotBlank(message = "Le mot de passe ne doit pas être vide.")
-    @Pattern(regexp = "^\\$2[abxy]?\\$\\d{2}\\$[./A-Za-z0-9]{53}$", message = "Le mot de passe doit être encodé dans le format BCrypt")
+    @Pattern(regexp = "[a-zA-Z0-9$&+,:;=?@#|'<>.^*()%!-]{8,}", message = "Le mot de passe doit être une combinaison de 8 lettres, chiffres et symboles")
     private String motDePasse;
 }

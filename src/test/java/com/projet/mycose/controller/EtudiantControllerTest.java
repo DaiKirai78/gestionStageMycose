@@ -47,7 +47,7 @@ public class EtudiantControllerTest {
     @Test
     public void testCreationDeCompte_Succes() throws Exception {
         RegisterDTO newEtudiant = new RegisterDTO(
-                "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "$2a$10$e0NRkvT7RRr3z8hDVoPYPOz1VsKUPF9EJb/Mc8SOP68GQkecCnIvO"
+                "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$"
         );
 
         when(etudiantService.creationDeCompte(any(), any(), any(), any(), any()))
@@ -60,7 +60,7 @@ public class EtudiantControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(etudiantJson)
                         .with(csrf())
-                        .with(user("karim").password("$2a$10$e0NRkvT7RRr3z8hDVoPYPOz1VsKUPF9EJb/Mc8SOP68GQkecCnIvO").roles("ETUDIANT")))
+                        .with(user("karim").password("Mimi123$").roles("ETUDIANT")))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.nom").value("Mihoubi"))
@@ -73,7 +73,7 @@ public class EtudiantControllerTest {
     @Test
     public void testCreationDeCompte_EchecAvecConflit() throws Exception {
         RegisterDTO newEtudiant = new RegisterDTO(
-                "Michel", "Genereux", "437-930-2483", "mihoubi@gmail.com", "$2a$10$e0NRkvT7RRr3z8hDVoPYPOz1VsKUPF9EJb/Mc8SOP68GQkecCnIvO"
+                "Michel", "Genereux", "437-930-2483", "mihoubi@gmail.com", "Mimi123$"
         );
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -83,7 +83,7 @@ public class EtudiantControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(etudiantJson)
                         .with(csrf())
-                        .with(user("michel").password("$2a$10$e0NRkvT7RRr3z8hDVoPYPOz1VsKUPF9EJb/Mc8SOP68GQkecCnIvO").roles("ETUDIANT")))
+                        .with(user("michel").password("Mimi123$").roles("ETUDIANT")))
                 .andExpect(status().isConflict());
     }
 
@@ -100,7 +100,7 @@ public class EtudiantControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(courrielTelephoneString)
                         .with(csrf())
-                        .with(user("karim").password("$2a$10$e0NRkvT7RRr3z8hDVoPYPOz1VsKUPF9EJb/Mc8SOP68GQkecCnIvO").roles("ETUDIANT")))
+                        .with(user("karim").password("Mimi123$").roles("ETUDIANT")))
                 .andExpect(status().isConflict());
     }
 
@@ -117,7 +117,7 @@ public class EtudiantControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(courrielTelephoneString)
                         .with(csrf())
-                        .with(user("karim").password("$2a$10$e0NRkvT7RRr3z8hDVoPYPOz1VsKUPF9EJb/Mc8SOP68GQkecCnIvO").roles("ETUDIANT")))
+                        .with(user("karim").password("Mimi123$").roles("ETUDIANT")))
                 .andExpect(status().isOk());
     }
 }
