@@ -4,6 +4,7 @@ import com.projet.mycose.service.EtudiantService;
 import com.projet.mycose.service.dto.CourrielTelephoneDTO;
 import com.projet.mycose.service.dto.EtudiantDTO;
 import com.projet.mycose.service.dto.RegisterDTO;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,14 +26,14 @@ public class EtudiantController {
                     nouveauCompteEtudiant.getNumeroDeTelephone(),
                     nouveauCompteEtudiant.getCourriel(),
                     nouveauCompteEtudiant.getMotDePasse());
-            return etudiantResultat != null ? ResponseEntity.status(HttpStatus.CREATED).body(etudiantResultat) : ResponseEntity.status(HttpStatus.BAD_REQUEST).body("");
+            return etudiantResultat != null ? ResponseEntity.status(HttpStatus.CREATED).body(etudiantResultat) : ResponseEntity.status(HttpStatus.CONFLICT).body("L'étudiant existe déjà ou les credentials sont invalides");
         }
 
 
     @PostMapping("/register/check-for-conflict")
     public ResponseEntity<Object> CreationDeCompte_CheckForConflict(@Valid @RequestBody CourrielTelephoneDTO courrielTelephoneDTO) {
             if (etudiantService.credentialsDejaPris(courrielTelephoneDTO.getCourriel(), courrielTelephoneDTO.getTelephone()))
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("Courriel ou numéro de téléphone déjà pris");
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("L'étudiant existe déjà ou les credentials sont invalides");
             else
                 return ResponseEntity.status(HttpStatus.OK).body(courrielTelephoneDTO);
         }

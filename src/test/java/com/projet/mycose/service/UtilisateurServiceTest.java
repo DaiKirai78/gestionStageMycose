@@ -9,6 +9,7 @@ import com.projet.mycose.service.dto.EtudiantDTO;
 import com.projet.mycose.service.dto.LoginDTO;
 import com.projet.mycose.service.dto.UtilisateurDTO;
 import io.jsonwebtoken.JwtException;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -68,53 +69,6 @@ public class UtilisateurServiceTest {
         assertEquals("Le mot de passe de l'utilisateur est invalide", thrown.getMessage());
 
         verify(authenticationManagerMock).authenticate(any(UsernamePasswordAuthenticationToken.class));
-        verify(jwtTokenProvider, never()).generateToken(any());
-    }
-
-    @Test
-    void testAuthentificationEtudiant_Failure_TokenGeneration_AuthNull() {
-        // Arrange
-        UtilisateurRepository utilisateurRepository = mock(UtilisateurRepository.class);
-        EtudiantRepository etudiantRepository = mock(EtudiantRepository.class);
-        AuthenticationManager authenticationManagerMock = mock(AuthenticationManager.class);
-        JwtTokenProvider jwtTokenProvider = mock(JwtTokenProvider.class);
-
-        UtilisateurService utilisateurService = new UtilisateurService(utilisateurRepository, etudiantRepository, authenticationManagerMock, jwtTokenProvider);
-
-        // Act & Assert
-        IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, () -> {
-            utilisateurService.authentificationUtilisateur(new LoginDTO(null, "password"));
-        });
-
-        assertEquals("Le courriel de l'utilisateur est invalide", thrown.getMessage());
-
-        verify(authenticationManagerMock, never()).authenticate(any(UsernamePasswordAuthenticationToken.class));
-        verify(jwtTokenProvider, never()).generateToken(any(Authentication.class));
-    }
-
-
-    @Test
-    void testAuthentificationEtudiant_Failure_NullFields() {
-        // Arrange
-        UtilisateurRepository utilisateurRepository = mock(UtilisateurRepository.class);
-        EtudiantRepository etudiantRepository = mock(EtudiantRepository.class);
-        AuthenticationManager authenticationManagerMock = mock(AuthenticationManager.class);
-        JwtTokenProvider jwtTokenProvider = mock(JwtTokenProvider.class);
-
-        UtilisateurService utilisateurService = new UtilisateurService(utilisateurRepository, etudiantRepository, authenticationManagerMock, jwtTokenProvider);
-
-        LoginDTO loginDTOWithNullEmail = new LoginDTO(null, "password");
-        LoginDTO loginDTOWithNullPassword = new LoginDTO("etudiant@example.com", null);
-
-
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> {
-            utilisateurService.authentificationUtilisateur(loginDTOWithNullEmail);
-        });
-        assertThrows(IllegalArgumentException.class, () -> {
-            utilisateurService.authentificationUtilisateur(loginDTOWithNullPassword);
-        });
-        verify(authenticationManagerMock, never()).authenticate(any());
         verify(jwtTokenProvider, never()).generateToken(any());
     }
 

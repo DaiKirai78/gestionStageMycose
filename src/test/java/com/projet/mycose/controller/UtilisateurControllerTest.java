@@ -7,12 +7,18 @@ import com.projet.mycose.service.UtilisateurService;
 import com.projet.mycose.service.dto.EtudiantDTO;
 import com.projet.mycose.service.dto.LoginDTO;
 import com.projet.mycose.service.dto.UtilisateurDTO;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -23,21 +29,30 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(UtilisateurController.class)
+@ExtendWith(MockitoExtension.class)
 public class UtilisateurControllerTest {
 
-    @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @Mock
     private EtudiantService etudiantService;
 
-    @MockBean
+    @Mock
     private UtilisateurService utilisateurService;
+
+    @InjectMocks
+    private UtilisateurController utilisateurController;
+
+    @BeforeEach
+    void setUp() {
+        mockMvc = MockMvcBuilders.standaloneSetup(utilisateurController)
+                .setControllerAdvice(new GlobalExceptionHandler())
+                .build();
+    }
 
     @Test
     public void testAuthentifierUtilisateur_Succes() throws Exception {
-        LoginDTO loginDTO = new LoginDTO("mihoubi@gmail.com", "$2a$10$e0NRkvT7RRr3z8hDVoPYPOz1VsKUPF9EJb/Mc8SOP68GQkecCnIvO");
+        LoginDTO loginDTO = new LoginDTO("mihoubi@gmail.com", "Mihoubi123$");
 
         String token = "Bearer valid_token";
 
@@ -50,18 +65,18 @@ public class UtilisateurControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(loginDTOJson)
                         .with(csrf())
-                        .with(user("karim").password("$2a$10$e0NRkvT7RRr3z8hDVoPYPOz1VsKUPF9EJb/Mc8SOP68GQkecCnIvO").roles("ETUDIANT")))
+                        .with(user("karim").password("Mihoubi123$").roles("ETUDIANT")))
                 .andExpect(status().isAccepted())
                 .andExpect(jsonPath("$.accessToken").value(token))
                 .andExpect(jsonPath("$.tokenType").value("BEARER"));
     }
 
     @Test
-    public void testAuthentifierUtilisateur_Unauthorized_EmailNull() throws Exception {
-        LoginDTO loginDTO = new LoginDTO(null, "$2a$10$e0NRkvT7RRr3z8hDVoPYPOz1VsKUPF9EJb/Mc8SOP68GQkecCnIvO");
+    public void testAuthentifierUtilisateur_IsUnauthorized() throws Exception {
+        LoginDTO loginDTO = new LoginDTO("example@gmail.com", "Mihoubi123$");
 
         when(utilisateurService.authentificationUtilisateur(any(LoginDTO.class)))
-                .thenThrow(new IllegalArgumentException("Le courriel de l'utilisateur est invalide"));
+                .thenThrow(new IllegalArgumentException());
 
         String loginDTOJson = new ObjectMapper().writeValueAsString(loginDTO);
 
@@ -69,16 +84,13 @@ public class UtilisateurControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(loginDTOJson)
                         .with(csrf())
-                        .with(user("karim").password("$2a$10$e0NRkvT7RRr3z8hDVoPYPOz1VsKUPF9EJb/Mc8SOP68GQkecCnIvO").roles("ETUDIANT")))
+                        .with(user("karim").password("Mihoubi123$").roles("ETUDIANT")))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
-    public void testAuthentifierUtilisateur_Unauthorized_EmailInvalide() throws Exception {
-        LoginDTO loginDTO = new LoginDTO("email_invalide", "$2a$10$e0NRkvT7RRr3z8hDVoPYPOz1VsKUPF9EJb/Mc8SOP68GQkecCnIvO");
-
-        when(utilisateurService.authentificationUtilisateur(any(LoginDTO.class)))
-                .thenThrow(new IllegalArgumentException("Le courriel de l'utilisateur est invalide"));
+    public void testAuthentifierUtilisateur_BadRequest_EmailInvalide() throws Exception {
+        LoginDTO loginDTO = new LoginDTO("email_invalide", "Mihoubi123$");
 
         String loginDTOJson = new ObjectMapper().writeValueAsString(loginDTO);
 
@@ -86,17 +98,14 @@ public class UtilisateurControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(loginDTOJson)
                         .with(csrf())
-                        .with(user("karim").password("$2a$10$e0NRkvT7RRr3z8hDVoPYPOz1VsKUPF9EJb/Mc8SOP68GQkecCnIvO").roles("ETUDIANT")))
-                .andExpect(status().isUnauthorized());
+                        .with(user("karim").password("Mihoubi123$").roles("ETUDIANT")))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
-    public void testAuthentifierUtilisateur_Unauthorized_MDPNull() throws Exception {
+    public void testAuthentifierUtilisateur_BadRequest_MDPNull() throws Exception {
         LoginDTO loginDTO = new LoginDTO("mihoubi@gmail.com", null);
 
-        when(utilisateurService.authentificationUtilisateur(any(LoginDTO.class)))
-                .thenThrow(new IllegalArgumentException("Le mot de passe de l'utilisateur est invalide"));
-
         String loginDTOJson = new ObjectMapper().writeValueAsString(loginDTO);
 
         mockMvc.perform(post("/utilisateur/login")
@@ -104,15 +113,12 @@ public class UtilisateurControllerTest {
                         .content(loginDTOJson)
                         .with(csrf())
                         .with(user("karim").roles("ETUDIANT")))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isBadRequest());
     }
 
     @Test
-    public void testAuthentifierUtilisateur_Unauthorized_MDPInvalide() throws Exception {
+    public void testAuthentifierUtilisateur_BadRequest_MDPInvalide() throws Exception {
         LoginDTO loginDTO = new LoginDTO("mihoubi@gmail.com", "123abc");
-
-        when(utilisateurService.authentificationUtilisateur(any(LoginDTO.class)))
-                .thenThrow(new IllegalArgumentException("Le mot de passe de l'utilisateur est invalide"));
 
         String loginDTOJson = new ObjectMapper().writeValueAsString(loginDTO);
 
@@ -121,7 +127,7 @@ public class UtilisateurControllerTest {
                         .content(loginDTOJson)
                         .with(csrf())
                         .with(user("karim").roles("ETUDIANT")))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -157,7 +163,7 @@ public class UtilisateurControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                 .with(csrf())
                 .with(user("karim").roles("ETUDIANT")))
-                .andExpect(status().isInternalServerError());
+                .andExpect(status().isBadRequest());
 
         verify(utilisateurService).getMe("Bearer invalid_token");
     }

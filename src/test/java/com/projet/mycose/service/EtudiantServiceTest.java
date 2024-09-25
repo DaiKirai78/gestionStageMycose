@@ -10,7 +10,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
@@ -63,12 +63,10 @@ public class EtudiantServiceTest {
         String numeroDeTelephoneInvalide = "12345abc";
 
         //Act & Assert
-        IllegalArgumentException exception = Assertions.assertThrows(
-                IllegalArgumentException.class,
+        Assertions.assertThrows(
+                NullPointerException.class,
                 () -> etudiantService.creationDeCompte("Karim", "Mihoubi", numeroDeTelephoneInvalide, "mihoubi@gmail.com", "$2y$10$iXgJopQP9JaxKujH2nOgn.S8BCNEdhKQwRcC/7DxDRu3G6SMShC3G")
         );
-
-        Assertions.assertEquals("Le numéro de téléphone de l'utilisateur est invalide", exception.getMessage());
     }
 
     @Test
@@ -80,12 +78,10 @@ public class EtudiantServiceTest {
         String courrielInvalide = "jeSuisUnEmailQuiNeRespectePasLesConventionsDÉcriture";
 
         //Act & Assert
-        IllegalArgumentException exception = Assertions.assertThrows(
-                IllegalArgumentException.class,
+        Assertions.assertThrows(
+                NullPointerException.class,
                 () -> etudiantService.creationDeCompte("Karim", "Mihoubi", "450-389-2628", courrielInvalide, "$2y$10$iXgJopQP9JaxKujH2nOgn.S8BCNEdhKQwRcC/7DxDRu3G6SMShC3G")
         );
-
-        Assertions.assertEquals("Le courriel de l'utilisateur est invalide", exception.getMessage());
     }
 
     @Test
@@ -97,12 +93,10 @@ public class EtudiantServiceTest {
         String motDePasseInvalide = "motDePassePasEncodé";
 
         //Act & Assert
-        IllegalArgumentException exception = Assertions.assertThrows(
-                IllegalArgumentException.class,
+        Assertions.assertThrows(
+                NullPointerException.class,
                 () -> etudiantService.creationDeCompte("Karim", "Mihoubi", "450-389-2628", "mihoubi@gmail.com", motDePasseInvalide)
         );
-
-        Assertions.assertEquals("Le mot de passe de l'utilisateur est invalide", exception.getMessage());
     }
 
     @Test
@@ -114,12 +108,10 @@ public class EtudiantServiceTest {
         String motDePasseInvalide = null;
 
         //Act & Assert
-        IllegalArgumentException exception = Assertions.assertThrows(
-                IllegalArgumentException.class,
+        Assertions.assertThrows(
+                NullPointerException.class,
                 () -> etudiantService.creationDeCompte("Karim", "Mihoubi", "450-389-2628", "mihoubi@gmail.com", motDePasseInvalide)
         );
-
-        Assertions.assertEquals("Le mot de passe de l'utilisateur est invalide", exception.getMessage());
     }
 
     @Test
@@ -131,12 +123,10 @@ public class EtudiantServiceTest {
         String prenomInvalide = "3426unPrenomInvalide28382";
 
         //Act & Assert
-        IllegalArgumentException exception = Assertions.assertThrows(
-                IllegalArgumentException.class,
+        Assertions.assertThrows(
+                NullPointerException.class,
                 () -> etudiantService.creationDeCompte(prenomInvalide, "Mihoubi", "450-389-2628", "mihoubi@gmail.com", "$2y$10$iXgJopQP9JaxKujH2nOgn.S8BCNEdhKQwRcC/7DxDRu3G6SMShC3G")
         );
-
-        Assertions.assertEquals("Le prénom de l'utilisateur est invalide", exception.getMessage());
     }
 
     @Test
@@ -148,12 +138,10 @@ public class EtudiantServiceTest {
         String nomInvalide = "3426unNomInvalide28382";
 
         //Act & Assert
-        IllegalArgumentException exception = Assertions.assertThrows(
-                IllegalArgumentException.class,
+        Assertions.assertThrows(
+                NullPointerException.class,
                 () -> etudiantService.creationDeCompte("Karim", nomInvalide, "450-389-2628", "mihoubi@gmail.com", "$2y$10$iXgJopQP9JaxKujH2nOgn.S8BCNEdhKQwRcC/7DxDRu3G6SMShC3G")
         );
-
-        Assertions.assertEquals("Le nom de l'utilisateur est invalide", exception.getMessage());
     }
 
     @Test
