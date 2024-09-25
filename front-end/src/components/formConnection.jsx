@@ -52,7 +52,7 @@ const FormConnection = () => {
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
-                        "courriel": loginInfo.email,
+                        "courriel": loginInfo.email.toLowerCase(),
                         "motDePasse": loginInfo.password
                     })
                 }
@@ -61,9 +61,7 @@ const FormConnection = () => {
             if (res.status === REPSONSE_CODE_ACCEPTED) {
                 const data = await res.json();
                 localStorage.setItem('token', data.accessToken);
-                navigate("/acceuil")
-                console.log("HEHEHE");
-                
+                navigate("/acceuil")                
                 
             } else if (res.status === ERROR_CODE_UNAUTHORIZED) {
                 setErrorKeyResponse("wrongEmailOrPassword")
