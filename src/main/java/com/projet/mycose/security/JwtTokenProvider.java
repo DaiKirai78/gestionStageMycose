@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import com.projet.mycose.security.exception.InvalidJwtTokenException;
 
+import java.nio.file.AccessDeniedException;
 import java.security.Key;
 import java.util.Date;
 
@@ -19,28 +20,37 @@ public class JwtTokenProvider{
 	@Value("${application.security.jwt.secret-key}")
 	private final String jwtSecret = "2B7E151628AED2A6ABF7158809CF4F3C2B7E151628AED2A6ABF7158809CF4F3C";
 
-	public String generateToken(Authentication authentication){
-		long nowMillis = System.currentTimeMillis();
-		JwtBuilder builder = Jwts.builder()
-			.setSubject(authentication.getName())
-			.setIssuedAt(new Date(nowMillis))
-			.setExpiration(new Date(nowMillis + expirationInMs))
-			.claim("authorities", authentication.getAuthorities())
-			.signWith(key());
-		return builder.compact();
+	public String generateToken(Authentication authentication) {
+		try {
+			long nowMillis = System.currentTimeMillis();
+			JwtBuilder builder = Jwts.builder()
+					.setSubject(authentication.getName())
+					.setIssuedAt(new Date(nowMillis))
+					.setExpiration(new Date(nowMillis + expirationInMs))
+					.claim("authorities", authentication.getAuthorities())
+					.signWith(key());
+			return builder.compact();
+		} catch (Exception e) {
+			throw new JwtException("La génération de token a échouée : " + e.getMessage());
+		}
 	}
 
 	private Key key(){
 		return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
 	}
 
-	public String getEmailFromJWT(String token){
-		return Jwts.parserBuilder()
-			.setSigningKey(key())
-			.build()
-			.parseClaimsJws(token)
-			.getBody()
-			.getSubject();
+	public String getEmailFromJWT(String token) throws AccessDeniedException {
+		try {
+			return Jwts.parserBuilder()
+					.setSigningKey(key())
+					.build()
+					.parseClaimsJws(token)
+					.getBody()
+					.getSubject();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			throw new AccessDeniedException("Token Invalide");
+		}
 	}
 
 	public void validateToken(String token){

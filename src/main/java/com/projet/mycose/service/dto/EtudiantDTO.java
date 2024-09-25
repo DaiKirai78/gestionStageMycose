@@ -1,7 +1,6 @@
 package com.projet.mycose.service.dto;
 
 import com.projet.mycose.modele.Etudiant;
-import com.projet.mycose.modele.auth.Credentials;
 import com.projet.mycose.modele.auth.Role;
 import lombok.*;
 
@@ -35,5 +34,9 @@ public class EtudiantDTO extends UtilisateurDTO {
                 .courriel(etudiantDto.getCourriel())
                 .numeroDeTelephone(etudiantDto.getNumeroDeTelephone())
                 .build();
+    }
+
+    public static EtudiantDTO empty() {
+        return new EtudiantDTO();
     }
 }
