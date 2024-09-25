@@ -28,7 +28,7 @@ public class UtilisateurService {
     private final JwtTokenProvider jwtTokenProvider;
 
     public String authentificationUtilisateur(LoginDTO loginDTO) {
-        infosValidation(loginDTO.getCourriel(), loginDTO.getMotDePasse());
+        //infosValidation(loginDTO.getCourriel(), loginDTO.getMotDePasse());
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginDTO.getCourriel(), loginDTO.getMotDePasse())
         );
@@ -57,10 +57,10 @@ public class UtilisateurService {
     }
     // TODO: AJOUTER LES AUTRES MÉTHODES GET POUR CHAQUE ROLES
 
-    public void infosValidation(String courriel, String motDePasse) {
-        if (courriel == null || courriel.isEmpty() || !courriel.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"))
-            throw new IllegalArgumentException("Le courriel de l'utilisateur est invalide");
-        if (motDePasse == null || motDePasse.isEmpty() || !motDePasse.matches("^\\$2[abxy]?\\$\\d{2}\\$[./A-Za-z0-9]{53}$"))
-            throw new IllegalArgumentException("Le mot de passe de l'utilisateur est invalide");
-    }
+//    public void infosValidation(String courriel, String motDePasse) {
+//        if (courriel == null || courriel.isEmpty() || !courriel.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"))
+//            throw new IllegalArgumentException("Le courriel de l'utilisateur est invalide");
+//        if (motDePasse == null || motDePasse.isEmpty() || !motDePasse.matches("^\\$2[abxy]?\\$\\d{2}\\$[./A-Za-z0-9]{53}$"))
+//            throw new IllegalArgumentException("Le mot de passe de l'utilisateur est invalide");
+//    }
 }
