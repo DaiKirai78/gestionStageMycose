@@ -15,8 +15,7 @@
     "telephone": "Numéro de téléphone",
     "errorPasswordNotSame" : "Les mots de passes doivenet être les mêmes",
     "inputLabelPassword": "Mot de Passe",
-    "inputLabelPasswordConfirmation": "Confirmation du mot de passe"
-    "errorMessagePassword": "Saisissez un mot de passe valide avec un minimum de 8 lettres",
+    "inputLabelPasswordConfirmation": "Confirmation du mot de passe",
     "newOnMycose": "Nouveau sur Mycose ?",
     "signin": "S'inscrire",
     "login": "Connexion",
