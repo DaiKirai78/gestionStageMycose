@@ -3,6 +3,7 @@ import Divider from './divider';
 import { useState } from "react";
 import InputErrorMessage from './inputErrorMesssage';
 import { useTranslation } from 'react-i18next';
+import ButtonConnexion from './buttonConnexion';
 
 function FormInscription2({email, setEmail, telephone, setTelephone, setStep}) {
 
@@ -144,7 +145,7 @@ function FormInscription2({email, setEmail, telephone, setTelephone, setStep}) {
                 </form>
                 <p className="text-center mt-3 text-sm text-gray-800">2/3</p>
                 <Divider texte={t("dejaCompte")}/>
-                <button className='p-2 border border-black bg-black rounded-[7px] text-white hover:bg-gray-900 hover:shadow-lg'>{t("connexion")}</button>
+                <ButtonConnexion/>
             </div>	
         </>
     );

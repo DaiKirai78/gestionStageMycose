@@ -5,6 +5,7 @@ import { useState } from "react";
 import {sha256} from 'js-sha256';
 import {redirect} from "react-router-dom";
 import { useTranslation } from 'react-i18next';
+import ButtonConnexion from './buttonConnexion';
 
 function FormInscription3({prenom, nom, email, telephone}) {
     const [password, setPassword] = useState('');
@@ -133,7 +134,7 @@ function FormInscription3({prenom, nom, email, telephone}) {
                 </form>
                 <p className="text-center mt-3 text-sm text-gray-800">3/3</p>
                 <Divider texte={t("dejaCompte")}/>
-                <button className='p-2 border border-black bg-black rounded-[7px] text-white hover:bg-gray-900 hover:shadow-lg'>{t("connexion")}</button>
+                <ButtonConnexion/>
                
             </div>
         </>
