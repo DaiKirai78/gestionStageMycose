@@ -11,13 +11,20 @@ import lombok.NoArgsConstructor;
 @DiscriminatorValue("Etudiant")
 @Entity
 public class Etudiant extends Utilisateur {
-    @Builder //Builder toDTO
+    @Builder
     public Etudiant(Long id, String prenom, String nom, String numeroDeTelephone, String courriel, String motDePasse) {
-        super(id, prenom, nom, numeroDeTelephone, Credentials.builder().email(courriel).password(motDePasse).role(Role.ETUDIANT).build());
+        super(id,
+                prenom,
+                nom,
+                numeroDeTelephone,
+                Credentials.builder().email(courriel).password(motDePasse).role(Role.ETUDIANT).build());
     }
 
     //Constructeur classique
     public Etudiant(String prenom, String nom, String numeroDeTelephone, String courriel, String motDePasse) {
-        super(prenom, nom, numeroDeTelephone, Credentials.builder().email(courriel).password(motDePasse).role(Role.ETUDIANT).build());
+        super(prenom,
+                nom,
+                numeroDeTelephone,
+                Credentials.builder().email(courriel).password(motDePasse).role(Role.ETUDIANT).build());
     }
 }
