@@ -2,10 +2,9 @@ import {Input} from '@material-tailwind/react';
 import Divider from './divider';
 import InputErrorMessage from './inputErrorMesssage';
 import { useState } from "react";
-import {sha256} from 'js-sha256';
-import {redirect} from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 import ButtonConnexion from './buttonConnexion';
+import { useNavigate } from 'react-router-dom';
 
 function FormInscription3({prenom, nom, email, telephone}) {
     const [password, setPassword] = useState('');
@@ -14,10 +13,13 @@ function FormInscription3({prenom, nom, email, telephone}) {
     const [errorKeyPassword, setErrorKeyPassword] = useState('');
     const validePassword = new RegExp(String.raw`[a-zA-Z0-9$&+,:;=?@#|'<>.^*()%!-]{8,}`);
 
-    const RESPONSE_OK = 200;
+    const RESPONSE_OK = 201;
+    const  REPSONSE_CODE_ACCEPTED = 202
     const [errorKeyResponse, setErrorKeyResponse] = useState('');
 
     const { t } = useTranslation();
+
+    const navigate = useNavigate();
 
     async function onSumbit(e) {
         e.preventDefault();
@@ -26,20 +28,24 @@ function FormInscription3({prenom, nom, email, telephone}) {
             console.log("Erreur Form Inscription 3");
             return;
         }
-
-        const passwordHash = sha256.create().update(password).hex();
         
         const reponseStatus = await envoyerInfos(passwordHash);
 
+        console.log(reponseStatus);
+        
+
         if(reponseStatus != RESPONSE_OK) {
             setErrorKeyResponse("errorOccurred")
+            return;
         }
 
-        
-        redirect("/acceuil");
+
+           sendLoginInfo({email, password})
+    
     }
 
-    async function envoyerInfos(passwordHash) {
+
+    async function envoyerInfos() {
         const res = await fetch("http://localhost:8080/etudiant/register", {
             method: 'POST',
             headers: {
@@ -48,13 +54,41 @@ function FormInscription3({prenom, nom, email, telephone}) {
             body: JSON.stringify({
                 'prenom': prenom,
                 'nom': nom,
-                'numeroDeTelephone': telephone,
+                'numeroDeTelephone': telephone.toLowerCase(),
                 'courriel': email,
-                'motDePasse': passwordHash
+                'motDePasse': password
             })
         })
 
         return res.status;
+    }
+
+    async function sendLoginInfo(loginInfo) {
+        try {
+            const res = await fetch("http://localhost:8080/utilisateur/login",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        "courriel": loginInfo.email,
+                        "motDePasse": loginInfo.password
+                    })
+                }
+            );
+
+            if (res.status === REPSONSE_CODE_ACCEPTED) {
+                const data = await res.json();
+                localStorage.setItem('token', data.accessToken);
+                navigate("/acceuil")                
+            }
+
+        } catch (e) {
+            setErrorKeyResponse("errorOccurredNotCode")
+            console.log(e);
+        }
+
     }
 
     function validerPasswordsInputs() {
