@@ -1,4 +1,4 @@
-import {useRef, useState} from "react";
+import {useState} from "react";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
 
@@ -76,7 +76,7 @@ function FormOffreStage() {
         }
 
         // Validation pour 'website'
-        if (formData.website && !/^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(formData.website)) {
+        if (formData.website && !/^(https?:\/\/)?(www\.)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/[^\s]*)?$/.test(formData.website)) {
             errors.website = t("websiteInvalid");
             valid = false;
         }
@@ -101,14 +101,21 @@ function FormOffreStage() {
         // Validation pour 'salary'
         if (!formData.salary) {
             errors.salary = t("salaryRequired");
-
             valid = false;
         }
 
-        if (formData.salary && isNaN(formData.salary)) {
+        const salaryNormalized = formData.salary.replace(',', '.');
+
+        if (salaryNormalized && isNaN(salaryNormalized)) {
             errors.salary = t("salaryInvalid");
             valid = false;
         }
+
+        if (salaryNormalized && !/^\d{1,10}([,.]\d{1,2})?$/.test(formData.salary)) {
+            errors.salary = t("salaryInvalidMaxNb");
+            valid = false;
+        }
+
 
         // Validation pour 'description'
         if (!formData.description) {
