@@ -36,15 +36,16 @@ function FormInscription3({prenom, nom, email, telephone, setStep ,role}) {
         switch (role) {
             case 'etudiant':
                 urlRole = "etudiant";
-                reponseStatus = await envoyerInfos();
                 break;
             case 'professeur':
-                // return envoyerInfosProf
+                urlRole = "professeur";
+                break;
             case 'entreprise':
                 //jasoooon faut set la variaaable iciiiiiii
                // return envoyerInfosEntreprise <---- jasoooon iiciiii codeeeerr
         }
 
+        reponseStatus = await envoyerInfos();
 
         if(reponseStatus != RESPONSE_OK) {
             setErrorKeyResponse("errorOccurredNotCode")

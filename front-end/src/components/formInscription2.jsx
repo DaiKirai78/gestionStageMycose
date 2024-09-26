@@ -33,13 +33,15 @@ function FormInscription2({email, setEmail, telephone, setTelephone, setStep, ro
 
         switch (role) {
             case 'etudiant':
-                urlRole = "etudiant";
-                reponseStatus = await verifierUser();                
+                urlRole = "etudiant";              
                 break;
             case 'professeur':
-                // return progesseurMethodeVerif
+                urlRole = "professeur";
+                break;
             case 'entreprise':
                // return entrepriseMethodeVerif
+
+               reponseStatus = await verifierUser();
         }
 
         console.log(reponseStatus);
