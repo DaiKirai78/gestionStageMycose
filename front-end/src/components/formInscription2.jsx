@@ -70,7 +70,7 @@ function FormInscription2({email, setEmail, telephone, setTelephone, setStep, ro
                         'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    'courriel': email,
+                    'courriel': email.toLowerCase(),
                     'telephone': telFormate
                 })
             });
