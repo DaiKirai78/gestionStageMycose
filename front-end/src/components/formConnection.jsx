@@ -40,9 +40,6 @@ const FormConnection = () => {
         }
         
         sendLoginInfo({email, password});
-
-        setEmail('');
-        setPassword('');
     }
 
     async function sendLoginInfo(loginInfo) {
