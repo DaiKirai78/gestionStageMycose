@@ -36,7 +36,7 @@ public class UtilisateurService {
 
     public UtilisateurDTO getMe(String token) throws AccessDeniedException {
         if (token != null && token.startsWith("Bearer")) {
-            token = token.startsWith("Bearer") ? token.substring(7) : token;
+            token = token.substring(7);
             String courriel = jwtTokenProvider.getEmailFromJWT(token);
             Utilisateur utilisateur = utilisateurRepository.findUtilisateurByCourriel(courriel).orElseThrow(UserNotFoundException::new);
             return switch (utilisateur.getRole()) {

@@ -15,6 +15,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.nio.file.AccessDeniedException;
 import java.util.Optional;
@@ -36,7 +37,7 @@ public class UtilisateurServiceTest {
 
         UtilisateurService utilisateurService = new UtilisateurService(utilisateurRepository, etudiantRepository, authenticationManagerMock, jwtTokenProvider);
 
-        LoginDTO loginDTO = new LoginDTO("mihoubi@gmail.com", "$2y$10$iXgJopQP9JaxKujH2nOgn.S8BCNEdhKQwRcC/7DxDRu3G6SMShC3G");
+        LoginDTO loginDTO = new LoginDTO("mihoubi@gmail.com", "Mimi123$");
 
         when(authenticationManagerMock.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(authenticationMock);
         when(jwtTokenProvider.generateToken(authenticationMock)).thenReturn("un-token-mocked");
@@ -80,11 +81,12 @@ public class UtilisateurServiceTest {
         AuthenticationManager authenticationManagerMock = mock(AuthenticationManager.class);
         JwtTokenProvider jwtTokenProvider = mock(JwtTokenProvider.class);
         UtilisateurService utilisateurService = new UtilisateurService(utilisateurRepository, etudiantRepository, authenticationManagerMock, jwtTokenProvider);
-        EtudiantService etudiantService = new EtudiantService(etudiantRepository);
+        PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);
+        EtudiantService etudiantService = new EtudiantService(etudiantRepository, passwordEncoder);
 
         String token = "Bearer valid_token";
         String email = "mihoubi@gmail.com";
-        Etudiant etudiant = new Etudiant(1L, "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "$2y$10$iXgJopQP9JaxKujH2nOgn.S8BCNEdhKQwRcC/7DxDRu3G6SMShC3G");
+        Etudiant etudiant = new Etudiant(1L, "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$");
 
         when(etudiantRepository.save(any(Etudiant.class))).thenReturn(etudiant);
         when(jwtTokenProvider.getEmailFromJWT(anyString())).thenReturn(email);
@@ -92,7 +94,7 @@ public class UtilisateurServiceTest {
         when(etudiantRepository.findById(anyLong())).thenReturn(Optional.of(etudiant));
 
         // Act
-        etudiantService.creationDeCompte("Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "$2y$10$iXgJopQP9JaxKujH2nOgn.S8BCNEdhKQwRcC/7DxDRu3G6SMShC3G");
+        etudiantService.creationDeCompte("Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$");
         UtilisateurDTO result = utilisateurService.getMe(token);
 
         // Assert

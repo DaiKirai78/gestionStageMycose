@@ -15,7 +15,6 @@ public class EtudiantDTO extends UtilisateurDTO {
     }
 
     public static EtudiantDTO toDTO(Etudiant etudiant) {
-        System.out.println(etudiant);
         return EtudiantDTO.builder()
                 .id(etudiant.getId())
                 .prenom(etudiant.getPrenom())

@@ -25,7 +25,7 @@ public class UtilisateurController {
     public ResponseEntity<JWTAuthResponse> authentifierUtilisateur(@Valid @RequestBody LoginDTO loginDTO) {
         try {
             String accessToken = utilisateurService.authentificationUtilisateur(loginDTO);
-            final JWTAuthResponse authResponse= new JWTAuthResponse(accessToken);
+            final JWTAuthResponse authResponse = new JWTAuthResponse(accessToken);
             return ResponseEntity.status(HttpStatus.ACCEPTED)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(authResponse);
