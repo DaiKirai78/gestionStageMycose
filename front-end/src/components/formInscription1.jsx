@@ -90,8 +90,8 @@ function FormInscription1({prenom, nom, setPrenom, setNom, setStep}) {
                         </div>
                     </div>
                     <div className='flex justify-center items-center space-x-4'>
-                        <button className='w-1/2 border p-2 border-black rounded-[7px] hover:shadow-lg' onClick={onReturn}>{t("retour")}</button>
-                        <button className='w-1/2 border p-2 border-black rounded-[7px] hover:shadow-lg' onClick={onNext}>{t("suivant")}</button>
+                        <button type='button' className='w-1/2 border p-2 border-black rounded-[7px] hover:shadow-lg' onClick={onReturn}>{t("retour")}</button>
+                        <button className='w-1/2 border p-2 border-black rounded-[7px] hover:shadow-lg' type='submit' onClick={onNext}>{t("suivant")}</button>
                     </div>
                     
                 </form>

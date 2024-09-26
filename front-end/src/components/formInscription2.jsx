@@ -162,7 +162,7 @@ function FormInscription2({email, setEmail, telephone, setTelephone, setStep, ro
                         </div>
                     </div>
                     <div className='flex justify-center items-center space-x-4'>
-                        <button className='w-1/2 border p-2 border-black rounded-[7px] hover:shadow-lg' onClick={onReturn}>{t("retour")}</button>
+                        <button type='button' className='w-1/2 border p-2 border-black rounded-[7px] hover:shadow-lg' onClick={onReturn}>{t("retour")}</button>
                         <button className='w-1/2 border p-2 border-black rounded-[7px] hover:shadow-lg' onClick={onNext}>{t("suivant")}</button>
                     </div>
                 </form>
