@@ -11,11 +11,11 @@ import jakarta.validation.constraints.Pattern;
 @Getter
 public class RegisterEtudiantEnseignantDTO {
     @NotBlank(message = "Le prénom ne doit pas être vide.")
-    @Pattern(regexp = "[a-zA-ZéÉàÀ\\-']+", message = "Le prénom ne doit pas contenir de chiffre ou de symbole")
+    @Pattern(regexp = "[a-zA-ZéÉàÀ\\-\\s']+", message = "Le prénom ne doit pas contenir de chiffre ou de symbole")
     private String prenom;
 
     @NotBlank(message = "Le nom ne doit pas être vide.")
-    @Pattern(regexp = "[a-zA-ZéÉàÀ\\-']+", message = "Le nom ne doit pas contenir de chiffre ou de symbole")
+    @Pattern(regexp = "[a-zA-ZéÉàÀ\\-\\s']+", message = "Le nom ne doit pas contenir de chiffre ou de symbole")
     private String nom;
 
     @NotBlank(message = "Le numéro de téléphone ne doit pas être vide.")
