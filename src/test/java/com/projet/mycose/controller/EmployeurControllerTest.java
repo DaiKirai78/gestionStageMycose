@@ -2,10 +2,8 @@ package com.projet.mycose.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.projet.mycose.modele.auth.Role;
-import com.projet.mycose.service.EtudiantService;
-import com.projet.mycose.service.dto.CourrielTelephoneDTO;
-import com.projet.mycose.service.dto.EtudiantDTO;
-import com.projet.mycose.service.dto.RegisterEtudiantDTO;
+import com.projet.mycose.service.EmployeurService;
+import com.projet.mycose.service.dto.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,62 +23,60 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
-public class EtudiantControllerTest {
-
+public class EmployeurControllerTest {
     private MockMvc mockMvc;
     @Mock
-    private EtudiantService etudiantService;
-
+    private EmployeurService employeurService;
     @InjectMocks
-    private EtudiantController etudiantController;
+    private EmployeurController employeurController;
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(etudiantController)
+        mockMvc = MockMvcBuilders.standaloneSetup(employeurController)
                 .setControllerAdvice(new GlobalExceptionHandler())
                 .build();
     }
 
     @Test
     public void testCreationDeCompte_Succes() throws Exception {
-        RegisterEtudiantDTO newEtudiant = new RegisterEtudiantDTO(
-                "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$"
+        RegisterEmployeurDTO newEmployeur = new RegisterEmployeurDTO(
+                "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$", "Couche-Tard"
         );
 
-        when(etudiantService.creationDeCompte(any(), any(), any(), any(), any()))
-                .thenReturn(new EtudiantDTO(1L, "Karim", "Mihoubi", "mihoubi@gmail.com", "438-532-2729", Role.ETUDIANT));
+        when(employeurService.creationDeCompte(any(), any(), any(), any(), any(), any()))
+                .thenReturn(new EmployeurDTO(1L, "Karim", "Mihoubi", "mihoubi@gmail.com", "438-532-2729", "Couche-Tard", Role.EMPLOYEUR));
 
         ObjectMapper objectMapper = new ObjectMapper();
-        String etudiantJson = objectMapper.writeValueAsString(newEtudiant);
+        String employeurJson = objectMapper.writeValueAsString(newEmployeur);
 
-        this.mockMvc.perform(post("/etudiant/register")
+        this.mockMvc.perform(post("/entreprise/register")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(etudiantJson)
+                        .content(employeurJson)
                         .with(csrf())
-                        .with(user("karim").password("Mimi123$").roles("ETUDIANT")))
+                        .with(user("karim").password("Mimi123$").roles("EMPLOYEUR")))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.nom").value("Mihoubi"))
                 .andExpect(jsonPath("$.prenom").value("Karim"))
                 .andExpect(jsonPath("$.courriel").value("mihoubi@gmail.com"))
                 .andExpect(jsonPath("$.numeroDeTelephone").value("438-532-2729"))
-                .andExpect(jsonPath("$.role").value("ETUDIANT"));
+                .andExpect(jsonPath("$.role").value("EMPLOYEUR"));
     }
 
     @Test
     public void testCreationDeCompte_EchecAvecConflit() throws Exception {
-        RegisterEtudiantDTO newEtudiant = new RegisterEtudiantDTO(
-                "Michel", "Genereux", "437-930-2483", "mihoubi@gmail.com", "Mimi123$"
+        RegisterEmployeurDTO newEmployeur = new RegisterEmployeurDTO(
+                "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$", "Couche-Tard"
         );
 
         ObjectMapper objectMapper = new ObjectMapper();
-        String etudiantJson = objectMapper.writeValueAsString(newEtudiant);
+        String employeurJson = objectMapper.writeValueAsString(newEmployeur);
 
-        this.mockMvc.perform(post("/etudiant/register")
+        this.mockMvc.perform(post("/entreprise/register")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(etudiantJson)
+                        .content(employeurJson)
                         .with(csrf())
-                        .with(user("michel").password("Mimi123$").roles("ETUDIANT")))
+                        .with(user("michel").password("Mimi123$").roles("EMPLOYEUR")))
                 .andExpect(status().isConflict());
     }
 
@@ -88,16 +84,16 @@ public class EtudiantControllerTest {
     public void testCheckForConflict_Echec() throws Exception {
         CourrielTelephoneDTO courrielTelephoneDTO = new CourrielTelephoneDTO("mihoubi@gmail.com", "438-639-2638");
 
-        when(etudiantService.credentialsDejaPris("mihoubi@gmail.com", "438-639-2638")).thenReturn(true);
+        when(employeurService.credentialsDejaPris("mihoubi@gmail.com", "438-639-2638")).thenReturn(true);
 
         ObjectMapper objectMapper = new ObjectMapper();
         String courrielTelephoneString = objectMapper.writeValueAsString(courrielTelephoneDTO);
 
-        this.mockMvc.perform(post("/etudiant/register/check-for-conflict")
+        this.mockMvc.perform(post("/entreprise/register/check-for-conflict")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(courrielTelephoneString)
                         .with(csrf())
-                        .with(user("karim").password("Mimi123$").roles("ETUDIANT")))
+                        .with(user("karim").password("Mimi123$").roles("EMPLOYEUR")))
                 .andExpect(status().isConflict());
     }
 
@@ -108,11 +104,11 @@ public class EtudiantControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
         String courrielTelephoneString = objectMapper.writeValueAsString(courrielTelephoneDTO);
 
-        this.mockMvc.perform(post("/etudiant/register/check-for-conflict")
+        this.mockMvc.perform(post("/entreprise/register/check-for-conflict")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(courrielTelephoneString)
                         .with(csrf())
-                        .with(user("karim").password("Mimi123$").roles("ETUDIANT")))
+                        .with(user("karim").password("Mimi123$").roles("EMPLOYEUR")))
                 .andExpect(status().isOk());
     }
 }

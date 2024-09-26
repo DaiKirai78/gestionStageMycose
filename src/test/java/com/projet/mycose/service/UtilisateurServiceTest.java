@@ -1,6 +1,7 @@
 package com.projet.mycose.service;
 
 import com.projet.mycose.modele.Etudiant;
+import com.projet.mycose.repository.EmployeurRepository;
 import com.projet.mycose.repository.EtudiantRepository;
 import com.projet.mycose.repository.UtilisateurRepository;
 import com.projet.mycose.security.JwtTokenProvider;
@@ -31,11 +32,12 @@ public class UtilisateurServiceTest {
         // Arrange
         UtilisateurRepository utilisateurRepository = mock(UtilisateurRepository.class);
         EtudiantRepository etudiantRepository = mock(EtudiantRepository.class);
+        EmployeurRepository employeurRepository = mock(EmployeurRepository.class);
         AuthenticationManager authenticationManagerMock = mock(AuthenticationManager.class);
         Authentication authenticationMock = mock(Authentication.class);
         JwtTokenProvider jwtTokenProvider = mock(JwtTokenProvider.class);
 
-        UtilisateurService utilisateurService = new UtilisateurService(utilisateurRepository, etudiantRepository, authenticationManagerMock, jwtTokenProvider);
+        UtilisateurService utilisateurService = new UtilisateurService(utilisateurRepository, etudiantRepository, employeurRepository, authenticationManagerMock, jwtTokenProvider);
 
         LoginDTO loginDTO = new LoginDTO("mihoubi@gmail.com", "Mimi123$");
 
@@ -78,9 +80,10 @@ public class UtilisateurServiceTest {
         // Arrange
         UtilisateurRepository utilisateurRepository = mock(UtilisateurRepository.class);
         EtudiantRepository etudiantRepository = mock(EtudiantRepository.class);
+        EmployeurRepository employeurRepository = mock(EmployeurRepository.class);
         AuthenticationManager authenticationManagerMock = mock(AuthenticationManager.class);
         JwtTokenProvider jwtTokenProvider = mock(JwtTokenProvider.class);
-        UtilisateurService utilisateurService = new UtilisateurService(utilisateurRepository, etudiantRepository, authenticationManagerMock, jwtTokenProvider);
+        UtilisateurService utilisateurService = new UtilisateurService(utilisateurRepository, etudiantRepository, employeurRepository, authenticationManagerMock, jwtTokenProvider);
         PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);
         EtudiantService etudiantService = new EtudiantService(etudiantRepository, passwordEncoder);
 
@@ -108,9 +111,10 @@ public class UtilisateurServiceTest {
         // Arrange
         UtilisateurRepository utilisateurRepository = mock(UtilisateurRepository.class);
         EtudiantRepository etudiantRepository = mock(EtudiantRepository.class);
+        EmployeurRepository employeurRepository = mock(EmployeurRepository.class);
         AuthenticationManager authenticationManagerMock = mock(AuthenticationManager.class);
         JwtTokenProvider jwtTokenProvider = mock(JwtTokenProvider.class);
-        UtilisateurService utilisateurService = new UtilisateurService(utilisateurRepository, etudiantRepository, authenticationManagerMock, jwtTokenProvider);
+        UtilisateurService utilisateurService = new UtilisateurService(utilisateurRepository, etudiantRepository, employeurRepository, authenticationManagerMock, jwtTokenProvider);
         String token = null;
 
         // Act & Assert
@@ -124,9 +128,10 @@ public class UtilisateurServiceTest {
         // Arrange
         UtilisateurRepository utilisateurRepository = mock(UtilisateurRepository.class);
         EtudiantRepository etudiantRepository = mock(EtudiantRepository.class);
+        EmployeurRepository employeurRepository = mock(EmployeurRepository.class);
         AuthenticationManager authenticationManagerMock = mock(AuthenticationManager.class);
         JwtTokenProvider jwtTokenProvider = mock(JwtTokenProvider.class);
-        UtilisateurService utilisateurService = new UtilisateurService(utilisateurRepository, etudiantRepository, authenticationManagerMock, jwtTokenProvider);
+        UtilisateurService utilisateurService = new UtilisateurService(utilisateurRepository, etudiantRepository, employeurRepository, authenticationManagerMock, jwtTokenProvider);
         String token = "invalid_token";
 
         // Act & Assert
@@ -140,9 +145,10 @@ public class UtilisateurServiceTest {
         // Arrange
         UtilisateurRepository utilisateurRepository = mock(UtilisateurRepository.class);
         EtudiantRepository etudiantRepository = mock(EtudiantRepository.class);
+        EmployeurRepository employeurRepository = mock(EmployeurRepository.class);
         AuthenticationManager authenticationManagerMock = mock(AuthenticationManager.class);
         JwtTokenProvider jwtTokenProvider = mock(JwtTokenProvider.class);
-        UtilisateurService utilisateurService = new UtilisateurService(utilisateurRepository, etudiantRepository, authenticationManagerMock, jwtTokenProvider);
+        UtilisateurService utilisateurService = new UtilisateurService(utilisateurRepository, etudiantRepository, employeurRepository, authenticationManagerMock, jwtTokenProvider);
         String token = "Bearer valid_token";
         String email = "inconnu@exemple.com";
 
@@ -160,9 +166,10 @@ public class UtilisateurServiceTest {
         // Arrange
         UtilisateurRepository utilisateurRepository = mock(UtilisateurRepository.class);
         EtudiantRepository etudiantRepository = mock(EtudiantRepository.class);
+        EmployeurRepository employeurRepository = mock(EmployeurRepository.class);
         AuthenticationManager authenticationManagerMock = mock(AuthenticationManager.class);
         JwtTokenProvider jwtTokenProvider = mock(JwtTokenProvider.class);
-        UtilisateurService utilisateurService = new UtilisateurService(utilisateurRepository, etudiantRepository, authenticationManagerMock, jwtTokenProvider);
+        UtilisateurService utilisateurService = new UtilisateurService(utilisateurRepository, etudiantRepository, employeurRepository, authenticationManagerMock, jwtTokenProvider);
         String token = "Bearer invalid_token";
 
         when(jwtTokenProvider.getEmailFromJWT(anyString())).thenThrow(new AccessDeniedException("Token Invalide"));
