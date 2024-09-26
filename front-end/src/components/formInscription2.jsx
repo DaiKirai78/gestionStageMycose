@@ -7,7 +7,7 @@ import ButtonConnexion from './buttonConnexion';
 
 function FormInscription2({email, setEmail, telephone, setTelephone, setStep, role}) {
 
-    const validePhone = new RegExp(String.raw`[0-9]{3}-? ?[0-9]{3}-? ?[0-9]{4}`)
+    const validePhone = new RegExp(String.raw`^[0-9]{3}-? ?[0-9]{3}-? ?[0-9]{4}$`)
     const valideEmail = new RegExp(String.raw`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$`);
     const getDigitsOnTelephone = new RegExp(String.raw`(\d{3})[- ]?(\d{3})[- ]?(\d{4})`);
 
@@ -33,16 +33,17 @@ function FormInscription2({email, setEmail, telephone, setTelephone, setStep, ro
 
         switch (role) {
             case 'etudiant':
-                urlRole = "etudiant";              
+                urlRole = "etudiant";           
                 break;
             case 'professeur':
                 urlRole = "professeur";
                 break;
             case 'entreprise':
-               // return entrepriseMethodeVerif
-
-               reponseStatus = await verifierUser();
+                urlRole = "entreprise";
+                break;
         }
+        
+        reponseStatus = await verifierUser();
 
         console.log(reponseStatus);
 
@@ -61,7 +62,13 @@ function FormInscription2({email, setEmail, telephone, setTelephone, setStep, ro
 
 
     async function verifierUser() {
+        
+        
         const telFormate = telephone.replace(getDigitsOnTelephone, '$1-$2-$3')
+        console.log({
+            'courriel': email.toLowerCase(),
+            'telephone': telFormate
+        });
         var res;
         try {
             res = await fetch("http://localhost:8080/" + urlRole + "/register/check-for-conflict", {
@@ -145,9 +152,10 @@ function FormInscription2({email, setEmail, telephone, setTelephone, setStep, ro
                             <Input label={t("inputLabelEmail")} color='black' size='lg' 
                             onChange={(e) => {changeEmailValue(e);}}
                             type='email'
-                            autoFocus="true"
+                            autoFocus={true}
                             error={errorKeyEmail.length > 0}
                             value={email}
+                            autoComplete='on'
                             />
                             <InputErrorMessage messageKey={errorKeyEmail}/>
                         </div>
@@ -159,6 +167,7 @@ function FormInscription2({email, setEmail, telephone, setTelephone, setStep, ro
                             type='tel'
                             error={errorKeyTelephone.length > 0}
                             value={telephone}
+                            autoComplete='on'
                             />
                             <InputErrorMessage messageKey={errorKeyTelephone}/>
                         </div>

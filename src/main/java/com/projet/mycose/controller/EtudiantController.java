@@ -13,10 +13,14 @@ import jakarta.validation.Valid;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
-@RequiredArgsConstructor
 @RequestMapping("etudiant")
 public class EtudiantController {
     private final EtudiantService etudiantService;
+
+    public EtudiantController(EtudiantService etudiantService) {
+        this.etudiantService = etudiantService;
+    }
+
 
     @PostMapping("/register")
     public ResponseEntity<Object> CreationDeCompte(@Valid @RequestBody RegisterEtudiantEnseignantDTO nouveauCompteEtudiant) {
@@ -36,4 +40,4 @@ public class EtudiantController {
             else
                 return ResponseEntity.status(HttpStatus.OK).body(courrielTelephoneDTO);
         }
-    }
+}

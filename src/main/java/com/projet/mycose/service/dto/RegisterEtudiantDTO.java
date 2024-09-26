@@ -9,7 +9,7 @@ import jakarta.validation.constraints.Pattern;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class RegisterEmployeurDTO {
+public class RegisterEtudiantDTO {
     @NotBlank(message = "Le prénom ne doit pas être vide.")
     @Pattern(regexp = "[a-zA-ZéÉàÀ\\-\\s']+", message = "Le prénom ne doit pas contenir de chiffre ou de symbole")
     private String prenom;
@@ -30,8 +30,4 @@ public class RegisterEmployeurDTO {
     @NotBlank(message = "Le mot de passe ne doit pas être vide.")
     @Pattern(regexp = "[a-zA-Z0-9$&+,:;=?@#|'<>.^*()%!-]{8,}", message = "Le mot de passe doit être une combinaison de 8 lettres, chiffres et symboles")
     private String motDePasse;
-
-    @Pattern(regexp = "^[A-Za-zÀ-ÖØ-öø-ÿ0-9'.,&\\s-]{2,100}$", message = "Le nom de l'organisation doit comprendre entre 2 et 100 caractères et peut contenir des lettres, chiffres,  apostrophes, points, virgules, espaces, tirets, et le symbole &")
-    @NotBlank(message = "Le nom de l'organisation ne doit pas être vide.")
-    private String nomOrganisation;
 }

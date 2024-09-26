@@ -30,11 +30,11 @@ const FormConnection = () => {
 
     const [isFetching, setIsFetching] = useState(false)
     const [errorKeyResponse, setErrorKeyResponse] = useState(false)
-    
+
     function onLogin(e) {
         e.preventDefault();
         emptyErrorKeys()
-        
+
         if(!verifierInputs()) {
             return;
         }
@@ -52,7 +52,7 @@ const FormConnection = () => {
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
-                        "courriel": loginInfo.email,
+                        "courriel": loginInfo.email.toLowerCase(),
                         "motDePasse": loginInfo.password
                     })
                 }
@@ -62,14 +62,11 @@ const FormConnection = () => {
                 const data = await res.json();
                 localStorage.setItem('token', data.accessToken);
                 navigate("/acceuil")
-                console.log("HEHEHE");
-                
-                
             } else if (res.status === ERROR_CODE_UNAUTHORIZED) {
                 setErrorKeyResponse("wrongEmailOrPassword")
             } else {
                 setErrorKeyResponse("errorOccurredNotCode")
-                
+
             }
 
         } catch (e) {
@@ -138,7 +135,7 @@ const FormConnection = () => {
             <form method="get" className='flex flex-col sm:gap-5 gap-3'>
                 <div>
                     <div className="w-full">
-                        <Input label={t("email")} color='black' size='lg' 
+                        <Input label={t("email")} color='black' size='lg'
                         onChange={(e) => {changeEmailValue(e);}}
                         type='email'
                         autoComplete='on'

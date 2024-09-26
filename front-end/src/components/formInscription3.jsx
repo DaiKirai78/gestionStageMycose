@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import ButtonConnexion from './buttonConnexion';
 import { useNavigate } from 'react-router-dom';
 
-function FormInscription3({prenom, nom, email, telephone, setStep ,role}) {
+function FormInscription3({prenom, nom, email, telephone, setStep, role, nomOrganisation}) {
     const [password, setPassword] = useState('');
     const [passwordConf, setPasswordConf] = useState('');
 
@@ -41,8 +41,8 @@ function FormInscription3({prenom, nom, email, telephone, setStep ,role}) {
                 urlRole = "professeur";
                 break;
             case 'entreprise':
-                //jasoooon faut set la variaaable iciiiiiii
-               // return envoyerInfosEntreprise <---- jasoooon iiciiii codeeeerr
+               urlRole = "entreprise";
+               break;
         }
 
         reponseStatus = await envoyerInfos();
@@ -64,16 +64,29 @@ function FormInscription3({prenom, nom, email, telephone, setStep ,role}) {
             headers: {
                 'Content-type': 'application/json'
             },
-            body: JSON.stringify({
-                'prenom': prenom,
-                'nom': nom,
-                'numeroDeTelephone': telephone,
-                'courriel': email.toLowerCase(),
-                'motDePasse': password
-            })
+            body: JSON.stringify(getBody())
         })
 
         return res.status;
+    }
+
+    function getBody() {
+        let body = {
+            'prenom': prenom,
+            'nom': nom,
+            'numeroDeTelephone': telephone,
+            'courriel': email.toLowerCase(),
+            'motDePasse': password,
+        };
+
+        if (urlRole == "entreprise") {
+            body.nomOrganisation = nomOrganisation;
+        }
+
+        console.log(body);
+        
+
+        return body;
     }
 
     async function sendLoginInfo(loginInfo) {
@@ -165,9 +178,10 @@ function FormInscription3({prenom, nom, email, telephone, setStep ,role}) {
                             <Input label={t("inputLabelPassword")} color='black' size='lg' 
                             onChange={(e) => {changePasswordValue(e);}}
                             type='password'
-                            autoFocus="true"
+                            autoFocus={true}
                             error={errorKeyPassword.length > 0}
                             value={password}
+                            autoComplete='on'
                             />
                             <InputErrorMessage messageKey={errorKeyPassword}/>
                         </div>
@@ -179,6 +193,7 @@ function FormInscription3({prenom, nom, email, telephone, setStep ,role}) {
                             type='password'
                             error={errorKeyPassword.length > 0}
                             value={passwordConf}
+                            autoComplete='on'
                             />
                             <InputErrorMessage messageKey={errorKeyPassword}/>
                         </div>
