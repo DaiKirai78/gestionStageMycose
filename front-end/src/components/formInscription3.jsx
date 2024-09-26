@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import ButtonConnexion from './buttonConnexion';
 import { useNavigate } from 'react-router-dom';
 
-function FormInscription3({prenom, nom, email, telephone}) {
+function FormInscription3({prenom, nom, email, telephone, setStep ,role}) {
     const [password, setPassword] = useState('');
     const [passwordConf, setPasswordConf] = useState('');
 
@@ -20,6 +20,7 @@ function FormInscription3({prenom, nom, email, telephone}) {
     const { t } = useTranslation();
 
     const navigate = useNavigate();
+    let urlRole;
 
     async function onSumbit(e) {
         e.preventDefault();
@@ -29,13 +30,24 @@ function FormInscription3({prenom, nom, email, telephone}) {
             return;
         }
         
-        const reponseStatus = await envoyerInfos(passwordHash);
+        let reponseStatus;
 
-        console.log(reponseStatus);
-        
+
+        switch (role) {
+            case 'etudiant':
+                urlRole = "etudiant";
+                reponseStatus = await envoyerInfos();
+                break;
+            case 'professeur':
+                // return envoyerInfosProf
+            case 'entreprise':
+                //jasoooon faut set la variaaable iciiiiiii
+               // return envoyerInfosEntreprise <---- jasoooon iiciiii codeeeerr
+        }
+
 
         if(reponseStatus != RESPONSE_OK) {
-            setErrorKeyResponse("errorOccurred")
+            setErrorKeyResponse("errorOccurredNotCode")
             return;
         }
 
@@ -46,7 +58,7 @@ function FormInscription3({prenom, nom, email, telephone}) {
 
 
     async function envoyerInfos() {
-        const res = await fetch("http://localhost:8080/etudiant/register", {
+        const res = await fetch("http://localhost:8080/" + urlRole + "/register", {
             method: 'POST',
             headers: {
                 'Content-type': 'application/json'
@@ -89,6 +101,10 @@ function FormInscription3({prenom, nom, email, telephone}) {
             console.log(e);
         }
 
+    }
+
+    function onReturn() {
+        setStep("deuxiemeEtape");
     }
 
     function validerPasswordsInputs() {
@@ -150,6 +166,7 @@ function FormInscription3({prenom, nom, email, telephone}) {
                             type='password'
                             autoFocus="true"
                             error={errorKeyPassword.length > 0}
+                            value={password}
                             />
                             <InputErrorMessage messageKey={errorKeyPassword}/>
                         </div>
@@ -160,14 +177,18 @@ function FormInscription3({prenom, nom, email, telephone}) {
                             onChange={(e) => {changePasswordConfValue(e);}}
                             type='password'
                             error={errorKeyPassword.length > 0}
+                            value={passwordConf}
                             />
                             <InputErrorMessage messageKey={errorKeyPassword}/>
                         </div>
                     </div>
-                    <button className='border p-2 border-black rounded-[7px] hover:shadow-lg' onClick={onSumbit}>{t("suivant")}</button>
+                    <div className='flex justify-center items-center space-x-4'>
+                        <button className='w-1/2 border p-2 border-black rounded-[7px] hover:shadow-lg' onClick={onReturn}>{t("retour")}</button>
+                        <button className='w-1/2 border p-2 border-black rounded-[7px] hover:shadow-lg' onClick={onSumbit}>{t("suivant")}</button>
+                    </div>
                 </form>
                 <p className="text-center mt-3 text-sm text-gray-800">3/3</p>
-                <Divider texte={t("dejaCompte")}/>
+                <Divider translateKey={"dejaCompte"}/>
                 <ButtonConnexion/>
                
             </div>

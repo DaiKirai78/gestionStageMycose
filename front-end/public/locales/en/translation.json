@@ -23,5 +23,9 @@
     "email": "Email",
     "errorOccurredNotCode": "An error has occurred",
     "wrongEmailOrPassword": "The email or password have an error",
-    "loading": "Loading"
+    "loading": "Loading",
+    "entreprise": "Entreprise",
+    "etudiant" : "Student",
+    "professeur" : "Teacher",
+    "retour": "Return"
 }

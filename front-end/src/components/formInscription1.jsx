@@ -26,6 +26,10 @@ function FormInscription1({prenom, nom, setPrenom, setNom, setStep}) {
         setStep('deuxiemeEtape');
     }
 
+    function onReturn() {
+        setStep('');
+    }
+
     function validerChamps() {
         const prenomValide = verifierPrenom();
         const nomValide = verifierNom();
@@ -69,6 +73,7 @@ function FormInscription1({prenom, nom, setPrenom, setNom, setStep}) {
                             onChange={(e) => {changePrenomValue(e);}}
                             type='text'
                             error={errorKeyPrenom.length > 0}
+                            value={prenom}
                             />
                             <InputErrorMessage messageKey={errorKeyPrenom}/>
                         </div>
@@ -78,15 +83,20 @@ function FormInscription1({prenom, nom, setPrenom, setNom, setStep}) {
                             <Input label={t("inputLabelNom")} color='black' size='lg'
                             onChange={(e) => {changeNomValue(e);}}
                             type='text'
-                            error={errorKeyPrenom.length > 0}
+                            error={errorKeyNom.length > 0}
+                            value={nom}
                             />
                             <InputErrorMessage messageKey={errorKeyNom}/>
                         </div>
                     </div>
-                    <button className='border p-2 border-black rounded-[7px] hover:shadow-lg' onClick={onNext}>{t("suivant")}</button>
+                    <div className='flex justify-center items-center space-x-4'>
+                        <button className='w-1/2 border p-2 border-black rounded-[7px] hover:shadow-lg' onClick={onReturn}>{t("retour")}</button>
+                        <button className='w-1/2 border p-2 border-black rounded-[7px] hover:shadow-lg' onClick={onNext}>{t("suivant")}</button>
+                    </div>
+                    
                 </form>
                 <p className="text-center mt-3 text-sm text-gray-800">1/3</p>
-                <Divider texte={t("dejaCompte")}/>
+                <Divider translateKey={"dejaCompte"}/>
                 {/* <button className='p-2 border border-black bg-black rounded-[7px] text-white  hover:bg-gray-900 hover:shadow-lg'>{t("connexion")}</button> */}
                 <ButtonConnexion/>
             </div>

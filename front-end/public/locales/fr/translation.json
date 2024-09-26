@@ -23,5 +23,9 @@
     "email": "Courriel",
     "errorOccurredNotCode": "Une erreur est survenue",
     "wrongEmailOrPassword": "Le courriel ou le mot de passe contient une erreur",
-    "loading": "Chargement"
+    "loading": "Chargement",
+    "entreprise": "Entreprise",
+    "etudiant" : "Étudiant",
+    "professeur" : "Professeur",
+    "retour": "Retour"
 }

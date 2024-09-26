@@ -5,7 +5,7 @@ import InputErrorMessage from './inputErrorMesssage';
 import { useTranslation } from 'react-i18next';
 import ButtonConnexion from './buttonConnexion';
 
-function FormInscription2({email, setEmail, telephone, setTelephone, setStep}) {
+function FormInscription2({email, setEmail, telephone, setTelephone, setStep, role}) {
 
     const validePhone = new RegExp(String.raw`[0-9]{3}-? ?[0-9]{3}-? ?[0-9]{4}`)
     const valideEmail = new RegExp(String.raw`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$`);
@@ -17,9 +17,10 @@ function FormInscription2({email, setEmail, telephone, setTelephone, setStep}) {
     const RESPONSE_OK = 200
     const RESPONSE_CONFLICT = 409;
     const RESPONSE_SERVER_ERROR = 500;
-    const [errorKeyEtudiantExiste, setErrorKeyEtudiantExiste] = useState('');
+    const [errorKeyUserExiste, setErrorKeyUserExiste] = useState('');
 
     const { t } = useTranslation();
+    let urlRole;
 
     async function onNext(e) {
         e.preventDefault();
@@ -28,15 +29,28 @@ function FormInscription2({email, setEmail, telephone, setTelephone, setStep}) {
             return;
         }
 
-        const reponseStatus = await verifierEtudiantExiste();
+        var reponseStatus;
+
+        switch (role) {
+            case 'etudiant':
+                urlRole = "etudiant";
+                reponseStatus = await verifierUser();                
+                break;
+            case 'professeur':
+                // return progesseurMethodeVerif
+            case 'entreprise':
+               // return entrepriseMethodeVerif
+        }
+
+        console.log(reponseStatus);
 
         if(reponseStatus === RESPONSE_CONFLICT) {
-            setErrorKeyEtudiantExiste("userExisteError");
+            setErrorKeyUserExiste("userExisteError");
             return;
         }
         
         if(reponseStatus !== RESPONSE_OK) {
-            setErrorKeyEtudiantExiste("errorOccurred");
+            setErrorKeyUserExiste("errorOccurredNotCode");
             return;
         }
     
@@ -44,11 +58,11 @@ function FormInscription2({email, setEmail, telephone, setTelephone, setStep}) {
     }
 
 
-    async function verifierEtudiantExiste() {
+    async function verifierUser() {
         const telFormate = telephone.replace(getDigitsOnTelephone, '$1-$2-$3')
         var res;
         try {
-            res = await fetch("http://localhost:8080/etudiant/register/check-for-conflict", {
+            res = await fetch("http://localhost:8080/" + urlRole + "/register/check-for-conflict", {
                 method: 'POST',
                 headers: {
                         'Content-Type': 'application/json'
@@ -67,8 +81,12 @@ function FormInscription2({email, setEmail, telephone, setTelephone, setStep}) {
         return res.status;
     }
 
+    function onReturn() {
+        setStep('premiereEtape');
+    }
+
     function resetEtudiantExisteMessage() {
-        setErrorKeyEtudiantExiste("");
+        setErrorKeyUserExiste("");
     }
 
     function validerChamps() {
@@ -109,7 +127,7 @@ function FormInscription2({email, setEmail, telephone, setTelephone, setStep}) {
     function renderMessageErreur() {
         return(
             <div className="text-center mb-5 rounded bg-red-200 py-3 bg-opacity-30">
-                <InputErrorMessage messageKey={errorKeyEtudiantExiste}/>
+                <InputErrorMessage messageKey={errorKeyUserExiste}/>
             </div>
         );
     }
@@ -119,7 +137,7 @@ function FormInscription2({email, setEmail, telephone, setTelephone, setStep}) {
             <div className='flex flex-col px-10'>
                 <form method="get" className='flex flex-col sm:gap-5 gap-3'>
                     <div>
-                        {(errorKeyEtudiantExiste != "") ? renderMessageErreur() : null}
+                        {(errorKeyUserExiste != "") ? renderMessageErreur() : null}
 
                         <div className="w-full">
                             <Input label={t("inputLabelEmail")} color='black' size='lg' 
@@ -127,6 +145,7 @@ function FormInscription2({email, setEmail, telephone, setTelephone, setStep}) {
                             type='email'
                             autoFocus="true"
                             error={errorKeyEmail.length > 0}
+                            value={email}
                             />
                             <InputErrorMessage messageKey={errorKeyEmail}/>
                         </div>
@@ -137,14 +156,18 @@ function FormInscription2({email, setEmail, telephone, setTelephone, setStep}) {
                             onChange={(e) => {changeTelephoneValue(e);}}
                             type='tel'
                             error={errorKeyTelephone.length > 0}
+                            value={telephone}
                             />
                             <InputErrorMessage messageKey={errorKeyTelephone}/>
                         </div>
                     </div>
-                    <button className='border p-2 border-black rounded-[7px] hover:shadow-lg' onClick={onNext}>{t("suivant")}</button>
+                    <div className='flex justify-center items-center space-x-4'>
+                        <button className='w-1/2 border p-2 border-black rounded-[7px] hover:shadow-lg' onClick={onReturn}>{t("retour")}</button>
+                        <button className='w-1/2 border p-2 border-black rounded-[7px] hover:shadow-lg' onClick={onNext}>{t("suivant")}</button>
+                    </div>
                 </form>
                 <p className="text-center mt-3 text-sm text-gray-800">2/3</p>
-                <Divider texte={t("dejaCompte")}/>
+                <Divider translateKey={"dejaCompte"}/>
                 <ButtonConnexion/>
             </div>	
         </>
