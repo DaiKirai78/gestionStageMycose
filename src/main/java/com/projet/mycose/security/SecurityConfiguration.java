@@ -41,6 +41,8 @@ public class SecurityConfiguration {
                         .requestMatchers(POST, "/utilisateur/login").permitAll()
                         .requestMatchers(POST, "/etudiant/register").permitAll()
                         .requestMatchers(POST, "/etudiant/register/check-for-conflict").permitAll()
+                        .requestMatchers(POST, "/entreprise/register").permitAll()
+                        .requestMatchers(POST, "/entreprise/register/check-for-conflict").permitAll()
 
                         .requestMatchers(GET, "/utilisateur/*").hasAnyAuthority("GESTIONNAIRE_STAGE", "ETUDIANT", "EMPLOYEUR", "ENSEIGNANT")
                         .requestMatchers("/etudiant/**").hasAuthority("ETUDIANT")
