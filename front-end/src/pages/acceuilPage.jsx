@@ -1,11 +1,16 @@
 import React from 'react';
+import TokenPageContainer from './tokenPageContainer';
+const AccueilPage = () => {
 
-const AcceuilPage = () => {
+
+
     return (
-        <div>
-            <h1>Acceuil</h1>
-        </div>
+        <TokenPageContainer>
+            <div>
+                <p>Acceuil</p>
+            </div>
+        </TokenPageContainer>
     );
 };
 
-export default AcceuilPage;
+export default AccueilPage;

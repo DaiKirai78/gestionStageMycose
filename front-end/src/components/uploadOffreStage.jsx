@@ -18,13 +18,13 @@ function UploadOffreStage() {
                 <h3 className="mt-0 mb-4 text-xl">{showFileUpload ? t("uploadInternshipFilePDF") : t("fillFormInternship")}</h3>
                 <div className="flex justify-center space-x-4 w-full">
                     <button
-                        className="px-4 py-2 rounded-lg bg-[#FFF8F2] border-2 border-black w-full shadow-md"
+                        className="px-4 py-2 rounded-lg bg-[#FFF8F2] border-2 border-black w-full shadow-md hover:shadow-lg"
                         onClick={() => setShowFileUpload(!showFileUpload)}
                     >
                         {showFileUpload ? t("showForm") : t("showUpload")}
                     </button>
                 </div>
-                <Divider texte={t("or")}></Divider>
+                <Divider translateKey={t("or")}></Divider>
                 {showFileUpload ? <FileOffreStage/> : <FormOffreStage/>}
             </div>
         </div>
