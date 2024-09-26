@@ -1,10 +1,13 @@
 package com.projet.mycose.service;
 
+import com.projet.mycose.modele.Employeur;
 import com.projet.mycose.modele.Etudiant;
 import com.projet.mycose.modele.Utilisateur;
+import com.projet.mycose.repository.EmployeurRepository;
 import com.projet.mycose.repository.EtudiantRepository;
 import com.projet.mycose.repository.UtilisateurRepository;
 import com.projet.mycose.security.JwtTokenProvider;
+import com.projet.mycose.service.dto.EmployeurDTO;
 import com.projet.mycose.service.dto.EtudiantDTO;
 import com.projet.mycose.service.dto.LoginDTO;
 import com.projet.mycose.service.dto.UtilisateurDTO;
@@ -24,6 +27,7 @@ public class UtilisateurService {
 
     private final UtilisateurRepository utilisateurRepository;
     private final EtudiantRepository etudiantRepository;
+    private final EmployeurRepository employeurRepository;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -42,6 +46,7 @@ public class UtilisateurService {
             return switch (utilisateur.getRole()) {
                 case GESTIONNAIRE_STAGE -> null; // TODO: RETOURNER UN getGestionnaireDTO
                 case ETUDIANT -> getEtudiantDTO(utilisateur.getId());
+                case EMPLOYEUR -> getEmployeurDTO(utilisateur.getId());
                 // TODO: AJOUTER LES AUTRES TYPES D'UTILISATEUR
             };
         }
@@ -53,6 +58,13 @@ public class UtilisateurService {
         return etudiantOptional.isPresent() ?
                 EtudiantDTO.toDTO(etudiantOptional.get()) :
                 EtudiantDTO.empty();
+    }
+
+    private EmployeurDTO getEmployeurDTO(Long id) {
+        final Optional<Employeur> employeurOptional = employeurRepository.findById(id);
+        return employeurOptional.isPresent() ?
+                EmployeurDTO.toDTO(employeurOptional.get()) :
+                EmployeurDTO.empty();
     }
     // TODO: AJOUTER LES AUTRES MÉTHODES GET POUR CHAQUE ROLES
 }

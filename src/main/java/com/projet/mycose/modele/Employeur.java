@@ -23,7 +23,7 @@ public class Employeur extends Utilisateur {
     }
 
     // Sans Id
-    public Employeur(String prenom, String nom, String numeroDeTelephone, String courriel, String motDePasse) {
+    public Employeur(String prenom, String nom, String numeroDeTelephone, String courriel, String motDePasse, String nomOrganisation) {
         super(prenom, nom, numeroDeTelephone, Credentials.builder().email(courriel).password(motDePasse).role(Role.EMPLOYEUR).build());
         this.nomOrganisation = nomOrganisation;
     }

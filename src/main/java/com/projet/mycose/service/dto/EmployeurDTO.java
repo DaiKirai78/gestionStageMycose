@@ -28,7 +28,7 @@ public class EmployeurDTO extends UtilisateurDTO {
 
     }
 
-    public static EtudiantDTO empty() {
-        return new EtudiantDTO();
+    public static EmployeurDTO empty() {
+        return new EmployeurDTO();
     }
 }

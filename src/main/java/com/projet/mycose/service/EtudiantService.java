@@ -20,7 +20,7 @@ public class EtudiantService {
 
     public EtudiantDTO creationDeCompte(String prenom, String nom, String numeroTelephone, String courriel, String motDePasse) {
         if (!credentialsDejaPris(courriel, numeroTelephone))
-            return toDTO(etudiantRepository.save(new Etudiant(prenom, nom, numeroTelephone, courriel, passwordEncoder.encode(motDePasse))));
+            return EtudiantDTO.toDTO(etudiantRepository.save(new Etudiant(prenom, nom, numeroTelephone, courriel, passwordEncoder.encode(motDePasse))));
         else
             return null;
     }
