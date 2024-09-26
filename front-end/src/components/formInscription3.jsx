@@ -124,10 +124,12 @@ function FormInscription3({prenom, nom, email, telephone, setStep, role, nomOrga
     function validerPasswordsInputs() {
         if(!champsPassRegex()) {
             setErrorKeyPassword("errorMessagePassword");
+            return false;
         }
 
         if(!isPasswordsSame()) {
             setErrorKeyPassword("errorPasswordNotSame");
+            return false;
         }
 
         return true;
