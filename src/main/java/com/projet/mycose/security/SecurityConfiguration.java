@@ -47,7 +47,7 @@ public class SecurityConfiguration {
                         .requestMatchers(GET, "/utilisateur/*").hasAnyAuthority("GESTIONNAIRE_STAGE", "ETUDIANT", "EMPLOYEUR", "ENSEIGNANT")
                         .requestMatchers("/etudiant/**").hasAuthority("ETUDIANT")
                         .requestMatchers("/enseignant/**").hasAuthority("ENSEIGNANT")
-                        .requestMatchers("/employeur/**").hasAuthority("EMPLOYEUR")
+                        .requestMatchers("/entreprise/**").hasAuthority("EMPLOYEUR")
                         .requestMatchers("/enseignant/**").hasAuthority("ENSEIGNANT")
                         .requestMatchers("/gestionnaire-stage/**").hasAuthority("GESTIONNAIRE_STAGE")
                         .requestMatchers("/**").permitAll()

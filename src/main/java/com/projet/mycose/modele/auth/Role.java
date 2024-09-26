@@ -7,6 +7,7 @@ public enum Role {
     GESTIONNAIRE_STAGE("ROLE_GESTIONNAIRE_STAGE"),
     ETUDIANT("ROLE_ETUDIANT"),
     EMPLOYEUR("ROLE_EMPLOYEUR"),
+    //ENSEIGNANT("ROLE_ENSEIGNANT"),
     ;
 
     //TODO: AJOUTER LES AUTRES ROLES
@@ -16,6 +17,8 @@ public enum Role {
 
     static{
         GESTIONNAIRE_STAGE.managedRoles.add(ETUDIANT);
+        GESTIONNAIRE_STAGE.managedRoles.add(EMPLOYEUR);
+        //GESTIONNAIRE_STAGE.managedRoles.add(ENSEIGNANT);
     }
 
     Role(String string){
