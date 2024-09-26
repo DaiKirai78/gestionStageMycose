@@ -13,15 +13,16 @@ const InscriptionPage = () => {
     const [telephone, setTelephone] = useState('');
     const [step, setStep] = useState('')
     const [role, setRole] = useState('');
+    const [nomOrganisation, setNomOrganisation] = useState('');
 
     function switchComponent(param) {
         switch (param) {
             case 'premiereEtape':
-                return <FormInscription1 prenom={prenom} nom={nom} setNom={setNom} setPrenom={setPrenom} setStep={setStep}/>;
+                return <FormInscription1 prenom={prenom} nom={nom} setNom={setNom} setPrenom={setPrenom} setStep={setStep} role={role} setNomOrganisation={setNomOrganisation} nomOrganisation={nomOrganisation}/>;
             case 'deuxiemeEtape':
                 return <FormInscription2 email={email} setEmail={setEmail} telephone={telephone} setTelephone={setTelephone} setStep={setStep} role={role}/>
             case 'troisiemeEtape':
-                return <FormInscription3 prenom={prenom} nom={nom} email={email} telephone={telephone} setStep={setStep} role={role}/>
+                return <FormInscription3 prenom={prenom} nom={nom} email={email} telephone={telephone} setStep={setStep} role={role} nomOrganisation={nomOrganisation}/>
         }
     }
 

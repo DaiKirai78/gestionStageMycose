@@ -27,5 +27,7 @@
     "entreprise": "Entreprise",
     "etudiant" : "Étudiant",
     "professeur" : "Professeur",
-    "retour": "Retour"
+    "retour": "Retour",
+    "errorMessageNomOrganisation": "Nom organisation invalide",
+    "inputLabelNomOrganisation": "Nom de l'organisation"
 }

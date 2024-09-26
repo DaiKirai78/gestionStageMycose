@@ -33,14 +33,16 @@ function FormInscription2({email, setEmail, telephone, setTelephone, setStep, ro
 
         switch (role) {
             case 'etudiant':
-                urlRole = "etudiant";
-                reponseStatus = await verifierUser();                
+                urlRole = "etudiant";           
                 break;
             case 'professeur':
                 // return progesseurMethodeVerif
             case 'entreprise':
-               // return entrepriseMethodeVerif
+                urlRole = "employeur";
+                break;
         }
+        
+        reponseStatus = await verifierUser();
 
         console.log(reponseStatus);
 
@@ -143,7 +145,7 @@ function FormInscription2({email, setEmail, telephone, setTelephone, setStep, ro
                             <Input label={t("inputLabelEmail")} color='black' size='lg' 
                             onChange={(e) => {changeEmailValue(e);}}
                             type='email'
-                            autoFocus="true"
+                            autoFocus={true}
                             error={errorKeyEmail.length > 0}
                             value={email}
                             />

@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import ButtonConnexion from './buttonConnexion';
 import { useNavigate } from 'react-router-dom';
 
-function FormInscription3({prenom, nom, email, telephone, setStep ,role}) {
+function FormInscription3({prenom, nom, email, telephone, setStep, role, nomOrganisation}) {
     const [password, setPassword] = useState('');
     const [passwordConf, setPasswordConf] = useState('');
 
@@ -36,15 +36,17 @@ function FormInscription3({prenom, nom, email, telephone, setStep ,role}) {
         switch (role) {
             case 'etudiant':
                 urlRole = "etudiant";
-                reponseStatus = await envoyerInfos();
                 break;
             case 'professeur':
                 // return envoyerInfosProf
             case 'entreprise':
                 //jasoooon faut set la variaaable iciiiiiii
                // return envoyerInfosEntreprise <---- jasoooon iiciiii codeeeerr
+               urlRole = "employeur";
+               break;
         }
 
+        reponseStatus = await envoyerInfos();
 
         if(reponseStatus != RESPONSE_OK) {
             setErrorKeyResponse("errorOccurredNotCode")
@@ -63,16 +65,26 @@ function FormInscription3({prenom, nom, email, telephone, setStep ,role}) {
             headers: {
                 'Content-type': 'application/json'
             },
-            body: JSON.stringify({
-                'prenom': prenom,
-                'nom': nom,
-                'numeroDeTelephone': telephone.toLowerCase(),
-                'courriel': email,
-                'motDePasse': password
-            })
+            body: JSON.stringify(getBody())
         })
 
         return res.status;
+    }
+
+    function getBody() {
+        let body = {
+            'prenom': prenom,
+            'nom': nom,
+            'numeroDeTelephone': telephone.toLowerCase(),
+            'courriel': email,
+            'motDePasse': password,
+        };
+
+        if (urlRole == "employeur") {
+            body.nomOrganisation = nomOrganisation;
+        }
+
+        return body;
     }
 
     async function sendLoginInfo(loginInfo) {
@@ -164,7 +176,7 @@ function FormInscription3({prenom, nom, email, telephone, setStep ,role}) {
                             <Input label={t("inputLabelPassword")} color='black' size='lg' 
                             onChange={(e) => {changePasswordValue(e);}}
                             type='password'
-                            autoFocus="true"
+                            autoFocus={true}
                             error={errorKeyPassword.length > 0}
                             value={password}
                             />
