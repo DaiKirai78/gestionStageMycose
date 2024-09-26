@@ -1,16 +1,15 @@
 package com.projet.mycose.service;
 
 import com.projet.mycose.modele.Employeur;
+import com.projet.mycose.modele.Enseignant;
 import com.projet.mycose.modele.Etudiant;
 import com.projet.mycose.modele.Utilisateur;
 import com.projet.mycose.repository.EmployeurRepository;
+import com.projet.mycose.repository.EnseignantRepository;
 import com.projet.mycose.repository.EtudiantRepository;
 import com.projet.mycose.repository.UtilisateurRepository;
 import com.projet.mycose.security.JwtTokenProvider;
-import com.projet.mycose.service.dto.EmployeurDTO;
-import com.projet.mycose.service.dto.EtudiantDTO;
-import com.projet.mycose.service.dto.LoginDTO;
-import com.projet.mycose.service.dto.UtilisateurDTO;
+import com.projet.mycose.service.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -28,6 +27,7 @@ public class UtilisateurService {
     private final UtilisateurRepository utilisateurRepository;
     private final EtudiantRepository etudiantRepository;
     private final EmployeurRepository employeurRepository;
+    private final EnseignantRepository enseignantRepository;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -47,7 +47,7 @@ public class UtilisateurService {
                 case GESTIONNAIRE_STAGE -> null; // TODO: RETOURNER UN getGestionnaireDTO
                 case ETUDIANT -> getEtudiantDTO(utilisateur.getId());
                 case EMPLOYEUR -> getEmployeurDTO(utilisateur.getId());
-                // TODO: AJOUTER LES AUTRES TYPES D'UTILISATEUR
+                case ENSEIGNANT -> getEnseignantDTO(utilisateur.getId());
             };
         }
         throw new AccessDeniedException("Accès refusé : Token manquant");
@@ -66,5 +66,13 @@ public class UtilisateurService {
                 EmployeurDTO.toDTO(employeurOptional.get()) :
                 EmployeurDTO.empty();
     }
-    // TODO: AJOUTER LES AUTRES MÉTHODES GET POUR CHAQUE ROLES
+
+    private EnseignantDTO getEnseignantDTO(Long id) {
+        final Optional<Enseignant> enseignantOptional = enseignantRepository.findById(id);
+        return enseignantOptional.isPresent() ?
+                EnseignantDTO.toDTO(enseignantOptional.get()) :
+                EnseignantDTO.empty();
+    }
+
+    // TODO: AJOUTER getGestionnaireDTO
 }
