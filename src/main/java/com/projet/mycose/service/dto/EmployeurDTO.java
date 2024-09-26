@@ -23,6 +23,7 @@ public class EmployeurDTO extends UtilisateurDTO {
                 .nom(employeur.getNom())
                 .courriel(employeur.getCourriel())
                 .numeroDeTelephone(employeur.getNumeroDeTelephone())
+                .nomOrganisation(employeur.getNomOrganisation())
                 .role(employeur.getRole())
                 .build();
 
