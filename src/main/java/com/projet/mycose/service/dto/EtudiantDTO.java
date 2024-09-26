@@ -26,16 +26,6 @@ public class EtudiantDTO extends UtilisateurDTO {
 
     }
 
-    public static Etudiant toEntity(EtudiantDTO etudiantDto) {
-        return Etudiant.builder()
-                .id(etudiantDto.getId())
-                .prenom(etudiantDto.getPrenom())
-                .nom(etudiantDto.getNom())
-                .courriel(etudiantDto.getCourriel())
-                .numeroDeTelephone(etudiantDto.getNumeroDeTelephone())
-                .build();
-    }
-
     public static EtudiantDTO empty() {
         return new EtudiantDTO();
     }

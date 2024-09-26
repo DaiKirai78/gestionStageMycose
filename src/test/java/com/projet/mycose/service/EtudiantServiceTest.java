@@ -274,19 +274,4 @@ public class EtudiantServiceTest {
         // Assert
         Assertions.assertFalse(result);
     }
-
-    @Test
-    public void toEntityEtudiantDTO() {
-        // Arrange
-        EtudiantDTO etudiantDTO = new EtudiantDTO(1L, "Karim", "Mihoubi", "mihoubi@gmail.com", "438-532-2729", Role.ETUDIANT);
-        // Act
-        Etudiant etudiant = EtudiantDTO.toEntity(etudiantDTO);
-        // Assert
-        Assertions.assertEquals(etudiant.getId(), 1L);
-        Assertions.assertEquals(etudiant.getPrenom(), "Karim");
-        Assertions.assertEquals(etudiant.getNom(), "Mihoubi");
-        Assertions.assertEquals(etudiant.getCourriel(), "mihoubi@gmail.com");
-        Assertions.assertEquals(etudiant.getNumeroDeTelephone(), "438-532-2729");
-        Assertions.assertEquals(etudiant.getRole(), Role.ETUDIANT);
-    }
 }
