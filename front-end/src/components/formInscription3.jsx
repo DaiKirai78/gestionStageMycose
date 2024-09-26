@@ -66,8 +66,8 @@ function FormInscription3({prenom, nom, email, telephone, setStep ,role}) {
             body: JSON.stringify({
                 'prenom': prenom,
                 'nom': nom,
-                'numeroDeTelephone': telephone.toLowerCase(),
-                'courriel': email,
+                'numeroDeTelephone': telephone,
+                'courriel': email.toLowerCase(),
                 'motDePasse': password
             })
         })
@@ -84,7 +84,7 @@ function FormInscription3({prenom, nom, email, telephone, setStep ,role}) {
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
-                        "courriel": loginInfo.email,
+                        "courriel": loginInfo.email.toLowerCase(),
                         "motDePasse": loginInfo.password
                     })
                 }
