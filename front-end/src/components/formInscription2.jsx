@@ -38,7 +38,7 @@ function FormInscription2({email, setEmail, telephone, setTelephone, setStep, ro
             case 'professeur':
                 // return progesseurMethodeVerif
             case 'entreprise':
-                urlRole = "employeur";
+                urlRole = "entreprise";
                 break;
         }
         

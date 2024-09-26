@@ -40,9 +40,7 @@ function FormInscription3({prenom, nom, email, telephone, setStep, role, nomOrga
             case 'professeur':
                 // return envoyerInfosProf
             case 'entreprise':
-                //jasoooon faut set la variaaable iciiiiiii
-               // return envoyerInfosEntreprise <---- jasoooon iiciiii codeeeerr
-               urlRole = "employeur";
+               urlRole = "entreprise";
                break;
         }
 
@@ -75,14 +73,17 @@ function FormInscription3({prenom, nom, email, telephone, setStep, role, nomOrga
         let body = {
             'prenom': prenom,
             'nom': nom,
-            'numeroDeTelephone': telephone.toLowerCase(),
-            'courriel': email,
+            'numeroDeTelephone': telephone,
+            'courriel': email.toLowerCase(),
             'motDePasse': password,
         };
 
-        if (urlRole == "employeur") {
+        if (urlRole == "entreprise") {
             body.nomOrganisation = nomOrganisation;
         }
+
+        console.log(body);
+        
 
         return body;
     }
