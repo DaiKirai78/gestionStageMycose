@@ -52,7 +52,7 @@ const FormConnection = () => {
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
-                        "courriel": loginInfo.email.toLowerCase(),
+                        "courriel": loginInfo.email,
                         "motDePasse": loginInfo.password
                     })
                 }
@@ -61,7 +61,9 @@ const FormConnection = () => {
             if (res.status === REPSONSE_CODE_ACCEPTED) {
                 const data = await res.json();
                 localStorage.setItem('token', data.accessToken);
-                navigate("/acceuil")                
+                navigate("/acceuil")
+                console.log("HEHEHE");
+                
                 
             } else if (res.status === ERROR_CODE_UNAUTHORIZED) {
                 setErrorKeyResponse("wrongEmailOrPassword")
@@ -76,6 +78,10 @@ const FormConnection = () => {
         }
 
         setIsFetching(false)
+    }
+
+    function goToInscription() {
+        navigate("/inscription");
     }
 
     function verifierInputs() {
@@ -157,7 +163,7 @@ const FormConnection = () => {
                 <button className='border p-2 border-black rounded-[7px] hover:shadow-md' onClick={onLogin} disabled={isFetching}>{isFetching ? t("loading") : t("login")}</button>
             </form>
             <Divider translateKey="newOnMycose"/>
-            <button className='p-2 border border-black bg-black rounded-[7px] text-white hover:shadow-lg hover:bg-gray-900' disabled={isFetching}>{t("signin")}</button>
+            <button className='p-2 border border-black bg-black rounded-[7px] text-white hover:shadow-lg hover:bg-gray-900' disabled={isFetching} onClick={goToInscription} >{t("signin")}</button>
         </div>
     );
 };

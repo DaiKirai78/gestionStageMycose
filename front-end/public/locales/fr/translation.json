@@ -1,6 +1,21 @@
 {
     "errorMessageEmail": "Saisissez une adresse courriel valide",
     "errorMessagePassword": "Saisissez un mot de passe valide avec un minimum de 8 lettres",
+    "errorMessagePrenom": "Le prénom est invalide",
+    "errorMessageNom": "Le nom est invalide",
+    "inputLabelPrenom": "Prénom",
+    "inputLabelNom": "Nom",
+    "suivant": "Suivant",
+    "connexion": "Connexion",
+    "dejaCompte": "Déjà un compte ?",
+    "userExisteError": "Ces informations existent dèjà",
+    "errorOccurred": "Une erreur est survenue avec code: 500",
+    "errorMessageTelephone" : "Le téléphone est invalide",
+    "inputLabelEmail": "Courriel",
+    "telephone": "Numéro de téléphone",
+    "errorPasswordNotSame" : "Les mots de passes doivenet être les mêmes",
+    "inputLabelPassword": "Mot de Passe",
+    "inputLabelPasswordConfirmation": "Confirmation du mot de passe",
     "newOnMycose": "Nouveau sur Mycose ?",
     "signin": "S'inscrire",
     "login": "Connexion",
@@ -8,5 +23,9 @@
     "email": "Courriel",
     "errorOccurredNotCode": "Une erreur est survenue",
     "wrongEmailOrPassword": "Le courriel ou le mot de passe contient une erreur",
-    "loading": "Chargement"
+    "loading": "Chargement",
+    "entreprise": "Entreprise",
+    "etudiant" : "Étudiant",
+    "professeur" : "Professeur",
+    "retour": "Retour"
 }
