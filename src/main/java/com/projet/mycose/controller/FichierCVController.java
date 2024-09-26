@@ -2,9 +2,7 @@ package com.projet.mycose.controller;
 
 
 import com.projet.mycose.service.FichierCVService;
-import com.projet.mycose.service.FichierOffreStageService;
 import com.projet.mycose.service.dto.FichierCVDTO;
-import com.projet.mycose.service.dto.FichierOffreStageDTO;
 import jakarta.validation.ConstraintViolationException;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
