@@ -104,25 +104,21 @@ function FormOffreStage() {
             valid = false;
         }
 
-        const salaryNormalized = formData.salary.replace(',', '.');
-
-        if (salaryNormalized && isNaN(salaryNormalized)) {
+        if (formData.salary && isNaN(formData.salary)) {
             errors.salary = t("salaryInvalid");
             valid = false;
         }
 
-        if (salaryNormalized && !/^\d{1,10}([,.]\d{1,2})?$/.test(formData.salary)) {
+        if (formData.salary && !/^\d{1,10}(\.\d{1,2})?$/.test(formData.salary)) {
             errors.salary = t("salaryInvalidMaxNb");
             valid = false;
         }
-
 
         // Validation pour 'description'
         if (!formData.description) {
             errors.description = t("descriptionRequired");
             valid = false;
         }
-
 
         setError(errors);
 
