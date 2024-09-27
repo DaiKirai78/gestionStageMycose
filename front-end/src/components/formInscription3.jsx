@@ -38,7 +38,7 @@ function FormInscription3({prenom, nom, email, telephone, setStep, role, nomOrga
                 urlRole = "etudiant";
                 break;
             case 'professeur':
-                urlRole = "professeur";
+                urlRole = "enseignant";
                 break;
             case 'entreprise':
                urlRole = "entreprise";

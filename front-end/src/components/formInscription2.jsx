@@ -36,7 +36,7 @@ function FormInscription2({email, setEmail, telephone, setTelephone, setStep, ro
                 urlRole = "etudiant";           
                 break;
             case 'professeur':
-                urlRole = "professeur";
+                urlRole = "enseignant";
                 break;
             case 'entreprise':
                 urlRole = "entreprise";
