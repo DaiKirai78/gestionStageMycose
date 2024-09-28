@@ -5,7 +5,7 @@ import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.service.EnseignantService;
 import com.projet.mycose.service.dto.CourrielTelephoneDTO;
 import com.projet.mycose.service.dto.EnseignantDTO;
-import com.projet.mycose.service.dto.RegisterEtudiantEnseignantDTO;
+import com.projet.mycose.service.dto.RegisterEnseignantDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,7 +41,7 @@ public class EnseignantControllerTest {
 
     @Test
     public void testCreationDeCompte_Succes() throws Exception {
-        RegisterEtudiantEnseignantDTO newEnseignant = new RegisterEtudiantEnseignantDTO(
+        RegisterEnseignantDTO newEnseignant = new RegisterEnseignantDTO(
                 "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$"
         );
 
@@ -67,7 +67,7 @@ public class EnseignantControllerTest {
 
     @Test
     public void testCreationDeCompte_EchecAvecConflit() throws Exception {
-        RegisterEtudiantEnseignantDTO newEnseignant = new RegisterEtudiantEnseignantDTO(
+        RegisterEnseignantDTO newEnseignant = new RegisterEnseignantDTO(
                 "Michel", "Genereux", "437-930-2483", "mihoubi@gmail.com", "Mimi123$"
         );
 

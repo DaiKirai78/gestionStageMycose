@@ -133,21 +133,24 @@ public class UtilisateurControllerTest {
     @Test
     public void testGetMe_Success() throws Exception {
         String token = "Bearer valid_token";
-        EtudiantDTO utilisateurDTO = new EtudiantDTO(1L, "Karim", "Mihoubi", "mihoubi@gmail.com", "438-508-2345", Role.ETUDIANT);
+        EtudiantDTO utilisateurDTO = new EtudiantDTO(1L, "Karim", "Mihoubi", "mihoubi@gmail.com", "438-508-2345", Role.ETUDIANT, "Technique de l'informatique");
 
         when(utilisateurService.getMe(anyString())).thenReturn(utilisateurDTO);
 
         mockMvc.perform(post("/utilisateur/me")
                         .header("Authorization", token)
                         .contentType(MediaType.APPLICATION_JSON)
-                .with(csrf())
-                .with(user("karim").roles("ETUDIANT")))
+                        .with(csrf())
+                        .with(user("karim").roles("ETUDIANT")))
                 .andExpect(status().isAccepted())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.prenom").value("Karim"))
                 .andExpect(jsonPath("$.nom").value("Mihoubi"))
-                .andExpect(jsonPath("$.courriel").value("mihoubi@gmail.com"));
+                .andExpect(jsonPath("$.courriel").value("mihoubi@gmail.com"))
+                .andExpect(jsonPath("$.numeroDeTelephone").value("438-508-2345"))
+                .andExpect(jsonPath("$.role").value("ETUDIANT"))
+                .andExpect(jsonPath("$.programme").value("Technique de l'informatique"));
 
         verify(utilisateurService).getMe("Bearer valid_token");
     }
@@ -161,8 +164,8 @@ public class UtilisateurControllerTest {
         mockMvc.perform(post("/utilisateur/me")
                         .header("Authorization", token)
                         .contentType(MediaType.APPLICATION_JSON)
-                .with(csrf())
-                .with(user("karim").roles("ETUDIANT")))
+                        .with(csrf())
+                        .with(user("karim").roles("ETUDIANT")))
                 .andExpect(status().isBadRequest());
 
         verify(utilisateurService).getMe("Bearer invalid_token");

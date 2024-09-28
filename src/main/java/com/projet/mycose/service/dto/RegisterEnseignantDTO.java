@@ -9,7 +9,7 @@ import jakarta.validation.constraints.Pattern;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class RegisterEtudiantEnseignantDTO {
+public class RegisterEnseignantDTO {
     @NotBlank(message = "Le prénom ne doit pas être vide.")
     @Pattern(regexp = "[a-zA-ZéÉàÀ\\-\\s']+", message = "Le prénom ne doit pas contenir de chiffre ou de symbole")
     private String prenom;

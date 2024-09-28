@@ -1,9 +1,12 @@
 package com.projet.mycose.service.dto;
 
-import lombok.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -30,4 +33,8 @@ public class RegisterEtudiantDTO {
     @NotBlank(message = "Le mot de passe ne doit pas être vide.")
     @Pattern(regexp = "[a-zA-Z0-9$&+,:;=?@#|'<>.^*()%!-]{8,}", message = "Le mot de passe doit être une combinaison de 8 lettres, chiffres et symboles")
     private String motDePasse;
+
+    @NotBlank(message = "Le programme ne doit pas être vide.")
+    @Pattern(regexp = "[a-zA-ZéÉàÀ\\-\\s']+", message = "Le programme ne doit pas contenir de chiffre ou de symbole")
+    private String programme;
 }

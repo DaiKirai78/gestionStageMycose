@@ -92,7 +92,7 @@ public class UtilisateurServiceTest {
 
         String token = "Bearer valid_token";
         String email = "mihoubi@gmail.com";
-        Etudiant etudiant = new Etudiant(1L, "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$");
+        Etudiant etudiant = new Etudiant(1L, "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$", "Technique de l'informatique");
 
         when(etudiantRepository.save(any(Etudiant.class))).thenReturn(etudiant);
         when(jwtTokenProvider.getEmailFromJWT(anyString())).thenReturn(email);
@@ -100,7 +100,7 @@ public class UtilisateurServiceTest {
         when(etudiantRepository.findById(anyLong())).thenReturn(Optional.of(etudiant));
 
         // Act
-        etudiantService.creationDeCompte("Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$");
+        etudiantService.creationDeCompte("Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$", "Technique de l'informatique");
         UtilisateurDTO result = utilisateurService.getMe(token);
 
         // Assert

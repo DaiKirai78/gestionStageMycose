@@ -9,9 +9,11 @@ import lombok.*;
 @Setter
 @ToString
 public class EtudiantDTO extends UtilisateurDTO {
+    private String programme;
     @Builder
-    public EtudiantDTO(Long id, String prenom, String nom, String courriel, String numeroDeTelephone, Role role) {
+    public EtudiantDTO(Long id, String prenom, String nom, String courriel, String numeroDeTelephone, Role role, String programme) {
         super(id, prenom, nom, courriel, numeroDeTelephone, role);
+        this.programme = programme;
     }
 
     public static EtudiantDTO toDTO(Etudiant etudiant) {
@@ -22,6 +24,7 @@ public class EtudiantDTO extends UtilisateurDTO {
                 .courriel(etudiant.getCourriel())
                 .numeroDeTelephone(etudiant.getNumeroDeTelephone())
                 .role(etudiant.getRole())
+                .programme(etudiant.getProgramme())
                 .build();
 
     }

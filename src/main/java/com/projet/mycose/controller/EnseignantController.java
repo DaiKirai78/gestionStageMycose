@@ -3,7 +3,7 @@ package com.projet.mycose.controller;
 import com.projet.mycose.service.EnseignantService;
 import com.projet.mycose.service.dto.CourrielTelephoneDTO;
 import com.projet.mycose.service.dto.EnseignantDTO;
-import com.projet.mycose.service.dto.RegisterEtudiantEnseignantDTO;
+import com.projet.mycose.service.dto.RegisterEnseignantDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,7 +18,7 @@ public class EnseignantController {
     private final EnseignantService enseignantService;
 
     @PostMapping("/register")
-    public ResponseEntity<Object> CreationDeCompte(@Valid @RequestBody RegisterEtudiantEnseignantDTO nouveauCompteEnseignant) {
+    public ResponseEntity<Object> CreationDeCompte(@Valid @RequestBody RegisterEnseignantDTO nouveauCompteEnseignant) {
         EnseignantDTO enseignantResultat = enseignantService.creationDeCompte(nouveauCompteEnseignant.getPrenom(),
                 nouveauCompteEnseignant.getNom(),
                 nouveauCompteEnseignant.getNumeroDeTelephone(),

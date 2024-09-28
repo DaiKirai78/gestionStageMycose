@@ -23,11 +23,11 @@ public class EtudiantServiceTest {
         PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);
         EtudiantService etudiantService = new EtudiantService(etudiantRepositoryMock, passwordEncoder);
 
-        Etudiant etudiant = new Etudiant(1L, "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$");
+        Etudiant etudiant = new Etudiant(1L, "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$", "Technique de l'informatique");
         when(etudiantRepositoryMock.save(any(Etudiant.class))).thenReturn(etudiant);
 
         //Act
-        EtudiantDTO etudiantDTO = etudiantService.creationDeCompte("Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$");
+        EtudiantDTO etudiantDTO = etudiantService.creationDeCompte("Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$", "Technique de l'informatique");
 
         //Assert
         Assertions.assertEquals(etudiantDTO.getId(), 1);
@@ -35,6 +35,7 @@ public class EtudiantServiceTest {
         Assertions.assertEquals(etudiantDTO.getNom(), "Mihoubi");
         Assertions.assertEquals(etudiantDTO.getCourriel(), "mihoubi@gmail.com");
         Assertions.assertEquals(etudiantDTO.getNumeroDeTelephone(), "438-532-2729");
+        Assertions.assertEquals(etudiantDTO.getProgramme(), "Technique de l'informatique");
         Assertions.assertEquals(etudiantDTO.getRole(), Role.ETUDIANT);
     }
 
@@ -51,7 +52,7 @@ public class EtudiantServiceTest {
         //Act & Assert
         DataIntegrityViolationException exception = Assertions.assertThrows(
                 DataIntegrityViolationException.class,
-                () -> etudiantService.creationDeCompte("Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$")
+                () -> etudiantService.creationDeCompte("Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$", "Technique de l'informatique")
         );
 
         Assertions.assertEquals("Courriel déjà utilisé", exception.getMessage());
@@ -69,7 +70,7 @@ public class EtudiantServiceTest {
         //Act & Assert
         Assertions.assertThrows(
                 NullPointerException.class,
-                () -> etudiantService.creationDeCompte("Karim", "Mihoubi", numeroDeTelephoneInvalide, "mihoubi@gmail.com", "Mimi123$")
+                () -> etudiantService.creationDeCompte("Karim", "Mihoubi", numeroDeTelephoneInvalide, "mihoubi@gmail.com", "Mimi123$", "Technique de l'informatique")
         );
     }
 
@@ -85,7 +86,7 @@ public class EtudiantServiceTest {
         //Act & Assert
         Assertions.assertThrows(
                 NullPointerException.class,
-                () -> etudiantService.creationDeCompte("Karim", "Mihoubi", "450-389-2628", courrielInvalide, "Mimi123$")
+                () -> etudiantService.creationDeCompte("Karim", "Mihoubi", "450-389-2628", courrielInvalide, "Mimi123$", "Technique de l'informatique")
         );
     }
 
@@ -101,7 +102,7 @@ public class EtudiantServiceTest {
         //Act & Assert
         Assertions.assertThrows(
                 NullPointerException.class,
-                () -> etudiantService.creationDeCompte("Karim", "Mihoubi", "450-389-2628", "mihoubi@gmail.com", motDePasseInvalide)
+                () -> etudiantService.creationDeCompte("Karim", "Mihoubi", "450-389-2628", "mihoubi@gmail.com", motDePasseInvalide, "Technique de l'informatique")
         );
     }
 
@@ -117,7 +118,7 @@ public class EtudiantServiceTest {
         //Act & Assert
         Assertions.assertThrows(
                 NullPointerException.class,
-                () -> etudiantService.creationDeCompte("Karim", "Mihoubi", "450-389-2628", "mihoubi@gmail.com", motDePasseInvalide)
+                () -> etudiantService.creationDeCompte("Karim", "Mihoubi", "450-389-2628", "mihoubi@gmail.com", motDePasseInvalide, "Technique de l'informatique")
         );
     }
 
@@ -133,7 +134,7 @@ public class EtudiantServiceTest {
         //Act & Assert
         Assertions.assertThrows(
                 NullPointerException.class,
-                () -> etudiantService.creationDeCompte(prenomInvalide, "Mihoubi", "450-389-2628", "mihoubi@gmail.com", "Mimi123$")
+                () -> etudiantService.creationDeCompte(prenomInvalide, "Mihoubi", "450-389-2628", "mihoubi@gmail.com", "Mimi123$", "Technique de l'informatique")
         );
     }
 
@@ -149,7 +150,7 @@ public class EtudiantServiceTest {
         //Act & Assert
         Assertions.assertThrows(
                 NullPointerException.class,
-                () -> etudiantService.creationDeCompte("Karim", nomInvalide, "450-389-2628", "mihoubi@gmail.com", "Mimi123$")
+                () -> etudiantService.creationDeCompte("Karim", nomInvalide, "450-389-2628", "mihoubi@gmail.com", "Mimi123$", "Technique de l'informatique")
         );
     }
 
@@ -160,7 +161,7 @@ public class EtudiantServiceTest {
         PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);
         EtudiantService etudiantService = new EtudiantService(etudiantRepositoryMock, passwordEncoder);
 
-        Etudiant etudiant = new Etudiant(1L, "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$");
+        Etudiant etudiant = new Etudiant(1L, "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$", "Technique de l'informatique");
         when(etudiantRepositoryMock.findEtudiantByCourriel("mihoubi@gmail.com")).thenReturn(Optional.of(etudiant));
 
         // Act
@@ -195,7 +196,7 @@ public class EtudiantServiceTest {
         PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);
         EtudiantService etudiantService = new EtudiantService(etudiantRepositoryMock, passwordEncoder);
 
-        Etudiant etudiant = new Etudiant(1L, "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$");
+        Etudiant etudiant = new Etudiant(1L, "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$", "Technique de l'informatique");
         when(etudiantRepositoryMock.findEtudiantByNumeroDeTelephone("438-532-2729")).thenReturn(Optional.of(etudiant));
 
         // Act
@@ -229,7 +230,7 @@ public class EtudiantServiceTest {
         PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);
         EtudiantService etudiantService = new EtudiantService(etudiantRepositoryMock, passwordEncoder);
 
-        Etudiant etudiant = new Etudiant(1L, "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$");
+        Etudiant etudiant = new Etudiant(1L, "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$", "Technique de l'informatique");
         when(etudiantRepositoryMock.findEtudiantByCourriel("mihoubi@gmail.com")).thenReturn(Optional.of(etudiant));
         when(etudiantRepositoryMock.findEtudiantByNumeroDeTelephone(any())).thenReturn(Optional.empty());
 
@@ -247,7 +248,7 @@ public class EtudiantServiceTest {
         PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);
         EtudiantService etudiantService = new EtudiantService(etudiantRepositoryMock, passwordEncoder);
 
-        Etudiant etudiant = new Etudiant(1L, "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$");
+        Etudiant etudiant = new Etudiant(1L, "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$", "Technique de l'informatique");
         when(etudiantRepositoryMock.findEtudiantByCourriel(any())).thenReturn(Optional.empty());
         when(etudiantRepositoryMock.findEtudiantByNumeroDeTelephone("438-532-2729")).thenReturn(Optional.of(etudiant));
 
