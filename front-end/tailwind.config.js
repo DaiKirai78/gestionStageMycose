@@ -20,6 +20,9 @@ export default withMT({
         '20pct': '20%',
         '30pct': '30%',
       },
+      fontFamily: {
+        customFont: ["Fantasy", "sans-serif"],
+      },
     },
   },
   plugins: [],

@@ -7,7 +7,7 @@ const AccueilPage = () => {
     return (
         <TokenPageContainer>
             <div>
-                <p>Acceuil</p>
+                <p>Accueil</p>
             </div>
         </TokenPageContainer>
     );
