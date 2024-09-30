@@ -7,3 +7,16 @@ body {
     background-repeat: no-repeat;
     background-size: cover;
 }
+
+#searchInput {
+    background-color: #ffe9d9;
+    background-image: url("assets/OrangeSearchIcon.png");
+    background-position: 15px 10px;
+    background-repeat: no-repeat;
+    background-size: 30px;
+    color: #FFA350;
+}
+
+#searchInput::placeholder {
+    color: #FFA350;
+}

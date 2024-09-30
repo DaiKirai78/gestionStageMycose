@@ -22,6 +22,7 @@ export default withMT({
       },
       fontFamily: {
         customFont: ["Fantasy", "sans-serif"],
+        accueilTitreFont: ["Montserrat", "Roboto", "Raleway", "sans-serif"],
       },
     },
   },
