@@ -27,7 +27,7 @@ body {
 }
 
 #buttonRechercherStage {
-    background-color: #FFA350;
+    background-color: darkorange;
     background-image: url("assets/OrangePaleSearchIcon.png");
     background-repeat: no-repeat;
     background-position: 30px 12px;
@@ -42,8 +42,22 @@ body {
     background-size: 30px;
 }
 
+#buttonRechercherStage:disabled {
+    background-color: #FFA350;
+    background-image: url("assets/OrangePaleSearchIcon.png");
+    background-repeat: no-repeat;
+    background-position: 30px 12px;
+    background-size: 30px;
+}
+
 @media screen and (max-width: 719px) {
     #buttonRechercherStage {
+        background-position: 15px 10px;
+    }
+    #buttonRechercherStage:hover {
+        background-position: 15px 10px;
+    }
+    #buttonRechercherStage:disabled {
         background-position: 15px 10px;
     }
     #searchInput::-webkit-search-cancel-button {
@@ -53,6 +67,12 @@ body {
 
 @media screen and (max-width: 539px) {
     #buttonRechercherStage {
+        background-position: 7px 10px;
+    }
+    #buttonRechercherStage:hover {
+        background-position: 7px 10px;
+    }
+    #buttonRechercherStage:disabled {
         background-position: 7px 10px;
     }
 }

@@ -6,6 +6,8 @@ const listeStage = () => {
     const [stagesFormulaire, setStagesFormulaire] = useState(null);
     const [stagesFichier, setStagesFichier] = useState(null);
 
+    const [rechercheStage, setRechercheStage] = useState("");
+
     let localhost = "http://localhost:8080/";
     let urlGetFormulaireStage = "/api/offres/get-all-forms";
     let urlGetFichierStage = "/api/offres-stage/get-all-files";
@@ -31,16 +33,24 @@ const listeStage = () => {
 
     }, []);
 
-    console.log("Valeur de stagesFormulaire après mise à jour:", stagesFormulaire);
+    function activerPossibiliteRecherche(e) {
+        const searchButton = document.getElementById("buttonRechercherStage");
+        if (e.target.value.length > 0)
+            searchButton.disabled = false;
+        else
+            searchButton.disabled = true
+    }
 
     return (
         <div className="w-2/3 lg:w-1/2">
             <h1 className="pt-12 text-3xl md:text-4xl text-pretty font-accueilTitreFont font-bold text-black">Explorez des stages dans des
                 entreprises variées</h1>
             <div className="flex flex-row">
-                <input type="search" placeholder="Chercher un stage" id="searchInput"
+                <input type="search" placeholder="Chercher un stage" id="searchInput" onChange={(e) => {
+                    activerPossibiliteRecherche(e);
+                }}
                        className="mt-6 mb-9 pt-3 pb-3 pl-14 text-md sm:text-xl rounded-l-3xl w-full outline-0"></input>
-                <button id="buttonRechercherStage" className="mt-6 mb-9 pt-3 pb-3 pl-12 sm:pl-16 md:pl-24 rounded-r-3xl">
+                <button id="buttonRechercherStage" className="mt-6 mb-9 pt-3 pb-3 pl-12 sm:pl-16 md:pl-24 rounded-r-3xl" disabled={true}>
                 </button>
             </div>
             <div>
