@@ -33,3 +33,26 @@ body {
     background-position: 30px 12px;
     background-size: 30px;
 }
+
+#buttonRechercherStage:hover {
+    background-color: #ffd0ae;
+    background-image: url("assets/OrangeSearchIcon.png");
+    background-repeat: no-repeat;
+    background-position: 30px 12px;
+    background-size: 30px;
+}
+
+@media screen and (max-width: 719px) {
+    #buttonRechercherStage {
+        background-position: 15px 10px;
+    }
+    #searchInput::-webkit-search-cancel-button {
+        right: 10px;
+    }
+}
+
+@media screen and (max-width: 539px) {
+    #buttonRechercherStage {
+        background-position: 7px 10px;
+    }
+}
