@@ -20,3 +20,16 @@ body {
 #searchInput::placeholder {
     color: #FFA350;
 }
+
+#searchInput::-webkit-search-cancel-button {
+    position:relative;
+    right:20px;
+}
+
+#buttonRechercherStage {
+    background-color: #FFA350;
+    background-image: url("assets/OrangePaleSearchIcon.png");
+    background-repeat: no-repeat;
+    background-position: 30px 12px;
+    background-size: 30px;
+}
