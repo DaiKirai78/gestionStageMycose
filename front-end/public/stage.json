@@ -10,8 +10,18 @@
     "entreprise": "Hydro-Québec"
   },
   {
+    "titre": "Programmeur front-end Vue.js",
+    "date": "2024-01-12",
+    "entreprise": "Jean-Coutu"
+  },
+  {
     "titre": "Développeur SQL",
     "date": "2024-07-03",
     "entreprise": "Air Canada"
+  },
+  {
+    "titre": "Développeur front end",
+    "date": "2024-09-02",
+    "entreprise": "Bombardier"
   }
 ]
