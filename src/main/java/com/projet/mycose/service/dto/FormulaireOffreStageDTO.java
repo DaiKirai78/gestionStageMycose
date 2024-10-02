@@ -2,10 +2,14 @@ package com.projet.mycose.service.dto;
 
 
 
+import com.projet.mycose.modele.FormulaireOffreStage;
 import jakarta.validation.constraints.*;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@NoArgsConstructor
 @Getter
 @Setter
 public class FormulaireOffreStageDTO {
@@ -41,4 +45,31 @@ public class FormulaireOffreStageDTO {
     @NotBlank(message = "Description is required.")
     @Size(max = 500, message = "Description cannot exceed 500 characters.")
     private String description;
+
+    @Builder
+    public FormulaireOffreStageDTO(Long id, String entrepriseName, String employerName, String email, String website, String title, String location, String salary, String description) {
+        this.id = id;
+        this.entrepriseName = entrepriseName;
+        this.employerName = employerName;
+        this.email = email;
+        this.website = website;
+        this.title = title;
+        this.location = location;
+        this.salary = salary;
+        this.description = description;
+    }
+
+    public static FormulaireOffreStageDTO toDTO(FormulaireOffreStage formulaireOffreStage) {
+        return FormulaireOffreStageDTO.builder()
+                .id(formulaireOffreStage.getId())
+                .entrepriseName(formulaireOffreStage.getEntrepriseName())
+                .employerName(formulaireOffreStage.getEmployerName())
+                .email(formulaireOffreStage.getEmail())
+                .website(formulaireOffreStage.getWebsite())
+                .title(formulaireOffreStage.getTitle())
+                .location(formulaireOffreStage.getLocation())
+                .salary(formulaireOffreStage.getSalary())
+                .location(formulaireOffreStage.getLocation())
+                .build();
+    }
 }
