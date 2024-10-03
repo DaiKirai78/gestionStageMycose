@@ -10,6 +10,7 @@ import com.projet.mycose.repository.EtudiantRepository;
 import com.projet.mycose.repository.UtilisateurRepository;
 import com.projet.mycose.security.JwtTokenProvider;
 import com.projet.mycose.service.dto.*;
+import jdk.jshell.execution.Util;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -74,5 +75,21 @@ public class UtilisateurService {
                 EnseignantDTO.empty();
     }
 
+    public UtilisateurDTO getUtilisateurByCourriel(String courriel) {
+        Optional<Utilisateur> optionalUtilisateur = utilisateurRepository.findUtilisateurByCourriel(courriel);
+        return optionalUtilisateur.map(UtilisateurDTO::toDTO).orElse(null);
+    }
+
+    public UtilisateurDTO getUtilisateurByTelephone(String numero) {
+        Optional<Utilisateur> optionalUtilisateur = utilisateurRepository.findUtilisateurByNumeroDeTelephone(numero);
+        return optionalUtilisateur.map(UtilisateurDTO::toDTO).orElse(null);
+    }
+
+    public boolean credentialsDejaPris(String courriel, String numero) {
+        return getUtilisateurByCourriel(courriel) != null || getUtilisateurByTelephone(numero) != null;
+    }
+
     // TODO: AJOUTER getGestionnaireDTO
+
+    // TODO: Finir les tests non couverts
 }
