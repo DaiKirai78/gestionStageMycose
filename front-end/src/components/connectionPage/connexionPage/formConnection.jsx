@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import Divider from './divider';
+import Divider from '../../divider.jsx';
 import { Input } from '@material-tailwind/react';
-import InputErrorMessage from './inputErrorMesssage';
+import InputErrorMessage from '../../inputErrorMesssage.jsx';
 import { useTranslation } from "react-i18next"
 import { useNavigate } from 'react-router-dom';
 

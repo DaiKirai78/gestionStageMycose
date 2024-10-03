@@ -12,9 +12,9 @@ import InscriptionPage from './pages/inscriptionPage.jsx';
 import ValiderCVPage from './pages/validerCVPage.jsx';
 
 import "./i18n"
-import UploadOffreStage from "./components/uploadOffreStage.jsx";
-import UploadCV from "./components/uploadCV.jsx";
-import ValiderCV from "./components/validerCV.jsx";
+import ValiderCV from "./components/validerCVPage/validerCV.jsx";
+import UploadCvPage from "./pages/uploadCvPage.jsx";
+import UploadOffreStagePage from "./pages/uploadOffreStagePage.jsx";
 
 const router = createBrowserRouter([
   {
@@ -27,11 +27,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/televerserOffreStage",
-    element: <UploadOffreStage />
+    element: <UploadOffreStagePage />
   },
   {
     path: "/televerserCV",
-    element: <UploadCV />
+    element: <UploadCvPage />
   },
   {
     path: "/inscription",

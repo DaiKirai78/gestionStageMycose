@@ -1,9 +1,9 @@
 import {Input} from '@material-tailwind/react';
-import Divider from './divider';
-import InputErrorMessage from './inputErrorMesssage';
+import Divider from '../divider.jsx';
+import InputErrorMessage from '../inputErrorMesssage.jsx';
 import { useState } from "react";
 import { useTranslation } from 'react-i18next';
-import ButtonConnexion from './buttonConnexion';
+import ButtonConnection from '../connectionPage/connexionPage/buttonConnection.jsx';
 
 function FormInscription1({prenom, nom, setPrenom, setNom, setStep, role, setNomOrganisation, nomOrganisation}) {
 
@@ -140,7 +140,7 @@ function FormInscription1({prenom, nom, setPrenom, setNom, setStep, role, setNom
                 <p className="text-center mt-3 text-sm text-gray-800">1/3</p>
                 <Divider translateKey={"dejaCompte"}/>
                 {/* <button className='p-2 border border-black bg-black rounded-[7px] text-white  hover:bg-gray-900 hover:shadow-lg'>{t("connexion")}</button> */}
-                <ButtonConnexion/>
+                <ButtonConnection/>
             </div>
         </>
     );

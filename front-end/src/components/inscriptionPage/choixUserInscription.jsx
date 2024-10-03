@@ -1,9 +1,9 @@
 import { Checkbox } from '@material-tailwind/react'
 import Ripple from 'material-ripple-effects';
-import bgOrange from "../assets/bgOrange.jpg"
-import businessman from "../assets/businessman.png"
-import etudiant from "../assets/etudiant.png"
-import professeur from "../assets/professeurContent.png"
+import bgOrange from "../../assets/bgOrange.jpg"
+import businessman from "../../assets/businessman.png"
+import etudiant from "../../assets/etudiant.png"
+import professeur from "../../assets/professeurContent.png"
 import { useEffect, useState } from 'react';
 import detectElementOverflow from 'detect-element-overflow';
 import { useNavigate } from 'react-router-dom';

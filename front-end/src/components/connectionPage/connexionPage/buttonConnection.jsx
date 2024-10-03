@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import {redirect, useNavigate} from "react-router-dom";
 
-function ButtonConnexion() {
+function ButtonConnection() {
     const { t } = useTranslation();
     const navigate = useNavigate();
 
@@ -16,4 +16,4 @@ function ButtonConnexion() {
     );
 }
 
-export default ButtonConnexion;
+export default ButtonConnection;
