@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -152,5 +153,31 @@ public class FichierCVServiceTest {
 
         // Assert
         Assertions.assertThat(fichierCVService.getAmountOfPages()).isEqualTo(4);
+    }
+    @Test
+    @MockitoSettings(strictness = Strictness.LENIENT)
+    void testChangeStatus_Success() throws ChangeSetPersister.NotFoundException {
+
+        // Act
+        when(fileRepository.findById(1L)).thenReturn(Optional.of(fichierCV));
+
+        // Assert
+        fichierCVService.changeStatus(1L, FichierCV.Status.ACCEPTED, "asd");
+    }
+
+    @Test
+    @MockitoSettings(strictness = Strictness.LENIENT)
+    void testChangeStatus_CvNotFound() {
+
+        // Act
+        when(fileRepository.findById(1L)).thenReturn(Optional.empty());
+
+        // Assert
+        try {
+            fichierCVService.changeStatus(1L, FichierCV.Status.ACCEPTED, "asd");
+            fail();
+        } catch (ChangeSetPersister.NotFoundException e) {
+            assertTrue(true);
+        }
     }
 }

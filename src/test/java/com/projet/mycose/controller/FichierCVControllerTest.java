@@ -1,5 +1,6 @@
 package com.projet.mycose.controller;
 
+import com.projet.mycose.modele.FichierCV;
 import com.projet.mycose.service.FichierCVService;
 import com.projet.mycose.service.dto.FichierCVDTO;
 import com.projet.mycose.service.dto.FichierOffreStageDTO;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
@@ -25,10 +27,10 @@ import java.util.List;
 import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -134,7 +136,7 @@ public class FichierCVControllerTest {
         when(fichierCVService.getWaitingCv(1)).thenReturn(new ArrayList<>());
 
         // Assert
-        mockMvc.perform(post("/api/cv/waitingcv?page=1"))
+        mockMvc.perform(get("/api/cv/waitingcv?page=1"))
                 .andExpect(status().isOk());
     }
     @Test
@@ -155,7 +157,7 @@ public class FichierCVControllerTest {
         when(fichierCVService.getWaitingCv(0)).thenReturn(fichierCVDTOS);
 
         // Assert
-        mockMvc.perform(post("/api/cv/waitingcv?page=0"))
+        mockMvc.perform(get("/api/cv/waitingcv?page=0"))
                 .andExpect(status().isOk());
     }
     @Test
@@ -164,8 +166,57 @@ public class FichierCVControllerTest {
         when(fichierCVService.getAmountOfPages()).thenReturn(4);
 
         // Assert
-        mockMvc.perform(post("/api/cv/pages"))
+        mockMvc.perform(get("/api/cv/pages"))
+                .andDo(MockMvcResultHandlers.print())
                 .andExpect(content().string("4"))
                 .andExpect(status().isOk());
+    }
+    @Test
+    void test_acceptCv_OK() throws Exception {
+        // Act
+        doNothing().when(fichierCVService).changeStatus(1L, FichierCV.Status.ACCEPTED, "asd");
+
+        // Assert
+        mockMvc.perform(post("/api/cv/accept?id=1")
+                        .content("asd")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+    @Test
+    void test_acceptCv_UserNotFound() throws Exception {
+        // Act
+        doThrow(ChangeSetPersister.NotFoundException.class)
+                .when(fichierCVService)
+                .changeStatus(1L, FichierCV.Status.ACCEPTED, "asd");
+
+        // Assert
+        mockMvc.perform(post("/api/cv/accept?id=1")
+                        .content("asd")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+    @Test
+    void test_refuseCv_OK() throws Exception {
+        // Act
+        doNothing().when(fichierCVService).changeStatus(1L, FichierCV.Status.REFUSED, "asd");
+
+        // Assert
+        mockMvc.perform(post("/api/cv/refuse?id=1")
+                        .content("asd")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+    @Test
+    void test_refusetCv_UserNotFound() throws Exception {
+        // Act
+        doThrow(ChangeSetPersister.NotFoundException.class)
+                .when(fichierCVService)
+                .changeStatus(1L, FichierCV.Status.REFUSED, "asd");
+
+        // Assert
+        mockMvc.perform(post("/api/cv/refuse?id=1")
+                        .content("asd")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 }

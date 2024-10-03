@@ -54,6 +54,8 @@ public class SecurityConfiguration {
                         .requestMatchers("/gestionnaire-stage/**").hasAuthority("GESTIONNAIRE_STAGE")
                         .requestMatchers("/api/cv/waitingcv").hasAuthority("GESTIONNAIRE_STAGE")
                         .requestMatchers("/api/cv/pages").hasAuthority("GESTIONNAIRE_STAGE")
+                        .requestMatchers("/api/cv/accept").hasAuthority("GESTIONNAIRE_STAGE")
+                        .requestMatchers("/api/cv/refuse").hasAuthority("GESTIONNAIRE_STAGE")
                         .requestMatchers("/**").permitAll()
                         .anyRequest().denyAll()
                 )

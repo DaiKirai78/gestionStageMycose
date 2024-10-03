@@ -2,11 +2,13 @@ package com.projet.mycose.service;
 
 import com.projet.mycose.modele.FichierCV;
 import com.projet.mycose.repository.FichierCVRepository;
+import com.projet.mycose.security.exception.UserNotFoundException;
 import com.projet.mycose.service.dto.FichierCVDTO;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -81,6 +83,18 @@ public class FichierCVService {
     public Integer getAmountOfPages() {
         long amoutOfRows = fileRepository.count();
         return (int) Math.floor((double) amoutOfRows / LIMIT_PER_PAGE);
+    }
+
+    public void changeStatus(Long id, FichierCV.Status status, String description) throws ChangeSetPersister.NotFoundException {
+        Optional<FichierCV> fichierCVOptional = fileRepository.findById(id);
+
+        if (fichierCVOptional.isEmpty())
+            throw new ChangeSetPersister.NotFoundException();
+
+        FichierCV fichierCV = fichierCVOptional.get();
+        fichierCV.setStatus(status);
+        fichierCV.setStatusDescription(description);
+        fileRepository.save(fichierCV);
     }
 //    public FichierOffreStage getFile(Long id) {
 //        return fileRepository.findById(id).orElseThrow(() -> new RuntimeException("Fichier non trouvé"));

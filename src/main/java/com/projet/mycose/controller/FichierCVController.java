@@ -5,7 +5,7 @@ import com.projet.mycose.modele.FichierCV;
 import com.projet.mycose.service.FichierCVService;
 import com.projet.mycose.service.dto.FichierCVDTO;
 import jakarta.validation.ConstraintViolationException;
-import org.modelmapper.ModelMapper;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,11 +23,9 @@ import java.util.Map;
 public class FichierCVController {
 
     private final FichierCVService fichierCVService;
-    private final ModelMapper modelMapper;
 
-    public FichierCVController(FichierCVService fichierCVService, ModelMapper modelMapper) {
+    public FichierCVController(FichierCVService fichierCVService) {
         this.fichierCVService = fichierCVService;
-        this.modelMapper = modelMapper;
     }
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -58,5 +56,24 @@ public class FichierCVController {
     @GetMapping("/pages")
     public ResponseEntity<Integer> getAmountOfPages() {
         return ResponseEntity.status((HttpStatus.OK)).body(fichierCVService.getAmountOfPages());
+    }
+
+    @PostMapping("/accept")
+    public ResponseEntity<?> acceptCV(@RequestParam Long id, @RequestBody String description) {
+        try {
+            fichierCVService.changeStatus(id, FichierCV.Status.ACCEPTED, description);
+            return ResponseEntity.ok().build();
+        } catch (ChangeSetPersister.NotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+    @PostMapping("/refuse")
+    public ResponseEntity<?> refuseCV(@RequestParam Long id, @RequestBody String description) {
+        try {
+            fichierCVService.changeStatus(id, FichierCV.Status.REFUSED, description);
+            return ResponseEntity.ok().build();
+        } catch (ChangeSetPersister.NotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
