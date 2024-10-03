@@ -27,6 +27,8 @@ public class EtudiantService {
     private final EtudiantRepository etudiantRepository;
     private final PasswordEncoder passwordEncoder;
     private final UtilisateurService utilisateurService;
+    private final FichierOffreStageRepository fichierOffreStageRepository;
+    private final FormulaireOffreStageRepository formulaireOffreStageRepository;
 
     public EtudiantDTO creationDeCompte(String prenom, String nom, String numeroTelephone, String courriel, String motDePasse, String programme) {
         if (!utilisateurService.credentialsDejaPris(courriel, numeroTelephone))

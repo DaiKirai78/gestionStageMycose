@@ -12,20 +12,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class MycoseApplication implements CommandLineRunner {
 
-    public MycoseApplication(EnseignantService enseignantService, EtudiantService etudiantService) {
-        this.enseignantService = enseignantService;
-        this.etudiantService = etudiantService;
-    }
-
     public static void main(String[] args) {
 		SpringApplication.run(MycoseApplication.class, args);
 		System.out.println("Hello world!");
 	}
-	private final EnseignantService enseignantService;
-	private final EtudiantService etudiantService;
 	@Override
 	public void run(String... args) {
-		//enseignantService.creationDeCompte("Guillaume", "Courtemanche", "283-948-2738", "courtemanche@gmail.com", "courte123$");
-		etudiantService.creationDeCompte("Roberto", "Berrios", "273-389-2937", "roby@gmail.com", "Roby123$", "Technique de l'informatique");
 	}
 }
