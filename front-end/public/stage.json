@@ -1,0 +1,42 @@
+[
+  {
+    "titre": "Programmeur Spring Boot",
+    "date": "2024-05-04",
+    "entreprise": "Desjardins"
+  },
+  {
+    "titre": "Programmeur front-end avec React",
+    "date": "2024-02-18",
+    "entreprise": "Hydro-Québec"
+  },
+  {
+    "titre": "Programmeur front-end Vue.js",
+    "date": "2024-01-12",
+    "entreprise": "Jean-Coutu"
+  },
+  {
+    "titre": "Développeur SQL",
+    "date": "2024-07-03",
+    "entreprise": "Air Canada"
+  },
+  {
+    "titre": "Développeur front end",
+    "date": "2024-09-02",
+    "entreprise": "Bombardier"
+  },
+  {
+    "titre": "Technicien en cybersécurité",
+    "date": "2024-09-11",
+    "entreprise": "Bell"
+  },
+  {
+    "titre": "Développeur Front-end Vue.js",
+    "date": "2024-05-29",
+    "entreprise": "Vidéotron"
+  },
+  {
+    "titre": "Développeur de jeux vidéo avec Unreal Engine",
+    "date": "2024-07-18",
+    "entreprise": "Ubisoft"
+  }
+]

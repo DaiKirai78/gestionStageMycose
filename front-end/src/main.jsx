@@ -7,7 +7,7 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import ConnectionPage from "./pages/connectionPage.jsx"
-import AcceuilPage from './pages/acceuilPage.jsx';
+import AcceuilPage from './pages/accueilPage.jsx';
 import InscriptionPage from './pages/inscriptionPage.jsx';
 
 import "./i18n"
@@ -23,7 +23,7 @@ const router = createBrowserRouter([
     element: <ConnectionPage />,
   },
   {
-    path: "/acceuil",
+    path: "/accueil",
     element: <AcceuilPage />
   },
   {
