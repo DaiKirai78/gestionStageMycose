@@ -112,25 +112,25 @@ public class FichierCVServiceTest {
     // MockitioSetting stricness linient retire l'erreur
     @MockitoSettings(strictness = Strictness.LENIENT)
     void testGetWaitingCV_Success() {
-        // Arrange
+        // Act
         when(fileRepository.getFichierCVSByStatusEquals(FichierCV.Status.WAITING, PageRequest.of(0, 10)))
                 .thenReturn(Optional.of(new ArrayList<>((Arrays.asList(fichierCV, fichierCV, fichierCV, fichierCV, fichierCV, fichierCV, fichierCV, fichierCV, fichierCV, fichierCV)))));
         when(fileRepository.getFichierCVSByStatusEquals(FichierCV.Status.WAITING, PageRequest.of(1, 10)))
                 .thenReturn(Optional.of(new ArrayList<>((Arrays.asList(fichierCV, fichierCV, fichierCV, fichierCV)))));;
         when(modelMapper.map(any(FichierCV.class), eq(FichierCVDTO.class))).thenReturn(fichierCVDTO);
 
-        // Act
+        // Assert
         Assertions.assertThat(fichierCVService.getWaitingCv(0).size()).isEqualTo(10);
         Assertions.assertThat(fichierCVService.getWaitingCv(1).size()).isEqualTo(4);
     }
     @Test
     @MockitoSettings(strictness = Strictness.LENIENT)
     void testGetWaitingCV_PageVide() {
-        // Arrange
+        // Act
         when(fileRepository.getFichierCVSByStatusEquals(FichierCV.Status.WAITING, PageRequest.of(1, 10)))
                 .thenReturn(Optional.empty());
 
-        // Act
+        // Assert
         Assertions.assertThat(fichierCVService.getWaitingCv(1).size()).isEqualTo(0);
     }
 
