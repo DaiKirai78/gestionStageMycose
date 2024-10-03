@@ -9,7 +9,7 @@ import {
 import ConnectionPage from "./pages/connectionPage.jsx"
 import AcceuilPage from './pages/acceuilPage.jsx';
 import InscriptionPage from './pages/inscriptionPage.jsx';
-import EtudiantsCV from './components/etudiantsCV.jsx';
+import ValiderCVPage from './pages/validerCVPage.jsx';
 
 import "./i18n"
 import UploadOffreStage from "./components/uploadOffreStage.jsx";
@@ -39,7 +39,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/validerCV",
-    element: <EtudiantsCV />
+    element: <ValiderCVPage />
   },
   { path: "/validerCV/:id",
     element: <ValiderCV />
