@@ -16,16 +16,29 @@ const listeStage = () => {
 
     let localhost = "http://localhost:8080/";
     let urlGetFormulaireStage = "etudiant/getStages";
+    // let sendTokenToBackend = "etudiant/sendToken"
 
 
     useEffect(() => {
         fetchStages();
     }, []);
 
+    // const sendToken = () => {
+    //     try {
+    //         const token = localStorage.getItem("token");
+    //         await axios.post(localhost + urlGetFormulaireStage, {
+    //     }
+    // }
 
     const fetchStages = async () => {
+        let token = localStorage.getItem("token");
         try {
-            const responseForms = await axios.post(localhost + urlGetFormulaireStage);
+            const responseForms = await axios.post(localhost + urlGetFormulaireStage, {}, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+            });
             console.log("Voici les infos : " + responseForms.data);
             setStages(responseForms.data);
             return responseForms.data;

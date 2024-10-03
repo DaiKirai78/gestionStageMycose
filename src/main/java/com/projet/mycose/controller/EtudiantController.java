@@ -47,11 +47,12 @@ public class EtudiantController {
         }
 
     @PostMapping("/getStages")
-    public ResponseEntity<List<OffreStageDTO>> getStages(String token) {
+    public ResponseEntity<List<OffreStageDTO>> getStages(HttpServletRequest request) {
+        //System.out.println(token);
         try {
-            //return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
-                    //etudiantService.getStages(request.getHeader("Authorization")));
-            return ResponseEntity.status(HttpStatus.OK).body(etudiantService.getStages(token));
+            return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
+                    etudiantService.getStages(request.getHeader("Authorization")));
+//            return ResponseEntity.status(HttpStatus.OK).body(etudiantService.getStages(token));
         } catch (Exception e) {
             return ResponseEntity.noContent().build();
         }
