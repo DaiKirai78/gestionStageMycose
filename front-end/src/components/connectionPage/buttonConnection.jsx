@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import {redirect, useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 
 function ButtonConnection() {
     const { t } = useTranslation();
