@@ -25,10 +25,12 @@ public class EtudiantService {
 
     private final EtudiantRepository etudiantRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UtilisateurService utilisateurService;
+   
     private final OffreStageRepository offreStageRepository;
 
     public EtudiantDTO creationDeCompte(String prenom, String nom, String numeroTelephone, String courriel, String motDePasse, String programme) {
-        if (!credentialsDejaPris(courriel, numeroTelephone))
+        if (!utilisateurService.credentialsDejaPris(courriel, numeroTelephone))
             return EtudiantDTO.toDTO(etudiantRepository.save(new Etudiant(prenom, nom, numeroTelephone, courriel, passwordEncoder.encode(motDePasse), programme)));
         else
             return null;

@@ -1,6 +1,7 @@
 package com.projet.mycose.controller;
 
 import com.projet.mycose.service.UtilisateurService;
+import com.projet.mycose.service.dto.CourrielTelephoneDTO;
 import com.projet.mycose.service.dto.JWTAuthResponse;
 import com.projet.mycose.service.dto.LoginDTO;
 import com.projet.mycose.service.dto.UtilisateurDTO;
@@ -43,5 +44,13 @@ public class UtilisateurController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
+    }
+
+    @PostMapping("/register/check-for-conflict")
+    public ResponseEntity<Object> CreationDeCompte_CheckForConflict(@Valid @RequestBody CourrielTelephoneDTO courrielTelephoneDTO) {
+        if (utilisateurService.credentialsDejaPris(courrielTelephoneDTO.getCourriel(), courrielTelephoneDTO.getTelephone()))
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("L'utilisateur existe déjà ou les credentials sont invalides");
+        else
+            return ResponseEntity.status(HttpStatus.OK).body(courrielTelephoneDTO);
     }
 }

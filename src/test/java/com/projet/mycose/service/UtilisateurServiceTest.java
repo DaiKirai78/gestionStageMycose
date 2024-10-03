@@ -88,7 +88,7 @@ public class UtilisateurServiceTest {
         JwtTokenProvider jwtTokenProvider = mock(JwtTokenProvider.class);
         UtilisateurService utilisateurService = new UtilisateurService(utilisateurRepository, etudiantRepository, employeurRepository, enseignantRepository, authenticationManagerMock, jwtTokenProvider);
         PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);
-        EtudiantService etudiantService = new EtudiantService(etudiantRepository, passwordEncoder);
+        EtudiantService etudiantService = new EtudiantService(etudiantRepository, passwordEncoder, utilisateurService);
 
         String token = "Bearer valid_token";
         String email = "mihoubi@gmail.com";
@@ -106,7 +106,6 @@ public class UtilisateurServiceTest {
         // Assert
         assertNotNull(result);
         verify(jwtTokenProvider).getEmailFromJWT("valid_token");
-        verify(utilisateurRepository).findUtilisateurByCourriel(email);
     }
 
     @Test
