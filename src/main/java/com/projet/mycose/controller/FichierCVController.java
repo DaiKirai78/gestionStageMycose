@@ -54,4 +54,9 @@ public class FichierCVController {
          List<FichierCVDTO> fichierCVDTOS = fichierCVService.getWaitingCv(page);
          return ResponseEntity.status(HttpStatus.OK).body(fichierCVDTOS);
     }
+
+    @PostMapping("/pages")
+    public ResponseEntity<Integer> getAmountOfPages() {
+        return ResponseEntity.status((HttpStatus.OK)).body(fichierCVService.getAmountOfPages());
+    }
 }

@@ -77,6 +77,11 @@ public class FichierCVService {
 
         return fichierCVS.stream().map(this::convertToDTO).toList();
     }
+
+    public Integer getAmountOfPages() {
+        long amoutOfRows = fileRepository.count();
+        return (int) Math.floor((double) amoutOfRows / LIMIT_PER_PAGE);
+    }
 //    public FichierOffreStage getFile(Long id) {
 //        return fileRepository.findById(id).orElseThrow(() -> new RuntimeException("Fichier non trouvé"));
 //    }
