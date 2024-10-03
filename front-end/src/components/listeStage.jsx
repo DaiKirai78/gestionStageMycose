@@ -15,7 +15,7 @@ const listeStage = () => {
     const [uneRechercheEstFaite, setUneRechercheEstFaite] = useState(false);
 
     let localhost = "http://localhost:8080/";
-    let urlGetFormulaireStage = "/etudiant/getStages";
+    let urlGetFormulaireStage = "etudiant/getStages";
 
 
     useEffect(() => {
@@ -26,6 +26,7 @@ const listeStage = () => {
     const fetchStages = async () => {
         try {
             const responseForms = await axios.post(localhost + urlGetFormulaireStage);
+            console.log("Voici les infos : " + responseForms.data);
             setStages(responseForms.data);
             return responseForms.data;
         } catch (error) {
