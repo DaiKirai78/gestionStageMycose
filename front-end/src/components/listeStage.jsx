@@ -122,7 +122,7 @@ const listeStage = () => {
 
     return (
         <>
-            <div className="w-2/3 lg:w-1/2 absolute">
+            <div className="w-2/3 lg:w-1/2">
                 <h1 className="pt-12 text-3xl md:text-4xl text-pretty font-accueilTitreFont font-bold text-black">Explorez
                     des stages dans des
                     entreprises variées</h1>
@@ -166,7 +166,7 @@ const listeStage = () => {
                 //stageClique.type === "fichier" ? //TODO : AJOUTER LE TYPE DE FICHIER SELON SI C'EST FILE OU FORM
                 unStageEstClique &&  (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50" onClick={() => setUnStageEstClique(false)}>
-                        <div className="w-1/3 h-1/3 bg-white rounded-xl shadow-xl p-4 relative" onClick={(e) => e.stopPropagation()}>
+                        <div className="w-3/4 h-1/3 sm:w-2/3 sm:h-1/3 lg:w-1/3 lg:h-1/3 bg-white rounded-xl shadow-xl p-4 relative" onClick={(e) => e.stopPropagation()}>
                             <div className="flex justify-center items-center border-b pb-3">
                                 <h2 className="text-2xl font-accueilTitreFont font-semibold">
                                     Détails du stage
