@@ -13,6 +13,8 @@ import InscriptionPage from './pages/inscriptionPage.jsx';
 import "./i18n"
 import UploadOffreStage from "./components/uploadOffreStage.jsx";
 import UploadCV from "./components/uploadCV.jsx";
+import voirMonCV from "./components/voirMonCV.jsx";
+import VoirMonCV from "./components/voirMonCV.jsx";
 
 const router = createBrowserRouter([
   {
@@ -34,6 +36,10 @@ const router = createBrowserRouter([
   {
     path: "/inscription",
     element: <InscriptionPage />
+  },
+  {
+    path: "/voirMonCV",
+    element: <VoirMonCV />
   }
 ]);
 
