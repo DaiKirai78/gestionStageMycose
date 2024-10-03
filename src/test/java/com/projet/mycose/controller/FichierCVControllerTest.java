@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -155,6 +156,16 @@ public class FichierCVControllerTest {
 
         // Assert
         mockMvc.perform(post("/api/cv/waitingcv?page=0"))
+                .andExpect(status().isOk());
+    }
+    @Test
+    void test_getAmountOfPages_OK() throws Exception {
+        // Act
+        when(fichierCVService.getAmountOfPages()).thenReturn(4);
+
+        // Assert
+        mockMvc.perform(post("/api/cv/pages"))
+                .andExpect(content().string("4"))
                 .andExpect(status().isOk());
     }
 }

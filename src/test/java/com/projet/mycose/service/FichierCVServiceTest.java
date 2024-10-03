@@ -134,4 +134,23 @@ public class FichierCVServiceTest {
         Assertions.assertThat(fichierCVService.getWaitingCv(1).size()).isEqualTo(0);
     }
 
+
+    @Test
+    @MockitoSettings(strictness = Strictness.LENIENT)
+    void testGetAmountOfPage_NumberEndWithZero_Success() {
+        // Act
+        when(fileRepository.count()).thenReturn(30L);
+
+        // Assert
+        Assertions.assertThat(fichierCVService.getAmountOfPages()).isEqualTo(3);
+    }
+    @Test
+    @MockitoSettings(strictness = Strictness.LENIENT)
+    void testGetAmountOfPage_NumberNotEndWithZero_Success() {
+        // Act
+        when(fileRepository.count()).thenReturn(43L);
+
+        // Assert
+        Assertions.assertThat(fichierCVService.getAmountOfPages()).isEqualTo(4);
+    }
 }
