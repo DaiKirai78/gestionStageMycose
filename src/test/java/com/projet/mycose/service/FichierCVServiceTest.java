@@ -6,19 +6,21 @@ import com.projet.mycose.service.dto.FichierCVDTO;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -103,4 +105,33 @@ public class FichierCVServiceTest {
         });
         verify(fileRepository, never()).save(any(FichierCV.class));
     }
+
+    @Test
+    // Parce que dans setup ya des when qui sont pas utilisé
+    // donc ça fait une erreur.
+    // MockitioSetting stricness linient retire l'erreur
+    @MockitoSettings(strictness = Strictness.LENIENT)
+    void testGetWaitingCV_Success() {
+        // Arrange
+        when(fileRepository.getFichierCVSByStatusEquals(FichierCV.Status.WAITING, PageRequest.of(0, 10)))
+                .thenReturn(Optional.of(new ArrayList<>((Arrays.asList(fichierCV, fichierCV, fichierCV, fichierCV, fichierCV, fichierCV, fichierCV, fichierCV, fichierCV, fichierCV)))));
+        when(fileRepository.getFichierCVSByStatusEquals(FichierCV.Status.WAITING, PageRequest.of(1, 10)))
+                .thenReturn(Optional.of(new ArrayList<>((Arrays.asList(fichierCV, fichierCV, fichierCV, fichierCV)))));;
+        when(modelMapper.map(any(FichierCV.class), eq(FichierCVDTO.class))).thenReturn(fichierCVDTO);
+
+        // Act
+        Assertions.assertThat(fichierCVService.getWaitingCv(0).size()).isEqualTo(10);
+        Assertions.assertThat(fichierCVService.getWaitingCv(1).size()).isEqualTo(4);
+    }
+    @Test
+    @MockitoSettings(strictness = Strictness.LENIENT)
+    void testGetWaitingCV_PageVide() {
+        // Arrange
+        when(fileRepository.getFichierCVSByStatusEquals(FichierCV.Status.WAITING, PageRequest.of(1, 10)))
+                .thenReturn(Optional.empty());
+
+        // Act
+        Assertions.assertThat(fichierCVService.getWaitingCv(1).size()).isEqualTo(0);
+    }
+
 }
