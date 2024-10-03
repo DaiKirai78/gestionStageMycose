@@ -1,7 +1,9 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 function ValiderCV() {
+    const { t } = useTranslation();
     const { id } = useParams();
     const navigate = useNavigate();
     const [commentaire, setCommentaire] = useState("");
@@ -18,11 +20,11 @@ function ValiderCV() {
 
     return (
         <div className="min-h-screen flex items-start justify-center p-8">
-            <div className="bg-white shadow-lg rounded-lg flex w-full max-w-6xl">
+            <div className="bg-[#FFF8F2] shadow-lg rounded-lg flex w-full max-w-6xl">
                 {/* Section PDF */}
                 <div className="w-[70%] p-8 border-r border-gray-300">
-                    <h1 className="text-4xl font-bold mb-6 mt-6 text-center">CV de l'étudiant</h1>
-                    <h2 className="mb-8 text-xl text-center">Accepter ou refuser le CV de l'étudiant</h2>
+                    <h1 className="text-4xl font-bold mb-6 mt-6 text-center">{t("studentCV")}</h1>
+                    <h2 className="mb-8 text-xl text-center">{t("acceptOrRefuseCV")}</h2>
                     <iframe
                         src="/fake_CV.pdf"
                         title="CV"
@@ -36,13 +38,13 @@ function ValiderCV() {
                             className="bg-green-500 text-white py-2 px-4 rounded mb-4 w-full"
                             onClick={handleAccept}
                         >
-                            Accepter
+                            {t("accept")}
                         </button>
                         <button
                             className="bg-red-500 text-white py-2 px-4 rounded mb-4 w-full"
                             onClick={handleReject}
                         >
-                            Refuser
+                            {t("refuse")}
                         </button>
                     </div>
 
