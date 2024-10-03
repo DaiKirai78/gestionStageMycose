@@ -76,8 +76,6 @@ public class FichierCVService {
         List<FichierCV> fichierCVS = fichierCVSOptional.get();
 
         return fichierCVS.stream().map(this::convertToDTO).toList();
-
-
     }
 //    public FichierOffreStage getFile(Long id) {
 //        return fileRepository.findById(id).orElseThrow(() -> new RuntimeException("Fichier non trouvé"));
