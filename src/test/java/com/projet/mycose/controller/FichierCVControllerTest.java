@@ -18,13 +18,16 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -122,5 +125,37 @@ public class FichierCVControllerTest {
                         .file(mockFile)
                         .contentType(MediaType.MULTIPART_FORM_DATA))
                 .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    void getWaitingCv_NothingFound() throws Exception {
+
+        // Act
+        when(fichierCVService.getWaitingCv(1)).thenReturn(new ArrayList<>());
+
+        // Assert
+        mockMvc.perform(post("/api/cv/waitingcv?page=1"))
+                .andExpect(status().isOk());
+    }
+    @Test
+    void getWaitingCv_FoundCvs() throws Exception {
+
+        // Arrange
+        FichierCVDTO fichierCVDTO = new FichierCVDTO();
+        fichierCVDTO.setId(1L);
+        fichierCVDTO.setFilename("validFile.pdf");
+        fichierCVDTO.setFileData("Base64FileData");
+
+        List<FichierCVDTO> fichierCVDTOS = new ArrayList<>();
+
+        fichierCVDTOS.add(fichierCVDTO);
+        fichierCVDTOS.add(fichierCVDTO);
+
+        // Act
+        when(fichierCVService.getWaitingCv(0)).thenReturn(fichierCVDTOS);
+
+        // Assert
+        mockMvc.perform(post("/api/cv/waitingcv?page=0"))
+                .andExpect(status().isOk());
     }
 }

@@ -1,6 +1,7 @@
 package com.projet.mycose.controller;
 
 
+import com.projet.mycose.modele.FichierCV;
 import com.projet.mycose.service.FichierCVService;
 import com.projet.mycose.service.dto.FichierCVDTO;
 import jakarta.validation.ConstraintViolationException;
@@ -13,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -47,16 +49,9 @@ public class FichierCVController {
         }
     }
 
-//    @GetMapping("/download/{id}")
-//    public ResponseEntity<FichierOffreStageDTO> downloadFile(@PathVariable Long id) {
-//        FichierOffreStage fichierOffreStage = fichierOffreStageService.getFile(id);
-//
-//        // Convert the entity to DTO
-//        FichierOffreStageDTO fileDTO = modelMapper.map(fichierOffreStage, FichierOffreStageDTO.class);
-//
-//        // Encode the byte[] data to a Base64 string
-//        fileDTO.setFileData(Base64.getEncoder().encodeToString(fichierOffreStage.getData()));
-//
-//        return ResponseEntity.ok(fileDTO);
-//    }
+    @PostMapping("/waitingcv")
+    public ResponseEntity<List<FichierCVDTO>> getWaitingCv(@RequestParam int page) {
+         List<FichierCVDTO> fichierCVDTOS = fichierCVService.getWaitingCv(page);
+         return ResponseEntity.status(HttpStatus.OK).body(fichierCVDTOS);
+    }
 }
