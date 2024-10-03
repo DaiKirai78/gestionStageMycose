@@ -42,7 +42,7 @@ public class EtudiantController {
                 return ResponseEntity.status(HttpStatus.OK).body(courrielTelephoneDTO);
         }
 
-    @GetMapping("/getStages")
+    @PostMapping("/getStages")
     public ResponseEntity<List<OffreStageDTO>> getStages() {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(etudiantService.getStages());

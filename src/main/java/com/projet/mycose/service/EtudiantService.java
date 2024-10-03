@@ -48,14 +48,11 @@ public class EtudiantService {
         return getEtudiantByCourriel(courriel) != null || getEtudiantByTelephone(numero) != null;
     }
 
-    private List<FichierOffreStageDTO> listeFichierToDTO(Optional<List<FichierOffreStage>> listeAMapper) {
-        if(listeAMapper.isEmpty()) {
-            return null;
-        }
+    private List<OffreStageDTO> listeOffreStageToDTO(Optional<List<OffreStage>> listeAMapper) {
 
-        List<FichierOffreStageDTO> listeMappee = new ArrayList<>();
-        for(FichierOffreStage fichierOffreStage : listeAMapper.get()) {
-            listeMappee.add(FichierOffreStageDTO.toDTO(fichierOffreStage));
+        List<OffreStageDTO> listeMappee = new ArrayList<>();
+        for(OffreStage offreStage : listeAMapper.get()) {
+            listeMappee.add(OffreStageDTO.toOffreStageInstaceDTO(offreStage));
         }
 
         return listeMappee;
@@ -68,8 +65,7 @@ public class EtudiantService {
             return null;
         }
 
-        //A FAIRE
-        return null;
+        return listeOffreStageToDTO(offresRetournee);
     }
 
 }
