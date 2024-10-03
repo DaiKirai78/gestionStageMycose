@@ -15,6 +15,7 @@ import UploadOffreStage from "./components/uploadOffreStage.jsx";
 import UploadCV from "./components/uploadCV.jsx";
 import voirMonCV from "./components/voirMonCV.jsx";
 import VoirMonCV from "./components/voirMonCV.jsx";
+import VoirMonCVPage from "./pages/voirMonCVPage.jsx";
 
 const router = createBrowserRouter([
   {
@@ -39,7 +40,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/voirMonCV",
-    element: <VoirMonCV />
+    element: <VoirMonCVPage />
   }
 ]);
 
