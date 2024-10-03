@@ -75,7 +75,7 @@ public class EtudiantService {
         return listeMappee;
     }
 
-    public OffresStagesDTO getStages() {
+    /*public OffresStagesDTO getStages() {
         Optional<List<FichierOffreStage>> listeFichiersRetournee = Optional.of(fichierOffreStageRepository.findAll());
         Optional<List<FormulaireOffreStage>> listeFormulairesRetournee = Optional.of(formulaireOffreStageRepository.findAll());
 
@@ -83,6 +83,6 @@ public class EtudiantService {
         List<FormulaireOffreStageDTO> listeFormulairesEnvoyer = listeFormulaireToDTO(listeFormulairesRetournee);
 
         return new OffresStagesDTO(listeFichiersEnvoyer, listeFormulairesEnvoyer);
-    }
+    }*/
 
 }
