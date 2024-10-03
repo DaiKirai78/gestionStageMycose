@@ -1,10 +1,10 @@
-import FormInscriptionEtudiant from '../components/formInscription2.jsx'
-import FormInscription1 from '../components/formInscription1.jsx';
+import FormInscriptionEtudiant from '../components/inscriptionPage/formInscription2.jsx'
+import FormInscription1 from '../components/inscriptionPage/formInscription1.jsx';
 import FormContainer from '../components/formContainer.jsx';
 import { useState } from "react";
-import FormInscription2 from '../components/formInscription2.jsx';
-import FormInscription3 from '../components/formInscription3.jsx';
-import ChoixUserInscription from '../components/choixUserInscription.jsx';
+import FormInscription2 from '../components/inscriptionPage/formInscription2.jsx';
+import FormInscription3 from '../components/inscriptionPage/formInscription3.jsx';
+import ChoixUserInscription from '../components/inscriptionPage/choixUserInscription.jsx';
 
 const InscriptionPage = () => {
     const [prenom, setPrenom] = useState('');

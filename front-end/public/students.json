@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "prenom": "John",
+    "nom": "Doe",
+    "programme": "Informatique"
+  },
+  {
+    "id": 2,
+    "prenom": "Jane",
+    "nom": "Smith",
+    "programme": "Génie logiciel"
+  },
+  {
+    "id": 3,
+    "prenom": "Alice",
+    "nom": "Johnson",
+    "programme": "Mathématiques"
+  },
+    {
+        "id": 4,
+        "prenom": "Bob",
+        "nom": "Brown",
+        "programme": "Informatique"
+    },
+    {
+        "id": 5,
+        "prenom": "Eve",
+        "nom": "Williams",
+        "programme": "Génie logiciel"
+    },
+    {
+        "id": 6,
+        "prenom": "Charlie",
+        "nom": "Jones",
+        "programme": "Mathématiques"
+    }
+]

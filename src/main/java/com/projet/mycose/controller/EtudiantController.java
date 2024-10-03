@@ -44,13 +44,13 @@ public class EtudiantController {
                 return ResponseEntity.status(HttpStatus.OK).body(courrielTelephoneDTO);
         }
 
-    @GetMapping("/getStages")
+    /*@GetMapping("/getStages")
     public ResponseEntity<OffresStagesDTO> getStages() {
         try {
             return ResponseEntity.ok().body(etudiantService.getStages());
         } catch (Exception e) {
             return ResponseEntity.noContent().build();
         }
-    }
+    }*/
 
 }

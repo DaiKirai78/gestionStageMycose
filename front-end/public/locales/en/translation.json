@@ -36,7 +36,6 @@
     "signin": "Signin",
     "login": "Login",
     "password": "Password",
-    "email": "Email",
     "website": "Company website",
     "title": "Title of the internship offer",
     "location": "Internship location",
@@ -70,5 +69,12 @@
     "professeur" : "Teacher",
     "retour": "Return",
     "errorMessageNomOrganisation": "Invalid organisation name",
-    "inputLabelNomOrganisation": "Organisation name"
+    "inputLabelNomOrganisation": "Organisation name",
+    "studentList": "List of students",
+    "clickStudentCV": "Click on a student to view their CV and validate it",
+    "studentCV": "Student CV",
+    "acceptOrRefuseCV": "Accept or reject the student's CV",
+    "accept": "Accept",
+    "refuse": "Refuse",
+    "leaveComment": "Leave a comment (optional)"
 }

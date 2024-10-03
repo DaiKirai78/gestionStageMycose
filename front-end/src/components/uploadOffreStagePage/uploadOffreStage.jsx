@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import FileOffreStage from "./fileOffreStage.jsx";
 import FormOffreStage from "./formOffreStage.jsx";
-import Divider from "./divider.jsx";
+import Divider from "../divider.jsx";
 
 function UploadOffreStage() {
     const { t } = useTranslation();
