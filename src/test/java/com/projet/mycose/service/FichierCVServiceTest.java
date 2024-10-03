@@ -173,11 +173,8 @@ public class FichierCVServiceTest {
         when(fileRepository.findById(1L)).thenReturn(Optional.empty());
 
         // Assert
-        try {
+        assertThrows(ChangeSetPersister.NotFoundException.class, () -> {
             fichierCVService.changeStatus(1L, FichierCV.Status.ACCEPTED, "asd");
-            fail();
-        } catch (ChangeSetPersister.NotFoundException e) {
-            assertTrue(true);
-        }
+        });
     }
 }
