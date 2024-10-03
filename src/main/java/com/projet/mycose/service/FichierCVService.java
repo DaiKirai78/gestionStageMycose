@@ -12,10 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Base64;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class FichierCVService {
@@ -68,13 +65,19 @@ public class FichierCVService {
         return convertToDTO(fileRepository.save(fichierCV));
     }
 
-    public List<FichierCV> getWaitingCv(int page) {
+    public List<FichierCVDTO> getWaitingCv(int page) {
         int indexOfFirstCv = (page - 1) * LIMIT_PER_PAGE;
         int indexOfLastCv = page * LIMIT_PER_PAGE;
         Optional<List<FichierCV>> fichierCVSOptional = fileRepository.getFichierCVSByStatusEquals(FichierCV.Status.WAITING,
                 PageRequest.of(indexOfFirstCv, indexOfLastCv));
 
-        return fichierCVSOptional.orElse(null);
+        if (fichierCVSOptional.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<FichierCV> fichierCVS = fichierCVSOptional.get();
+
+        return fichierCVS.stream().map(this::convertToDTO).toList();
 
 
     }

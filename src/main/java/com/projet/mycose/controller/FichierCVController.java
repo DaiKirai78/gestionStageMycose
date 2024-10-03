@@ -51,10 +51,7 @@ public class FichierCVController {
 
     @PostMapping("/waitingcv")
     public ResponseEntity<List<FichierCVDTO>> getWaitingCv(@RequestParam int page) {
-         List<FichierCV> fichiersCv = fichierCVService.getWaitingCv(page);
-         List<FichierCVDTO> fichierCVDTOS = fichiersCv.stream().map(fichierCVService::convertToDTO).toList();
+         List<FichierCVDTO> fichierCVDTOS = fichierCVService.getWaitingCv(page);
          return ResponseEntity.status(HttpStatus.OK).body(fichierCVDTOS);
-
-
     }
 }
