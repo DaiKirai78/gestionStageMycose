@@ -79,10 +79,6 @@ public class FichierCVService {
 
 
     }
-
-    public void saveFile(FichierCV fichierCV) {
-        fileRepository.save(fichierCV);
-    }
 //    public FichierOffreStage getFile(Long id) {
 //        return fileRepository.findById(id).orElseThrow(() -> new RuntimeException("Fichier non trouvé"));
 //    }
