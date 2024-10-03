@@ -1,5 +1,9 @@
 package com.projet.mycose.service.dto;
 
+import com.projet.mycose.modele.Employeur;
+import com.projet.mycose.modele.Enseignant;
+import com.projet.mycose.modele.Etudiant;
+import com.projet.mycose.modele.Utilisateur;
 import com.projet.mycose.modele.auth.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -26,5 +30,14 @@ public abstract class UtilisateurDTO {
         this.courriel = courriel;
         this.numeroDeTelephone = numeroDeTelephone;
         this.role = role;
+    }
+
+    public static UtilisateurDTO toDTO(Utilisateur utilisateur) {
+        return switch (utilisateur.getCredentials().getRole()) {
+            case ETUDIANT -> EtudiantDTO.toDTO((Etudiant) utilisateur);
+            case ENSEIGNANT -> EnseignantDTO.toDTO((Enseignant) utilisateur);
+            case EMPLOYEUR -> EmployeurDTO.toDTO((Employeur) utilisateur);
+            case GESTIONNAIRE_STAGE -> null;
+        };
     }
 }
