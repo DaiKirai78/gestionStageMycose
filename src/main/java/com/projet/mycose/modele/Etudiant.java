@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @NoArgsConstructor
 @DiscriminatorValue("Etudiant")
 @Getter
@@ -16,6 +18,9 @@ import lombok.Setter;
 @Entity
 public class Etudiant extends Utilisateur {
     private String programme;
+//    private List<FichierOffreStage> stagesVisiblesFichiers;
+//    private List<FormulaireOffreStage> stagesVisiblesFormulaires;
+
     @Builder
     public Etudiant(Long id, String prenom, String nom, String numeroDeTelephone, String courriel, String motDePasse, String programme) {
         super(id,
