@@ -9,6 +9,7 @@ import {
 import ConnectionPage from "./pages/connectionPage.jsx"
 import AcceuilPage from './pages/acceuilPage.jsx';
 import InscriptionPage from './pages/inscriptionPage.jsx';
+import EtudiantsCV from './components/etudiantsCV.jsx';
 
 import "./i18n"
 import UploadOffreStage from "./components/uploadOffreStage.jsx";
@@ -34,7 +35,11 @@ const router = createBrowserRouter([
   {
     path: "/inscription",
     element: <InscriptionPage />
-  }
+  },
+    {
+      path: "/validerCV",
+        element: <EtudiantsCV />
+    }
 ]);
 
 createRoot(document.getElementById("root")).render(
