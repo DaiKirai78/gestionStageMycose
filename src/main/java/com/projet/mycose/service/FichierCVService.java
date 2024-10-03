@@ -1,6 +1,7 @@
 package com.projet.mycose.service;
 
 import com.projet.mycose.modele.FichierCV;
+import com.projet.mycose.modele.FichierOffreStage;
 import com.projet.mycose.repository.FichierCVRepository;
 import com.projet.mycose.service.dto.FichierCVDTO;
 import jakarta.validation.ConstraintViolation;
@@ -63,7 +64,8 @@ public class FichierCVService {
 
         return convertToDTO(fileRepository.save(fichierCV));
     }
-//    public FichierOffreStage getFile(Long id) {
-//        return fileRepository.findById(id).orElseThrow(() -> new RuntimeException("Fichier non trouvé"));
-//    }
+    public FichierCVDTO getFile(Long id) {
+        FichierCV fichierCV = fileRepository.findById(id).orElseThrow(() -> new RuntimeException("Fichier non trouvé"));
+        return convertToDTO(fichierCV);
+    }
 }

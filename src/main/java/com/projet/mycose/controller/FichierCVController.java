@@ -1,8 +1,12 @@
 package com.projet.mycose.controller;
 
 
+import com.projet.mycose.modele.FichierOffreStage;
 import com.projet.mycose.service.FichierCVService;
+import com.projet.mycose.service.UtilisateurService;
 import com.projet.mycose.service.dto.FichierCVDTO;
+import com.projet.mycose.service.dto.FichierOffreStageDTO;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -12,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,10 +27,12 @@ public class FichierCVController {
 
     private final FichierCVService fichierCVService;
     private final ModelMapper modelMapper;
+    private final UtilisateurService utilisateurService;
 
-    public FichierCVController(FichierCVService fichierCVService, ModelMapper modelMapper) {
+    public FichierCVController(FichierCVService fichierCVService, ModelMapper modelMapper, UtilisateurService utilisateurService) {
         this.fichierCVService = fichierCVService;
         this.modelMapper = modelMapper;
+        this.utilisateurService = utilisateurService;
     }
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -47,16 +54,15 @@ public class FichierCVController {
         }
     }
 
-//    @GetMapping("/download/{id}")
-//    public ResponseEntity<FichierOffreStageDTO> downloadFile(@PathVariable Long id) {
-//        FichierOffreStage fichierOffreStage = fichierOffreStageService.getFile(id);
-//
-//        // Convert the entity to DTO
-//        FichierOffreStageDTO fileDTO = modelMapper.map(fichierOffreStage, FichierOffreStageDTO.class);
-//
-//        // Encode the byte[] data to a Base64 string
-//        fileDTO.setFileData(Base64.getEncoder().encodeToString(fichierOffreStage.getData()));
-//
-//        return ResponseEntity.ok(fileDTO);
-//    }
+    @PostMapping("/getCV")
+    public ResponseEntity<FichierCVDTO> getCV(HttpServletRequest request) {
+
+        try {
+            Long id = utilisateurService.getUserIdByToken(request.getHeader("Authorization"));
+            return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(fichierCVService.getFile(id));
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
 }
