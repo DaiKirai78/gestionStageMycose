@@ -50,18 +50,21 @@ public class EtudiantService {
         return getEtudiantByCourriel(courriel) != null || getEtudiantByTelephone(numero) != null;
     }
 
-    private List<OffreStageDTO> listeOffreStageToDTO(Optional<List<OffreStage>> listeAMapper) {
+    private List<OffreStageDTO> listeOffreStageToDTO(List<OffreStage> listeAMapper) {
 
         List<OffreStageDTO> listeMappee = new ArrayList<>();
-        for(OffreStage offreStage : listeAMapper.get()) {
+        for(OffreStage offreStage : listeAMapper) {
             listeMappee.add(OffreStageDTO.toOffreStageInstaceDTO(offreStage));
         }
 
         return listeMappee;
     }
 
-    public List<OffreStageDTO> getStages() {
-        Optional<List<OffreStage>> offresRetournee = Optional.of(offreStageRepository.findAll());
+    public List<OffreStageDTO> getStages(String token) {
+
+        utilisateurService.getUserIdByToken(token);
+
+        List<OffreStage> offresRetournee = offreStageRepository.findAll();
 
         if(offresRetournee.isEmpty()) {
             return null;

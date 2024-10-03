@@ -6,8 +6,10 @@ import com.projet.mycose.service.dto.EtudiantDTO;
 import com.projet.mycose.service.dto.RegisterEnseignantDTO;
 import com.projet.mycose.service.dto.RegisterEtudiantDTO;
 import com.projet.mycose.service.dto.*;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,8 +38,6 @@ public class EtudiantController {
                     nouveauCompteEtudiant.getProgramme());
             return etudiantResultat != null ? ResponseEntity.status(HttpStatus.CREATED).body(etudiantResultat) : ResponseEntity.status(HttpStatus.CONFLICT).body("L'étudiant existe déjà ou les credentials sont invalides");
         }
-
-
     @PostMapping("/register/check-for-conflict")
     public ResponseEntity<Object> CreationDeCompte_CheckForConflict(@Valid @RequestBody CourrielTelephoneDTO courrielTelephoneDTO) {
             if (etudiantService.credentialsDejaPris(courrielTelephoneDTO.getCourriel(), courrielTelephoneDTO.getTelephone()))
@@ -47,9 +47,11 @@ public class EtudiantController {
         }
 
     @PostMapping("/getStages")
-    public ResponseEntity<List<OffreStageDTO>> getStages() {
+    public ResponseEntity<List<OffreStageDTO>> getStages(String token) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(etudiantService.getStages());
+            //return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
+                    //etudiantService.getStages(request.getHeader("Authorization")));
+            return ResponseEntity.status(HttpStatus.OK).body(etudiantService.getStages(token));
         } catch (Exception e) {
             return ResponseEntity.noContent().build();
         }
