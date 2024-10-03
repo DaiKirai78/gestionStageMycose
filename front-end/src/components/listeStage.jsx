@@ -3,8 +3,7 @@ import axios from "axios";
 
 const listeStage = () => {
 
-    const [stagesFormulaire, setStagesFormulaire] = useState(null);
-    const [stagesFichier, setStagesFichier] = useState(null);
+    const [stages, setStages] = useState(null);
 
     const [rechercheStage, setRechercheStage] = useState("");
     const [motsContenantRechercheTitre, setMotsContenantRechercheTitre] = useState(null);
@@ -16,29 +15,33 @@ const listeStage = () => {
     const [uneRechercheEstFaite, setUneRechercheEstFaite] = useState(false);
 
     let localhost = "http://localhost:8080/";
-    let urlGetFormulaireStage = "/api/offres/get-all-forms";
-    let urlGetFichierStage = "/api/offres-stage/get-all-files";
+    let urlGetFormulaireStage = "/etudiant/getStages";
 
-    // useEffect(async () => {
-    //     const responseForms = await axios.get(localhost + urlGetFormulaireStage);
-    //     setStagesFormulaire(responseForms.data);
-    //     const responseFiles = await axios.get(localhost + urlGetFichierStage);
-    //     setStagesFichier(responseFiles.data);
-    // }, []);
 
     useEffect(() => {
         fetchStages();
     }, []);
 
+
     const fetchStages = async () => {
         try {
-            const response = await axios.get("/stage.json");
-            setStagesFormulaire(response.data);
-            return response.data;
+            const responseForms = await axios.post(localhost + urlGetFormulaireStage);
+            setStages(responseForms.data);
+            return responseForms.data;
         } catch (error) {
             console.error("Erreur lors de la récupération des stages:", error);
         }
     };
+
+    // const fetchStages = async () => {
+    //     try {
+    //         const response = await axios.get("/stage.json");
+    //         setStages(response.data);
+    //         return response.data;
+    //     } catch (error) {
+    //         console.error("Erreur lors de la récupération des stages:", error);
+    //     }
+    // };
 
     function elementStageClique(stage) {
         setUnStageEstClique(true);
@@ -73,7 +76,7 @@ const listeStage = () => {
         let mapStages = new Map();
         let arrayMotsTrouvesTitre = [];
         let arrayMotsTrouvesEntreprise = [];
-        Object.entries(stagesFormulaire).forEach(([key, stage]) => {
+        Object.entries(stages).forEach(([key, stage]) => {
             const arrayofStringTitre = stage.titre.match(/\b[\wÀ-ÿ]+\b/gu);
             const arrayofStringEntreprise = stage.entreprise.match(/\b[\wÀ-ÿ]+\b/gu);
             const arrayofStringRecherche = rechercheStage.match(/\b[\wÀ-ÿ]+\b/gu);
@@ -130,7 +133,7 @@ const listeStage = () => {
                 )
                 .filter(Boolean);
 
-            setStagesFormulaire(resultatsFinals);
+            setStages(resultatsFinals);
         });
     }
 
@@ -177,10 +180,11 @@ const listeStage = () => {
                     des stages dans des
                     entreprises variées</h1>
                 <div className="flex flex-row">
-                    <input type="search" placeholder="Chercher un stage" id="searchInput" value={rechercheStage} onChange={(e) => {
-                        activerDesactiverRecherche(e);
-                        changeRechercheStage(e);
-                    }}
+                    <input type="search" placeholder="Chercher un stage" id="searchInput" value={rechercheStage}
+                           onChange={(e) => {
+                               activerDesactiverRecherche(e);
+                               changeRechercheStage(e);
+                           }}
                            className={`mt-6 mb-9 pt-3 pb-3 pl-14 text-md sm:text-xl rounded-l-3xl outline-0 w-full ${
                                uneRechercheEstFaite ? 'w-80' : 'w-full'
                            }`}></input>
@@ -192,7 +196,7 @@ const listeStage = () => {
                         uneRechercheEstFaite && (
                             <button id="clearSearch"
                                     className="mt-6 mb-9 pt-3 pb-3 w-8 sm:ml-1 md:ml-4 pr-8 sm:mr-0"
-                            onClick={supprimerRecherche}>
+                                    onClick={supprimerRecherche}>
                             </button>
                         )
                     }
@@ -200,15 +204,15 @@ const listeStage = () => {
                 <div>
                     <hr/>
                     {
-                        stagesFormulaire && stagesFormulaire.length > 0 ?
-                            stagesFormulaire.map((stage, index) => (
+                        stages && stages.length > 0 ?
+                            stages.map((stage, index) => (
                                 <>
                                     <div id="elementStage"
                                          className="flex flex-col w-full hover:cursor-pointer pb-3 pt-3 bg-orange-light transition-all duration-300 ease-in-out transform md:hover:-translate-y-1 md:hover:shadow-lg md:hover:rounded-t-xl"
                                          onClick={() => elementStageClique(stage)}>
                                         <div>
                                             <h3 key={index}
-                                                className="text-black text-xl pl-2 max-w-max pr-2">{surlignerRecherche(stage.titre, motsContenantRechercheTitre)}</h3>
+                                                className="text-black text-xl pl-2 max-w-max pr-2">{surlignerRecherche(stage.title, motsContenantRechercheTitre)}</h3>
                                             <h4 className="text-lg pl-2 max-w-max pr-2">{surlignerRecherche(stage.entreprise, motsContenantRechercheEntreprise)}</h4>
                                             <h4 className="pl-2 max-w-max pr-2">{stage.date}</h4>
                                         </div>
