@@ -66,10 +66,8 @@ public class FichierCVService {
     }
 
     public List<FichierCVDTO> getWaitingCv(int page) {
-        int indexOfFirstCv = (page - 1) * LIMIT_PER_PAGE;
-        int indexOfLastCv = page * LIMIT_PER_PAGE;
         Optional<List<FichierCV>> fichierCVSOptional = fileRepository.getFichierCVSByStatusEquals(FichierCV.Status.WAITING,
-                PageRequest.of(indexOfFirstCv, indexOfLastCv));
+                PageRequest.of(page, LIMIT_PER_PAGE));
 
         if (fichierCVSOptional.isEmpty()) {
             return new ArrayList<>();
@@ -80,6 +78,10 @@ public class FichierCVService {
         return fichierCVS.stream().map(this::convertToDTO).toList();
 
 
+    }
+
+    public void saveFile(FichierCV fichierCV) {
+        fileRepository.save(fichierCV);
     }
 //    public FichierOffreStage getFile(Long id) {
 //        return fileRepository.findById(id).orElseThrow(() -> new RuntimeException("Fichier non trouvé"));
