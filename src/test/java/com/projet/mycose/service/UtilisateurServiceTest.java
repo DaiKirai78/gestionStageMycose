@@ -1,10 +1,7 @@
 package com.projet.mycose.service;
 
 import com.projet.mycose.modele.Etudiant;
-import com.projet.mycose.repository.EmployeurRepository;
-import com.projet.mycose.repository.EnseignantRepository;
-import com.projet.mycose.repository.EtudiantRepository;
-import com.projet.mycose.repository.UtilisateurRepository;
+import com.projet.mycose.repository.*;
 import com.projet.mycose.security.JwtTokenProvider;
 import com.projet.mycose.security.exception.UserNotFoundException;
 import com.projet.mycose.service.dto.EtudiantDTO;
@@ -84,11 +81,13 @@ public class UtilisateurServiceTest {
         EtudiantRepository etudiantRepository = mock(EtudiantRepository.class);
         EmployeurRepository employeurRepository = mock(EmployeurRepository.class);
         EnseignantRepository enseignantRepository = mock(EnseignantRepository.class);
+        FormulaireOffreStageRepository formulaireOffreStageRepository = mock(FormulaireOffreStageRepository.class);
+        FichierOffreStageRepository fichierOffreStageRepository = mock(FichierOffreStageRepository.class);
         AuthenticationManager authenticationManagerMock = mock(AuthenticationManager.class);
         JwtTokenProvider jwtTokenProvider = mock(JwtTokenProvider.class);
         UtilisateurService utilisateurService = new UtilisateurService(utilisateurRepository, etudiantRepository, employeurRepository, enseignantRepository, authenticationManagerMock, jwtTokenProvider);
         PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);
-        EtudiantService etudiantService = new EtudiantService(etudiantRepository, passwordEncoder, utilisateurService);
+        EtudiantService etudiantService = new EtudiantService(etudiantRepository, passwordEncoder, utilisateurService, fichierOffreStageRepository, formulaireOffreStageRepository);
 
         String token = "Bearer valid_token";
         String email = "mihoubi@gmail.com";
