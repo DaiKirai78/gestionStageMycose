@@ -3,6 +3,7 @@ package com.projet.mycose.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.service.EnseignantService;
+import com.projet.mycose.service.UtilisateurService;
 import com.projet.mycose.service.dto.CourrielTelephoneDTO;
 import com.projet.mycose.service.dto.EnseignantDTO;
 import com.projet.mycose.service.dto.RegisterEnseignantDTO;
@@ -29,6 +30,10 @@ public class EnseignantControllerTest {
     private MockMvc mockMvc;
     @Mock
     private EnseignantService enseignantService;
+
+    @Mock
+    private UtilisateurService utilisateurService;
+
     @InjectMocks
     private EnseignantController enseignantController;
 
@@ -80,37 +85,5 @@ public class EnseignantControllerTest {
                         .with(csrf())
                         .with(user("michel").password("Mimi123$").roles("ENSEIGNANT")))
                 .andExpect(status().isConflict());
-    }
-
-    @Test
-    public void testCheckForConflict_Echec() throws Exception {
-        CourrielTelephoneDTO courrielTelephoneDTO = new CourrielTelephoneDTO("mihoubi@gmail.com", "438-639-2638");
-
-        when(enseignantService.credentialsDejaPris("mihoubi@gmail.com", "438-639-2638")).thenReturn(true);
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        String courrielTelephoneString = objectMapper.writeValueAsString(courrielTelephoneDTO);
-
-        this.mockMvc.perform(post("/enseignant/register/check-for-conflict")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(courrielTelephoneString)
-                        .with(csrf())
-                        .with(user("karim").password("Mimi123$").roles("ENSEIGNANT")))
-                .andExpect(status().isConflict());
-    }
-
-    @Test
-    public void testCheckForConflict_Succes() throws Exception {
-        CourrielTelephoneDTO courrielTelephoneDTO = new CourrielTelephoneDTO("mihoubi@gmail.com", "438-639-2638");
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        String courrielTelephoneString = objectMapper.writeValueAsString(courrielTelephoneDTO);
-
-        this.mockMvc.perform(post("/enseignant/register/check-for-conflict")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(courrielTelephoneString)
-                        .with(csrf())
-                        .with(user("karim").password("Mimi123$").roles("ENSEIGNANT")))
-                .andExpect(status().isOk());
     }
 }

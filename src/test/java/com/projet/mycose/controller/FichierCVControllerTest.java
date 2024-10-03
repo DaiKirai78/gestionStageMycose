@@ -56,6 +56,7 @@ public class FichierCVControllerTest {
         validFichierCVDTO.setFilename("validFile.pdf");
         validFichierCVDTO.setFileData("Base64FileData"); // Example Base64 data
 
+
         when(fichierCVService.saveFile(any(MultipartFile.class)))
                 .thenReturn(validFichierCVDTO);
 
