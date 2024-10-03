@@ -3,13 +3,12 @@ package com.projet.mycose.service;
 import com.projet.mycose.modele.Etudiant;
 import com.projet.mycose.modele.FichierOffreStage;
 import com.projet.mycose.modele.FormulaireOffreStage;
+import com.projet.mycose.modele.OffreStage;
 import com.projet.mycose.repository.EtudiantRepository;
 import com.projet.mycose.repository.FichierOffreStageRepository;
 import com.projet.mycose.repository.FormulaireOffreStageRepository;
-import com.projet.mycose.service.dto.EtudiantDTO;
-import com.projet.mycose.service.dto.FichierOffreStageDTO;
-import com.projet.mycose.service.dto.FormulaireOffreStageDTO;
-import com.projet.mycose.service.dto.OffresStagesDTO;
+import com.projet.mycose.repository.OffreStageRepository;
+import com.projet.mycose.service.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,8 +25,7 @@ public class EtudiantService {
 
     private final EtudiantRepository etudiantRepository;
     private final PasswordEncoder passwordEncoder;
-    private final FichierOffreStageRepository fichierOffreStageRepository;
-    private final FormulaireOffreStageRepository formulaireOffreStageRepository;
+    private final OffreStageRepository offreStageRepository;
 
     public EtudiantDTO creationDeCompte(String prenom, String nom, String numeroTelephone, String courriel, String motDePasse, String programme) {
         if (!credentialsDejaPris(courriel, numeroTelephone))
@@ -63,27 +61,15 @@ public class EtudiantService {
         return listeMappee;
     }
 
-    private List<FormulaireOffreStageDTO> listeFormulaireToDTO(Optional<List<FormulaireOffreStage>> listeAMapper) {
-        if(listeAMapper.isEmpty()) {
+    public List<OffreStageDTO> getStages() {
+        Optional<List<OffreStage>> offresRetournee = Optional.of(offreStageRepository.findAll());
+
+        if(offresRetournee.isEmpty()) {
             return null;
         }
 
-        List<FormulaireOffreStageDTO> listeMappee = new ArrayList<>();
-        for(FormulaireOffreStage formulaireOffreStage : listeAMapper.get()) {
-            listeMappee.add(FormulaireOffreStageDTO.toDTO(formulaireOffreStage));
-        }
-
-        return listeMappee;
-    }
-
-    public OffresStagesDTO getStages() {
-        Optional<List<FichierOffreStage>> listeFichiersRetournee = Optional.of(fichierOffreStageRepository.findAll());
-        Optional<List<FormulaireOffreStage>> listeFormulairesRetournee = Optional.of(formulaireOffreStageRepository.findAll());
-
-        List<FichierOffreStageDTO> listeFichiersEnvoyer = listeFichierToDTO(listeFichiersRetournee);
-        List<FormulaireOffreStageDTO> listeFormulairesEnvoyer = listeFormulaireToDTO(listeFormulairesRetournee);
-
-        return new OffresStagesDTO(listeFichiersEnvoyer, listeFormulairesEnvoyer);
+        //A FAIRE
+        return null;
     }
 
 }

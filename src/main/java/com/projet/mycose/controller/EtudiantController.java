@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 
+import java.util.List;
+
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("etudiant")
@@ -41,9 +43,9 @@ public class EtudiantController {
         }
 
     @GetMapping("/getStages")
-    public ResponseEntity<OffresStagesDTO> getStages() {
+    public ResponseEntity<List<OffreStageDTO>> getStages() {
         try {
-            return ResponseEntity.ok().body(etudiantService.getStages());
+            return ResponseEntity.status(HttpStatus.OK).body(etudiantService.getStages());
         } catch (Exception e) {
             return ResponseEntity.noContent().build();
         }
