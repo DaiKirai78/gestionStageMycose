@@ -49,13 +49,13 @@ public class FichierCVController {
         }
     }
 
-    @PostMapping("/waitingcv")
+    @GetMapping("/waitingcv")
     public ResponseEntity<List<FichierCVDTO>> getWaitingCv(@RequestParam int page) {
          List<FichierCVDTO> fichierCVDTOS = fichierCVService.getWaitingCv(page);
          return ResponseEntity.status(HttpStatus.OK).body(fichierCVDTOS);
     }
 
-    @PostMapping("/pages")
+    @GetMapping("/pages")
     public ResponseEntity<Integer> getAmountOfPages() {
         return ResponseEntity.status((HttpStatus.OK)).body(fichierCVService.getAmountOfPages());
     }
