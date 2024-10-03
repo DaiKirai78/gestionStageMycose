@@ -32,13 +32,4 @@ public class EtudiantController {
                     nouveauCompteEtudiant.getProgramme());
             return etudiantResultat != null ? ResponseEntity.status(HttpStatus.CREATED).body(etudiantResultat) : ResponseEntity.status(HttpStatus.CONFLICT).body("L'étudiant existe déjà ou les credentials sont invalides");
         }
-
-
-    @PostMapping("/register/check-for-conflict")
-    public ResponseEntity<Object> CreationDeCompte_CheckForConflict(@Valid @RequestBody CourrielTelephoneDTO courrielTelephoneDTO) {
-            if (etudiantService.credentialsDejaPris(courrielTelephoneDTO.getCourriel(), courrielTelephoneDTO.getTelephone()))
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("L'étudiant existe déjà ou les credentials sont invalides");
-            else
-                return ResponseEntity.status(HttpStatus.OK).body(courrielTelephoneDTO);
-        }
 }
