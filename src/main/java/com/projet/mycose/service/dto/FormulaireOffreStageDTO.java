@@ -3,6 +3,7 @@ package com.projet.mycose.service.dto;
 
 
 import com.projet.mycose.modele.FormulaireOffreStage;
+import com.projet.mycose.modele.OffreStage;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,9 +13,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class FormulaireOffreStageDTO {
+public class FormulaireOffreStageDTO extends OffreStageDTO {
 
-    private Long id;
+    //private Long id;
 
     @NotBlank(message = "Enterprise name is required.")
     private String entrepriseName;
@@ -48,7 +49,7 @@ public class FormulaireOffreStageDTO {
 
     @Builder
     public FormulaireOffreStageDTO(Long id, String entrepriseName, String employerName, String email, String website, String title, String location, String salary, String description) {
-        this.id = id;
+        super(id);
         this.entrepriseName = entrepriseName;
         this.employerName = employerName;
         this.email = email;

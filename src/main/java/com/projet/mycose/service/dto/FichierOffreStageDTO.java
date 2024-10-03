@@ -13,9 +13,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class FichierOffreStageDTO {
+public class FichierOffreStageDTO extends OffreStageDTO{
 
-    private Long id;
+    //private Long id;
 
     @NotBlank(message = "Filename is required.")
     @Size(max = 255, message = "Filename cannot exceed 255 characters.")
@@ -30,7 +30,7 @@ public class FichierOffreStageDTO {
 
     @Builder
     public FichierOffreStageDTO(long id, String filename, String fileData) {
-        this.id = id;
+        super(id);
         this.filename = filename;
         this.fileData = fileData;
     }

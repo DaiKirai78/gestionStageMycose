@@ -1,17 +1,20 @@
 package com.projet.mycose.modele;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "fichiersOffresStage")
+//@Table(name = "fichiersOffresStage")
 @Getter
 @Setter
-public class FichierOffreStage {
+@NoArgsConstructor
+@DiscriminatorValue("FILE")
+public class FichierOffreStage extends OffreStage{
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    //@Id
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
+    //private Long id;
 
     private String filename;
 

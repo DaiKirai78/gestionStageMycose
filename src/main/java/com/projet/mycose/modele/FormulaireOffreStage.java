@@ -2,17 +2,20 @@ package com.projet.mycose.modele;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "formulairesOffresStage")
+//@Table(name = "formulairesOffresStage")
 @Getter
 @Setter
-public class FormulaireOffreStage {
+@NoArgsConstructor
+@DiscriminatorValue("FORM")
+public class FormulaireOffreStage extends OffreStage{
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    //@Id
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
+    //private Long id;
 
     private String entrepriseName;
     private String employerName;
