@@ -41,7 +41,4 @@ public class FichierCV {
     private Status status = Status.WAITING;
 
     private String statusDescription;
-
-    @CreationTimestamp
-    private LocalDateTime createdAt;
 }
