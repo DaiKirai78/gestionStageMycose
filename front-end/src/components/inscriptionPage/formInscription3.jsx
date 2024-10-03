@@ -3,7 +3,7 @@ import Divider from '../divider.jsx';
 import InputErrorMessage from '../inputErrorMesssage.jsx';
 import { useState } from "react";
 import { useTranslation } from 'react-i18next';
-import ButtonConnection from '../connectionPage/connexionPage/buttonConnection.jsx';
+import ButtonConnection from '../connectionPage/buttonConnection.jsx';
 import { useNavigate } from 'react-router-dom';
 
 function FormInscription3({prenom, nom, email, telephone, setStep, role, nomOrganisation}) {
@@ -47,7 +47,7 @@ function FormInscription3({prenom, nom, email, telephone, setStep, role, nomOrga
 
         reponseStatus = await envoyerInfos();
 
-        if(reponseStatus != RESPONSE_OK) {
+        if(reponseStatus !== RESPONSE_OK) {
             setErrorKeyResponse("errorOccurredNotCode")
             return;
         }
@@ -79,7 +79,7 @@ function FormInscription3({prenom, nom, email, telephone, setStep, role, nomOrga
             'motDePasse': password,
         };
 
-        if (urlRole == "entreprise") {
+        if (urlRole === "entreprise") {
             body.nomOrganisation = nomOrganisation;
         }
 
@@ -175,7 +175,7 @@ function FormInscription3({prenom, nom, email, telephone, setStep, role, nomOrga
             <div className='flex flex-col px-10'>
                 <form method="get" className='flex flex-col sm:gap-5 gap-3'>
                     <div>
-                        {(errorKeyResponse != "") ? renderMessageErreur() : null}
+                        {(errorKeyResponse !== "") ? renderMessageErreur() : null}
                         <div className="w-full">
                             <Input label={t("inputLabelPassword")} color='black' size='lg' 
                             onChange={(e) => {changePasswordValue(e);}}

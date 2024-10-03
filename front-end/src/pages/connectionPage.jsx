@@ -1,5 +1,5 @@
 import React from 'react';
-import FormConnection from '../components/connectionPage/connexionPage/formConnection.jsx'
+import FormConnection from '../components/connectionPage/formConnection.jsx'
 import FormContainer from '../components/formContainer'
 
 const ConnectionPage = () => {

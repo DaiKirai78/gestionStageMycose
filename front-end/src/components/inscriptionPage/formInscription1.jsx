@@ -3,7 +3,7 @@ import Divider from '../divider.jsx';
 import InputErrorMessage from '../inputErrorMesssage.jsx';
 import { useState } from "react";
 import { useTranslation } from 'react-i18next';
-import ButtonConnection from '../connectionPage/connexionPage/buttonConnection.jsx';
+import ButtonConnection from '../connectionPage/buttonConnection.jsx';
 
 function FormInscription1({prenom, nom, setPrenom, setNom, setStep, role, setNomOrganisation, nomOrganisation}) {
 
@@ -117,7 +117,7 @@ function FormInscription1({prenom, nom, setPrenom, setNom, setStep, role, setNom
                         </div>
                     </div>
                     {
-                        role == "entreprise" &&
+                        role === "entreprise" &&
                         <div>
                             <div className="w-full">
                                 <Input label={t("inputLabelNomOrganisation")} color='black' size='lg'
