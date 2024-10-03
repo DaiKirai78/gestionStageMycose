@@ -10,12 +10,7 @@ import ConnectionPage from "./pages/connectionPage.jsx"
 import AcceuilPage from './pages/accueilPage.jsx';
 import InscriptionPage from './pages/inscriptionPage.jsx';
 import ValiderCVPage from './pages/validerCVPage.jsx';
-
 import "./i18n"
-import UploadOffreStage from "./components/uploadOffreStage.jsx";
-import UploadCV from "./components/uploadCV.jsx";
-import voirMonCV from "./components/voirMonCV.jsx";
-import VoirMonCV from "./components/voirMonCV.jsx";
 import VoirMonCVPage from "./pages/voirMonCVPage.jsx";
 import ValiderCV from "./components/validerCVPage/validerCV.jsx";
 import UploadCvPage from "./pages/uploadCvPage.jsx";
