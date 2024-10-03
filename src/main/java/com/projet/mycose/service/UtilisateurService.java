@@ -74,5 +74,14 @@ public class UtilisateurService {
                 EnseignantDTO.empty();
     }
 
+    public Long getUserIdByToken(String token) {
+        try{
+            UtilisateurDTO userRecu = getMe(token);
+            return userRecu.getId();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     // TODO: AJOUTER getGestionnaireDTO
 }
