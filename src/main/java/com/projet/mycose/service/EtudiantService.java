@@ -3,6 +3,7 @@ package com.projet.mycose.service;
 import com.projet.mycose.modele.Etudiant;
 import com.projet.mycose.modele.FichierOffreStage;
 import com.projet.mycose.modele.FormulaireOffreStage;
+import com.projet.mycose.modele.OffreStage;
 import com.projet.mycose.repository.EtudiantRepository;
 import com.projet.mycose.repository.FichierOffreStageRepository;
 import com.projet.mycose.repository.FormulaireOffreStageRepository;
@@ -27,6 +28,8 @@ public class EtudiantService {
     private final EtudiantRepository etudiantRepository;
     private final PasswordEncoder passwordEncoder;
     private final UtilisateurService utilisateurService;
+   
+    private final OffreStageRepository offreStageRepository;
 
     public EtudiantDTO creationDeCompte(String prenom, String nom, String numeroTelephone, String courriel, String motDePasse, String programme) {
         if (!utilisateurService.credentialsDejaPris(courriel, numeroTelephone))
