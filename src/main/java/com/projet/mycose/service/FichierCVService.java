@@ -7,15 +7,16 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Base64;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class FichierCVService {
+    private static final int LIMIT_PER_PAGE = 10;
     private final FichierCVRepository fileRepository;
     private final ModelMapper modelMapper;
     private final Validator validator;
@@ -62,6 +63,21 @@ public class FichierCVService {
         FichierCV fichierCV = convertToEntity(fichierCVDTO);
 
         return convertToDTO(fileRepository.save(fichierCV));
+    }
+
+    public List<FichierCVDTO> getWaitingCv(int page) {
+        Optional<List<FichierCV>> fichierCVSOptional = fileRepository.getFichierCVSByStatusEquals(FichierCV.Status.WAITING,
+                PageRequest.of(page, LIMIT_PER_PAGE));
+
+        if (fichierCVSOptional.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<FichierCV> fichierCVS = fichierCVSOptional.get();
+
+        return fichierCVS.stream().map(this::convertToDTO).toList();
+
+
     }
 //    public FichierOffreStage getFile(Long id) {
 //        return fileRepository.findById(id).orElseThrow(() -> new RuntimeException("Fichier non trouvé"));

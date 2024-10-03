@@ -52,6 +52,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/entreprise/**").hasAuthority("EMPLOYEUR")
                         .requestMatchers("/enseignant/**").hasAuthority("ENSEIGNANT")
                         .requestMatchers("/gestionnaire-stage/**").hasAuthority("GESTIONNAIRE_STAGE")
+                        .requestMatchers("/api/cv/waitingcv").hasAuthority("GESTIONNAIRE_STAGE")
                         .requestMatchers("/**").permitAll()
                         .anyRequest().denyAll()
                 )

@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Setter
 public class FichierCV {
 
-    enum Status {
+    public enum Status {
         WAITING,
         ACCEPTED,
         REFUSED
