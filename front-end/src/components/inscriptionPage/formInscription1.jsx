@@ -148,16 +148,16 @@ function FormInscription1({prenom, nom, setPrenom, setNom, setStep, role, setNom
                     }
                     {role === "etudiant" &&
                         <div>
-                            <label className="block mb-2 text-sm font-medium text-gray-700">{t("selectProgramme")}</label>
+                            <label className="block mb-2 text-sm font-medium text-gray-700">{t("choisirProgramme")}</label>
                             <select
                                 className="block w-full p-2 border border-gray-300 rounded-md"
                                 value={programme}
                                 onChange={(e) => {ChangeProgrammeValue(e);}}
                             >
-                                <option value="">-- {t("choisirProgramme")} --</option>
+                                <option value="" className={"text-center"}>-- {t("choisirProgramme")} --</option>
                                 {programmes.map((programme, index) => (
                                     <option key={index} value={programme}>
-                                        {programme}
+                                        {t(programme)}
                                     </option>
                                 ))}
                             </select>

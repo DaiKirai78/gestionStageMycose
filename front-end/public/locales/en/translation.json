@@ -76,5 +76,9 @@
     "acceptOrRefuseCV": "Accept or reject the student's CV",
     "accept": "Accept",
     "refuse": "Refuse",
-    "leaveComment": "Leave a comment (optional)"
+    "leaveComment": "Leave a comment (optional)",
+    "TECHNIQUE_INFORMATIQUE": "Computer Science",
+    "GENIE_LOGICIEL": "Software Engineering",
+    "RESEAU_TELECOMMUNICATION": "Telecommunication Network",
+    "choisirProgramme": "Choose a program"
 }

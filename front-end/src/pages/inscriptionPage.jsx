@@ -22,7 +22,7 @@ const InscriptionPage = () => {
             case 'deuxiemeEtape':
                 return <FormInscription2 email={email} setEmail={setEmail} telephone={telephone} setTelephone={setTelephone} setStep={setStep} role={role}/>
             case 'troisiemeEtape':
-                return <FormInscription3 prenom={prenom} nom={nom} email={email} telephone={telephone} setStep={setStep} role={role} nomOrganisation={nomOrganisation}/>
+                return <FormInscription3 prenom={prenom} nom={nom} email={email} telephone={telephone} setStep={setStep} role={role} nomOrganisation={nomOrganisation} programme={programme}/>
         }
     }
 
