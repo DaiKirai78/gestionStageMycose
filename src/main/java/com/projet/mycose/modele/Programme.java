@@ -6,7 +6,7 @@ import lombok.Getter;
 public enum Programme {
     TECHNIQUE_INFORMATIQUE("Technique de l'informatique"),
     GENIE_LOGICIEL("Génie logiciel"),
-    RESEAU("RÉSEAU"),
+    RESEAU("Réseau"),
     ;
 
     private final String programme;

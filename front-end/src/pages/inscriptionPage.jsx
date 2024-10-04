@@ -1,4 +1,3 @@
-import FormInscriptionEtudiant from '../components/inscriptionPage/formInscription2.jsx'
 import FormInscription1 from '../components/inscriptionPage/formInscription1.jsx';
 import FormContainer from '../components/formContainer.jsx';
 import { useState } from "react";
@@ -14,11 +13,12 @@ const InscriptionPage = () => {
     const [step, setStep] = useState('')
     const [role, setRole] = useState('etudiant');
     const [nomOrganisation, setNomOrganisation] = useState('');
+    const [programme, setProgramme] = useState('etudiant');
 
     function switchComponent(param) {
         switch (param) {
             case 'premiereEtape':
-                return <FormInscription1 prenom={prenom} nom={nom} setNom={setNom} setPrenom={setPrenom} setStep={setStep} role={role} setNomOrganisation={setNomOrganisation} nomOrganisation={nomOrganisation}/>;
+                return <FormInscription1 prenom={prenom} nom={nom} setNom={setNom} setPrenom={setPrenom} setStep={setStep} role={role} setNomOrganisation={setNomOrganisation} nomOrganisation={nomOrganisation} programme={programme} setProgramme={setProgramme}/>;
             case 'deuxiemeEtape':
                 return <FormInscription2 email={email} setEmail={setEmail} telephone={telephone} setTelephone={setTelephone} setStep={setStep} role={role}/>
             case 'troisiemeEtape':
@@ -28,7 +28,7 @@ const InscriptionPage = () => {
 
     return (
         <>
-        {step == "" ? <ChoixUserInscription  setRole={setRole} setStep={setStep}/> :
+        {step === "" ? <ChoixUserInscription setRole={setRole} setStep={setStep}/> :
             <FormContainer>
                 {switchComponent(step)}
             </FormContainer>}

@@ -7,7 +7,7 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import ConnectionPage from "./pages/connectionPage.jsx"
-import AcceuilPage from './pages/accueilPage.jsx';
+import AccueilPage from './pages/accueilPage.jsx';
 import InscriptionPage from './pages/inscriptionPage.jsx';
 import ValiderCVPage from './pages/validerCVPage.jsx';
 import "./i18n"
@@ -23,7 +23,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/accueil",
-    element: <AcceuilPage />
+    element: <AccueilPage />
   },
   {
     path: "/televerserOffreStage",
