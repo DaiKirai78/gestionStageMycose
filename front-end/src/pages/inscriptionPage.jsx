@@ -13,7 +13,7 @@ const InscriptionPage = () => {
     const [step, setStep] = useState('')
     const [role, setRole] = useState('etudiant');
     const [nomOrganisation, setNomOrganisation] = useState('');
-    const [programme, setProgramme] = useState('etudiant');
+    const [programme, setProgramme] = useState('');
 
     function switchComponent(param) {
         switch (param) {
