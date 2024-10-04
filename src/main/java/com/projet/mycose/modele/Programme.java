@@ -1,8 +1,11 @@
 package com.projet.mycose.modele;
 
+import lombok.Getter;
+
+@Getter
 public enum Programme {
-    TECHNIQUE_INFORMATIQUE("TECHNIQUE_INFORMATIQUE"),
-    GENIE_LOGICIEL("GÉNIE_LOGICIEL"),
+    TECHNIQUE_INFORMATIQUE("Technique de l'informatique"),
+    GENIE_LOGICIEL("Génie logiciel"),
     RESEAU("RÉSEAU"),
     ;
 
@@ -10,10 +13,6 @@ public enum Programme {
 
     Programme(String programme) {
         this.programme = programme;
-    }
-
-    public String getProgramme() {
-        return programme;
     }
 
     @Override

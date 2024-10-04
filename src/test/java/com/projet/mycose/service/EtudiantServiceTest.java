@@ -1,6 +1,7 @@
 package com.projet.mycose.service;
 
 import com.projet.mycose.modele.Etudiant;
+import com.projet.mycose.modele.Programme;
 import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.repository.EtudiantRepository;
 import com.projet.mycose.service.dto.EnseignantDTO;
@@ -40,12 +41,11 @@ public class EtudiantServiceTest {
     @Test
     public void creationDeCompteAvecSucces() {
         //Arrange
-
-        Etudiant etudiant = new Etudiant(1L, "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$", "Technique de l'informatique");
+        Etudiant etudiant = new Etudiant(1L, "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$", Programme.TECHNIQUE_INFORMATIQUE);
         when(etudiantRepositoryMock.save(any(Etudiant.class))).thenReturn(etudiant);
 
         //Act
-        EtudiantDTO etudiantDTO = etudiantService.creationDeCompte("Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$", "Technique de l'informatique");
+        EtudiantDTO etudiantDTO = etudiantService.creationDeCompte("Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$", Programme.TECHNIQUE_INFORMATIQUE);
 
         //Assert
         Assertions.assertEquals(etudiantDTO.getId(), 1);
@@ -53,7 +53,7 @@ public class EtudiantServiceTest {
         Assertions.assertEquals(etudiantDTO.getNom(), "Mihoubi");
         Assertions.assertEquals(etudiantDTO.getCourriel(), "mihoubi@gmail.com");
         Assertions.assertEquals(etudiantDTO.getNumeroDeTelephone(), "438-532-2729");
-        Assertions.assertEquals(etudiantDTO.getProgramme(), "Technique de l'informatique");
+        Assertions.assertEquals(etudiantDTO.getProgramme(), Programme.TECHNIQUE_INFORMATIQUE);
         Assertions.assertEquals(etudiantDTO.getRole(), Role.ETUDIANT);
     }
 
@@ -66,7 +66,7 @@ public class EtudiantServiceTest {
         //Act & Assert
         Assertions.assertThrows(
                 NullPointerException.class,
-                () -> etudiantService.creationDeCompte("Karim", "Mihoubi", numeroDeTelephoneInvalide, "mihoubi@gmail.com", "Mimi123$", "Technique de l'informatique")
+                () -> etudiantService.creationDeCompte("Karim", "Mihoubi", numeroDeTelephoneInvalide, "mihoubi@gmail.com", "Mimi123$", Programme.TECHNIQUE_INFORMATIQUE)
         );
     }
 
@@ -79,7 +79,7 @@ public class EtudiantServiceTest {
         //Act & Assert
         Assertions.assertThrows(
                 NullPointerException.class,
-                () -> etudiantService.creationDeCompte("Karim", "Mihoubi", "450-389-2628", courrielInvalide, "Mimi123$", "Technique de l'informatique")
+                () -> etudiantService.creationDeCompte("Karim", "Mihoubi", "450-389-2628", courrielInvalide, "Mimi123$", Programme.TECHNIQUE_INFORMATIQUE)
         );
     }
 
@@ -92,7 +92,7 @@ public class EtudiantServiceTest {
         //Act & Assert
         Assertions.assertThrows(
                 NullPointerException.class,
-                () -> etudiantService.creationDeCompte("Karim", "Mihoubi", "450-389-2628", "mihoubi@gmail.com", motDePasseInvalide, "Technique de l'informatique")
+                () -> etudiantService.creationDeCompte("Karim", "Mihoubi", "450-389-2628", "mihoubi@gmail.com", motDePasseInvalide, Programme.TECHNIQUE_INFORMATIQUE)
         );
     }
 
@@ -105,7 +105,7 @@ public class EtudiantServiceTest {
         //Act & Assert
         Assertions.assertThrows(
                 NullPointerException.class,
-                () -> etudiantService.creationDeCompte("Karim", "Mihoubi", "450-389-2628", "mihoubi@gmail.com", motDePasseInvalide, "Technique de l'informatique")
+                () -> etudiantService.creationDeCompte("Karim", "Mihoubi", "450-389-2628", "mihoubi@gmail.com", motDePasseInvalide, Programme.TECHNIQUE_INFORMATIQUE)
         );
     }
 
@@ -118,7 +118,7 @@ public class EtudiantServiceTest {
         //Act & Assert
         Assertions.assertThrows(
                 NullPointerException.class,
-                () -> etudiantService.creationDeCompte(prenomInvalide, "Mihoubi", "450-389-2628", "mihoubi@gmail.com", "Mimi123$", "Technique de l'informatique")
+                () -> etudiantService.creationDeCompte(prenomInvalide, "Mihoubi", "450-389-2628", "mihoubi@gmail.com", "Mimi123$", Programme.TECHNIQUE_INFORMATIQUE)
         );
     }
 
@@ -131,7 +131,7 @@ public class EtudiantServiceTest {
         //Act & Assert
         Assertions.assertThrows(
                 NullPointerException.class,
-                () -> etudiantService.creationDeCompte("Karim", nomInvalide, "450-389-2628", "mihoubi@gmail.com", "Mimi123$", "Technique de l'informatique")
+                () -> etudiantService.creationDeCompte("Karim", nomInvalide, "450-389-2628", "mihoubi@gmail.com", "Mimi123$", Programme.TECHNIQUE_INFORMATIQUE)
         );
     }
 
@@ -141,7 +141,7 @@ public class EtudiantServiceTest {
         when(utilisateurService.credentialsDejaPris("mihoubi@gmail.com", "450-691-0000")).thenReturn(true);
 
         // Act
-        EtudiantDTO result = etudiantService.creationDeCompte("Karim", "Mihoubi", "450-691-0000", "mihoubi@gmail.com", "Mimi123$", "Technique de l'informatique");
+        EtudiantDTO result = etudiantService.creationDeCompte("Karim", "Mihoubi", "450-691-0000", "mihoubi@gmail.com", "Mimi123$", Programme.TECHNIQUE_INFORMATIQUE);
 
         // Assert
         Assertions.assertNull(result);

@@ -4,6 +4,8 @@ import com.projet.mycose.modele.auth.Credentials;
 import com.projet.mycose.modele.auth.Role;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,12 +19,14 @@ import java.util.List;
 @Setter
 @Entity
 public class Etudiant extends Utilisateur {
-    private String programme;
+
+    @Enumerated(EnumType.STRING)
+    private Programme programme;
 //    private List<FichierOffreStage> stagesVisiblesFichiers;
 //    private List<FormulaireOffreStage> stagesVisiblesFormulaires;
 
     @Builder
-    public Etudiant(Long id, String prenom, String nom, String numeroDeTelephone, String courriel, String motDePasse, String programme) {
+    public Etudiant(Long id, String prenom, String nom, String numeroDeTelephone, String courriel, String motDePasse, Programme programme) {
         super(id,
                 prenom,
                 nom,
@@ -32,7 +36,7 @@ public class Etudiant extends Utilisateur {
     }
 
     // Sans Id
-    public Etudiant(String prenom, String nom, String numeroDeTelephone, String courriel, String motDePasse, String programme) {
+    public Etudiant(String prenom, String nom, String numeroDeTelephone, String courriel, String motDePasse, Programme programme) {
         super(prenom,
                 nom,
                 numeroDeTelephone,

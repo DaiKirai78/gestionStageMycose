@@ -1,6 +1,7 @@
 package com.projet.mycose.service;
 
 import com.projet.mycose.modele.Etudiant;
+import com.projet.mycose.modele.Programme;
 import com.projet.mycose.repository.*;
 import com.projet.mycose.security.JwtTokenProvider;
 import com.projet.mycose.security.exception.UserNotFoundException;
@@ -91,7 +92,7 @@ public class UtilisateurServiceTest {
 
         String token = "Bearer valid_token";
         String email = "mihoubi@gmail.com";
-        Etudiant etudiant = new Etudiant(1L, "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$", "Technique de l'informatique");
+        Etudiant etudiant = new Etudiant(1L, "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$", Programme.TECHNIQUE_INFORMATIQUE);
 
         when(etudiantRepository.save(any(Etudiant.class))).thenReturn(etudiant);
         when(jwtTokenProvider.getEmailFromJWT(anyString())).thenReturn(email);
@@ -99,7 +100,7 @@ public class UtilisateurServiceTest {
         when(etudiantRepository.findById(anyLong())).thenReturn(Optional.of(etudiant));
 
         // Act
-        etudiantService.creationDeCompte("Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$", "Technique de l'informatique");
+        etudiantService.creationDeCompte("Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$", Programme.TECHNIQUE_INFORMATIQUE);
         UtilisateurDTO result = utilisateurService.getMe(token);
 
         // Assert

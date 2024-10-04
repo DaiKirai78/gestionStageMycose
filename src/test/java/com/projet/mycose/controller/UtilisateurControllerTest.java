@@ -1,6 +1,7 @@
 package com.projet.mycose.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.projet.mycose.modele.Programme;
 import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.service.EtudiantService;
 import com.projet.mycose.service.UtilisateurService;
@@ -134,7 +135,7 @@ public class UtilisateurControllerTest {
     @Test
     public void testGetMe_Success() throws Exception {
         String token = "Bearer valid_token";
-        EtudiantDTO utilisateurDTO = new EtudiantDTO(1L, "Karim", "Mihoubi", "mihoubi@gmail.com", "438-508-2345", Role.ETUDIANT, "Technique de l'informatique");
+        EtudiantDTO utilisateurDTO = new EtudiantDTO(1L, "Karim", "Mihoubi", "mihoubi@gmail.com", "438-508-2345", Role.ETUDIANT, Programme.TECHNIQUE_INFORMATIQUE);
 
         when(utilisateurService.getMe(anyString())).thenReturn(utilisateurDTO);
 
@@ -151,7 +152,7 @@ public class UtilisateurControllerTest {
                 .andExpect(jsonPath("$.courriel").value("mihoubi@gmail.com"))
                 .andExpect(jsonPath("$.numeroDeTelephone").value("438-508-2345"))
                 .andExpect(jsonPath("$.role").value("ETUDIANT"))
-                .andExpect(jsonPath("$.programme").value("Technique de l'informatique"));
+                .andExpect(jsonPath("$.programme").value(Programme.TECHNIQUE_INFORMATIQUE.name()));
 
         verify(utilisateurService).getMe("Bearer valid_token");
     }
