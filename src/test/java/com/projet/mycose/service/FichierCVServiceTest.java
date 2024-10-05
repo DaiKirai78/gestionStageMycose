@@ -1,6 +1,8 @@
 package com.projet.mycose.service;
 
+import com.projet.mycose.modele.Etudiant;
 import com.projet.mycose.modele.FichierCV;
+import com.projet.mycose.repository.EtudiantRepository;
 import com.projet.mycose.repository.FichierCVRepository;
 import com.projet.mycose.service.dto.FichierCVDTO;
 import jakarta.validation.ConstraintViolation;
@@ -33,6 +35,9 @@ public class FichierCVServiceTest {
     private FichierCVRepository fileRepository;
 
     @Mock
+    private EtudiantRepository etudiantRepository;
+
+    @Mock
     private ModelMapper modelMapper;
 
     @Mock
@@ -47,16 +52,23 @@ public class FichierCVServiceTest {
     private FichierCV fichierCV;
     private FichierCVDTO fichierCVDTO;
 
+    private Etudiant etudiant;
+
     @BeforeEach
     void setUp() throws IOException {
         fichierCV = new FichierCV();
         fichierCV.setId(1L);
         fichierCV.setFilename("test.pdf");
         fichierCV.setData("Test file data".getBytes());
+        etudiant = new Etudiant();
+        etudiant.setId(1L);
+        fichierCV.setEtudiant(etudiant);
+
 
         fichierCVDTO = new FichierCVDTO();
         fichierCVDTO.setFilename("test.pdf");
         fichierCVDTO.setFileData(Base64.getEncoder().encodeToString("Test file data".getBytes()));
+        fichierCVDTO.setEtudiant_id(1L);
 
         when(multipartFile.getOriginalFilename()).thenReturn("test.pdf");
         when(multipartFile.getBytes()).thenReturn("Test file data".getBytes());
@@ -69,9 +81,10 @@ public class FichierCVServiceTest {
         when(fileRepository.save(any(FichierCV.class))).thenReturn(fichierCV);
         when(modelMapper.map(any(FichierCV.class), eq(FichierCVDTO.class))).thenReturn(fichierCVDTO);
         when(modelMapper.map(any(FichierCVDTO.class), eq(FichierCV.class))).thenReturn(fichierCV);
+        when(etudiantRepository.findById(anyLong())).thenReturn(Optional.of(etudiant));
 
         // Act
-        FichierCVDTO result = fichierCVService.saveFile(multipartFile);
+        FichierCVDTO result = fichierCVService.saveFile(multipartFile, 1L);
 
         // Assert
         assertNotNull(result);
@@ -89,7 +102,7 @@ public class FichierCVServiceTest {
 
         // Act & Assert
         assertThrows(ConstraintViolationException.class, () -> {
-            fichierCVService.saveFile(multipartFile);
+            fichierCVService.saveFile(multipartFile, 1L);
         });
         verify(fileRepository, never()).save(any(FichierCV.class));
     }
@@ -101,7 +114,7 @@ public class FichierCVServiceTest {
 
         // Act & Assert
         assertThrows(IOException.class, () -> {
-            fichierCVService.saveFile(multipartFile);
+            fichierCVService.saveFile(multipartFile, 1L);
         });
         verify(fileRepository, never()).save(any(FichierCV.class));
     }
