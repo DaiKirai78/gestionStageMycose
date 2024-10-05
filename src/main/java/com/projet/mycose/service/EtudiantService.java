@@ -61,6 +61,8 @@ public class EtudiantService {
     }
 
     public List<OffreStageDTO> getStages(String token) {
+        System.out.println("Mec j'adore token");
+        System.out.println(token);
 
         utilisateurService.getUserIdByToken(token);
 
