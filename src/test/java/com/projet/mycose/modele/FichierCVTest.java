@@ -1,7 +1,6 @@
 package com.projet.mycose.modele;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Mock;
@@ -25,7 +24,6 @@ class FichierCVTest {
     }
 
     @Test
-    @DisplayName("prePersist sets status to WAITING when status is null")
     void prePersist_SetsStatusToWaiting_WhenStatusIsNull() {
         // Arrange
         fichierCV.setStatus(null);
@@ -39,7 +37,6 @@ class FichierCVTest {
     }
 
     @Test
-    @DisplayName("prePersist does not change status when status is already set")
     void prePersist_DoesNotChangeStatus_WhenStatusIsAlreadySet() {
         // Arrange
         fichierCV.setStatus(FichierCV.Status.ACCEPTED);
