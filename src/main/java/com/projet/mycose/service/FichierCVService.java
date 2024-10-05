@@ -13,8 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Base64;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class FichierCVService {
@@ -79,7 +78,8 @@ public class FichierCVService {
 
         return fichierCVS.stream().map(this::convertToDTO).toList();
     }
-//    public FichierOffreStage getFile(Long id) {
-//        return fileRepository.findById(id).orElseThrow(() -> new RuntimeException("Fichier non trouvé"));
-//    }
+    public FichierCVDTO getFile(Long id) {
+         FichierCV fichierCV = fileRepository.findById(id).orElseThrow(() -> new RuntimeException("Fichier non trouvé"));
+         return convertToDTO(fichierCV);
+    }
 }
