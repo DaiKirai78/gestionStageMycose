@@ -1,5 +1,6 @@
 package com.projet.mycose.controller;
 
+import com.projet.mycose.modele.FichierCV;
 import com.projet.mycose.security.exception.AuthenticationException;
 import com.projet.mycose.service.FichierCVService;
 import com.projet.mycose.service.UtilisateurService;
@@ -14,10 +15,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -297,6 +300,62 @@ public class FichierCVControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError())
                 .andExpect(content().string("Fichier non trouvé"));
+    }
+
+    @Test
+    void test_acceptCv_OK() throws Exception {
+        // Act
+        doNothing().when(fichierCVService).changeStatus(1L, FichierCV.Status.ACCEPTED, "asd");
+        // Assert
+        mockMvc.perform(post("/api/cv/accept?id=1")
+                        .content("asd")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+    @Test
+    void test_acceptCv_UserNotFound() throws Exception {
+        // Act
+        doThrow(ChangeSetPersister.NotFoundException.class)
+                .when(fichierCVService)
+                .changeStatus(1L, FichierCV.Status.ACCEPTED, "asd");
+        // Assert
+        mockMvc.perform(post("/api/cv/accept?id=1")
+                        .content("asd")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+    @Test
+    void test_refuseCv_OK() throws Exception {
+        // Act
+        doNothing().when(fichierCVService).changeStatus(1L, FichierCV.Status.REFUSED, "asd");
+        // Assert
+        mockMvc.perform(post("/api/cv/refuse?id=1")
+                        .content("asd")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+    @Test
+    void test_refusetCv_UserNotFound() throws Exception {
+        // Act
+        doThrow(ChangeSetPersister.NotFoundException.class)
+                .when(fichierCVService)
+                .changeStatus(1L, FichierCV.Status.REFUSED, "asd");
+        // Assert
+        mockMvc.perform(post("/api/cv/refuse?id=1")
+                        .content("asd")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void test_getAmountOfPages_OK() throws Exception {
+        // Act
+        when(fichierCVService.getAmountOfPages()).thenReturn(4);
+
+        // Assert
+        mockMvc.perform(get("/api/cv/pages"))
+                .andExpect(content().string("4"))
+                .andExpect(status().isOk());
     }
 
 }

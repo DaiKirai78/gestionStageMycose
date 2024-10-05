@@ -90,4 +90,28 @@ public class FichierCVController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Fichier non trouvé");
         }
     }
+
+    @GetMapping("/pages")
+    public ResponseEntity<Integer> getAmountOfPages() {
+        return ResponseEntity.status((HttpStatus.OK)).body(fichierCVService.getAmountOfPages());
+    }
+
+    @PostMapping("/accept")
+    public ResponseEntity<?> acceptCV(@RequestParam Long id, @RequestBody String description) {
+        try {
+            fichierCVService.changeStatus(id, FichierCV.Status.ACCEPTED, description);
+            return ResponseEntity.ok().build();
+        } catch (ChangeSetPersister.NotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+    @PostMapping("/refuse")
+    public ResponseEntity<?> refuseCV(@RequestParam Long id, @RequestBody String description) {
+        try {
+            fichierCVService.changeStatus(id, FichierCV.Status.REFUSED, description);
+            return ResponseEntity.ok().build();
+        } catch (ChangeSetPersister.NotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }
