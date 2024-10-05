@@ -1,5 +1,6 @@
 package com.projet.mycose.controller;
 
+import com.projet.mycose.security.exception.AuthenticationException;
 import com.projet.mycose.service.FichierCVService;
 import com.projet.mycose.service.UtilisateurService;
 import com.projet.mycose.service.dto.FichierCVDTO;
@@ -7,11 +8,13 @@ import com.projet.mycose.service.dto.FichierOffreStageDTO;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
@@ -26,10 +29,8 @@ import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -158,6 +159,7 @@ public class FichierCVControllerTest {
         mockMvc.perform(post("/api/cv/waitingcv?page=1"))
                 .andExpect(status().isOk());
     }
+
     @Test
     void getWaitingCv_FoundCvs() throws Exception {
 
@@ -179,4 +181,122 @@ public class FichierCVControllerTest {
         mockMvc.perform(post("/api/cv/waitingcv?page=0"))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    void testGetCurrentCV_Success() throws Exception {
+        // Arrange
+        String authHeader = "Bearer validToken123";
+        Long userId = 1L;
+
+        FichierCVDTO mockFichierCVDTO = new FichierCVDTO();
+        mockFichierCVDTO.setId(1L);
+        mockFichierCVDTO.setFilename("test.pdf");
+        mockFichierCVDTO.setFileData("Base64EncodedData");
+        mockFichierCVDTO.setEtudiant_id(userId);
+
+        when(utilisateurService.getUserIdByToken(authHeader)).thenReturn(userId);
+        when(fichierCVService.getCurrentCV(userId)).thenReturn(mockFichierCVDTO);
+
+        // Act & Assert
+        mockMvc.perform(post("/api/cv/current")
+                        .header("Authorization", authHeader)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.filename").value("test.pdf"))
+                .andExpect(jsonPath("$.fileData").value("Base64EncodedData"))
+                .andExpect(jsonPath("$.etudiant_id").value(userId));
+    }
+
+    @Test
+    void testGetCurrentCV_Unauthorized() throws Exception {
+        // Arrange
+        String invalidAuthHeader = "Bearer invalidToken123";
+
+        when(utilisateurService.getUserIdByToken(invalidAuthHeader))
+                .thenThrow(new AuthenticationException(HttpStatus.UNAUTHORIZED, "Unauthorized access"));
+
+        // Act & Assert
+        mockMvc.perform(post("/api/cv/current")
+                        .header("Authorization", invalidAuthHeader)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().string("Unauthorized access"));
+    }
+
+    @Test
+    void testGetCurrentCV_FileNotFound() throws Exception {
+        // Arrange
+        String authHeader = "Bearer validToken123";
+        Long userId = 1L;
+
+        when(utilisateurService.getUserIdByToken(authHeader)).thenReturn(userId);
+        when(fichierCVService.getCurrentCV(userId))
+                .thenThrow(new RuntimeException("CV not found"));
+
+        // Act & Assert
+        mockMvc.perform(post("/api/cv/current")
+                        .header("Authorization", authHeader)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().string("Fichier non trouvé"));
+    }
+
+    @Test
+    void testDeleteCurrentCV_Success() throws Exception {
+        // Arrange
+        String authHeader = "Bearer validToken123";
+        Long userId = 1L;
+
+        FichierCVDTO mockFichierCVDTO = new FichierCVDTO();
+        mockFichierCVDTO.setId(1L);
+        mockFichierCVDTO.setFilename("test.pdf");
+        mockFichierCVDTO.setFileData("Base64EncodedData");
+        mockFichierCVDTO.setEtudiant_id(userId);
+
+        when(utilisateurService.getUserIdByToken(authHeader)).thenReturn(userId);
+        when(fichierCVService.deleteCurrentCV(userId)).thenReturn(mockFichierCVDTO);
+
+        // Act & Assert
+        mockMvc.perform(patch("/api/cv/delete_current")
+                        .header("Authorization", authHeader)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string("CV supprimé avec succès"));
+    }
+
+    @Test
+    void testDeleteCurrentCV_Unauthorized() throws Exception {
+        // Arrange
+        String invalidAuthHeader = "Bearer invalidToken123";
+
+        when(utilisateurService.getUserIdByToken(invalidAuthHeader))
+                .thenThrow(new AuthenticationException(HttpStatus.UNAUTHORIZED, "Unauthorized access"));
+
+        // Act & Assert
+        mockMvc.perform(patch("/api/cv/delete_current")
+                        .header("Authorization", invalidAuthHeader)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().string("Unauthorized access"));
+    }
+
+    @Test
+    void testDeleteCurrentCV_FileNotFound() throws Exception {
+        // Arrange
+        String authHeader = "Bearer validToken123";
+        Long userId = 1L;
+
+        when(utilisateurService.getUserIdByToken(authHeader)).thenReturn(userId);
+        doThrow(new RuntimeException("CV not found")).when(fichierCVService).deleteCurrentCV(userId);
+
+        // Act & Assert
+        mockMvc.perform(patch("/api/cv/delete_current")
+                        .header("Authorization", authHeader)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().string("Fichier non trouvé"));
+    }
+
 }
