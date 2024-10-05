@@ -93,8 +93,8 @@ public class FichierCVService {
          return convertToDTO(fichierCV);
     }
 
-    public FichierCVDTO getCurrentCV(Long id) {
-        FichierCV fichierCV = fileRepository.getFirstByIdAndStatusEquals(id, FichierCV.Status.ACCEPTED).orElseThrow(() -> new RuntimeException("Fichier non trouvé"));
+    public FichierCVDTO getCurrentCV(Long etudiant_id) {
+        FichierCV fichierCV = fileRepository.getFirstByEtudiant_IdAndStatusEquals(etudiant_id, FichierCV.Status.ACCEPTED).orElseThrow(() -> new RuntimeException("Fichier non trouvé"));
         return convertToDTO(fichierCV);
     }
 }
