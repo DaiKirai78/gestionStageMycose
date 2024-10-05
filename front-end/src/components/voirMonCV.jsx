@@ -1,26 +1,21 @@
 // src/components/VoirMonCV.js
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
+import {data} from "autoprefixer";
 //import pdfFile from "../assets/pdf.pdf";
 
 const VoirMonCV = () => {
     const [isFullscreen, setIsFullscreen] = useState(false);
     const pdfContainerRef = useRef(null);
     const [pdfUrl, setPdfUrl] = useState(null);
+    const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(true);
 
 
 
     useEffect(() => {
         fetchCV();
-
-        //Cleanup pour éviter de saturer la mémoire
-        return () => {
-            if (pdfUrl) {
-                URL.revokeObjectURL(pdfUrl);
-            }
-        };
-
-    }, [pdfUrl]);
+    }, []);
 
     const fetchCV = async () => {
         let token = localStorage.getItem("token");
@@ -28,18 +23,24 @@ const VoirMonCV = () => {
             const response = await axios.post("http://localhost:8080/api/cv/current", {}, {
                 headers: {
                     Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/pdf'
+                    'Content-Type': 'application/json'
                 },
-                responseType: 'blob'
             });
+            const base64String = response.data.fileData;
 
-            const blob = await response.blob();
-            const url = URL.createObjectURL(blob);
-            setPdfUrl(url);
+            if (!base64String) {
+                throw new Error("No PDF data found in the response.");
+            }
+
+            const dataUrl = `data:application/pdf;base64,${base64String}`;
+            setPdfUrl(dataUrl);
+            setLoading(false);
 
 
         } catch (error) {
             console.error("Erreur lors de la récupération du CV:", error);
+            setError("Impossible de charger le CV. Veuillez réessayer plus tard.");
+            setLoading(false);
         }
     };
 
@@ -85,17 +86,26 @@ const VoirMonCV = () => {
         <div className="flex flex-col items-center w-full p-4">
             <div className="flex flex-col items-center w-full py-1" id="pdf-parent"
                   ref={pdfContainerRef}>
-                {/* Container for the iframe */}
                 <div
                     id="pdf-container"
                     className="w-full max-w-4xl h-[80vh] sm:h-[90vh] md:h-[100vh] overflow-hidden rounded shadow-lg"
                 >
+                    {loading ? (
+                        <div className="flex items-center justify-center w-full h-full">
+                            <p>Loading PDF...</p>
+                        </div>
+                    ) : error ? (
+                        <div className="flex items-center justify-center w-full h-full text-red-500">
+                            {error}
+                        </div>
+                    ) : (
                     <iframe
                         src={pdfUrl}
                         title="Mon CV"
                         className="w-full h-full border-0"
                         allowFullScreen
                     ></iframe>
+                    )}
                 </div>
                 {/* Fullscreen Toggle Button */}
                 <button
