@@ -2,8 +2,8 @@ import { useState } from "react";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
 import { BsCloudArrowUpFill } from "react-icons/bs";
-import logoPdf from '../assets/pdficon.png'
-import InputErrorMessage from "./inputErrorMesssage";
+import logoPdf from '../../assets/pdficon.png'
+import InputErrorMessage from "../inputErrorMesssage.jsx";
 
 function FileOffreStage() {
     const { t } = useTranslation();

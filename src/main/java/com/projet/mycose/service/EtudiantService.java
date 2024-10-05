@@ -4,6 +4,7 @@ import com.projet.mycose.modele.Etudiant;
 import com.projet.mycose.modele.FichierOffreStage;
 import com.projet.mycose.modele.FormulaireOffreStage;
 import com.projet.mycose.modele.OffreStage;
+import com.projet.mycose.modele.Programme;
 import com.projet.mycose.repository.EtudiantRepository;
 import com.projet.mycose.repository.FichierOffreStageRepository;
 import com.projet.mycose.repository.FormulaireOffreStageRepository;
@@ -26,28 +27,14 @@ public class EtudiantService {
     private final EtudiantRepository etudiantRepository;
     private final PasswordEncoder passwordEncoder;
     private final UtilisateurService utilisateurService;
-   
+
     private final OffreStageRepository offreStageRepository;
 
-    public EtudiantDTO creationDeCompte(String prenom, String nom, String numeroTelephone, String courriel, String motDePasse, String programme) {
+    public EtudiantDTO creationDeCompte(String prenom, String nom, String numeroTelephone, String courriel, String motDePasse, Programme programme) {
         if (!utilisateurService.credentialsDejaPris(courriel, numeroTelephone))
             return EtudiantDTO.toDTO(etudiantRepository.save(new Etudiant(prenom, nom, numeroTelephone, courriel, passwordEncoder.encode(motDePasse), programme)));
         else
             return null;
-    }
-
-    public EtudiantDTO getEtudiantByCourriel(String courriel) {
-        Optional<Etudiant> optionalEtudiant = etudiantRepository.findEtudiantByCourriel(courriel);
-        return optionalEtudiant.map(EtudiantDTO::toDTO).orElse(null);
-    }
-
-    public EtudiantDTO getEtudiantByTelephone(String numero) {
-        Optional<Etudiant> optionalEtudiant = etudiantRepository.findEtudiantByNumeroDeTelephone(numero);
-        return optionalEtudiant.map(EtudiantDTO::toDTO).orElse(null);
-    }
-
-    public boolean credentialsDejaPris(String courriel, String numero) {
-        return getEtudiantByCourriel(courriel) != null || getEtudiantByTelephone(numero) != null;
     }
 
     private List<OffreStageDTO> listeOffreStageToDTO(List<OffreStage> listeAMapper) {
@@ -59,6 +46,7 @@ public class EtudiantService {
 
         return listeMappee;
     }
+
 
     public List<OffreStageDTO> getStages(String token) {
         System.out.println("Mec j'adore token");

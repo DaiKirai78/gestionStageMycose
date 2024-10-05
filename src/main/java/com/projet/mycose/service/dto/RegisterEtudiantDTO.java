@@ -1,5 +1,6 @@
 package com.projet.mycose.service.dto;
 
+import com.projet.mycose.modele.Programme;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -34,7 +35,5 @@ public class RegisterEtudiantDTO {
     @Pattern(regexp = "[a-zA-Z0-9$&+,:;=?@#|'<>.^*()%!-]{8,}", message = "Le mot de passe doit être une combinaison de 8 lettres, chiffres et symboles")
     private String motDePasse;
 
-    @NotBlank(message = "Le programme ne doit pas être vide.")
-    @Pattern(regexp = "[a-zA-ZéÉàÀ\\-\\s']+", message = "Le programme ne doit pas contenir de chiffre ou de symbole")
-    private String programme;
+    private Programme programme;
 }

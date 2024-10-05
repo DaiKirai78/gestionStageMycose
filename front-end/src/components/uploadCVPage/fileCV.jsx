@@ -2,8 +2,8 @@ import { useState } from "react";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
 import { BsCloudArrowUpFill } from "react-icons/bs";
-import logoPdf from '../assets/pdficon.png'
-import InputErrorMessage from "./inputErrorMesssage";
+import logoPdf from '../../assets/pdficon.png'
+import InputErrorMessage from "../inputErrorMesssage.jsx";
 
 function FileCV() {
     const { t } = useTranslation();
@@ -15,11 +15,13 @@ function FileCV() {
     const handleFileUpload = async () => {
         const formData = new FormData();
         formData.append("file", file);
+        let token = localStorage.getItem("token");
 
         try {
             const response = await axios.post("http://localhost:8080/api/cv/upload", formData,
                 {
                     headers: {
+                        Authorization: `Bearer ${token}`,
                         "Content-Type": "multipart/form-data",
                     },
                 });

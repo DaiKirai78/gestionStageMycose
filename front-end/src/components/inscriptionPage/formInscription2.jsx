@@ -1,9 +1,9 @@
 import {Input} from '@material-tailwind/react';
-import Divider from './divider';
+import Divider from '../divider.jsx';
 import { useState } from "react";
-import InputErrorMessage from './inputErrorMesssage';
+import InputErrorMessage from '../inputErrorMesssage.jsx';
 import { useTranslation } from 'react-i18next';
-import ButtonConnexion from './buttonConnexion';
+import ButtonConnection from '../connectionPage/buttonConnection.jsx';
 
 function FormInscription2({email, setEmail, telephone, setTelephone, setStep, role}) {
 
@@ -133,7 +133,7 @@ function FormInscription2({email, setEmail, telephone, setTelephone, setStep, ro
             <div className='flex flex-col px-10'>
                 <form method="get" className='flex flex-col sm:gap-5 gap-3'>
                     <div>
-                        {(errorKeyUserExiste != "") ? renderMessageErreur() : null}
+                        {(errorKeyUserExiste !== "") ? renderMessageErreur() : null}
 
                         <div className="w-full">
                             <Input label={t("inputLabelEmail")} color='black' size='lg' 
@@ -166,10 +166,10 @@ function FormInscription2({email, setEmail, telephone, setTelephone, setStep, ro
                 </form>
                 <p className="text-center mt-3 text-sm text-gray-800">2/3</p>
                 <Divider translateKey={"dejaCompte"}/>
-                <ButtonConnexion/>
+                <ButtonConnection/>
             </div>	
         </>
     );
-};
+}
 
 export default FormInscription2;
