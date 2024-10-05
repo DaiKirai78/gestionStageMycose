@@ -2,10 +2,7 @@ package com.projet.mycose.modele;
 
 import com.projet.mycose.modele.auth.Credentials;
 import com.projet.mycose.modele.auth.Role;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,6 +21,9 @@ public class Etudiant extends Utilisateur {
     private Programme programme;
 //    private List<FichierOffreStage> stagesVisiblesFichiers;
 //    private List<FormulaireOffreStage> stagesVisiblesFormulaires;
+
+    @OneToMany(mappedBy = "etudiant", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FichierCV> fichiersCV;
 
     @Builder
     public Etudiant(Long id, String prenom, String nom, String numeroDeTelephone, String courriel, String motDePasse, Programme programme) {

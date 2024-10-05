@@ -2,6 +2,7 @@ package com.projet.mycose.controller;
 
 
 import com.projet.mycose.modele.FichierCV;
+import com.projet.mycose.security.exception.AuthenticationException;
 import com.projet.mycose.service.FichierCVService;
 import com.projet.mycose.service.UtilisateurService;
 import com.projet.mycose.service.dto.FichierCVDTO;
@@ -9,6 +10,7 @@ import com.projet.mycose.service.dto.FichierOffreStageDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -37,9 +39,10 @@ public class FichierCVController {
     }
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
         try {
-            FichierCVDTO savedFileDTO = fichierCVService.saveFile(file);
+            Long etudiant_id = utilisateurService.getUserIdByToken(request.getHeader("Authorization"));
+            FichierCVDTO savedFileDTO = fichierCVService.saveFile(file, etudiant_id);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(savedFileDTO);
         } catch (ConstraintViolationException e) {
@@ -47,6 +50,7 @@ public class FichierCVController {
             e.getConstraintViolations().forEach(violation ->
                     errors.put(violation.getPropertyPath().toString(), violation.getMessage()));
 
+            System.out.println(errors);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
 
         } catch (IOException e) {
@@ -55,15 +59,18 @@ public class FichierCVController {
         }
     }
 
-    @PostMapping("/getCV")
-    public ResponseEntity<FichierCVDTO> getCV(HttpServletRequest request) {
-
+    @PostMapping("/current")
+    public ResponseEntity<?> getCV(HttpServletRequest request) {
         try {
             Long id = utilisateurService.getUserIdByToken(request.getHeader("Authorization"));
-            return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(fichierCVService.getFile(id));
+            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(fichierCVService.getCurrentCV(id));
 
+        } catch (AuthenticationException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized access");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Fichier non trouvé");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 

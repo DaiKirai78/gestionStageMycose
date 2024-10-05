@@ -40,10 +40,14 @@ public class FichierCV {
     private byte[] data;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "varchar(20) default 'WAITING'")
+    @Column(nullable = false)
     private Status status;
 
     private String statusDescription;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "etudiant_id", nullable = false)
+    private Etudiant etudiant;
 
     @PrePersist
     public void prePersist() {
@@ -61,6 +65,7 @@ public class FichierCV {
                 ", filename='" + filename + '\'' +
                 ", status=" + status +
                 ", statusDescription='" + statusDescription + '\'' +
+                ", etudiant=" + etudiant +
                 '}';
     }
 }
