@@ -20,12 +20,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
 public class EtudiantControllerTest {
@@ -33,9 +33,6 @@ public class EtudiantControllerTest {
     private MockMvc mockMvc;
     @Mock
     private EtudiantService etudiantService;
-
-    @Mock
-    private UtilisateurService utilisateurService;
 
     @InjectMocks
     private EtudiantController etudiantController;
@@ -90,4 +87,5 @@ public class EtudiantControllerTest {
                         .with(user("michel").password("Mimi123$").roles("ETUDIANT")))
                 .andExpect(status().isConflict());
     }
+
 }
