@@ -54,21 +54,21 @@ public class UtilisateurService {
         throw new AccessDeniedException("Accès refusé : Token manquant");
     }
 
-    private EtudiantDTO getEtudiantDTO(Long id) {
+    public EtudiantDTO getEtudiantDTO(Long id) {
         final Optional<Etudiant> etudiantOptional = etudiantRepository.findById(id);
         return etudiantOptional.isPresent() ?
                 EtudiantDTO.toDTO(etudiantOptional.get()) :
                 EtudiantDTO.empty();
     }
 
-    private EmployeurDTO getEmployeurDTO(Long id) {
+    public EmployeurDTO getEmployeurDTO(Long id) {
         final Optional<Employeur> employeurOptional = employeurRepository.findById(id);
         return employeurOptional.isPresent() ?
                 EmployeurDTO.toDTO(employeurOptional.get()) :
                 EmployeurDTO.empty();
     }
 
-    private EnseignantDTO getEnseignantDTO(Long id) {
+    public EnseignantDTO getEnseignantDTO(Long id) {
         final Optional<Enseignant> enseignantOptional = enseignantRepository.findById(id);
         return enseignantOptional.isPresent() ?
                 EnseignantDTO.toDTO(enseignantOptional.get()) :
