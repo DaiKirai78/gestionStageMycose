@@ -1,10 +1,54 @@
 // src/components/VoirMonCV.js
 import React, { useState, useEffect, useRef } from "react";
-import pdfFile from "../assets/pdf.pdf";
+import axios from "axios";
+//import pdfFile from "../assets/pdf.pdf";
 
 const VoirMonCV = () => {
     const [isFullscreen, setIsFullscreen] = useState(false);
     const pdfContainerRef = useRef(null);
+    const [pdfUrl, setPdfUrl] = useState(null);
+
+
+
+    useEffect(() => {
+        fetchCV();
+
+        //Cleanup pour éviter de saturer la mémoire
+        return () => {
+            if (pdfUrl) {
+                URL.revokeObjectURL(pdfUrl);
+            }
+        };
+
+    }, [pdfUrl]);
+
+    const fetchCV = async () => {
+        let token = localStorage.getItem("token");
+        try {
+            const response = await axios.post("http://localhost:8080/api/cv/current", {}, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/pdf'
+                },
+                responseType: 'blob'
+            });
+
+            const blob = await response.blob();
+            const url = URL.createObjectURL(blob);
+            setPdfUrl(url);
+
+
+        } catch (error) {
+            console.error("Erreur lors de la récupération du CV:", error);
+        }
+    };
+
+
+
+
+
+
+
 
     const toggleFullscreen = () => {
         const container = pdfContainerRef.current;
@@ -47,7 +91,7 @@ const VoirMonCV = () => {
                     className="w-full max-w-4xl h-[80vh] sm:h-[90vh] md:h-[100vh] overflow-hidden rounded shadow-lg"
                 >
                     <iframe
-                        src={pdfFile}
+                        src={pdfUrl}
                         title="Mon CV"
                         className="w-full h-full border-0"
                         allowFullScreen
