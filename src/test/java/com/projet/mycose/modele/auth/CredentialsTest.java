@@ -1,7 +1,5 @@
-package com.projet.mycose.auth;
+package com.projet.mycose.modele.auth;
 
-import com.projet.mycose.modele.auth.Credentials;
-import com.projet.mycose.modele.auth.Role;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
