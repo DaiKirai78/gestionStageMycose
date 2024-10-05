@@ -97,4 +97,10 @@ public class FichierCVService {
         FichierCV fichierCV = fileRepository.getFirstByEtudiant_IdAndStatusEquals(etudiant_id, FichierCV.Status.ACCEPTED).orElseThrow(() -> new RuntimeException("Fichier non trouvé"));
         return convertToDTO(fichierCV);
     }
+
+    public FichierCVDTO deleteCurrentCV(Long id) {
+        FichierCV fichierCV = fileRepository.getFirstByEtudiant_IdAndStatusEquals(id, FichierCV.Status.ACCEPTED).orElseThrow(() -> new RuntimeException("Fichier non trouvé"));
+        fichierCV.setStatus(FichierCV.Status.DELETED);
+        return convertToDTO(fileRepository.save(fichierCV));
+    }
 }

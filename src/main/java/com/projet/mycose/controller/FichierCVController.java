@@ -79,4 +79,19 @@ public class FichierCVController {
          List<FichierCVDTO> fichierCVDTOS = fichierCVService.getWaitingCv(page);
          return ResponseEntity.status(HttpStatus.OK).body(fichierCVDTOS);
     }
+
+    @PatchMapping("/delete_current")
+    public ResponseEntity<?> deleteCurrentCV(HttpServletRequest request) {
+        try {
+            Long id = utilisateurService.getUserIdByToken(request.getHeader("Authorization"));
+            fichierCVService.deleteCurrentCV(id);
+            return ResponseEntity.status(HttpStatus.OK).body("CV supprimé avec succès");
+        } catch (AuthenticationException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized access");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Fichier non trouvé");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
 }

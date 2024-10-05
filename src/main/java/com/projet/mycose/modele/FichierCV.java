@@ -20,7 +20,8 @@ public class FichierCV {
     public enum Status {
         WAITING,
         ACCEPTED,
-        REFUSED
+        REFUSED,
+        DELETED
     }
 
     @Id

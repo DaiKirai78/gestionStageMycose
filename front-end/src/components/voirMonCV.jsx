@@ -44,6 +44,28 @@ const VoirMonCV = () => {
         }
     };
 
+    const supprimerCV = async () => {
+        let token = localStorage.getItem("token");
+        try {
+            const response = await axios.patch("http://localhost:8080/api/cv/delete_current", {}, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+            });
+
+
+            setError("PDF supprimé avec succès.");
+
+
+
+
+        } catch (error) {
+            console.error("Erreur lors de la suppression du CV:", error);
+            setError("Erreur lors de la suppression du CV");
+        }
+    }
+
 
 
 
@@ -107,13 +129,20 @@ const VoirMonCV = () => {
                     ></iframe>
                     )}
                 </div>
-                {/* Fullscreen Toggle Button */}
-                <button
-                    onClick={toggleFullscreen}
-                    className="mt-4 px-4 py-2 bg-[#afafea] font-bold text-black p-2 rounded-lg hover:bg-[#7d7ded] cursor-pointer disabled:hover:bg-[#afafea] disabled:cursor-auto"
-                >
-                    {isFullscreen ? "Exit Full Screen" : "Full Screen"}
-                </button>
+                <div className="flex space-x-4">
+                    <button
+                        onClick={toggleFullscreen}
+                        className="mt-4 px-4 py-2 bg-[#afafea] font-bold text-black p-2 rounded-lg hover:bg-[#7d7ded] cursor-pointer disabled:hover:bg-[#afafea] disabled:cursor-auto"
+                    >
+                        {isFullscreen ? "Exit Full Screen" : "Full Screen"}
+                    </button>
+                    <button
+                        onClick={supprimerCV}
+                        className="mt-4 px-4 py-2 bg-[#dc3545] font-bold text-black p-2 rounded-lg hover:bg-[#c43540] cursor-pointer disabled:hover:bg-[#dc3545] disabled:cursor-auto"
+                    >
+                        Supprimer CV
+                    </button>
+                </div>
             </div>
         </div>
     );
