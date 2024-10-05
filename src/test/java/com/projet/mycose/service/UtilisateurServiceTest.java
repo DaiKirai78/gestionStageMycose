@@ -82,13 +82,11 @@ public class UtilisateurServiceTest {
         EtudiantRepository etudiantRepository = mock(EtudiantRepository.class);
         EmployeurRepository employeurRepository = mock(EmployeurRepository.class);
         EnseignantRepository enseignantRepository = mock(EnseignantRepository.class);
-        FormulaireOffreStageRepository formulaireOffreStageRepository = mock(FormulaireOffreStageRepository.class);
-        FichierOffreStageRepository fichierOffreStageRepository = mock(FichierOffreStageRepository.class);
         AuthenticationManager authenticationManagerMock = mock(AuthenticationManager.class);
         JwtTokenProvider jwtTokenProvider = mock(JwtTokenProvider.class);
         UtilisateurService utilisateurService = new UtilisateurService(utilisateurRepository, etudiantRepository, employeurRepository, enseignantRepository, authenticationManagerMock, jwtTokenProvider);
         PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);
-        EtudiantService etudiantService = new EtudiantService(etudiantRepository, passwordEncoder, utilisateurService, fichierOffreStageRepository, formulaireOffreStageRepository);
+        EtudiantService etudiantService = new EtudiantService(etudiantRepository, passwordEncoder, utilisateurService);
 
         String token = "Bearer valid_token";
         String email = "mihoubi@gmail.com";

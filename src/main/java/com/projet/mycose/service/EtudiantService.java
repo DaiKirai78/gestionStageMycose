@@ -28,28 +28,12 @@ public class EtudiantService {
     private final EtudiantRepository etudiantRepository;
     private final PasswordEncoder passwordEncoder;
     private final UtilisateurService utilisateurService;
-    private final FichierOffreStageRepository fichierOffreStageRepository;
-    private final FormulaireOffreStageRepository formulaireOffreStageRepository;
 
     public EtudiantDTO creationDeCompte(String prenom, String nom, String numeroTelephone, String courriel, String motDePasse, Programme programme) {
         if (!utilisateurService.credentialsDejaPris(courriel, numeroTelephone))
             return EtudiantDTO.toDTO(etudiantRepository.save(new Etudiant(prenom, nom, numeroTelephone, courriel, passwordEncoder.encode(motDePasse), programme)));
         else
             return null;
-    }
-
-    public EtudiantDTO getEtudiantByCourriel(String courriel) {
-        Optional<Etudiant> optionalEtudiant = etudiantRepository.findEtudiantByCourriel(courriel);
-        return optionalEtudiant.map(EtudiantDTO::toDTO).orElse(null);
-    }
-
-    public EtudiantDTO getEtudiantByTelephone(String numero) {
-        Optional<Etudiant> optionalEtudiant = etudiantRepository.findEtudiantByNumeroDeTelephone(numero);
-        return optionalEtudiant.map(EtudiantDTO::toDTO).orElse(null);
-    }
-
-    public boolean credentialsDejaPris(String courriel, String numero) {
-        return getEtudiantByCourriel(courriel) != null || getEtudiantByTelephone(numero) != null;
     }
 
     private List<FichierOffreStageDTO> listeFichierToDTO(Optional<List<FichierOffreStage>> listeAMapper) {
