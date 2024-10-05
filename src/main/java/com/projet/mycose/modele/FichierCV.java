@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 @Entity
 @Table(name = "fichiers_CV")
@@ -38,7 +39,28 @@ public class FichierCV {
     @Column(name = "data", columnDefinition = "BYTEA")
     private byte[] data;
 
-    private Status status = Status.WAITING;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, columnDefinition = "varchar(20) default 'WAITING'")
+    private Status status;
 
     private String statusDescription;
+
+    @PrePersist
+    public void prePersist() {
+        if (status == null) {
+            status = Status.WAITING;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "FichierCV{" +
+                "id=" + id +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", filename='" + filename + '\'' +
+                ", status=" + status +
+                ", statusDescription='" + statusDescription + '\'' +
+                '}';
+    }
 }
