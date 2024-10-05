@@ -1,6 +1,7 @@
 package com.projet.mycose.controller;
 
 import com.projet.mycose.service.FichierCVService;
+import com.projet.mycose.service.UtilisateurService;
 import com.projet.mycose.service.dto.FichierCVDTO;
 import com.projet.mycose.service.dto.FichierOffreStageDTO;
 import jakarta.validation.ConstraintViolation;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -35,6 +37,9 @@ public class FichierCVControllerTest {
 
     @Mock
     private FichierCVService fichierCVService;
+
+    @Mock
+    private UtilisateurService utilisateurService;
 
     @InjectMocks
     private FichierCVController fichierCVController;
@@ -58,19 +63,26 @@ public class FichierCVControllerTest {
         validFichierCVDTO.setId(1L);
         validFichierCVDTO.setFilename("validFile.pdf");
         validFichierCVDTO.setFileData("Base64FileData"); // Example Base64 data
+        validFichierCVDTO.setEtudiant_id(1L);
+
+        String testToken = "Bearer testToken123";
+        when(utilisateurService.getUserIdByToken(eq(testToken))).thenReturn(1L);
 
 
-        when(fichierCVService.saveFile(any(MultipartFile.class)))
+        when(fichierCVService.saveFile(any(MultipartFile.class), eq(1L)))
                 .thenReturn(validFichierCVDTO);
 
         // Act & Assert
         mockMvc.perform(multipart("/api/cv/upload")
                         .file(mockFile)
+                        .header("Authorization", testToken)
                         .contentType(MediaType.MULTIPART_FORM_DATA))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.filename").value("validFile.pdf"));
+                .andExpect(jsonPath("$.filename").value("validFile.pdf"))
+                .andExpect(jsonPath("$.fileData").value("Base64FileData"))
+                .andExpect(jsonPath("$.etudiant_id").value(1));
     }
 
     @Test
@@ -90,6 +102,9 @@ public class FichierCVControllerTest {
         // Stubbing the violation message
         when(mockViolation.getMessage()).thenReturn("Invalid filename format. Only PDF files are allowed.");
 
+        String testToken = "Bearer testToken123";
+        when(utilisateurService.getUserIdByToken(eq(testToken))).thenReturn(1L);
+
         // Create a set of violations to mock the validator behavior
         Set<ConstraintViolation<FichierOffreStageDTO>> violations = new HashSet<>();
         violations.add(mockViolation);
@@ -98,12 +113,13 @@ public class FichierCVControllerTest {
         ConstraintViolationException mockConstraintViolationException = new ConstraintViolationException(violations);
 
         // Simulate the service throwing the mocked ConstraintViolationException
-        when(fichierCVService.saveFile(any(MultipartFile.class)))
+        when(fichierCVService.saveFile(any(MultipartFile.class), eq(1L)))
                 .thenThrow(mockConstraintViolationException);
 
         // Act & Assert: Perform the request and check for BadRequest (400) response and validate error messages
         mockMvc.perform(multipart("/api/cv/upload")
                         .file(mockFile)
+                        .header("Authorization", testToken)
                         .contentType(MediaType.MULTIPART_FORM_DATA))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.filename").value("Invalid filename format. Only PDF files are allowed."));
@@ -116,13 +132,18 @@ public class FichierCVControllerTest {
         MockMultipartFile mockFile = new MockMultipartFile("file", "validFile.pdf",
                 MediaType.APPLICATION_PDF_VALUE, "Some content".getBytes());
 
+
+        String testToken = "Bearer testToken123";
+        when(utilisateurService.getUserIdByToken(eq(testToken))).thenReturn(1L);
+
         // Simulate an IOException when the service tries to save the file
-        when(fichierCVService.saveFile(any(MultipartFile.class)))
+        when(fichierCVService.saveFile(any(MultipartFile.class), eq(1L)))
                 .thenThrow(new IOException("File error"));
 
         // Act & Assert: Perform the request and expect InternalServerError (500)
         mockMvc.perform(multipart("/api/cv/upload")
                         .file(mockFile)
+                        .header("Authorization", testToken)
                         .contentType(MediaType.MULTIPART_FORM_DATA))
                 .andExpect(status().isInternalServerError());
     }
