@@ -6,12 +6,21 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "fichiers_CV")
 @Getter
 @Setter
 public class FichierCV {
+
+    public enum Status {
+        WAITING,
+        ACCEPTED,
+        REFUSED
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,4 +38,7 @@ public class FichierCV {
     @Column(name = "data", columnDefinition = "BYTEA")
     private byte[] data;
 
+    private Status status = Status.WAITING;
+
+    private String statusDescription;
 }

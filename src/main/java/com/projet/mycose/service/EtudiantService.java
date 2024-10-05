@@ -3,6 +3,7 @@ package com.projet.mycose.service;
 import com.projet.mycose.modele.Etudiant;
 import com.projet.mycose.modele.FichierOffreStage;
 import com.projet.mycose.modele.FormulaireOffreStage;
+import com.projet.mycose.modele.Programme;
 import com.projet.mycose.repository.EtudiantRepository;
 import com.projet.mycose.repository.FichierOffreStageRepository;
 import com.projet.mycose.repository.FormulaireOffreStageRepository;
@@ -27,8 +28,10 @@ public class EtudiantService {
     private final EtudiantRepository etudiantRepository;
     private final PasswordEncoder passwordEncoder;
     private final UtilisateurService utilisateurService;
+    private final FichierOffreStageRepository fichierOffreStageRepository;
+    private final FormulaireOffreStageRepository formulaireOffreStageRepository;
 
-    public EtudiantDTO creationDeCompte(String prenom, String nom, String numeroTelephone, String courriel, String motDePasse, String programme) {
+    public EtudiantDTO creationDeCompte(String prenom, String nom, String numeroTelephone, String courriel, String motDePasse, Programme programme) {
         if (!utilisateurService.credentialsDejaPris(courriel, numeroTelephone))
             return EtudiantDTO.toDTO(etudiantRepository.save(new Etudiant(prenom, nom, numeroTelephone, courriel, passwordEncoder.encode(motDePasse), programme)));
         else
@@ -75,7 +78,7 @@ public class EtudiantService {
         return listeMappee;
     }
 
-    public OffresStagesDTO getStages() {
+    /*public OffresStagesDTO getStages() {
         Optional<List<FichierOffreStage>> listeFichiersRetournee = Optional.of(fichierOffreStageRepository.findAll());
         Optional<List<FormulaireOffreStage>> listeFormulairesRetournee = Optional.of(formulaireOffreStageRepository.findAll());
 
@@ -83,6 +86,6 @@ public class EtudiantService {
         List<FormulaireOffreStageDTO> listeFormulairesEnvoyer = listeFormulaireToDTO(listeFormulairesRetournee);
 
         return new OffresStagesDTO(listeFichiersEnvoyer, listeFormulairesEnvoyer);
-    }
+    }*/
 
 }

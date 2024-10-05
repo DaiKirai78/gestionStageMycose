@@ -4,7 +4,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.time.LocalDateTime;
 
 
 @Getter
@@ -23,5 +26,13 @@ public class FichierCVDTO {
     @Pattern(regexp = "^[A-Za-z0-9+/=]+$",
             message = "Invalid file data. Should be Base64 encoded.")
     private String fileData;
+
+    @NotBlank(message = "A status is required")
+    private String status;
+
+    private String statusDescription;
+
+    @NotBlank(message = "A creation date is required")
+    private LocalDateTime createdAt;
 
 }

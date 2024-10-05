@@ -1,7 +1,7 @@
 package com.projet.mycose.controller;
 
 
-import com.projet.mycose.modele.FichierOffreStage;
+import com.projet.mycose.modele.FichierCV;
 import com.projet.mycose.service.FichierCVService;
 import com.projet.mycose.service.UtilisateurService;
 import com.projet.mycose.service.dto.FichierCVDTO;
@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -64,5 +65,11 @@ public class FichierCVController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
+    }
+
+    @PostMapping("/waitingcv")
+    public ResponseEntity<List<FichierCVDTO>> getWaitingCv(@RequestParam int page) {
+         List<FichierCVDTO> fichierCVDTOS = fichierCVService.getWaitingCv(page);
+         return ResponseEntity.status(HttpStatus.OK).body(fichierCVDTOS);
     }
 }

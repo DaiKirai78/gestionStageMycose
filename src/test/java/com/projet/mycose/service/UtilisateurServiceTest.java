@@ -1,10 +1,8 @@
 package com.projet.mycose.service;
 
 import com.projet.mycose.modele.Etudiant;
-import com.projet.mycose.repository.EmployeurRepository;
-import com.projet.mycose.repository.EnseignantRepository;
-import com.projet.mycose.repository.EtudiantRepository;
-import com.projet.mycose.repository.UtilisateurRepository;
+import com.projet.mycose.modele.Programme;
+import com.projet.mycose.repository.*;
 import com.projet.mycose.security.JwtTokenProvider;
 import com.projet.mycose.security.exception.UserNotFoundException;
 import com.projet.mycose.service.dto.EtudiantDTO;
@@ -84,15 +82,17 @@ public class UtilisateurServiceTest {
         EtudiantRepository etudiantRepository = mock(EtudiantRepository.class);
         EmployeurRepository employeurRepository = mock(EmployeurRepository.class);
         EnseignantRepository enseignantRepository = mock(EnseignantRepository.class);
+        FormulaireOffreStageRepository formulaireOffreStageRepository = mock(FormulaireOffreStageRepository.class);
+        FichierOffreStageRepository fichierOffreStageRepository = mock(FichierOffreStageRepository.class);
         AuthenticationManager authenticationManagerMock = mock(AuthenticationManager.class);
         JwtTokenProvider jwtTokenProvider = mock(JwtTokenProvider.class);
         UtilisateurService utilisateurService = new UtilisateurService(utilisateurRepository, etudiantRepository, employeurRepository, enseignantRepository, authenticationManagerMock, jwtTokenProvider);
         PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);
-        EtudiantService etudiantService = new EtudiantService(etudiantRepository, passwordEncoder, utilisateurService);
+        EtudiantService etudiantService = new EtudiantService(etudiantRepository, passwordEncoder, utilisateurService, fichierOffreStageRepository, formulaireOffreStageRepository);
 
         String token = "Bearer valid_token";
         String email = "mihoubi@gmail.com";
-        Etudiant etudiant = new Etudiant(1L, "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$", "Technique de l'informatique");
+        Etudiant etudiant = new Etudiant(1L, "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$", Programme.TECHNIQUE_INFORMATIQUE);
 
         when(etudiantRepository.save(any(Etudiant.class))).thenReturn(etudiant);
         when(jwtTokenProvider.getEmailFromJWT(anyString())).thenReturn(email);
@@ -100,7 +100,7 @@ public class UtilisateurServiceTest {
         when(etudiantRepository.findById(anyLong())).thenReturn(Optional.of(etudiant));
 
         // Act
-        etudiantService.creationDeCompte("Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$", "Technique de l'informatique");
+        etudiantService.creationDeCompte("Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$", Programme.TECHNIQUE_INFORMATIQUE);
         UtilisateurDTO result = utilisateurService.getMe(token);
 
         // Assert
