@@ -38,7 +38,7 @@ const FormConnection = () => {
         if(!verifierInputs()) {
             return;
         }
-        
+
         sendLoginInfo({email, password});
     }
 
@@ -61,7 +61,7 @@ const FormConnection = () => {
             if (res.status === REPSONSE_CODE_ACCEPTED) {
                 const data = await res.json();
                 localStorage.setItem('token', data.accessToken);
-                navigate("/acceuil")
+                navigate("/accueil")
             } else if (res.status === ERROR_CODE_UNAUTHORIZED) {
                 setErrorKeyResponse("wrongEmailOrPassword")
             } else {
@@ -84,7 +84,7 @@ const FormConnection = () => {
     function verifierInputs() {
         const emailValide = verifierCourriel();
         const passwordValide = verifierMotDePasse();
-        
+
         return emailValide && passwordValide;
     }
 
@@ -135,12 +135,17 @@ const FormConnection = () => {
             <form method="get" className='flex flex-col sm:gap-5 gap-3'>
                 <div>
                     <div className="w-full">
-                        <Input label={t("email")} color='black' size='lg'
-                        onChange={(e) => {changeEmailValue(e);}}
-                        type='email'
-                        autoComplete='on'
-                        value={email}
-                        error={errorKeyEmail.length > 0}
+                        <Input
+                            label={t("email")}
+                            color='black'
+                            size='lg'
+                            onChange={(e) => {
+                                changeEmailValue(e);
+                            }}
+                            type='email'
+                            autoComplete='on'
+                            value={email}
+                            error={errorKeyEmail.length > 0}
                         />
                         <InputErrorMessage messageKey={errorKeyEmail}/>
                     </div>
@@ -148,19 +153,21 @@ const FormConnection = () => {
                 <div>
                     <div className="w-full">
                         <Input label={t("password")} color='black' size='lg'
-                        onChange={(e) => {changePasswordValue(e);}}
-                        type='password'
-                        autoComplete='on'
-                        value={password}
-                        error={errorKeyPassword.length > 0}
+                               onChange={(e) => {
+                                   changePasswordValue(e);
+                               }}
+                               type='password'
+                               autoComplete='on'
+                               value={password}
+                               error={errorKeyPassword.length > 0}
                         />
                         <InputErrorMessage messageKey={errorKeyPassword}/>
                     </div>
                 </div>
-                <button className='border p-2 border-black rounded-[7px] hover:shadow-md' onClick={onLogin} disabled={isFetching}>{isFetching ? t("loading") : t("login")}</button>
+                <button className='border p-2 border-black rounded-[7px] hover:shadow-md text-md' onClick={onLogin} disabled={isFetching}>{isFetching ? t("loading") : t("login")}</button>
             </form>
             <Divider translateKey="newOnMycose"/>
-            <button className='p-2 border border-black bg-black rounded-[7px] text-white hover:shadow-lg hover:bg-gray-900' disabled={isFetching} onClick={goToInscription} >{t("signin")}</button>
+            <button className='p-2 border border-black bg-black rounded-[7px] text-white hover:shadow-lg hover:bg-gray-900 text-md' disabled={isFetching} onClick={goToInscription} >{t("signin")}</button>
         </div>
     );
 };

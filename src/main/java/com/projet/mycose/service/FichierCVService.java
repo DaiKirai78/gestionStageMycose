@@ -1,8 +1,9 @@
 package com.projet.mycose.service;
 
 import com.projet.mycose.modele.FichierCV;
+import com.projet.mycose.modele.FichierOffreStage;
+import com.projet.mycose.repository.EtudiantRepository;
 import com.projet.mycose.repository.FichierCVRepository;
-import com.projet.mycose.security.exception.UserNotFoundException;
 import com.projet.mycose.service.dto.FichierCVDTO;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -22,11 +23,14 @@ public class FichierCVService {
     private final FichierCVRepository fileRepository;
     private final ModelMapper modelMapper;
     private final Validator validator;
+    private final EtudiantRepository etudiantRepository;
 
-    public FichierCVService(FichierCVRepository fileRepository, ModelMapper modelMapper, Validator validator) {
+
+    public FichierCVService(FichierCVRepository fileRepository, ModelMapper modelMapper, Validator validator, EtudiantRepository etudiantRepository) {
         this.fileRepository = fileRepository;
         this.modelMapper = modelMapper;
         this.validator = validator;
+        this.etudiantRepository = etudiantRepository;
     }
 
     // Convert Entity to DTO
@@ -35,6 +39,8 @@ public class FichierCVService {
 
         // Convert byte[] data to Base64 string
         fichierCVDTO.setFileData(Base64.getEncoder().encodeToString(fichierCV.getData()));
+
+        fichierCVDTO.setEtudiant_id(fichierCV.getEtudiant().getId());
 
         return fichierCVDTO;
     }
@@ -46,16 +52,19 @@ public class FichierCVService {
         // Convert Base64 string back to byte[]
         fichierCV.setData(Base64.getDecoder().decode(dto.getFileData()));
 
+        fichierCV.setEtudiant(etudiantRepository.findById(dto.getEtudiant_id()).orElseThrow(() -> new RuntimeException("Etudiant non trouvé")));
+
         return fichierCV;
     }
 
 
-    public FichierCVDTO saveFile(MultipartFile file) throws ConstraintViolationException, IOException {
+    public FichierCVDTO saveFile(MultipartFile file, Long etudiant_id) throws ConstraintViolationException, IOException {
 
         FichierCVDTO fichierCVDTO = new FichierCVDTO();
 
         fichierCVDTO.setFilename(file.getOriginalFilename());
         fichierCVDTO.setFileData(Base64.getEncoder().encodeToString(file.getBytes()));
+        fichierCVDTO.setEtudiant_id(etudiant_id);
 
         Set<ConstraintViolation<FichierCVDTO>> violations = validator.validate(fichierCVDTO);
         if (!violations.isEmpty()) {
@@ -63,6 +72,7 @@ public class FichierCVService {
         }
 
         FichierCV fichierCV = convertToEntity(fichierCVDTO);
+        System.out.println(fichierCV.toString());
 
         return convertToDTO(fileRepository.save(fichierCV));
     }
@@ -96,7 +106,20 @@ public class FichierCVService {
         fichierCV.setStatusDescription(description);
         fileRepository.save(fichierCV);
     }
-//    public FichierOffreStage getFile(Long id) {
-//        return fileRepository.findById(id).orElseThrow(() -> new RuntimeException("Fichier non trouvé"));
-//    }
+
+    public FichierCVDTO getFile(Long id) {
+         FichierCV fichierCV = fileRepository.findById(id).orElseThrow(() -> new RuntimeException("Fichier non trouvé"));
+         return convertToDTO(fichierCV);
+    }
+
+    public FichierCVDTO getCurrentCV(Long etudiant_id) {
+        FichierCV fichierCV = fileRepository.getFirstByEtudiant_IdAndStatusEquals(etudiant_id, FichierCV.Status.ACCEPTED).orElseThrow(() -> new RuntimeException("Fichier non trouvé"));
+        return convertToDTO(fichierCV);
+    }
+
+    public FichierCVDTO deleteCurrentCV(Long id) {
+        FichierCV fichierCV = fileRepository.getFirstByEtudiant_IdAndStatusEquals(id, FichierCV.Status.ACCEPTED).orElseThrow(() -> new RuntimeException("Fichier non trouvé"));
+        fichierCV.setStatus(FichierCV.Status.DELETED);
+        return convertToDTO(fileRepository.save(fichierCV));
+    }
 }

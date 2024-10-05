@@ -20,7 +20,6 @@ function FormInscription2({email, setEmail, telephone, setTelephone, setStep, ro
     const [errorKeyUserExiste, setErrorKeyUserExiste] = useState('');
 
     const { t } = useTranslation();
-    let urlRole;
 
     async function onNext(e) {
         e.preventDefault();
@@ -30,18 +29,6 @@ function FormInscription2({email, setEmail, telephone, setTelephone, setStep, ro
         }
 
         var reponseStatus;
-
-        switch (role) {
-            case 'etudiant':
-                urlRole = "etudiant";           
-                break;
-            case 'professeur':
-                urlRole = "enseignant";
-                break;
-            case 'entreprise':
-                urlRole = "entreprise";
-                break;
-        }
         
         reponseStatus = await verifierUser();
 
@@ -71,7 +58,7 @@ function FormInscription2({email, setEmail, telephone, setTelephone, setStep, ro
         });
         var res;
         try {
-            res = await fetch("http://localhost:8080/" + urlRole + "/register/check-for-conflict", {
+            res = await fetch("http://localhost:8080/utilisateur/register/check-for-conflict", {
                 method: 'POST',
                 headers: {
                         'Content-Type': 'application/json'

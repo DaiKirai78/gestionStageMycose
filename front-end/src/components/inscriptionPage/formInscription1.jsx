@@ -1,12 +1,13 @@
 import {Input} from '@material-tailwind/react';
 import Divider from '../divider.jsx';
 import InputErrorMessage from '../inputErrorMesssage.jsx';
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import { useTranslation } from 'react-i18next';
 import ButtonConnection from '../connectionPage/buttonConnection.jsx';
 
-function FormInscription1({prenom, nom, setPrenom, setNom, setStep, role, setNomOrganisation, nomOrganisation}) {
+function FormInscription1({prenom, nom, setPrenom, setNom, setStep, role, setNomOrganisation, nomOrganisation, programme, setProgramme}) {
 
+    const [programmes, setProgrammes] = useState([]);
     const [errorKeyPrenom, setErrorKeyPrenom] = useState('');
     const [errorKeyNom, setErrorKeyNom] = useState('');
     const [errorKeyNomOrganisation, setErrorKeyNomOrganisation] = useState('');
@@ -16,6 +17,15 @@ function FormInscription1({prenom, nom, setPrenom, setNom, setStep, role, setNom
     const valideNomOrganisation = new RegExp(String.raw`^[A-Za-zÀ-ÖØ-öø-ÿ0-9'.,&\s-]{2,100}$`);
 
     const { t } = useTranslation();
+
+    useEffect(() => {
+        if (role === "etudiant") {
+            fetch('http://localhost:8080/api/programme')
+                .then((response) => response.json())
+                .then((data) => setProgrammes(data))
+                .catch((error) => console.error('Error fetching programmes:', error));
+        }
+    }, [role]);
 
     function onNext(e) {
         e.preventDefault();
@@ -27,6 +37,7 @@ function FormInscription1({prenom, nom, setPrenom, setNom, setStep, role, setNom
             return;
         }
 
+        console.log("Programme sélectionn:", programme);
         console.log("2");
 
         setStep('deuxiemeEtape');
@@ -87,6 +98,10 @@ function FormInscription1({prenom, nom, setPrenom, setNom, setStep, role, setNom
         setErrorKeyNom("");
     }
 
+    function ChangeProgrammeValue(e) {
+        setProgramme(e.target.value);
+    }
+
     return (
         <>
             <div className='flex flex-col px-10'>
@@ -129,6 +144,23 @@ function FormInscription1({prenom, nom, setPrenom, setNom, setStep, role, setNom
                                 />
                                 <InputErrorMessage messageKey={errorKeyNomOrganisation}/>
                             </div>
+                        </div>
+                    }
+                    {role === "etudiant" &&
+                        <div>
+                            <label className="block mb-2 text-sm font-medium text-gray-700">{t("choisirProgramme")}</label>
+                            <select
+                                className="block w-full p-2 border border-gray-300 rounded-md"
+                                value={programme}
+                                onChange={(e) => {ChangeProgrammeValue(e);}}
+                            >
+                                <option value="" className={"text-center"}>-- {t("choisirProgramme")} --</option>
+                                {programmes.map((programme, index) => (
+                                    <option key={index} value={programme}>
+                                        {t(programme)}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
                     }
                     <div className='flex justify-center items-center space-x-4'>

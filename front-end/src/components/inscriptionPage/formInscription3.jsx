@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import ButtonConnection from '../connectionPage/buttonConnection.jsx';
 import { useNavigate } from 'react-router-dom';
 
-function FormInscription3({prenom, nom, email, telephone, setStep, role, nomOrganisation}) {
+function FormInscription3({prenom, nom, email, telephone, setStep, role, nomOrganisation, programme}) {
     const [password, setPassword] = useState('');
     const [passwordConf, setPasswordConf] = useState('');
 
@@ -83,6 +83,10 @@ function FormInscription3({prenom, nom, email, telephone, setStep, role, nomOrga
             body.nomOrganisation = nomOrganisation;
         }
 
+        if(urlRole === "etudiant") {
+            body.programme = programme;
+        }
+
         console.log(body);
         
 
@@ -107,7 +111,7 @@ function FormInscription3({prenom, nom, email, telephone, setStep, role, nomOrga
             if (res.status === REPSONSE_CODE_ACCEPTED) {
                 const data = await res.json();
                 localStorage.setItem('token', data.accessToken);
-                navigate("/acceuil")                
+                navigate("/accueil")
             }
 
         } catch (e) {

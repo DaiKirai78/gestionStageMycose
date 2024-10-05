@@ -14,25 +14,13 @@ import java.util.Optional;
 public class EnseignantService {
     private final EnseignantRepository enseignantRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UtilisateurService utilisateurService;
+
 
     public EnseignantDTO creationDeCompte(String prenom, String nom, String numeroTelephone, String courriel, String motDePasse) {
-        if (!credentialsDejaPris(courriel, numeroTelephone))
+        if (!utilisateurService.credentialsDejaPris(courriel, numeroTelephone))
             return EnseignantDTO.toDTO(enseignantRepository.save(new Enseignant(prenom, nom, numeroTelephone, courriel, passwordEncoder.encode(motDePasse))));
         else
             return null;
-    }
-
-    public EnseignantDTO getEnseignantByCourriel(String courriel) {
-        Optional<Enseignant> optionalEnseignant = enseignantRepository.findEnseignantByCourriel(courriel);
-        return optionalEnseignant.map(EnseignantDTO::toDTO).orElse(null);
-    }
-
-    public EnseignantDTO getEnseignantByTelephone(String numero) {
-        Optional<Enseignant> optionalEnseignant = enseignantRepository.findEnseignantByNumeroDeTelephone(numero);
-        return optionalEnseignant.map(EnseignantDTO::toDTO).orElse(null);
-    }
-
-    public boolean credentialsDejaPris(String courriel, String numero) {
-        return getEnseignantByCourriel(courriel) != null || getEnseignantByTelephone(numero) != null;
     }
 }

@@ -15,11 +15,13 @@ function FileCV() {
     const handleFileUpload = async () => {
         const formData = new FormData();
         formData.append("file", file);
+        let token = localStorage.getItem("token");
 
         try {
             const response = await axios.post("http://localhost:8080/api/cv/upload", formData,
                 {
                     headers: {
+                        Authorization: `Bearer ${token}`,
                         "Content-Type": "multipart/form-data",
                     },
                 });

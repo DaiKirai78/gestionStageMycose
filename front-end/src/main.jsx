@@ -7,11 +7,11 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import ConnectionPage from "./pages/connectionPage.jsx"
-import AcceuilPage from './pages/acceuilPage.jsx';
+import AccueilPage from './pages/accueilPage.jsx';
 import InscriptionPage from './pages/inscriptionPage.jsx';
 import ValiderCVPage from './pages/validerCVPage.jsx';
-
 import "./i18n"
+import VoirMonCVPage from "./pages/voirMonCVPage.jsx";
 import ValiderCV from "./components/validerCVPage/validerCV.jsx";
 import UploadCvPage from "./pages/uploadCvPage.jsx";
 import UploadOffreStagePage from "./pages/uploadOffreStagePage.jsx";
@@ -22,8 +22,8 @@ const router = createBrowserRouter([
     element: <ConnectionPage />,
   },
   {
-    path: "/acceuil",
-    element: <AcceuilPage />
+    path: "/accueil",
+    element: <AccueilPage />
   },
   {
     path: "/televerserOffreStage",
@@ -36,6 +36,10 @@ const router = createBrowserRouter([
   {
     path: "/inscription",
     element: <InscriptionPage />
+  },
+  {
+    path: "/voirMonCV",
+    element: <VoirMonCVPage />
   },
   {
     path: "/validerCV",

@@ -1,6 +1,8 @@
 package com.projet.mycose.service;
 
+import com.projet.mycose.modele.Etudiant;
 import com.projet.mycose.modele.FichierCV;
+import com.projet.mycose.repository.EtudiantRepository;
 import com.projet.mycose.repository.FichierCVRepository;
 import com.projet.mycose.service.dto.FichierCVDTO;
 import jakarta.validation.ConstraintViolation;
@@ -8,8 +10,10 @@ import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -34,6 +38,9 @@ public class FichierCVServiceTest {
     private FichierCVRepository fileRepository;
 
     @Mock
+    private EtudiantRepository etudiantRepository;
+
+    @Mock
     private ModelMapper modelMapper;
 
     @Mock
@@ -48,19 +55,26 @@ public class FichierCVServiceTest {
     private FichierCV fichierCV;
     private FichierCVDTO fichierCVDTO;
 
+    private Etudiant etudiant;
+
     @BeforeEach
     void setUp() throws IOException {
         fichierCV = new FichierCV();
         fichierCV.setId(1L);
         fichierCV.setFilename("test.pdf");
         fichierCV.setData("Test file data".getBytes());
+        etudiant = new Etudiant();
+        etudiant.setId(1L);
+        fichierCV.setEtudiant(etudiant);
+
 
         fichierCVDTO = new FichierCVDTO();
         fichierCVDTO.setFilename("test.pdf");
         fichierCVDTO.setFileData(Base64.getEncoder().encodeToString("Test file data".getBytes()));
+        fichierCVDTO.setEtudiant_id(1L);
 
-        when(multipartFile.getOriginalFilename()).thenReturn("test.pdf");
-        when(multipartFile.getBytes()).thenReturn("Test file data".getBytes());
+
+
     }
 
     @Test
@@ -70,9 +84,12 @@ public class FichierCVServiceTest {
         when(fileRepository.save(any(FichierCV.class))).thenReturn(fichierCV);
         when(modelMapper.map(any(FichierCV.class), eq(FichierCVDTO.class))).thenReturn(fichierCVDTO);
         when(modelMapper.map(any(FichierCVDTO.class), eq(FichierCV.class))).thenReturn(fichierCV);
+        when(etudiantRepository.findById(anyLong())).thenReturn(Optional.of(etudiant));
+
+        when(multipartFile.getBytes()).thenReturn("Test file data".getBytes());
 
         // Act
-        FichierCVDTO result = fichierCVService.saveFile(multipartFile);
+        FichierCVDTO result = fichierCVService.saveFile(multipartFile, 1L);
 
         // Assert
         assertNotNull(result);
@@ -88,9 +105,12 @@ public class FichierCVServiceTest {
         Set<ConstraintViolation<FichierCVDTO>> violations = Set.of(violation);
         when(validator.validate(any(FichierCVDTO.class))).thenReturn(violations);
 
+        when(multipartFile.getBytes()).thenReturn("Test file data".getBytes());
+        when(multipartFile.getOriginalFilename()).thenReturn("test.pdf");
+
         // Act & Assert
         assertThrows(ConstraintViolationException.class, () -> {
-            fichierCVService.saveFile(multipartFile);
+            fichierCVService.saveFile(multipartFile, 1L);
         });
         verify(fileRepository, never()).save(any(FichierCV.class));
     }
@@ -102,16 +122,12 @@ public class FichierCVServiceTest {
 
         // Act & Assert
         assertThrows(IOException.class, () -> {
-            fichierCVService.saveFile(multipartFile);
+            fichierCVService.saveFile(multipartFile, 1L);
         });
         verify(fileRepository, never()).save(any(FichierCV.class));
     }
 
     @Test
-    // Parce que dans setup ya des when qui sont pas utilisé
-    // donc ça fait une erreur.
-    // MockitioSetting stricness linient retire l'erreur
-    @MockitoSettings(strictness = Strictness.LENIENT)
     void testGetWaitingCV_Success() {
         // Act
         when(fileRepository.getFichierCVSByStatusEquals(FichierCV.Status.WAITING, PageRequest.of(0, 10)))
@@ -125,7 +141,6 @@ public class FichierCVServiceTest {
         Assertions.assertThat(fichierCVService.getWaitingCv(1).size()).isEqualTo(4);
     }
     @Test
-    @MockitoSettings(strictness = Strictness.LENIENT)
     void testGetWaitingCV_PageVide() {
         // Act
         when(fileRepository.getFichierCVSByStatusEquals(FichierCV.Status.WAITING, PageRequest.of(1, 10)))
@@ -135,9 +150,120 @@ public class FichierCVServiceTest {
         Assertions.assertThat(fichierCVService.getWaitingCv(1).size()).isEqualTo(0);
     }
 
+    @Test
+    void testGetFile_Success() {
+        // Arrange
+
+        when(fileRepository.findById(1L)).thenReturn(Optional.of(fichierCV));
+        when(modelMapper.map(fichierCV, FichierCVDTO.class)).thenReturn(fichierCVDTO);
+
+        // Act
+        FichierCVDTO result = fichierCVService.getFile(1L);
+
+        // Assert
+        assertNotNull(result, "The returned FichierCVDTO should not be null");
+        assertEquals(fichierCVDTO.getFilename(), result.getFilename());
+        assertEquals(fichierCVDTO.getFileData(), result.getFileData());
+        verify(fileRepository, times(1)).findById(1L);
+        verify(modelMapper, times(1)).map(fichierCV, FichierCVDTO.class);
+    }
 
     @Test
-    @MockitoSettings(strictness = Strictness.LENIENT)
+    void testGetFile_NotFound() {
+        // Arrange
+        when(fileRepository.findById(1L)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            fichierCVService.getFile(1L);
+        }, "Expected getFile() to throw, but it didn't");
+
+        assertEquals("Fichier non trouvé", exception.getMessage(), "Exception message should match");
+        verify(fileRepository, times(1)).findById(1L);
+        verify(modelMapper, never()).map(any(FichierCV.class), eq(FichierCVDTO.class));
+    }
+
+    @Test
+    void testGetCurrentCV_Success() {
+        // Arrange
+
+        when(fileRepository.getFirstByEtudiant_IdAndStatusEquals(etudiant.getId(), FichierCV.Status.ACCEPTED))
+                .thenReturn(Optional.of(fichierCV));
+        when(modelMapper.map(fichierCV, FichierCVDTO.class)).thenReturn(fichierCVDTO);
+
+        // Act
+        FichierCVDTO result = fichierCVService.getCurrentCV(etudiant.getId());
+
+        // Assert
+        assertNotNull(result, "The returned FichierCVDTO should not be null");
+        assertEquals(fichierCVDTO.getFilename(), result.getFilename());
+        assertEquals(fichierCVDTO.getFileData(), result.getFileData());
+        verify(fileRepository, times(1)).getFirstByEtudiant_IdAndStatusEquals(etudiant.getId(), FichierCV.Status.ACCEPTED);
+        verify(modelMapper, times(1)).map(fichierCV, FichierCVDTO.class);
+    }
+
+    @Test
+    void testGetCurrentCV_NotFound() {
+        // Arrange
+        when(fileRepository.getFirstByEtudiant_IdAndStatusEquals(etudiant.getId(), FichierCV.Status.ACCEPTED))
+                .thenReturn(Optional.empty());
+
+        // Act & Assert
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            fichierCVService.getCurrentCV(etudiant.getId());
+        }, "Expected getCurrentCV() to throw, but it didn't");
+
+        assertEquals("Fichier non trouvé", exception.getMessage(), "Exception message should match");
+        verify(fileRepository, times(1)).getFirstByEtudiant_IdAndStatusEquals(etudiant.getId(), FichierCV.Status.ACCEPTED);
+        verify(modelMapper, never()).map(any(FichierCV.class), eq(FichierCVDTO.class));
+    }
+    @Test
+    void testDeleteCurrentCV_Success() {
+        // Arrange
+
+        when(fileRepository.getFirstByEtudiant_IdAndStatusEquals(etudiant.getId(), FichierCV.Status.ACCEPTED))
+                .thenReturn(Optional.of(fichierCV));
+        when(fileRepository.save(any(FichierCV.class))).thenReturn(fichierCV);
+        when(modelMapper.map(fichierCV, FichierCVDTO.class)).thenReturn(fichierCVDTO);
+
+        // Act
+        FichierCVDTO result = fichierCVService.deleteCurrentCV(etudiant.getId());
+
+        // Assert
+        assertNotNull(result, "The returned FichierCVDTO should not be null");
+
+        assertEquals(fichierCVDTO.getFilename(), result.getFilename());
+        assertEquals(fichierCVDTO.getFileData(), result.getFileData());
+
+        // Capture the FichierCV passed to save() to verify status change
+        ArgumentCaptor<FichierCV> fichierCVCaptor = ArgumentCaptor.forClass(FichierCV.class);
+        verify(fileRepository).save(fichierCVCaptor.capture());
+        FichierCV savedFichierCV = fichierCVCaptor.getValue();
+        assertEquals(FichierCV.Status.DELETED, savedFichierCV.getStatus(), "Status should be set to DELETED");
+
+        verify(fileRepository, times(1)).getFirstByEtudiant_IdAndStatusEquals(etudiant.getId(), FichierCV.Status.ACCEPTED);
+        verify(fileRepository, times(1)).save(any(FichierCV.class));
+        verify(modelMapper, times(1)).map(fichierCV, FichierCVDTO.class);
+    }
+    @Test
+    void testDeleteCurrentCV_NotFound() {
+        // Arrange
+        when(fileRepository.getFirstByEtudiant_IdAndStatusEquals(etudiant.getId(), FichierCV.Status.ACCEPTED))
+                .thenReturn(Optional.empty());
+
+        // Act & Assert
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            fichierCVService.deleteCurrentCV(etudiant.getId());
+        }, "Expected deleteCurrentCV() to throw, but it didn't");
+
+        assertEquals("Fichier non trouvé", exception.getMessage(), "Exception message should match");
+        verify(fileRepository, times(1)).getFirstByEtudiant_IdAndStatusEquals(etudiant.getId(), FichierCV.Status.ACCEPTED);
+        verify(fileRepository, never()).save(any());
+        verify(modelMapper, never()).map(any(FichierCV.class), eq(FichierCVDTO.class));
+    }
+
+
+    @Test
     void testGetAmountOfPage_NumberEndWithZero_Success() {
         // Act
         when(fileRepository.count()).thenReturn(30L);
@@ -146,7 +272,6 @@ public class FichierCVServiceTest {
         Assertions.assertThat(fichierCVService.getAmountOfPages()).isEqualTo(3);
     }
     @Test
-    @MockitoSettings(strictness = Strictness.LENIENT)
     void testGetAmountOfPage_NumberNotEndWithZero_Success() {
         // Act
         when(fileRepository.count()).thenReturn(43L);
@@ -155,7 +280,6 @@ public class FichierCVServiceTest {
         Assertions.assertThat(fichierCVService.getAmountOfPages()).isEqualTo(4);
     }
     @Test
-    @MockitoSettings(strictness = Strictness.LENIENT)
     void testChangeStatus_Success() throws ChangeSetPersister.NotFoundException {
 
         // Act
@@ -166,7 +290,6 @@ public class FichierCVServiceTest {
     }
 
     @Test
-    @MockitoSettings(strictness = Strictness.LENIENT)
     void testChangeStatus_CvNotFound() {
 
         // Act

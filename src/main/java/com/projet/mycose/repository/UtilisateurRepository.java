@@ -14,4 +14,6 @@ public interface UtilisateurRepository extends JpaRepository<Utilisateur, Long> 
         select u from Utilisateur u where trim(lower(u.credentials.email)) = :courriel
     """)
     Optional<Utilisateur> findUtilisateurByCourriel(@Param("courriel") String courriel);
+
+    Optional<Utilisateur> findUtilisateurByNumeroDeTelephone(String numero);
 }
