@@ -5,6 +5,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 @Entity
 @Getter
 @Setter
@@ -13,5 +17,9 @@ import lombok.Setter;
 public class OffreStage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "offre_id")
     private long id;
+
+    @ManyToMany
+    private Set<Etudiant> etudiants;
 }

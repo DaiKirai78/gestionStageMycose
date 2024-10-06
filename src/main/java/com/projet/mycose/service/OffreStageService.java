@@ -1,10 +1,11 @@
 package com.projet.mycose.service;
 
-import com.projet.mycose.modele.FichierOffreStage;
-import com.projet.mycose.modele.FormulaireOffreStage;
+import com.projet.mycose.modele.*;
 import com.projet.mycose.repository.OffreStageRepository;
+import com.projet.mycose.repository.UtilisateurRepository;
 import com.projet.mycose.service.dto.FichierOffreStageDTO;
 import com.projet.mycose.service.dto.FormulaireOffreStageDTO;
+import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
@@ -21,11 +22,13 @@ public class OffreStageService {
     private final OffreStageRepository offreStageRepository;
     private final ModelMapper modelMapper;
     private final Validator validator;
+    private final UtilisateurRepository utilisateurRepository;
 
-    public OffreStageService(OffreStageRepository offreStageRepository, ModelMapper modelMapper, Validator validator) {
+    public OffreStageService(OffreStageRepository offreStageRepository, ModelMapper modelMapper, Validator validator, UtilisateurRepository utilisateurRepository) {
         this.offreStageRepository = offreStageRepository;
         this.modelMapper = modelMapper;
         this.validator = validator;
+        this.utilisateurRepository = utilisateurRepository;
     }
 
 
@@ -70,5 +73,22 @@ public class OffreStageService {
         FormulaireOffreStage formulaireOffreStage = modelMapper.map(formulaireOffreStageDTO, FormulaireOffreStage.class);
         FormulaireOffreStage savedForm = offreStageRepository.save(formulaireOffreStage);
         return modelMapper.map(savedForm, FormulaireOffreStageDTO.class);
+    }
+
+    @Transactional
+    public void assignerOffre(long etudiantId, long offreStageId) {
+        if(!etudiantIdEtOffreStageIdValides(etudiantId, offreStageId)) {
+            return;
+        }
+
+        Etudiant etudiant = (Etudiant) utilisateurRepository.findById(etudiantId).get();
+        OffreStage offreStage = offreStageRepository.findById(offreStageId).get();
+        etudiant.getOffres().add(offreStage);
+        offreStage.getEtudiants().add(etudiant);
+        utilisateurRepository.save(etudiant);
+    }
+
+    private boolean etudiantIdEtOffreStageIdValides(long etudiantId, long offreStageId) {
+        return utilisateurRepository.existsById(etudiantId) && offreStageRepository.existsById(offreStageId);
     }
 }
