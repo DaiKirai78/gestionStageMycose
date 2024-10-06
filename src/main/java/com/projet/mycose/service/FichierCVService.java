@@ -1,7 +1,6 @@
 package com.projet.mycose.service;
 
 import com.projet.mycose.modele.FichierCV;
-import com.projet.mycose.modele.FichierOffreStage;
 import com.projet.mycose.repository.EtudiantRepository;
 import com.projet.mycose.repository.FichierCVRepository;
 import com.projet.mycose.service.dto.FichierCVDTO;
@@ -91,8 +90,8 @@ public class FichierCVService {
     }
 
     public Integer getAmountOfPages() {
-        long amoutOfRows = fileRepository.count();
-        return (int) Math.floor((double) amoutOfRows / LIMIT_PER_PAGE);
+        long amountOfRows = fileRepository.count();
+        return (int) Math.floor((double) amountOfRows / LIMIT_PER_PAGE);
     }
 
     public void changeStatus(Long id, FichierCV.Status status, String description) throws ChangeSetPersister.NotFoundException {
@@ -113,12 +112,20 @@ public class FichierCVService {
     }
 
     public FichierCVDTO getCurrentCV(Long etudiant_id) {
-        FichierCV fichierCV = fileRepository.getFirstByEtudiant_IdAndStatusEquals(etudiant_id, FichierCV.Status.ACCEPTED).orElseThrow(() -> new RuntimeException("Fichier non trouvé"));
+        FichierCV fichierCV = fileRepository.getFirstByEtudiant_IdAndStatusEqualsOrStatusEquals(etudiant_id, FichierCV.Status.ACCEPTED, FichierCV.Status.WAITING).orElseThrow(() -> new RuntimeException("Fichier non trouvé"));
         return convertToDTO(fichierCV);
     }
 
+    public FichierCVDTO getCurrentCV_returnNullIfEmpty(Long etudiant_id) {
+        Optional<FichierCV> fichierCV = fileRepository.
+                getFirstByEtudiant_IdAndStatusEqualsOrStatusEquals(etudiant_id, FichierCV.Status.ACCEPTED, FichierCV.Status.WAITING);
+        return fichierCV.isPresent() ?
+                convertToDTO(fichierCV.get()) :
+                null;
+    }
+
     public FichierCVDTO deleteCurrentCV(Long id) {
-        FichierCV fichierCV = fileRepository.getFirstByEtudiant_IdAndStatusEquals(id, FichierCV.Status.ACCEPTED).orElseThrow(() -> new RuntimeException("Fichier non trouvé"));
+        FichierCV fichierCV = fileRepository.getFirstByEtudiant_IdAndStatusEqualsOrStatusEquals(id, FichierCV.Status.ACCEPTED, FichierCV.Status.WAITING).orElseThrow(() -> new RuntimeException("Fichier non trouvé"));
         fichierCV.setStatus(FichierCV.Status.DELETED);
         return convertToDTO(fileRepository.save(fichierCV));
     }

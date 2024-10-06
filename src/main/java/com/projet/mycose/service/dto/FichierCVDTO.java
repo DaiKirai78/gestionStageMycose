@@ -1,5 +1,6 @@
 package com.projet.mycose.service.dto;
 
+import com.projet.mycose.modele.FichierCV;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
@@ -7,6 +8,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.modelmapper.internal.bytebuddy.implementation.bind.annotation.Empty;
 
 import java.time.LocalDateTime;
@@ -14,6 +16,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@ToString(exclude = "fileData")
 public class FichierCVDTO {
 
     private Long id;
@@ -29,7 +32,7 @@ public class FichierCVDTO {
             message = "Invalid file data. Should be Base64 encoded.")
     private String fileData;
 
-    private String status;
+    private FichierCV.Status status;
 
     private String statusDescription;
 
