@@ -1,6 +1,5 @@
 package com.projet.mycose;
 
-import com.projet.mycose.modele.FichierCV;
 import com.projet.mycose.modele.Programme;
 import com.projet.mycose.service.EnseignantService;
 import com.projet.mycose.service.EtudiantService;

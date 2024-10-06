@@ -4,23 +4,15 @@ import com.projet.mycose.modele.Etudiant;
 import com.projet.mycose.modele.Programme;
 import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.repository.EtudiantRepository;
-import com.projet.mycose.service.dto.EnseignantDTO;
 import com.projet.mycose.service.dto.EtudiantDTO;
-import jdk.jshell.execution.Util;
-import lombok.experimental.UtilityClass;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Optional;
-
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
