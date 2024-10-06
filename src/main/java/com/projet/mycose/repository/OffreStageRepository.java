@@ -13,4 +13,7 @@ public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
     Page<OffreStage> findOffresByEtudiantId(@Param("etudiantId") long etudiantId, Pageable pageable);
 
     int countByEtudiantsId(long id);
+
+    //@Query("SELECT o FROM OffreStage o JOIN o.etudiants e WHERE e.id = :etudiantId AND o.title LIKE %:rechercheValue%")
+    //Page<OffreStage> findOffresByEtudiantIdWithSearch(@Param("etudiantId") long etudiantId, @Param("rechercheValue") String rechercheValue Pageable pageable);
 }

@@ -10,12 +10,6 @@ import java.util.Optional;
 
 @Repository
 public interface EtudiantRepository extends JpaRepository<Etudiant, Long> {
-    @Query("""
-        select e from Etudiant e where trim(lower(e.credentials.email)) = :courriel
-    """)
-    Optional<Etudiant> findEtudiantByCourriel(@Param("courriel") String courriel);
-    @Query("""
-        select e from Etudiant e where trim(e.numeroDeTelephone) = :numero
-    """)
-    Optional<Etudiant> findEtudiantByNumeroDeTelephone(@Param("numero") String numero);
+
+
 }

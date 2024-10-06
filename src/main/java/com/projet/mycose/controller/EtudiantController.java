@@ -62,5 +62,14 @@ public class EtudiantController {
         }
     }
 
+    @PostMapping("/recherche-offre")
+    public ResponseEntity<List<OffreStageDTO>> rechercherOffres(HttpServletRequest request ,@RequestParam String recherche, @RequestParam int page) {
+        try {
+            return null;
+        } catch (Exception e) {
+            return ResponseEntity.noContent().build();
+        }
+    }
+
 
 }
