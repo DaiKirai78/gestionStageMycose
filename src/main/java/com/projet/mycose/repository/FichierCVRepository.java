@@ -11,14 +11,15 @@ import java.util.Optional;
 public interface FichierCVRepository extends JpaRepository<FichierCV, Long> {
     Optional<List<FichierCV>> getFichierCVSByStatusEquals(FichierCV.Status status, Pageable pageable);
 
+
     @Query("""
             SELECT f
             FROM FichierCV f
             WHERE f.etudiant.id = :etudiant_id
-               AND (f.status = :status OR f.status = :status2)
+               AND (f.status = 'WAITING' OR f.status = 'ACCEPTED' OR f.status = 'REFUSED')
             ORDER BY f.id ASC
             LIMIT 1
             """
     )
-    Optional<FichierCV> getFirstByEtudiant_IdAndStatusEqualsOrStatusEquals(Long etudiant_id, FichierCV.Status status, FichierCV.Status status2);
+    Optional<FichierCV> getCurrentCvByEtudiant_id(Long etudiant_id);
 }
