@@ -5,16 +5,36 @@ import PageIsLoading from "../components/pageIsLoading.jsx"
 
 const fakeData = [
     {
-        name: "Offre1"
+        format: "file",
+        id: "id1",
+        created_at: "created_at1",
+        data: "data1",
+        filename: "filename1",
+        updated_at: "updated_at1",
+        description: "description1",
+        email: "email1",
+        employer_name: "employer_name1",
+        entreprise_name: "entreprise_name1",
+        location: "location1",
+        salary: "salary1",
+        title: "title1",
+        website: "website1",
     },
     {
-        name: "Offre2"
-    },
-    {
-        name: "Offre3"
-    },
-    {
-        name: "Offre4"
+        format: "form",
+        id: "id2",
+        created_at: "created_at2",
+        data: "data2",
+        filename: "filename2",
+        updated_at: "updated_at2",
+        description: "description2",
+        email: "email2",
+        employer_name: "employer_name2",
+        entreprise_name: "entreprise_name2",
+        location: "location2",
+        salary: "salary2",
+        title: "title2",
+        website: "website2",
     },
 ]
 
@@ -56,9 +76,19 @@ const VoirMesOffreStagePage = () => {
 
     return (
         <TokenPageContainer>
-            {
-                isFetching ? <PageIsLoading /> : <ListOffreStageEmployeur data={data} />
-            }
+            <div className="bg-orange-light w-full min-h-screen flex flex-col items-center gap-10">
+                <div className="h-20 border-b-2 border-deep-orange-100 pl-8 items-center flex w-full">
+                    (Logo) Mycose
+                </div>
+                <div className='w-4/5'>
+                {
+                    isFetching ? 
+                        <PageIsLoading /> : 
+                        data.length > 0 ? <ListOffreStageEmployeur data={data} /> :
+                            <h1>Aucune offre</h1>
+                }
+                </div>
+            </div>
         </TokenPageContainer>
     );
 };
