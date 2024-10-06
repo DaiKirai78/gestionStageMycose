@@ -40,14 +40,27 @@ public class EtudiantController {
         }
 
     @PostMapping("/getStages")
-    public ResponseEntity<List<OffreStageDTO>> getStages(HttpServletRequest request) {
+    public ResponseEntity<List<OffreStageDTO>> getStages(HttpServletRequest request, @RequestParam int pageNumber) {
         try {
             return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
-                    etudiantService.getStages(request.getHeader("Authorization")));
+                    etudiantService.getStages(request.getHeader("Authorization"), pageNumber));
             //return ResponseEntity.status(HttpStatus.OK).body(etudiantService.getStages(token));
         } catch (Exception e) {
             return ResponseEntity.noContent().build();
         }
     }
+
+    @GetMapping("/pages")
+    public ResponseEntity<Integer> getAmountOfPages(HttpServletRequest request) {
+        //return ResponseEntity.status((HttpStatus.OK)).body(etudiantService.getAmountOfPages(idEtudiant));
+        try {
+            return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
+                    etudiantService.getAmountOfPages(request.getHeader("Authorization")));
+            //return ResponseEntity.status(HttpStatus.OK).body(etudiantService.getStages(token));
+        } catch (Exception e) {
+            return ResponseEntity.noContent().build();
+        }
+    }
+
 
 }

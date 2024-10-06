@@ -1,7 +1,16 @@
 package com.projet.mycose.repository;
 
 import com.projet.mycose.modele.OffreStage;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
+
+    @Query("SELECT o FROM OffreStage o JOIN o.etudiants e WHERE e.id = :etudiantId")
+    Page<OffreStage> findOffresByEtudiantId(@Param("etudiantId") long etudiantId, Pageable pageable);
+
+    int countByEtudiantsId(long id);
 }
