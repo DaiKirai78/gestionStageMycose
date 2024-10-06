@@ -1,17 +1,21 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BsArrowRight } from "react-icons/bs";
 
 
 const ListOffreStageEmployeur = ({data}) => {
 
+    const [activeOffer, setActiveOffer] = useState();
+
     useEffect(() => {
-        console.log(data);
-    }, [])
+        setActiveOffer(data[0]);        
+    }, []);
 
     function linkCard(offre, index) {
         return (
-            <div id="elementStage" key={index}
-                    className="group relative px-6 flex w-full cursor-pointer flex-col sm:justify-between pb-3 pt-3 border border-deep-orange-50 rounded">
+            <button id="elementStage" 
+                    key={index}
+                    onClick={() => {setActiveOffer(offre)}}
+                    className="group relative px-6 flex items-center w-full cursor-pointer flex-col pb-3 pt-3 border border-deep-orange-50 rounded">
                         <div className='absolute left-0 top-0 w-full h-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all z-10'>
                         <div className='absolute left-0 top-0 w-full h-full bg-orange opacity-10'></div>
                             <p className='text-2xl text-orange relative ease-in-out flex items-center gap-1'>Détails <BsArrowRight /></p>
@@ -27,7 +31,7 @@ const ListOffreStageEmployeur = ({data}) => {
                     </div>
                     <p className='text-center text-sm mt-5 text-orange underline'>Détails</p>
                 </div>
-            </div>
+            </button>
         )
     }
 
@@ -48,12 +52,17 @@ const ListOffreStageEmployeur = ({data}) => {
     }
 
     return (
-        <div className='min-w-screen min-h-screen bg-orange-light flex flex-col gap-1'>
-            {
-                data.map((offre, index) => {
-                    return linkCard(offre, index);
-                })
-            }
+        <div className='min-w-screen bg-orange-light flex gap-5 py-10'>
+            <div className='flex flex-col gap-2 w-full h-full overflow-auto'>
+                {
+                    data.map((offre, index) => {
+                        return linkCard(offre, index);
+                    })
+                }
+            </div>
+            <div className='bg-orange w-full h-[calc(100vh-1rem)] sticky top-2 flex flex-col'>
+                {/* Contenu du deuxième div */}
+            </div>
         </div>
     );
 }
