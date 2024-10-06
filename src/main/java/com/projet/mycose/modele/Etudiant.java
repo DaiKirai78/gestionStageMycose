@@ -25,7 +25,7 @@ public class Etudiant extends Utilisateur {
     @OneToMany(mappedBy = "etudiant", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FichierCV> fichiersCV;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     private Set<OffreStage> offres;
 
     @Builder

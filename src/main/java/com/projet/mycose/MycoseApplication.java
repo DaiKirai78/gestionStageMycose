@@ -36,7 +36,11 @@ public class MycoseApplication implements CommandLineRunner {
 		//enseignantService.creationDeCompte("Guillaume", "Courtemanche", "283-948-2738", "courtemanche@gmail.com", "courte123$");
 		//etudiantService.creationDeCompte("Roberto", "Berrios", "273-389-2937", "roby@gmail.com", "Roby123$", "Technique de l'informatique");
 		FormulaireOffreStageDTO formulaireOffreStageDTO = new FormulaireOffreStageDTO(1L, "SUUPER", "Vicente", "vicen@mail.com", "www.vicen.ca", "Software Engineer", "Montrèal", "95 000", "J'adore ingénieur!");
+		FormulaireOffreStageDTO formulaireOffreStageDTO2 = new FormulaireOffreStageDTO(2L, "MMM", "Vicente2", "vicen@mail.com", "www.vicen2.ca", "Software Engineer 2", "Montrèal 2", "95 000", "J'adore ingénieur! 2");
+		FormulaireOffreStageDTO formulaireOffreStageDTO3 = new FormulaireOffreStageDTO(3L, "MMMSUUPER", "Vicente3", "vicen@mail.com", "www.vicen3.ca", "Software Engineer 3", "Montrèal 3", "16", "J'adore ingénieur! 3");
 		offreStageService.saveForm(formulaireOffreStageDTO);
+		offreStageService.saveForm(formulaireOffreStageDTO2);
+		offreStageService.saveForm(formulaireOffreStageDTO3);
 
 
 //		MultipartFile fichierOffreStage = ("test.pdf", "test.pdf", "application/pdf", "contenu".getBytes());
@@ -46,5 +50,6 @@ public class MycoseApplication implements CommandLineRunner {
 		etudiantService.creationDeCompte("Guillaume", "Courtemanche", "283-948-2738", "gc@gmail.com", "courte123$", Programme.GENIE_LOGICIEL);
 
 		offreStageService.assignerOffre(1L, 1L);
+		offreStageService.assignerOffre(2L, 3L);
 	}
 }

@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
 
-    @Query("SELECT o FROM OffreStage o JOIN o.etudiants e WHERE e.id = :etudiantId")
+    @Query("SELECT o FROM OffreStage o LEFT JOIN o.etudiants e WHERE e.id = :etudiantId OR e.id IS NULL")
     Page<OffreStage> findOffresByEtudiantId(@Param("etudiantId") long etudiantId, Pageable pageable);
 
     int countByEtudiantsId(long id);

@@ -20,6 +20,6 @@ public class OffreStage {
     @Column(name = "offre_id")
     private long id;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     private Set<Etudiant> etudiants;
 }
