@@ -22,15 +22,17 @@ public class FormulaireOffreStageService {
     private final UtilisateurRepository utilisateurRepository;
     private final ModelMapper modelMapper;
     private final Validator validator;
+    private final UtilisateurService utilisateurService;
 
     public FormulaireOffreStageService(FormulaireOffreStageRepository formulaireOffreStageRepository,
                                        UtilisateurRepository utilisateurRepository,
                                        ModelMapper modelMapper,
-                                       Validator validator) {
+                                       Validator validator, UtilisateurService utilisateurService) {
         this.formulaireOffreStageRepository = formulaireOffreStageRepository;
         this.utilisateurRepository = utilisateurRepository;
         this.modelMapper = modelMapper;
         this.validator = validator;
+        this.utilisateurService = utilisateurService;
     }
 
     public FormulaireOffreStageDTO convertToDTO(FormulaireOffreStage formulaireOffreStage) {
@@ -57,7 +59,10 @@ public class FormulaireOffreStageService {
         return formulaireOffreStage;
     }
 
-    public FormulaireOffreStageDTO save(FormulaireOffreStageDTO formulaireOffreStageDTO) {
+    public FormulaireOffreStageDTO save(FormulaireOffreStageDTO formulaireOffreStageDTO, String token) {
+        Long createur_id = utilisateurService.getUserIdByToken(token);
+
+        formulaireOffreStageDTO.setCreateur_id(createur_id);
 
         FormulaireOffreStage formulaireOffreStage = convertToEntity(formulaireOffreStageDTO);
 

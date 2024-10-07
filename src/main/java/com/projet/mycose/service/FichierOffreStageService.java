@@ -23,12 +23,14 @@ public class FichierOffreStageService {
     private final ModelMapper modelMapper;
     private final Validator validator;
     private final UtilisateurRepository utilisateurRepository;
+    private final UtilisateurService utilisateurService;
 
-    public FichierOffreStageService(FichierOffreStageRepository fileRepository, ModelMapper modelMapper, Validator validator, UtilisateurRepository utilisateurRepository) {
+    public FichierOffreStageService(FichierOffreStageRepository fileRepository, ModelMapper modelMapper, Validator validator, UtilisateurRepository utilisateurRepository, UtilisateurService utilisateurService) {
         this.fileRepository = fileRepository;
         this.modelMapper = modelMapper;
         this.validator = validator;
         this.utilisateurRepository = utilisateurRepository;
+        this.utilisateurService = utilisateurService;
     }
 
     // Convert Entity to DTO
@@ -64,8 +66,8 @@ public class FichierOffreStageService {
     }
 
 
-    public FichierOffreStageDTO saveFile(MultipartFile file, Long createur_id) throws ConstraintViolationException, IOException {
-
+    public FichierOffreStageDTO saveFile(MultipartFile file, String token) throws ConstraintViolationException, IOException {
+        Long createur_id = utilisateurService.getUserIdByToken(token);
         FichierOffreStageDTO fichierOffreStageDTO = new FichierOffreStageDTO();
 
         fichierOffreStageDTO.setFilename(file.getOriginalFilename());

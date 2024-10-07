@@ -25,9 +25,7 @@ public class FormulaireOffreStageController {
     @PostMapping("/upload")
     public ResponseEntity<FormulaireOffreStageDTO> uploadForm(
         @Valid @RequestBody FormulaireOffreStageDTO formulaireOffreStageDTO, @RequestHeader("Authorization") String token) {
-        Long createur_id = utilisateurService.getUserIdByToken(token);
-        formulaireOffreStageDTO.setCreateur_id(createur_id);
-        FormulaireOffreStageDTO savedForm = formulaireOffreStageService.save(formulaireOffreStageDTO);
+        FormulaireOffreStageDTO savedForm = formulaireOffreStageService.save(formulaireOffreStageDTO, token);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedForm);
     }
 

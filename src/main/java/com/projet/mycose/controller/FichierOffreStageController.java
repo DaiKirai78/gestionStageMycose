@@ -35,8 +35,7 @@ public class FichierOffreStageController {
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file, @RequestHeader("Authorization") String token) {
         try {
-            Long createur_id = utilisateurService.getUserIdByToken(token);
-            FichierOffreStageDTO savedFileDTO = fichierOffreStageService.saveFile(file, createur_id);
+            FichierOffreStageDTO savedFileDTO = fichierOffreStageService.saveFile(file, token);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(savedFileDTO);
         } catch (ConstraintViolationException e) {

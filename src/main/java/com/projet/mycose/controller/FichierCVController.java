@@ -41,8 +41,7 @@ public class FichierCVController {
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file, @RequestHeader("Authorization") String token) {
         try {
-            Long etudiant_id = utilisateurService.getUserIdByToken(token);
-            FichierCVDTO savedFileDTO = fichierCVService.saveFile(file, etudiant_id);
+            FichierCVDTO savedFileDTO = fichierCVService.saveFile(file, token);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(savedFileDTO);
         } catch (ConstraintViolationException e) {
@@ -62,8 +61,7 @@ public class FichierCVController {
     @PostMapping("/current")
     public ResponseEntity<?> getCV(@RequestHeader("Authorization") String token) {
         try {
-            Long id = utilisateurService.getUserIdByToken(token);
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(fichierCVService.getCurrentCV(id));
+            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(fichierCVService.getCurrentCV(token));
 
         } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized access");
@@ -81,8 +79,7 @@ public class FichierCVController {
     @PatchMapping("/delete_current")
     public ResponseEntity<?> deleteCurrentCV(@RequestHeader("Authorization") String token) {
         try {
-            Long id = utilisateurService.getUserIdByToken(token);
-            fichierCVService.deleteCurrentCV(id);
+            fichierCVService.deleteCurrentCV(token);
             return ResponseEntity.status(HttpStatus.OK).body("CV supprimé avec succès");
         } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized access");
