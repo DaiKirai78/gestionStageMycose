@@ -14,4 +14,8 @@ public class OffreStage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
+    @ManyToOne
+    @JoinColumn(name = "USER_ID")
+    private Employeur employeur;
 }

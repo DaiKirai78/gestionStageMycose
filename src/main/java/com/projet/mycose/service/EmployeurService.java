@@ -1,8 +1,10 @@
 package com.projet.mycose.service;
 
 import com.projet.mycose.modele.Employeur;
+import com.projet.mycose.modele.OffreStage;
 import com.projet.mycose.repository.EmployeurRepository;
 import com.projet.mycose.service.dto.EmployeurDTO;
+import com.projet.mycose.service.dto.OffreStageDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,4 +24,8 @@ public class EmployeurService {
         else
             return null;
     }
+
+
+    //public assignerOffre
+    //public OffreStageDTO
 }

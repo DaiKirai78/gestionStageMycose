@@ -21,6 +21,7 @@ import java.util.Collection;
 public abstract class Utilisateur {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "USER_ID")
     private Long id;
 
     @CreationTimestamp
