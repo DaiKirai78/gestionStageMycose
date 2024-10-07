@@ -31,10 +31,12 @@ public class FichierOffreStageDTO extends OffreStageDTO{
     private String fileData;
 
     @Builder
-    public FichierOffreStageDTO(long id, String filename, String fileData) {
+    public FichierOffreStageDTO(long id, String filename, String fileData, String title, String entrepriseName) {
         super(id);
         this.filename = filename;
         this.fileData = fileData;
+        this.setTitle(title);
+        this.setEntrepriseName(entrepriseName);
     }
 
     public static FichierOffreStageDTO toDTO(FichierOffreStage fichierOffreStage) {

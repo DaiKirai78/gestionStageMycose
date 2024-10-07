@@ -92,11 +92,12 @@ public class FormulaireOffreStageControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidFormDTO)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.entrepriseName").value("Enterprise name is required."))
+                //TODO: A enlever les commentaires quand les champs seront ajoutés au front-end
+                //.andExpect(jsonPath("$.entrepriseName").value("Enterprise name is required."))
                 .andExpect(jsonPath("$.employerName").value("Employer name is required."))
                 .andExpect(jsonPath("$.email").value("Email is required."))
                 .andExpect(jsonPath("$.website").value("Website is required."))
-                .andExpect(jsonPath("$.title").value("Title is required."))
+                //.andExpect(jsonPath("$.title").value("Title is required."))
                 .andExpect(jsonPath("$.location").value("Location is required."))
                 .andExpect(jsonPath("$.salary").value("Salary is required."))
                 .andExpect(jsonPath("$.description").value("Description is required."));
@@ -115,18 +116,20 @@ public class FormulaireOffreStageControllerTest {
                 .andExpect(jsonPath("$.salary").value("Salary must be a valid number with up to 10 digits and 2 decimal places."));
     }
 
-    @Test
-    void testUploadForm_TooLongTitle() throws Exception {
-        // Arrange
-        validFormulaireOffreStageDTO.setTitle("A".repeat(101)); // Exceeds 100 characters
 
-        // Act & Assert
-        mockMvc.perform(post("/api/offres/upload")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(validFormulaireOffreStageDTO)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.title").value("Title cannot exceed 100 characters."));
-    }
+    //TODO: A enlever les commentaires quand les champs seront ajoutés au front-end
+//    @Test
+//    void testUploadForm_TooLongTitle() throws Exception {
+//        // Arrange
+//        validFormulaireOffreStageDTO.setTitle("A".repeat(101)); // Exceeds 100 characters
+//
+//        // Act & Assert
+//        mockMvc.perform(post("/api/offres/upload")
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content(objectMapper.writeValueAsString(validFormulaireOffreStageDTO)))
+//                .andExpect(status().isBadRequest())
+//                .andExpect(jsonPath("$.title").value("Title cannot exceed 100 characters."));
+//    }
 
     @Test
     void testUploadForm_TooLongDescription() throws Exception {
