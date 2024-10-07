@@ -46,6 +46,9 @@ public class FichierOffreStageServiceTest {
     @Mock
     private MultipartFile multipartFile;
 
+    @Mock
+    private UtilisateurService utilisateurService;
+
     @InjectMocks
     private FichierOffreStageService fichierOffreStageService;
 
@@ -71,6 +74,9 @@ public class FichierOffreStageServiceTest {
 
         when(multipartFile.getOriginalFilename()).thenReturn("test.pdf");
         when(multipartFile.getBytes()).thenReturn("Test file data".getBytes());
+
+        when(utilisateurService.getUserIdByToken(anyString()))
+                .thenReturn(1L);
     }
 
     @Test
@@ -84,7 +90,8 @@ public class FichierOffreStageServiceTest {
 
 
         // Act
-        FichierOffreStageDTO result = fichierOffreStageService.saveFile(multipartFile, 1L);
+
+        FichierOffreStageDTO result = fichierOffreStageService.saveFile(multipartFile, "1L");
 
         // Assert
         assertNotNull(result);
@@ -102,7 +109,7 @@ public class FichierOffreStageServiceTest {
 
         // Act & Assert
         assertThrows(ConstraintViolationException.class, () -> {
-            fichierOffreStageService.saveFile(multipartFile, 1L);
+            fichierOffreStageService.saveFile(multipartFile, "1L");
         });
         verify(fileRepository, never()).save(any(FichierOffreStage.class));
     }
@@ -114,7 +121,7 @@ public class FichierOffreStageServiceTest {
 
         // Act & Assert
         assertThrows(IOException.class, () -> {
-            fichierOffreStageService.saveFile(multipartFile, 1L);
+            fichierOffreStageService.saveFile(multipartFile, "1L");
         });
         verify(fileRepository, never()).save(any(FichierOffreStage.class));
     }

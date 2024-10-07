@@ -69,17 +69,14 @@ public class FichierCVControllerTest {
         validFichierCVDTO.setFileData("Base64FileData"); // Example Base64 data
         validFichierCVDTO.setEtudiant_id(1L);
 
-        String testToken = "Bearer testToken123";
-        when(utilisateurService.getUserIdByToken(eq(testToken))).thenReturn(1L);
 
-
-        when(fichierCVService.saveFile(any(MultipartFile.class), eq(1L)))
+        when(fichierCVService.saveFile(any(MultipartFile.class), any(String.class)))
                 .thenReturn(validFichierCVDTO);
 
         // Act & Assert
         mockMvc.perform(multipart("/api/cv/upload")
                         .file(mockFile)
-                        .header("Authorization", testToken)
+                        .header("Authorization", "Bearer testToken123")
                         .contentType(MediaType.MULTIPART_FORM_DATA))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -106,9 +103,6 @@ public class FichierCVControllerTest {
         // Stubbing the violation message
         when(mockViolation.getMessage()).thenReturn("Invalid filename format. Only PDF files are allowed.");
 
-        String testToken = "Bearer testToken123";
-        when(utilisateurService.getUserIdByToken(eq(testToken))).thenReturn(1L);
-
         // Create a set of violations to mock the validator behavior
         Set<ConstraintViolation<FichierOffreStageDTO>> violations = new HashSet<>();
         violations.add(mockViolation);
@@ -117,13 +111,13 @@ public class FichierCVControllerTest {
         ConstraintViolationException mockConstraintViolationException = new ConstraintViolationException(violations);
 
         // Simulate the service throwing the mocked ConstraintViolationException
-        when(fichierCVService.saveFile(any(MultipartFile.class), eq(1L)))
+        when(fichierCVService.saveFile(any(MultipartFile.class), any(String.class)))
                 .thenThrow(mockConstraintViolationException);
 
         // Act & Assert: Perform the request and check for BadRequest (400) response and validate error messages
         mockMvc.perform(multipart("/api/cv/upload")
                         .file(mockFile)
-                        .header("Authorization", testToken)
+                        .header("Authorization", "Bearer validToken")
                         .contentType(MediaType.MULTIPART_FORM_DATA))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.filename").value("Invalid filename format. Only PDF files are allowed."));
@@ -137,17 +131,15 @@ public class FichierCVControllerTest {
                 MediaType.APPLICATION_PDF_VALUE, "Some content".getBytes());
 
 
-        String testToken = "Bearer testToken123";
-        when(utilisateurService.getUserIdByToken(eq(testToken))).thenReturn(1L);
 
         // Simulate an IOException when the service tries to save the file
-        when(fichierCVService.saveFile(any(MultipartFile.class), eq(1L)))
+        when(fichierCVService.saveFile(any(MultipartFile.class), any(String.class)))
                 .thenThrow(new IOException("File error"));
 
         // Act & Assert: Perform the request and expect InternalServerError (500)
         mockMvc.perform(multipart("/api/cv/upload")
                         .file(mockFile)
-                        .header("Authorization", testToken)
+                        .header("Authorization", "Bearer validToken")
                         .contentType(MediaType.MULTIPART_FORM_DATA))
                 .andExpect(status().isInternalServerError());
     }
@@ -197,8 +189,7 @@ public class FichierCVControllerTest {
         mockFichierCVDTO.setFileData("Base64EncodedData");
         mockFichierCVDTO.setEtudiant_id(userId);
 
-        when(utilisateurService.getUserIdByToken(authHeader)).thenReturn(userId);
-        when(fichierCVService.getCurrentCV(userId)).thenReturn(mockFichierCVDTO);
+        when(fichierCVService.getCurrentCV(authHeader)).thenReturn(mockFichierCVDTO);
 
         // Act & Assert
         mockMvc.perform(post("/api/cv/current")
@@ -213,29 +204,13 @@ public class FichierCVControllerTest {
     }
 
     @Test
-    void testGetCurrentCV_Unauthorized() throws Exception {
-        // Arrange
-        String invalidAuthHeader = "Bearer invalidToken123";
-
-        when(utilisateurService.getUserIdByToken(invalidAuthHeader))
-                .thenThrow(new AuthenticationException(HttpStatus.UNAUTHORIZED, "Unauthorized access"));
-
-        // Act & Assert
-        mockMvc.perform(post("/api/cv/current")
-                        .header("Authorization", invalidAuthHeader)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized())
-                .andExpect(content().string("Unauthorized access"));
-    }
-
-    @Test
     void testGetCurrentCV_FileNotFound() throws Exception {
         // Arrange
         String authHeader = "Bearer validToken123";
         Long userId = 1L;
 
         when(utilisateurService.getUserIdByToken(authHeader)).thenReturn(userId);
-        when(fichierCVService.getCurrentCV(userId))
+        when(fichierCVService.getCurrentCV("Bearer testToken123"))
                 .thenThrow(new RuntimeException("CV not found"));
 
         // Act & Assert
@@ -258,8 +233,7 @@ public class FichierCVControllerTest {
         mockFichierCVDTO.setFileData("Base64EncodedData");
         mockFichierCVDTO.setEtudiant_id(userId);
 
-        when(utilisateurService.getUserIdByToken(authHeader)).thenReturn(userId);
-        when(fichierCVService.deleteCurrentCV(userId)).thenReturn(mockFichierCVDTO);
+        when(fichierCVService.deleteCurrentCV(authHeader)).thenReturn(mockFichierCVDTO);
 
         // Act & Assert
         mockMvc.perform(patch("/api/cv/delete_current")
@@ -270,29 +244,13 @@ public class FichierCVControllerTest {
     }
 
     @Test
-    void testDeleteCurrentCV_Unauthorized() throws Exception {
-        // Arrange
-        String invalidAuthHeader = "Bearer invalidToken123";
-
-        when(utilisateurService.getUserIdByToken(invalidAuthHeader))
-                .thenThrow(new AuthenticationException(HttpStatus.UNAUTHORIZED, "Unauthorized access"));
-
-        // Act & Assert
-        mockMvc.perform(patch("/api/cv/delete_current")
-                        .header("Authorization", invalidAuthHeader)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized())
-                .andExpect(content().string("Unauthorized access"));
-    }
-
-    @Test
     void testDeleteCurrentCV_FileNotFound() throws Exception {
         // Arrange
         String authHeader = "Bearer validToken123";
         Long userId = 1L;
 
         when(utilisateurService.getUserIdByToken(authHeader)).thenReturn(userId);
-        doThrow(new RuntimeException("CV not found")).when(fichierCVService).deleteCurrentCV(userId);
+        doThrow(new RuntimeException("CV not found")).when(fichierCVService).deleteCurrentCV("Bearer testToken123");
 
         // Act & Assert
         mockMvc.perform(patch("/api/cv/delete_current")

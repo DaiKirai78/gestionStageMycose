@@ -47,7 +47,6 @@ public class FichierOffreStageControllerTest {
                 .setControllerAdvice(new GlobalExceptionHandler()) // Register GlobalExceptionHandler
                 .build();
 
-        when(utilisateurService.getUserIdByToken(any(String.class))).thenReturn(1L);
     }
 
     @Test
@@ -61,7 +60,7 @@ public class FichierOffreStageControllerTest {
         validFichierOffreStageDTO.setFilename("validFile.pdf");
         validFichierOffreStageDTO.setFileData("Base64FileData"); // Example Base64 data
 
-        when(fichierOffreStageService.saveFile(any(MultipartFile.class), any(Long.class)))
+        when(fichierOffreStageService.saveFile(any(MultipartFile.class), any(String.class)))
                 .thenReturn(validFichierOffreStageDTO);
 
         // Act & Assert
@@ -100,7 +99,7 @@ public class FichierOffreStageControllerTest {
         ConstraintViolationException mockConstraintViolationException = new ConstraintViolationException(violations);
 
         // Simulate the service throwing the mocked ConstraintViolationException
-        when(fichierOffreStageService.saveFile(any(MultipartFile.class), any(Long.class)))
+        when(fichierOffreStageService.saveFile(any(MultipartFile.class), any(String.class)))
                 .thenThrow(mockConstraintViolationException);
 
         // Act & Assert: Perform the request and check for BadRequest (400) response and validate error messages
@@ -120,7 +119,7 @@ public class FichierOffreStageControllerTest {
                 MediaType.APPLICATION_PDF_VALUE, "Some content".getBytes());
 
         // Simulate an IOException when the service tries to save the file
-        when(fichierOffreStageService.saveFile(any(MultipartFile.class), any(Long.class)))
+        when(fichierOffreStageService.saveFile(any(MultipartFile.class), any(String.class)))
                 .thenThrow(new IOException("File error"));
 
         // Act & Assert: Perform the request and expect InternalServerError (500)

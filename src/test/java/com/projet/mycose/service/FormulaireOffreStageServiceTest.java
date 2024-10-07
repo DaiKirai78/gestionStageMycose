@@ -31,6 +31,9 @@ public class FormulaireOffreStageServiceTest {
     @Mock
     private UtilisateurRepository utilisateurRepository;
 
+    @Mock
+    private UtilisateurService utilisateurService;
+
     @InjectMocks
     private FormulaireOffreStageService formulaireOffreStageService;
 
@@ -50,6 +53,10 @@ public class FormulaireOffreStageServiceTest {
 
         when(utilisateurRepository.findById(anyLong()))
                 .thenReturn(Optional.of(new Employeur()));
+
+        when(utilisateurService.getUserIdByToken(anyString()))
+                .thenReturn(1L);
+
     }
 
     @Test
@@ -63,7 +70,7 @@ public class FormulaireOffreStageServiceTest {
                 .thenReturn(formulaireOffreStageDTO);
 
         // Act
-        FormulaireOffreStageDTO result = formulaireOffreStageService.save(formulaireOffreStageDTO);
+        FormulaireOffreStageDTO result = formulaireOffreStageService.save(formulaireOffreStageDTO, "token");
 
         // Assert
         assertNotNull(result);
@@ -83,7 +90,7 @@ public class FormulaireOffreStageServiceTest {
 
         // Act & Assert
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            formulaireOffreStageService.save(formulaireOffreStageDTO);
+            formulaireOffreStageService.save(formulaireOffreStageDTO, "token");
         });
 
         assertEquals("Database Error", exception.getMessage());

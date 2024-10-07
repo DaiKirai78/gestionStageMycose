@@ -61,10 +61,9 @@ public class FormulaireOffreStageControllerTest {
     @Test
     void testUploadForm_Success() throws Exception {
         // Arrange
-        when(formulaireOffreStageService.save(any(FormulaireOffreStageDTO.class)))
+        when(formulaireOffreStageService.save(any(FormulaireOffreStageDTO.class), any(String.class)))
                 .thenReturn(validFormulaireOffreStageDTO);
 
-        when(utilisateurService.getUserIdByToken(any(String.class))).thenReturn(1L);
 
         // Act & Assert
         mockMvc.perform(post("/api/offres/upload")
