@@ -1,6 +1,7 @@
 package com.projet.mycose.controller;
 
 import com.projet.mycose.service.FichierOffreStageService;
+import com.projet.mycose.service.UtilisateurService;
 import com.projet.mycose.service.dto.FichierOffreStageDTO;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -32,6 +33,9 @@ public class FichierOffreStageControllerTest {
     @Mock
     private FichierOffreStageService fichierOffreStageService;
 
+    @Mock
+    private UtilisateurService utilisateurService;
+
     @InjectMocks
     private FichierOffreStageController fichierOffreStageController;
 
@@ -42,6 +46,8 @@ public class FichierOffreStageControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(fichierOffreStageController)
                 .setControllerAdvice(new GlobalExceptionHandler()) // Register GlobalExceptionHandler
                 .build();
+
+        when(utilisateurService.getUserIdByToken(any(String.class))).thenReturn(1L);
     }
 
     @Test
@@ -55,12 +61,13 @@ public class FichierOffreStageControllerTest {
         validFichierOffreStageDTO.setFilename("validFile.pdf");
         validFichierOffreStageDTO.setFileData("Base64FileData"); // Example Base64 data
 
-        when(fichierOffreStageService.saveFile(any(MultipartFile.class)))
+        when(fichierOffreStageService.saveFile(any(MultipartFile.class), any(Long.class)))
                 .thenReturn(validFichierOffreStageDTO);
 
         // Act & Assert
         mockMvc.perform(multipart("/api/offres-stage/upload")
                         .file(mockFile)
+                        .header("Authorization", "Bearer validToken")
                         .contentType(MediaType.MULTIPART_FORM_DATA))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -93,12 +100,13 @@ public class FichierOffreStageControllerTest {
         ConstraintViolationException mockConstraintViolationException = new ConstraintViolationException(violations);
 
         // Simulate the service throwing the mocked ConstraintViolationException
-        when(fichierOffreStageService.saveFile(any(MultipartFile.class)))
+        when(fichierOffreStageService.saveFile(any(MultipartFile.class), any(Long.class)))
                 .thenThrow(mockConstraintViolationException);
 
         // Act & Assert: Perform the request and check for BadRequest (400) response and validate error messages
         mockMvc.perform(multipart("/api/offres-stage/upload")
                         .file(mockFile)
+                        .header("Authorization", "Bearer validToken")
                         .contentType(MediaType.MULTIPART_FORM_DATA))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.filename").value("Invalid filename format. Only PDF files are allowed."));
@@ -112,12 +120,13 @@ public class FichierOffreStageControllerTest {
                 MediaType.APPLICATION_PDF_VALUE, "Some content".getBytes());
 
         // Simulate an IOException when the service tries to save the file
-        when(fichierOffreStageService.saveFile(any(MultipartFile.class)))
+        when(fichierOffreStageService.saveFile(any(MultipartFile.class), any(Long.class)))
                 .thenThrow(new IOException("File error"));
 
         // Act & Assert: Perform the request and expect InternalServerError (500)
         mockMvc.perform(multipart("/api/offres-stage/upload")
                         .file(mockFile)
+                        .header("Authorization", "Bearer validToken")
                         .contentType(MediaType.MULTIPART_FORM_DATA))
                 .andExpect(status().isInternalServerError());
     }

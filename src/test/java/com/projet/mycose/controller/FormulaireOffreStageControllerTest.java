@@ -2,6 +2,7 @@ package com.projet.mycose.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.projet.mycose.service.FormulaireOffreStageService;
+import com.projet.mycose.service.UtilisateurService;
 import com.projet.mycose.service.dto.FormulaireOffreStageDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,6 +24,9 @@ public class FormulaireOffreStageControllerTest {
 
     @Mock
     private FormulaireOffreStageService formulaireOffreStageService;
+
+    @Mock
+    private UtilisateurService utilisateurService;
 
     @InjectMocks
     private FormulaireOffreStageController formulaireOffreStageController;
@@ -50,6 +54,8 @@ public class FormulaireOffreStageControllerTest {
         validFormulaireOffreStageDTO.setLocation("Valid Location");
         validFormulaireOffreStageDTO.setSalary("50000.00");
         validFormulaireOffreStageDTO.setDescription("Valid description.");
+
+
     }
 
     @Test
@@ -58,9 +64,12 @@ public class FormulaireOffreStageControllerTest {
         when(formulaireOffreStageService.save(any(FormulaireOffreStageDTO.class)))
                 .thenReturn(validFormulaireOffreStageDTO);
 
+        when(utilisateurService.getUserIdByToken(any(String.class))).thenReturn(1L);
+
         // Act & Assert
         mockMvc.perform(post("/api/offres/upload")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer token")
                         .content(objectMapper.writeValueAsString(validFormulaireOffreStageDTO)))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -77,6 +86,7 @@ public class FormulaireOffreStageControllerTest {
         // Act & Assert
         mockMvc.perform(post("/api/offres/upload")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer token")
                         .content(objectMapper.writeValueAsString(validFormulaireOffreStageDTO)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.email").value("Invalid email format."));
@@ -90,6 +100,7 @@ public class FormulaireOffreStageControllerTest {
         // Act & Assert
         mockMvc.perform(post("/api/offres/upload")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer token")
                         .content(objectMapper.writeValueAsString(invalidFormDTO)))
                 .andExpect(status().isBadRequest())
                 //TODO: A enlever les commentaires quand les champs seront ajoutés au front-end
@@ -111,6 +122,7 @@ public class FormulaireOffreStageControllerTest {
         // Act & Assert
         mockMvc.perform(post("/api/offres/upload")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer token")
                         .content(objectMapper.writeValueAsString(validFormulaireOffreStageDTO)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.salary").value("Salary must be a valid number with up to 10 digits and 2 decimal places."));
@@ -139,6 +151,7 @@ public class FormulaireOffreStageControllerTest {
         // Act & Assert
         mockMvc.perform(post("/api/offres/upload")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer token")
                         .content(objectMapper.writeValueAsString(validFormulaireOffreStageDTO)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.description").value("Description cannot exceed 500 characters."));
