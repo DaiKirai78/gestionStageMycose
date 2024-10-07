@@ -23,20 +23,9 @@ public class OffreStageDTO {
 
 //    @NotBlank(message = "Enterprise name is required.")
     private String entrepriseName;
+
+    private Long createur_id;
     public OffreStageDTO(long id) {
         this.id = id;
-    }
-
-    public static OffreStageDTO toOffreStageInstaceDTO(OffreStage offreStage) {
-        OffreStageDTO offreStageDTO = null;
-
-        if(offreStage instanceof FormulaireOffreStage) {
-            offreStageDTO = FormulaireOffreStageDTO.toDTO((FormulaireOffreStage) offreStage);
-        }
-        else if(offreStage instanceof FichierOffreStage) {
-            offreStageDTO = FichierOffreStageDTO.toDTO((FichierOffreStage) offreStage);
-        }
-
-        return offreStageDTO;
     }
 }

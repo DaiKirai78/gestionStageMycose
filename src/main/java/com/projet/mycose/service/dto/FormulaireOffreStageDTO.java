@@ -39,7 +39,7 @@ public class FormulaireOffreStageDTO extends OffreStageDTO {
     private String description;
 
     @Builder
-    public FormulaireOffreStageDTO(Long id, String employerName, String email, String website, String location, String salary, String description, String title, String entrepriseName) {
+    public FormulaireOffreStageDTO(Long id, String employerName, String email, String website, String location, String salary, String description, String title, String entrepriseName, Long createur_id) {
         super(id);
         this.employerName = employerName;
         this.email = email;
@@ -49,6 +49,7 @@ public class FormulaireOffreStageDTO extends OffreStageDTO {
         this.description = description;
         this.setTitle(title);
         this.setEntrepriseName(entrepriseName);
+        this.setCreateur_id(createur_id);
     }
 
     public static FormulaireOffreStageDTO toDTO(FormulaireOffreStage formulaireOffreStage) {
@@ -62,6 +63,7 @@ public class FormulaireOffreStageDTO extends OffreStageDTO {
                 .location(formulaireOffreStage.getLocation())
                 .salary(formulaireOffreStage.getSalary())
                 .location(formulaireOffreStage.getLocation())
+                .createur_id(formulaireOffreStage.getCreateur().getId())
                 .build();
     }
 }
