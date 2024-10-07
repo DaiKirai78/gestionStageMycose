@@ -10,8 +10,13 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @DiscriminatorColumn(name = "FORMAT")
-public class OffreStage {
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+public abstract class OffreStage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
+    private String title;
+
+    private String entrepriseName;
 }

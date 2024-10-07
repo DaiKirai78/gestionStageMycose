@@ -9,16 +9,11 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-//@Table(name = "fichiersOffresStage")
 @Getter
 @Setter
 @NoArgsConstructor
 @DiscriminatorValue("FILE")
 public class FichierOffreStage extends OffreStage{
-
-    //@Id
-    //@GeneratedValue(strategy = GenerationType.IDENTITY)
-    //private Long id;
 
     @CreationTimestamp
     @Column(updatable = false)
@@ -31,5 +26,13 @@ public class FichierOffreStage extends OffreStage{
 
     @Column(name = "data", columnDefinition = "BYTEA")
     private byte[] data;
+
+    public FichierOffreStage(String title, String entrepriseName, String filename, byte[] data) {
+        super();
+        this.setTitle(title);
+        this.setEntrepriseName(entrepriseName);
+        this.filename = filename;
+        this.data = data;
+    }
 
 }
