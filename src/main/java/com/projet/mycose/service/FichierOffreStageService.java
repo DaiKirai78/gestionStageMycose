@@ -1,8 +1,11 @@
 package com.projet.mycose.service;
 
 import com.projet.mycose.modele.FichierOffreStage;
+import com.projet.mycose.modele.Utilisateur;
 import com.projet.mycose.repository.FichierOffreStageRepository;
+import com.projet.mycose.repository.UtilisateurRepository;
 import com.projet.mycose.service.dto.FichierOffreStageDTO;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
@@ -19,11 +22,13 @@ public class FichierOffreStageService {
     private final FichierOffreStageRepository fileRepository;
     private final ModelMapper modelMapper;
     private final Validator validator;
+    private final UtilisateurRepository utilisateurRepository;
 
-    public FichierOffreStageService(FichierOffreStageRepository fileRepository, ModelMapper modelMapper, Validator validator) {
+    public FichierOffreStageService(FichierOffreStageRepository fileRepository, ModelMapper modelMapper, Validator validator, UtilisateurRepository utilisateurRepository) {
         this.fileRepository = fileRepository;
         this.modelMapper = modelMapper;
         this.validator = validator;
+        this.utilisateurRepository = utilisateurRepository;
     }
 
     // Convert Entity to DTO
@@ -32,6 +37,10 @@ public class FichierOffreStageService {
 
         // Convert byte[] data to Base64 string
         fichierOffreStageDTO.setFileData(Base64.getEncoder().encodeToString(fichierOffreStage.getData()));
+
+        if (fichierOffreStage.getCreateur() != null) {
+            fichierOffreStageDTO.setCreateur_id(fichierOffreStage.getCreateur().getId());
+        }
 
         return fichierOffreStageDTO;
     }
@@ -43,27 +52,31 @@ public class FichierOffreStageService {
         // Convert Base64 string back to byte[]
         fichierOffreStage.setData(Base64.getDecoder().decode(dto.getFileData()));
 
+        if (dto.getCreateur_id() != null) {
+            Utilisateur createur = utilisateurRepository.findById(dto.getCreateur_id())
+                    .orElseThrow(() -> new EntityNotFoundException("Utilisateur not found with ID: " + dto.getCreateur_id()));
+            fichierOffreStage.setCreateur(createur);
+        } else {
+            throw new IllegalArgumentException("createur_id cannot be null");
+        }
+
         return fichierOffreStage;
     }
 
 
-    public FichierOffreStageDTO saveFile(MultipartFile file) throws ConstraintViolationException, IOException {
+    public FichierOffreStageDTO saveFile(MultipartFile file, Long createur_id) throws ConstraintViolationException, IOException {
 
         FichierOffreStageDTO fichierOffreStageDTO = new FichierOffreStageDTO();
 
         fichierOffreStageDTO.setFilename(file.getOriginalFilename());
         fichierOffreStageDTO.setFileData(Base64.getEncoder().encodeToString(file.getBytes()));
-
+        fichierOffreStageDTO.setCreateur_id(createur_id);
         Set<ConstraintViolation<FichierOffreStageDTO>> violations = validator.validate(fichierOffreStageDTO);
         if (!violations.isEmpty()) {
             throw new ConstraintViolationException(violations);
         }
 
         FichierOffreStage fichierOffreStage = convertToEntity(fichierOffreStageDTO);
-
         return convertToDTO(fileRepository.save(fichierOffreStage));
     }
-//    public FichierOffreStage getFile(Long id) {
-//        return fileRepository.findById(id).orElseThrow(() -> new RuntimeException("Fichier non trouvé"));
-//    }
 }
