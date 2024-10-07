@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Base64;
+
 
 @NoArgsConstructor
 @Getter
@@ -39,8 +41,10 @@ public class FichierOffreStageDTO extends OffreStageDTO{
         return FichierOffreStageDTO.builder()
                 .id(fichierOffreStage.getId())
                 .filename(fichierOffreStage.getFilename())
-                .fileData(fichierOffreStage.getFilename())
+                .fileData(Base64.getEncoder().encodeToString(fichierOffreStage.getData()))
                 .build();
     }
+
+    //TODO: Ajouter les champs title et entrepriseName au front-end pour qu'on puisse les envoyer au DTO avec validation
 
 }
