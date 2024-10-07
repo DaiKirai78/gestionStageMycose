@@ -49,6 +49,9 @@ public class FichierCVServiceTest {
     @Mock
     private MultipartFile multipartFile;
 
+    @Mock
+    private UtilisateurService utilisateurService;
+
     @InjectMocks
     private FichierCVService fichierCVService;
 
@@ -88,8 +91,11 @@ public class FichierCVServiceTest {
 
         when(multipartFile.getBytes()).thenReturn("Test file data".getBytes());
 
+        when(utilisateurService.getUserIdByToken(anyString()))
+                .thenReturn(1L);
+
         // Act
-        FichierCVDTO result = fichierCVService.saveFile(multipartFile, 1L);
+        FichierCVDTO result = fichierCVService.saveFile(multipartFile, "1L");
 
         // Assert
         assertNotNull(result);
@@ -103,6 +109,7 @@ public class FichierCVServiceTest {
         // Arrange
         ConstraintViolation<FichierCVDTO> violation = mock(ConstraintViolation.class);
         Set<ConstraintViolation<FichierCVDTO>> violations = Set.of(violation);
+
         when(validator.validate(any(FichierCVDTO.class))).thenReturn(violations);
 
         when(multipartFile.getBytes()).thenReturn("Test file data".getBytes());
@@ -110,7 +117,7 @@ public class FichierCVServiceTest {
 
         // Act & Assert
         assertThrows(ConstraintViolationException.class, () -> {
-            fichierCVService.saveFile(multipartFile, 1L);
+            fichierCVService.saveFile(multipartFile, "1L");
         });
         verify(fileRepository, never()).save(any(FichierCV.class));
     }
@@ -122,7 +129,7 @@ public class FichierCVServiceTest {
 
         // Act & Assert
         assertThrows(IOException.class, () -> {
-            fichierCVService.saveFile(multipartFile, 1L);
+            fichierCVService.saveFile(multipartFile, "1L");
         });
         verify(fileRepository, never()).save(any(FichierCV.class));
     }
@@ -187,12 +194,18 @@ public class FichierCVServiceTest {
     void testGetCurrentCV_Success() {
         // Arrange
 
+
+
+        when(utilisateurService.getUserIdByToken(anyString()))
+                .thenReturn(1L);
+
+
         when(fileRepository.getFirstByEtudiant_IdAndStatusEquals(etudiant.getId(), FichierCV.Status.ACCEPTED))
                 .thenReturn(Optional.of(fichierCV));
         when(modelMapper.map(fichierCV, FichierCVDTO.class)).thenReturn(fichierCVDTO);
 
         // Act
-        FichierCVDTO result = fichierCVService.getCurrentCV(etudiant.getId());
+        FichierCVDTO result = fichierCVService.getCurrentCV("1L");
 
         // Assert
         assertNotNull(result, "The returned FichierCVDTO should not be null");
@@ -208,9 +221,15 @@ public class FichierCVServiceTest {
         when(fileRepository.getFirstByEtudiant_IdAndStatusEquals(etudiant.getId(), FichierCV.Status.ACCEPTED))
                 .thenReturn(Optional.empty());
 
+
+
+        when(utilisateurService.getUserIdByToken(anyString()))
+                .thenReturn(1L);
+
+
         // Act & Assert
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            fichierCVService.getCurrentCV(etudiant.getId());
+            fichierCVService.getCurrentCV("1L");
         }, "Expected getCurrentCV() to throw, but it didn't");
 
         assertEquals("Fichier non trouvé", exception.getMessage(), "Exception message should match");
@@ -221,13 +240,19 @@ public class FichierCVServiceTest {
     void testDeleteCurrentCV_Success() {
         // Arrange
 
+
+
+        when(utilisateurService.getUserIdByToken(anyString()))
+                .thenReturn(1L);
+
+
         when(fileRepository.getFirstByEtudiant_IdAndStatusEquals(etudiant.getId(), FichierCV.Status.ACCEPTED))
                 .thenReturn(Optional.of(fichierCV));
         when(fileRepository.save(any(FichierCV.class))).thenReturn(fichierCV);
         when(modelMapper.map(fichierCV, FichierCVDTO.class)).thenReturn(fichierCVDTO);
 
         // Act
-        FichierCVDTO result = fichierCVService.deleteCurrentCV(etudiant.getId());
+        FichierCVDTO result = fichierCVService.deleteCurrentCV("1L");
 
         // Assert
         assertNotNull(result, "The returned FichierCVDTO should not be null");
@@ -251,9 +276,15 @@ public class FichierCVServiceTest {
         when(fileRepository.getFirstByEtudiant_IdAndStatusEquals(etudiant.getId(), FichierCV.Status.ACCEPTED))
                 .thenReturn(Optional.empty());
 
+
+
+        when(utilisateurService.getUserIdByToken(anyString()))
+                .thenReturn(1L);
+
+
         // Act & Assert
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            fichierCVService.deleteCurrentCV(etudiant.getId());
+            fichierCVService.deleteCurrentCV("1L");
         }, "Expected deleteCurrentCV() to throw, but it didn't");
 
         assertEquals("Fichier non trouvé", exception.getMessage(), "Exception message should match");

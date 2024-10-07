@@ -24,13 +24,15 @@ public class FichierCVService {
     private final ModelMapper modelMapper;
     private final Validator validator;
     private final EtudiantRepository etudiantRepository;
+    private final UtilisateurService utilisateurService;
 
 
-    public FichierCVService(FichierCVRepository fileRepository, ModelMapper modelMapper, Validator validator, EtudiantRepository etudiantRepository) {
+    public FichierCVService(FichierCVRepository fileRepository, ModelMapper modelMapper, Validator validator, EtudiantRepository etudiantRepository, UtilisateurService utilisateurService) {
         this.fileRepository = fileRepository;
         this.modelMapper = modelMapper;
         this.validator = validator;
         this.etudiantRepository = etudiantRepository;
+        this.utilisateurService = utilisateurService;
     }
 
     // Convert Entity to DTO
@@ -58,7 +60,8 @@ public class FichierCVService {
     }
 
 
-    public FichierCVDTO saveFile(MultipartFile file, Long etudiant_id) throws ConstraintViolationException, IOException {
+    public FichierCVDTO saveFile(MultipartFile file, String token) throws ConstraintViolationException, IOException {
+        Long etudiant_id = utilisateurService.getUserIdByToken(token);
 
         FichierCVDTO fichierCVDTO = new FichierCVDTO();
 
@@ -112,13 +115,15 @@ public class FichierCVService {
          return convertToDTO(fichierCV);
     }
 
-    public FichierCVDTO getCurrentCV(Long etudiant_id) {
+    public FichierCVDTO getCurrentCV(String token) {
+        Long etudiant_id = utilisateurService.getUserIdByToken(token);
         FichierCV fichierCV = fileRepository.getFirstByEtudiant_IdAndStatusEquals(etudiant_id, FichierCV.Status.ACCEPTED).orElseThrow(() -> new RuntimeException("Fichier non trouvé"));
         return convertToDTO(fichierCV);
     }
 
-    public FichierCVDTO deleteCurrentCV(Long id) {
-        FichierCV fichierCV = fileRepository.getFirstByEtudiant_IdAndStatusEquals(id, FichierCV.Status.ACCEPTED).orElseThrow(() -> new RuntimeException("Fichier non trouvé"));
+    public FichierCVDTO deleteCurrentCV(String token) {
+        Long etudiant_id = utilisateurService.getUserIdByToken(token);
+        FichierCV fichierCV = fileRepository.getFirstByEtudiant_IdAndStatusEquals(etudiant_id, FichierCV.Status.ACCEPTED).orElseThrow(() -> new RuntimeException("Fichier non trouvé"));
         fichierCV.setStatus(FichierCV.Status.DELETED);
         return convertToDTO(fileRepository.save(fichierCV));
     }

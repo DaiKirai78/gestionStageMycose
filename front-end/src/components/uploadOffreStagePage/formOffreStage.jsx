@@ -38,6 +38,9 @@ function FormOffreStage() {
     };
 
     const handleSubmitForm = async (e) => {
+
+        let token = localStorage.getItem("token");
+
         e.preventDefault();
 
         let valid = true;
@@ -127,7 +130,14 @@ function FormOffreStage() {
         }
 
         try {
-            const response = await axios.post("http://localhost:8080/api/offres/upload", formData);
+            const response = await axios.post("http://localhost:8080/api/offres/upload", formData,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
             console.log("Formulaire envoyé avec succès :", response.data);
             setSuccessMessage(t("formSubmissionSuccess"));
             setSubmitError("");
