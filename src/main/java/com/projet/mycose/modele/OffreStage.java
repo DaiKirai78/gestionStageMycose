@@ -19,4 +19,8 @@ public abstract class OffreStage {
     private String title;
 
     private String entrepriseName;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "createur_id")
+    private Utilisateur createur;
 }

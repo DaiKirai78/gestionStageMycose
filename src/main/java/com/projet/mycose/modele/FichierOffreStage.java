@@ -1,4 +1,5 @@
 package com.projet.mycose.modele;
+import com.projet.mycose.service.UtilisateurService;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,10 +28,11 @@ public class FichierOffreStage extends OffreStage{
     @Column(name = "data", columnDefinition = "BYTEA")
     private byte[] data;
 
-    public FichierOffreStage(String title, String entrepriseName, String filename, byte[] data) {
+    public FichierOffreStage(String title, String entrepriseName, String filename, byte[] data, Utilisateur createur) {
         super();
         this.setTitle(title);
         this.setEntrepriseName(entrepriseName);
+        this.setCreateur(createur);
         this.filename = filename;
         this.data = data;
     }
