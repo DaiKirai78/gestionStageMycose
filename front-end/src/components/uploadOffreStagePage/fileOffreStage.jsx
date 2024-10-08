@@ -40,8 +40,9 @@ function FileOffreStage() {
         formData.append("file", file);
         formData.append("title", title);
 
-        if (role === "GESTIONNAIRE") {
-            formData.append("entreprise_name", companyName);
+        if (role === "GESTIONNAIRE_STAGE") {
+            console.log("Entreprise :", companyName);
+            formData.append("entrepriseName", companyName);
         }
 
         try {
@@ -80,7 +81,7 @@ function FileOffreStage() {
             setTitleError("");
         }
 
-        if (role === "GESTIONNAIRE" && !companyName) {
+        if (role === "GESTIONNAIRE_STAGE" && !companyName) {
             setCompanyNameError("companyNameRequired");
             hasError = true;
         } else {
@@ -149,7 +150,7 @@ function FileOffreStage() {
             </div>
 
             {/* Champ pour le nom de l'entreprise */}
-            {role === "GESTIONNAIRE" && (
+            {role === "GESTIONNAIRE_STAGE" && (
                 <div className="relative w-full">
                     <label htmlFor="companyName" className="block text-sm font-medium text-black mt-4">{t("companyName")}</label>
                     <input

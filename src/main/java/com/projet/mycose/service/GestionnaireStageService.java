@@ -15,7 +15,6 @@ public class GestionnaireStageService {
     private final GestionnaireStageRepository gestionnaireStageRepository;
 
     public void creationDeCompte(String prenom, String nom, String numeroTelephone, String courriel, String motDePasse) {
-        System.out.println(utilisateurService.credentialsDejaPris(courriel, numeroTelephone));
         if (!utilisateurService.credentialsDejaPris(courriel, numeroTelephone)) {
             gestionnaireStageRepository.save(new GestionnaireStage(prenom, nom, numeroTelephone, courriel, passwordEncoder.encode(motDePasse)));
         }

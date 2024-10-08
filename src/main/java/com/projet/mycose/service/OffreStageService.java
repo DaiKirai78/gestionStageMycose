@@ -112,6 +112,9 @@ public class OffreStageService {
         if (utilisateurDTO.getRole() == Role.EMPLOYEUR) {
             fichierOffreStageDTO.setEntrepriseName(((EmployeurDTO) utilisateurDTO).getEntrepriseName());
         } else if (utilisateurDTO.getRole() == Role.GESTIONNAIRE_STAGE) {
+            if (uploadFicherOffreStageDTO.getEntrepriseName() == null) {
+                throw new IllegalArgumentException("entrepriseName cannot be null");
+            }
             fichierOffreStageDTO.setEntrepriseName(uploadFicherOffreStageDTO.getEntrepriseName());
         } else {
             throw new IllegalArgumentException("Utilisateur n'est pas un employeur ou un gestionnaire de stage");
