@@ -106,6 +106,10 @@ public class OffreStageService {
     }
 
     private boolean etudiantIdEtOffreStageIdValides(long etudiantId, long offreStageId) {
-        return utilisateurRepository.existsById(etudiantId) && offreStageRepository.existsById(offreStageId);
+        if(!utilisateurRepository.existsById(etudiantId) || !offreStageRepository.existsById(offreStageId)){
+            return false;
+        }
+
+        return utilisateurRepository.findById(etudiantId).get() instanceof Etudiant;
     }
 }
