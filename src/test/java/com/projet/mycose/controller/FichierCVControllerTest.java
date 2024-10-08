@@ -223,6 +223,17 @@ public class FichierCVControllerTest {
     }
 
     @Test
+    void getWaitingCv_SendPageZeroError() throws Exception {
+
+        // Act
+        when(fichierCVService.getWaitingCv(0)).thenThrow(IllegalArgumentException.class);
+
+        // Assert
+        mockMvc.perform(get("/api/cv/waitingcv?page=0"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void testGetCurrentCV_Success() throws Exception {
         // Arrange
         String authHeader = "Bearer validToken123";

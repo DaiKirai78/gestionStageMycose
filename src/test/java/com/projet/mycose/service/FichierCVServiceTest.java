@@ -135,8 +135,8 @@ public class FichierCVServiceTest {
                 .thenReturn(Optional.of(new ArrayList<>((Arrays.asList(fichierCV, fichierCV, fichierCV, fichierCV)))));;
 
         // Assert
-        Assertions.assertThat(fichierCVService.getWaitingCv(0).size()).isEqualTo(10);
-        Assertions.assertThat(fichierCVService.getWaitingCv(1).size()).isEqualTo(4);
+        Assertions.assertThat(fichierCVService.getWaitingCv(1).size()).isEqualTo(10);
+        Assertions.assertThat(fichierCVService.getWaitingCv(2).size()).isEqualTo(4);
     }
     @Test
     void testGetWaitingCV_PageVide() {
@@ -145,7 +145,15 @@ public class FichierCVServiceTest {
                 .thenReturn(Optional.empty());
 
         // Assert
-        Assertions.assertThat(fichierCVService.getWaitingCv(1).size()).isEqualTo(0);
+        Assertions.assertThat(fichierCVService.getWaitingCv(2).size()).isEqualTo(0);
+    }
+
+    @Test
+    void testGetWaitingCV_WrongPageNumber() {
+        // Assert
+        assertThrows(RuntimeException.class, () -> {
+            fichierCVService.getWaitingCv(0);
+        }, "Page commence à 1");
     }
 
     @Test

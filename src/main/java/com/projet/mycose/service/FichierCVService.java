@@ -77,7 +77,14 @@ public class FichierCVService {
         return convertToDTO(fileRepository.save(fichierCV));
     }
 
-    public List<FichierCVStudInfoDTO> getWaitingCv(int page) {
+    public List<FichierCVStudInfoDTO> getWaitingCv(int page) throws IllegalArgumentException {
+        //Pageable commence a 0 mais page va commencer a 1
+        page--;
+
+        if(page < 0) {
+            throw new IllegalArgumentException("Page commence à 1");
+        }
+
         Optional<List<FichierCV>> fichierCVSOptional = fileRepository.getFichierCVSByStatusEquals(FichierCV.Status.WAITING,
                 PageRequest.of(page, LIMIT_PER_PAGE));
 
@@ -99,8 +106,8 @@ public class FichierCVService {
         int nombrePages = (int) Math.floor((double) amountOfRows / LIMIT_PER_PAGE);
 
         if (amountOfRows % 10 > 0) {
-            // Return ++ (équivalent -> nombrePage + 1) parce que
-            // floor(13/10) = 1 mais il y a 2 page et pas 1
+            // Return ++ parce que floor(13/10) = 1
+            // mais il y a 2 page et pas 1
             nombrePages++;
         }
 

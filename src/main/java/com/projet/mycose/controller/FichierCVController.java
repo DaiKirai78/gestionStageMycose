@@ -82,9 +82,13 @@ public class FichierCVController {
     }
 
     @GetMapping("/waitingcv")
-    public ResponseEntity<List<FichierCVStudInfoDTO>> getWaitingCv(@RequestParam int page) {
-         List<FichierCVStudInfoDTO> fichierCVDTOS = fichierCVService.getWaitingCv(page);
-         return ResponseEntity.status(HttpStatus.OK).body(fichierCVDTOS);
+    public ResponseEntity<?> getWaitingCv(@RequestParam int page) {
+         try {
+             List<FichierCVStudInfoDTO> fichierCVDTOS = fichierCVService.getWaitingCv(page);
+             return ResponseEntity.status(HttpStatus.OK).body(fichierCVDTOS);
+         } catch (IllegalArgumentException e) {
+             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+         }
     }
 
     @GetMapping("/pages")
