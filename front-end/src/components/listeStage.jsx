@@ -1,5 +1,6 @@
 import {useEffect, useState} from "react";
 import axios from "axios";
+import {useTranslation} from "react-i18next";
 
 const listeStage = () => {
 
@@ -19,6 +20,8 @@ const listeStage = () => {
 
     const [pageActuelle, setPageActuelle] = useState(0);
     const [nombreDePage, setNombreDePage] = useState(0);
+
+    const { t } = useTranslation();
 
     let localhost = "http://localhost:8080/";
     let urlGetFormulaireStage = "etudiant/getStages?pageNumber=";
@@ -116,7 +119,7 @@ const listeStage = () => {
     }
 
     const handleKeyDown = (e) => {
-        if (e.key === 'Enter') {
+        if (e.key === 'Enter' && recherche !== "") {
             rechercher(e);
         }
     };
@@ -258,11 +261,9 @@ const listeStage = () => {
     return (
         <>
             <div className="w-2/3 lg:w-1/2">
-                <h1 className="pt-12 text-3xl md:text-4xl text-pretty font-accueilTitreFont font-bold text-black">Explorez
-                    des stages dans des
-                    entreprises variées</h1>
+                <h1 className="pt-12 text-3xl md:text-4xl text-pretty font-accueilTitreFont font-bold text-black">{t("titrePageAfficherOffreStage")}</h1>
                 <div className="flex flex-row">
-                    <input type="search" placeholder="Chercher un stage" id="searchInput" value={recherche}
+                    <input type="search" placeholder={t("placeholderRechercherUnStage")} id="searchInput" value={recherche}
                            onChange={(e) => {
                                activerDesactiverRecherche(e);
                                changeRechercheStage(e);
@@ -300,14 +301,14 @@ const listeStage = () => {
                                             <h4 className="pl-2 max-w-max pr-2">{stage.created_at}</h4>
                                         </div>
                                         <button
-                                            className="bg-orange text-white md:absolute md:bottom-2 lg:bottom-12 lg:top-4 md:right-2 px-4 md:px-8 py-2 rounded-2xl mt-3 lg:mt-0 w-1/2 md:w-1/3 lg:w-36 hover:bg-orange-dark shadow-md">Appliquer
+                                            className="bg-orange text-white md:absolute md:bottom-2 lg:bottom-12 lg:top-4 md:right-2 px-4 md:px-8 py-2 rounded-2xl mt-3 lg:mt-0 w-1/2 md:w-1/3 lg:w-36 hover:bg-orange-dark shadow-md">{t("boutonAppliquerAUnStage")}
                                         </button>
                                     </div>
                                     <hr className="bg-deep-orange-100"/>
                                 </>
 
                             )) :
-                            <h3>Aucun stage disponible</h3>
+                            <h3 className="text-xl mt-5">{t("messageAucunStageDisponible")}</h3>
                     }
                 </div>
                 <div className="text-center mb-7">
@@ -331,10 +332,9 @@ const listeStage = () => {
                             className="w-11/12 max-w-lg sm:w-2/3 lg:w-1/2 bg-white rounded-2xl shadow-2xl p-6 relative transform transition-transform duration-500 ease-out scale-100 hover:scale-105"
                             onClick={(e) => e.stopPropagation()}
                         >
-                            {/* Modal Header */}
                             <div className="flex justify-between items-center border-b pb-3">
                                 <h2 className="text-2xl font-bold text-gray-800">
-                                    Détails du stage
+                                    {t("modalTitreDetailsStage")}
                                 </h2>
                                 <button
                                     id="closeStageDetails"
@@ -347,7 +347,6 @@ const listeStage = () => {
                                 </button>
                             </div>
 
-                            {/* Modal Content */}
                             <div className="pt-4 space-y-4 text-center">
                                 {stageClique ? (
                                     <>
@@ -357,17 +356,17 @@ const listeStage = () => {
                                             </h3>
                                         ) : (
                                             <h3 className="text-xl font-semibold text-gray-500">
-                                                Titre de l'offre inexistant
+                                                {t("titreDeOffreDeStageInexistant")}
                                             </h3>
                                         )}
 
                                         {stageClique.entrepriseName ? (
                                             <h4 className="text-lg font-medium text-gray-700 break-words">
-                                                Offre de {stageClique.entrepriseName}
+                                                {t("offreDe") + stageClique.entrepriseName}
                                             </h4>
                                         ) : (
                                             <h4 className="text-lg text-gray-500">
-                                                Entreprise inconnue
+                                                {t("entrepriseInconnue")}
                                             </h4>
                                         )}
 
@@ -375,24 +374,24 @@ const listeStage = () => {
                                             <div className="space-y-2 break-words">
                                                 <p className="text-gray-700">{stageClique.description}</p>
                                                 <p className="text-gray-700">{stageClique.location}</p>
-                                                <p className="text-green-600 font-medium">Salaire : {stageClique.salary}$</p>
+                                                <p className="text-green-600 font-medium">{t("salaireDeOffre") + stageClique.salary}$/h</p>
                                                 <a href={stageClique.website} className="text-blue-500 underline">
                                                     {stageClique.website}
                                                 </a>
                                             </div>
                                         ) : (
                                             <p className="text-gray-500 break-words">
-                                                Rendez-vous sur la page d'application pour plus de détails concernant cette offre.
+                                                {t("rendezVousSurPagePourInfos")}
                                             </p>
                                         )}
 
                                         <p className="text-gray-400 text-sm">
-                                            Publié le {new Date(stageClique.create_at).toLocaleDateString()}
+                                            {t("publieLe") + new Date(stageClique.create_at).toLocaleDateString()}
                                         </p>
                                     </>
                                 ) : (
                                     <p className="text-gray-500">
-                                        Aucun stage sélectionné.
+                                        {t("aucunStageSelectionne")}
                                     </p>
                                 )}
                             </div>

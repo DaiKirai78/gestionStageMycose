@@ -80,5 +80,17 @@
     "TECHNIQUE_INFORMATIQUE": "Technique de l'informatique",
     "GENIE_LOGICIEL": "Génie logiciel",
     "RESEAU_TELECOMMUNICATION": "Réseau et télécommunication",
-    "choisirProgramme": "Choisir un programme"
+    "choisirProgramme": "Choisir un programme",
+    "titrePageAfficherOffreStage": "Explorez des stages dans des entreprises variées",
+    "placeholderRechercherUnStage": "Chercher un stage",
+    "boutonAppliquerAUnStage": "Appliquer",
+    "messageAucunStageDisponible": "Aucun stage disponible",
+    "modalTitreDetailsStage": "Détails du stage",
+    "titreDeOffreDeStageInexistant": "Titre de l'offre de stage inexistant",
+    "offreDe": "Offre de ",
+    "entrepriseInconnue": "Entreprise inconnue",
+    "salaireDeOffre": "Salaire : ",
+    "rendezVousSurPagePourInfos": "Rendez-vous sur la page d'application pour plus de détails concernant cette offre.",
+    "publieLe": "Publié le ",
+    "aucunStageSelectionne": "Aucun stage sélectionné."
 }

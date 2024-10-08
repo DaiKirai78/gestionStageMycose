@@ -80,5 +80,17 @@
     "TECHNIQUE_INFORMATIQUE": "Computer Science",
     "GENIE_LOGICIEL": "Software Engineering",
     "RESEAU_TELECOMMUNICATION": "Telecommunication Network",
-    "choisirProgramme": "Choose a program"
+    "choisirProgramme": "Choose a program",
+    "titrePageAfficherOffreStage": "Explore internships with a variety of companies",
+    "placeholderRechercherUnStage": "Search for an internship",
+    "boutonAppliquerAUnStage": "Apply",
+    "messageAucunStageDisponible": "No internship available",
+    "modalTitreDetailsStage": "Internship details",
+    "titreDeOffreDeStageInexistant": "Title of internship offer does not exist",
+    "offreDe": "Offer by ",
+    "entrepriseInconnue": "Unknown company",
+    "salaireDeOffre": "Salary : ",
+    "rendezVousSurPagePourInfos": "Go to the application page for more details about this offer.",
+    "publieLe": "Published on ",
+    "aucunStageSelectionne": "No internship selected."
 }
