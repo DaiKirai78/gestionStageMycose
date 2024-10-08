@@ -1,11 +1,11 @@
-import {useEffect, useRef, useState} from "react";
+import {useEffect, useState} from "react";
 import axios from "axios";
 
 const listeStage = () => {
 
     const [stages, setStages] = useState(null);
 
-    const [rechercheStage, setRechercheStage] = useState("");
+    const [recherche, setRecherche] = useState("");
     const [motsContenantRechercheTitre, setMotsContenantRechercheTitre] = useState(null);
     const [motsContenantRechercheEntreprise, setMotsContenantRechercheEntreprise] = useState(null);
     const [buttonDisabled, setButtonDisabled] = useState(true);
@@ -23,8 +23,9 @@ const listeStage = () => {
     let localhost = "http://localhost:8080/";
     let urlGetFormulaireStage = "etudiant/getStages?pageNumber=";
     let urlGetNombreDePage = "etudiant/pages"
-    // let sendTokenToBackend = "etudiant/sendToken"
+    let urlRechercheOffres = "etudiant/recherche-offre"
 
+    let token = localStorage.getItem("token");
 
     useEffect(() => {
         fetchStages();
@@ -33,15 +34,7 @@ const listeStage = () => {
         isItTheFirstPage();
     }, [pageActuelle]);
 
-    // const sendToken = () => {
-    //     try {
-    //         const token = localStorage.getItem("token");
-    //         await axios.post(localhost + urlGetFormulaireStage, {
-    //     }
-    // }
-
     const fetchNombrePages = async () => {
-        let token = localStorage.getItem("token");
         try {
             const response = await axios.get(localhost + urlGetNombreDePage, {
                 headers: {
@@ -57,7 +50,6 @@ const listeStage = () => {
         }
     };
     const fetchStages = async () => {
-        let token = localStorage.getItem("token");
         try {
             const responseForms = await axios.post(localhost + urlGetFormulaireStage + pageActuelle, {}, {
                 headers: {
@@ -65,23 +57,32 @@ const listeStage = () => {
                     'Content-Type': 'application/json'
                 },
             });
-            //console.log("Voici les infos : " + responseForms.data);
             setStages(responseForms.data);
             return responseForms.data;
         } catch (error) {
             console.error("Erreur lors de la récupération des stages:", error);
         }
     };
-
-    // const fetchStages = async () => {
-    //     try {
-    //         const response = await axios.get("/stage.json");
-    //         setStages(response.data);
-    //         return response.data;
-    //     } catch (error) {
-    //         console.error("Erreur lors de la récupération des stages:", error);
-    //     }
-    // };
+    const fetchStagesByRecherche = async () => {
+        let pageNumber = 0;
+        try {
+            const responseRecherche = await axios.post(localhost + urlRechercheOffres, {}, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                params: {
+                    pageNumber,
+                    recherche
+                }
+            });
+            console.log("Voici les infos : " + responseRecherche.data);
+            setStages(responseRecherche.data);
+            return responseRecherche.data;
+        } catch (error) {
+            console.error("Erreur lors de la récupération des stages recherchés:", error);
+        }
+    };
 
     function elementStageClique(stage) {
         setUnStageEstClique(true);
@@ -96,19 +97,19 @@ const listeStage = () => {
     }
 
     function changeRechercheStage(e) {
-        setRechercheStage(e.target.value)
+        setRecherche(e.target.value)
     }
 
     function rechercher(e) {
         e.preventDefault();
 
-        if (rechercheStage !== "")
+        if (recherche !== "")
             setUneRechercheEstFaite(true);
 
+        const stagesDetails = fetchStagesByRecherche();
         let mapStages = stageEtNbreDeCorrespondances();
 
         const mapStageSort = [...mapStages.entries()].sort((a, b) => b[1] - a[1]).map(([key, value]) => key);
-        const stagesDetails = fetchStages();
         trierStages(stagesDetails, mapStageSort);
     }
 
@@ -119,7 +120,7 @@ const listeStage = () => {
         Object.entries(stages).forEach(([key, stage]) => {
             const arrayofStringTitre = stage.titre.match(/\b[\wÀ-ÿ]+\b/gu);
             const arrayofStringEntreprise = stage.entreprise.match(/\b[\wÀ-ÿ]+\b/gu);
-            const arrayofStringRecherche = rechercheStage.match(/\b[\wÀ-ÿ]+\b/gu);
+            const arrayofStringRecherche = recherche.match(/\b[\wÀ-ÿ]+\b/gu);
 
             rechercheStageParTitre(stage, mapStages, arrayofStringRecherche, arrayofStringTitre, arrayMotsTrouvesTitre);
             rechercheStageParEntreprise(stage, mapStages, arrayofStringRecherche, arrayofStringEntreprise, arrayMotsTrouvesEntreprise);
@@ -205,7 +206,7 @@ const listeStage = () => {
 
     function supprimerRecherche() {
         setUneRechercheEstFaite(false);
-        setRechercheStage('');
+        setRecherche('');
         setMotsContenantRechercheTitre(null);
         setMotsContenantRechercheEntreprise(null);
         setButtonDisabled(true);
@@ -253,7 +254,7 @@ const listeStage = () => {
                     des stages dans des
                     entreprises variées</h1>
                 <div className="flex flex-row">
-                    <input type="search" placeholder="Chercher un stage" id="searchInput" value={rechercheStage}
+                    <input type="search" placeholder="Chercher un stage" id="searchInput" value={recherche}
                            onChange={(e) => {
                                activerDesactiverRecherche(e);
                                changeRechercheStage(e);

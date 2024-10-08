@@ -86,10 +86,16 @@ public class EtudiantService {
     }
 
     public List<OffreStageDTO> getStagesByRecherche(String token, int page, String recherche) {
+        System.out.println("nbre de page : " + page);
+        System.out.println("recherche : " + recherche);
+
         Long idEtudiant = utilisateurService.getUserIdByToken(token);
         PageRequest pageRequest = PageRequest.of(page, LIMIT_PER_PAGE);
 
+        System.out.println("page request : " + pageRequest);
         Page<OffreStage> offreStagesEnPages = offreStageRepository.findOffresByEtudiantIdWithSearch(idEtudiant, recherche, pageRequest);
+
+        System.out.println("stages : " + offreStagesEnPages.getContent());
         return listeOffreStageToDTO(offreStagesEnPages.getContent());
     }
 
