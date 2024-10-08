@@ -71,7 +71,18 @@ public class EtudiantService {
         Long etudiantId = utilisateurService.getUserIdByToken(token);
         long amountOfRows = offreStageRepository.countByEtudiantsId(etudiantId);
 
-        return (int) Math.floor((double) amountOfRows / LIMIT_PER_PAGE);
+        if (amountOfRows == 0)
+            return 0;
+
+        int nombrePages = (int) Math.floor((double) amountOfRows / LIMIT_PER_PAGE);
+
+        if (amountOfRows % 10 > 0) {
+            // Return ++ (équivalent -> nombrePage + 1) parce que
+            // floor(13/10) = 1 mais il y a 2 page et pas 1
+            nombrePages++;
+        }
+
+        return nombrePages;
     }
 
     public List<OffreStageDTO> getStagesByRecherche(String token, int page, String recherche) {
