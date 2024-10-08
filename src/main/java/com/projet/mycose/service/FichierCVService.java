@@ -91,7 +91,7 @@ public class FichierCVService {
     }
 
     public Integer getAmountOfPages() {
-        long amountOfRows = fileRepository.count();
+        long amountOfRows = fileRepository.countAllByStatusEquals(FichierCV.Status.WAITING);
 
         if (amountOfRows == 0)
             return 0;

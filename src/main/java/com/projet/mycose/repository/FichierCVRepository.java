@@ -22,4 +22,6 @@ public interface FichierCVRepository extends JpaRepository<FichierCV, Long> {
             """
     )
     Optional<FichierCV> getCurrentCvByEtudiant_id(Long etudiant_id);
+
+    long countAllByStatusEquals(FichierCV.Status status);
 }

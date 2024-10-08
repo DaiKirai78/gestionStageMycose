@@ -92,7 +92,7 @@ public class FichierCVController {
         return ResponseEntity.status((HttpStatus.OK)).body(fichierCVService.getAmountOfPages());
     }
 
-    @PostMapping("/accept")
+    @PatchMapping("/accept")
     public ResponseEntity<?> acceptCV(@RequestParam Long id, @RequestBody String description) {
         try {
             fichierCVService.changeStatus(id, FichierCV.Status.ACCEPTED, description);
@@ -101,7 +101,7 @@ public class FichierCVController {
             return ResponseEntity.notFound().build();
         }
     }
-    @PostMapping("/refuse")
+    @PatchMapping("/refuse")
     public ResponseEntity<?> refuseCV(@RequestParam Long id, @RequestBody String description) {
         try {
             fichierCVService.changeStatus(id, FichierCV.Status.REFUSED, description);

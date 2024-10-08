@@ -264,7 +264,7 @@ public class FichierCVServiceTest {
     @Test
     void testGetAmountOfPage_NumberEndWithZero_Success() {
         // Act
-        when(fileRepository.count()).thenReturn(30L);
+        when(fileRepository.countAllByStatusEquals(FichierCV.Status.WAITING)).thenReturn(30L);
 
         // Assert
         Assertions.assertThat(fichierCVService.getAmountOfPages()).isEqualTo(3);
@@ -272,7 +272,7 @@ public class FichierCVServiceTest {
     @Test
     void testGetAmountOfPage_NumberNotEndWithZero_Success() {
         // Act
-        when(fileRepository.count()).thenReturn(43L);
+        when(fileRepository.countAllByStatusEquals(FichierCV.Status.WAITING)).thenReturn(43L);
 
         // Assert
         Assertions.assertThat(fichierCVService.getAmountOfPages()).isEqualTo(5);
@@ -280,7 +280,7 @@ public class FichierCVServiceTest {
     @Test
     void testGetAmountOfPage_NothingInBd_Success() {
         // Act
-        when(fileRepository.count()).thenReturn(0L);
+        when(fileRepository.countAllByStatusEquals(FichierCV.Status.WAITING)).thenReturn(0L);
 
         // Assert
         Assertions.assertThat(fichierCVService.getAmountOfPages()).isEqualTo(0);

@@ -20,7 +20,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -289,7 +288,7 @@ public class FichierCVControllerTest {
         // Act
         doNothing().when(fichierCVService).changeStatus(1L, FichierCV.Status.ACCEPTED, "asd");
         // Assert
-        mockMvc.perform(post("/api/cv/accept?id=1")
+        mockMvc.perform(patch("/api/cv/accept?id=1")
                         .content("asd")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -301,7 +300,7 @@ public class FichierCVControllerTest {
                 .when(fichierCVService)
                 .changeStatus(1L, FichierCV.Status.ACCEPTED, "asd");
         // Assert
-        mockMvc.perform(post("/api/cv/accept?id=1")
+        mockMvc.perform(patch("/api/cv/accept?id=1")
                         .content("asd")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
@@ -311,7 +310,7 @@ public class FichierCVControllerTest {
         // Act
         doNothing().when(fichierCVService).changeStatus(1L, FichierCV.Status.REFUSED, "asd");
         // Assert
-        mockMvc.perform(post("/api/cv/refuse?id=1")
+        mockMvc.perform(patch("/api/cv/refuse?id=1")
                         .content("asd")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -323,7 +322,7 @@ public class FichierCVControllerTest {
                 .when(fichierCVService)
                 .changeStatus(1L, FichierCV.Status.REFUSED, "asd");
         // Assert
-        mockMvc.perform(post("/api/cv/refuse?id=1")
+        mockMvc.perform(patch("/api/cv/refuse?id=1")
                         .content("asd")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
