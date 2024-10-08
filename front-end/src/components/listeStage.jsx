@@ -9,19 +9,28 @@ const listeStage = () => {
     const [motsContenantRechercheTitre, setMotsContenantRechercheTitre] = useState(null);
     const [motsContenantRechercheEntreprise, setMotsContenantRechercheEntreprise] = useState(null);
     const [buttonDisabled, setButtonDisabled] = useState(true);
+    const [nextPageDisabled, setNextPageDisabled] = useState(false);
+    const [previousPageDisabled, setPreviousPageDisabled] = useState(false);
+
 
     const [stageClique, setStageClique] = useState(null);
     const [unStageEstClique, setUnStageEstClique] = useState(false);
     const [uneRechercheEstFaite, setUneRechercheEstFaite] = useState(false);
 
+    const [pageActuelle, setPageActuelle] = useState(0);
+    const [nombreDePage, setNombreDePage] = useState(4);
+
     let localhost = "http://localhost:8080/";
-    let urlGetFormulaireStage = "etudiant/getStages";
+    let urlGetFormulaireStage = "etudiant/getStages?pageNumber=0";
+    let urlGetNombreDePage = "etudiant/pages"
     // let sendTokenToBackend = "etudiant/sendToken"
 
 
     useEffect(() => {
         fetchStages();
-    }, []);
+        isThereANextPage();
+        isItTheFirstPage();
+    }, [pageActuelle]);
 
     // const sendToken = () => {
     //     try {
@@ -39,7 +48,7 @@ const listeStage = () => {
                     'Content-Type': 'application/json'
                 },
             });
-            console.log("Voici les infos : " + responseForms.data);
+            //console.log("Voici les infos : " + responseForms.data);
             setStages(responseForms.data);
             return responseForms.data;
         } catch (error) {
@@ -186,6 +195,35 @@ const listeStage = () => {
         fetchStages();
     }
 
+    function isThereANextPage() {
+        if (pageActuelle === nombreDePage) {
+            setNextPageDisabled(true);
+            return false;
+        } else {
+            setNextPageDisabled(false);
+            return true;
+        }
+    }
+
+    function isItTheFirstPage() {
+        if (pageActuelle === 0) {
+            setPreviousPageDisabled(true);
+            return true;
+        } else {
+            setPreviousPageDisabled(false);
+            return false;
+        }
+    }
+
+    function nextPage() {
+        if (isThereANextPage() === true)
+            setPageActuelle(pageActuelle + 1);
+    }
+
+    function previousPage() {
+        if (isItTheFirstPage() === false)
+            setPageActuelle(pageActuelle - 1);
+    }
 
     return (
         <>
@@ -215,7 +253,7 @@ const listeStage = () => {
                         )
                     }
                 </div>
-                <div>
+                <div className="mb-7">
                     <hr/>
                     {
                         stages && stages.length > 0 ?
@@ -227,8 +265,8 @@ const listeStage = () => {
                                         <div>
                                             <h3 key={index}
                                                 className="text-black text-xl pl-2 max-w-max pr-2">{surlignerRecherche(stage.title, motsContenantRechercheTitre)}</h3>
-                                            <h4 className="text-lg pl-2 max-w-max pr-2">{surlignerRecherche(stage.entreprise, motsContenantRechercheEntreprise)}</h4>
-                                            <h4 className="pl-2 max-w-max pr-2">{stage.date}</h4>
+                                            <h4 className="text-lg pl-2 max-w-max pr-2">{surlignerRecherche(stage.entrepriseName, motsContenantRechercheEntreprise)}</h4>
+                                            <h4 className="pl-2 max-w-max pr-2">{stage.created_at}</h4>
                                         </div>
                                         <button
                                             className="bg-orange text-white md:absolute md:bottom-2 lg:bottom-12 lg:top-4 md:right-2 px-4 md:px-8 py-2 rounded-2xl mt-3 lg:mt-0 w-1/2 md:w-1/3 lg:w-36 hover:bg-orange-dark shadow-md">Appliquer
@@ -240,6 +278,15 @@ const listeStage = () => {
                             )) :
                             <h3>Aucun stage disponible</h3>
                     }
+                </div>
+                <div className="text-center">
+                    <button
+                        className="decoration-0 bg-orange pt-0 pb-1 pl-4 pr-4 mr-2 hover:bg-amber-900 justify-center items-center w-10 text-xl shadow-md disabled:bg-orange disabled:opacity-70"
+                        disabled={previousPageDisabled} onClick={() => previousPage()}>&#8249;</button>
+                    {pageActuelle + 1}
+                    <button
+                        className="decoration-0 bg-orange pt-0 pb-1 pl-4 pr-4 ml-2 hover:bg-amber-900 justify-center items-center w-10 text-xl shadow-md disabled:bg-orange disabled:opacity-70"
+                        disabled={nextPageDisabled} onClick={() => nextPage()}>&#8250;</button>
                 </div>
             </div>
             {
