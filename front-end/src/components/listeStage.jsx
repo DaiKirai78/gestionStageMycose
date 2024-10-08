@@ -89,6 +89,8 @@ const listeStage = () => {
         setStageClique(stage);
     }
 
+    console.log(stageClique);
+
     function activerDesactiverRecherche(e) {
         if (e.target.value.length > 0)
             setButtonDisabled(false);
@@ -301,7 +303,7 @@ const listeStage = () => {
                             <h3>Aucun stage disponible</h3>
                     }
                 </div>
-                <div className="text-center">
+                <div className="text-center mb-7">
                     <button
                         className="decoration-0 bg-orange pt-0 pb-1 pl-4 pr-4 mr-2 hover:bg-amber-900 justify-center items-center w-10 text-xl shadow-md disabled:bg-orange disabled:opacity-70"
                         disabled={previousPageDisabled} onClick={() => previousPage()}>&#8249;</button>
@@ -314,37 +316,77 @@ const listeStage = () => {
             {
                 //stageClique.type === "fichier" ? //TODO : AJOUTER LE TYPE DE FICHIER SELON SI C'EST FILE OU FORM
                 unStageEstClique && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
-                         onClick={() => setUnStageEstClique(false)}>
+                    <div
+                        className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50 transition-opacity duration-300"
+                        onClick={() => setUnStageEstClique(false)}
+                    >
                         <div
-                            className="w-3/4 h-1/3 sm:w-2/3 sm:h-1/3 lg:w-1/3 lg:h-1/3 bg-white rounded-xl shadow-xl p-4 relative"
-                            onClick={(e) => e.stopPropagation()}>
-                            <div className="flex justify-center items-center border-b pb-3">
-                                <h2 className="text-2xl font-accueilTitreFont font-semibold">
+                            className="w-11/12 max-w-lg sm:w-2/3 lg:w-1/2 bg-white rounded-2xl shadow-2xl p-6 relative transform transition-transform duration-500 ease-out scale-100 hover:scale-105"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            {/* Modal Header */}
+                            <div className="flex justify-between items-center border-b pb-3">
+                                <h2 className="text-2xl font-bold text-gray-800">
                                     Détails du stage
                                 </h2>
                                 <button
                                     id="closeStageDetails"
-                                    className="absolute top-4 right-4 text-gray-600 hover:text-gray-900 w-6 h-6"
+                                    className="text-gray-600 hover:text-gray-900 transition-colors duration-200 focus:outline-none"
                                     onClick={() => setUnStageEstClique(false)}
                                 >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
                                 </button>
                             </div>
-                            <div className="pt-4">
-                                {stageClique && stageClique.titre ? (
+
+                            {/* Modal Content */}
+                            <div className="pt-4 space-y-4 text-center">
+                                {stageClique ? (
                                     <>
-                                        <h3 className="text-xl font-semibold text-center pt-4 pb-2">
-                                            {stageClique.titre}
-                                        </h3>
-                                        <h4 className="text-center pb-2">
-                                            Offre de {stageClique.entreprise}
-                                        </h4>
-                                        <h4 className="text-center">
-                                            Publié le {stageClique.date}
-                                        </h4>
+                                        {stageClique.title ? (
+                                            <h3 className="text-xl font-semibold text-gray-900 break-words">
+                                                {stageClique.title}
+                                            </h3>
+                                        ) : (
+                                            <h3 className="text-xl font-semibold text-gray-500">
+                                                Titre de l'offre inexistant
+                                            </h3>
+                                        )}
+
+                                        {stageClique.entrepriseName ? (
+                                            <h4 className="text-lg font-medium text-gray-700 break-words">
+                                                Offre de {stageClique.entrepriseName}
+                                            </h4>
+                                        ) : (
+                                            <h4 className="text-lg text-gray-500">
+                                                Entreprise inconnue
+                                            </h4>
+                                        )}
+
+                                        {stageClique.description && stageClique.location && stageClique.salary && stageClique.website ? (
+                                            <div className="space-y-2 break-words">
+                                                <p className="text-gray-700">{stageClique.description}</p>
+                                                <p className="text-gray-700">{stageClique.location}</p>
+                                                <p className="text-green-600 font-medium">Salaire : {stageClique.salary}$</p>
+                                                <a href={stageClique.website} className="text-blue-500 underline">
+                                                    {stageClique.website}
+                                                </a>
+                                            </div>
+                                        ) : (
+                                            <p className="text-gray-500 break-words">
+                                                Rendez-vous sur la page d'application pour plus de détails concernant cette offre.
+                                            </p>
+                                        )}
+
+                                        <p className="text-gray-400 text-sm">
+                                            Publié le {new Date(stageClique.create_at).toLocaleDateString()}
+                                        </p>
                                     </>
                                 ) : (
-                                    <div></div>
+                                    <p className="text-gray-500">
+                                        Aucun stage sélectionné.
+                                    </p>
                                 )}
                             </div>
                         </div>
