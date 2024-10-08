@@ -6,6 +6,7 @@ import com.projet.mycose.security.exception.AuthenticationException;
 import com.projet.mycose.service.FichierCVService;
 import com.projet.mycose.service.UtilisateurService;
 import com.projet.mycose.service.dto.FichierCVDTO;
+import com.projet.mycose.service.dto.FichierCVStudInfoDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.data.crossstore.ChangeSetPersister;
@@ -80,9 +81,9 @@ public class FichierCVController {
         }
     }
 
-    @PostMapping("/waitingcv")
-    public ResponseEntity<List<FichierCVDTO>> getWaitingCv(@RequestParam int page) {
-         List<FichierCVDTO> fichierCVDTOS = fichierCVService.getWaitingCv(page);
+    @GetMapping("/waitingcv")
+    public ResponseEntity<List<FichierCVStudInfoDTO>> getWaitingCv(@RequestParam int page) {
+         List<FichierCVStudInfoDTO> fichierCVDTOS = fichierCVService.getWaitingCv(page);
          return ResponseEntity.status(HttpStatus.OK).body(fichierCVDTOS);
     }
 

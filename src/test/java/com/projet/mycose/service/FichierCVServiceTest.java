@@ -2,6 +2,7 @@ package com.projet.mycose.service;
 
 import com.projet.mycose.modele.Etudiant;
 import com.projet.mycose.modele.FichierCV;
+import com.projet.mycose.modele.Programme;
 import com.projet.mycose.repository.EtudiantRepository;
 import com.projet.mycose.repository.FichierCVRepository;
 import com.projet.mycose.service.dto.FichierCVDTO;
@@ -62,6 +63,7 @@ public class FichierCVServiceTest {
         fichierCV.setData("Test file data".getBytes());
         etudiant = new Etudiant();
         etudiant.setId(1L);
+        etudiant.setProgramme(Programme.TECHNIQUE_INFORMATIQUE);
         fichierCV.setEtudiant(etudiant);
 
 
@@ -131,7 +133,6 @@ public class FichierCVServiceTest {
                 .thenReturn(Optional.of(new ArrayList<>((Arrays.asList(fichierCV, fichierCV, fichierCV, fichierCV, fichierCV, fichierCV, fichierCV, fichierCV, fichierCV, fichierCV)))));
         when(fileRepository.getFichierCVSByStatusEquals(FichierCV.Status.WAITING, PageRequest.of(1, 10)))
                 .thenReturn(Optional.of(new ArrayList<>((Arrays.asList(fichierCV, fichierCV, fichierCV, fichierCV)))));;
-        when(modelMapper.map(any(FichierCV.class), eq(FichierCVDTO.class))).thenReturn(fichierCVDTO);
 
         // Assert
         Assertions.assertThat(fichierCVService.getWaitingCv(0).size()).isEqualTo(10);

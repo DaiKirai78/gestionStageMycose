@@ -5,6 +5,7 @@ import com.projet.mycose.security.exception.AuthenticationException;
 import com.projet.mycose.service.FichierCVService;
 import com.projet.mycose.service.UtilisateurService;
 import com.projet.mycose.service.dto.FichierCVDTO;
+import com.projet.mycose.service.dto.FichierCVStudInfoDTO;
 import com.projet.mycose.service.dto.FichierOffreStageDTO;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -19,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -191,7 +193,8 @@ public class FichierCVControllerTest {
         when(fichierCVService.getWaitingCv(1)).thenReturn(new ArrayList<>());
 
         // Assert
-        mockMvc.perform(post("/api/cv/waitingcv?page=1"))
+        mockMvc.perform(get("/api/cv/waitingcv?page=1"))
+                .andExpect(content().json("[]"))
                 .andExpect(status().isOk());
     }
 
@@ -199,21 +202,24 @@ public class FichierCVControllerTest {
     void getWaitingCv_FoundCvs() throws Exception {
 
         // Arrange
-        FichierCVDTO fichierCVDTO = new FichierCVDTO();
+        FichierCVStudInfoDTO fichierCVDTO = new FichierCVStudInfoDTO();
         fichierCVDTO.setId(1L);
-        fichierCVDTO.setFilename("validFile.pdf");
-        fichierCVDTO.setFileData("Base64FileData");
 
-        List<FichierCVDTO> fichierCVDTOS = new ArrayList<>();
+        FichierCVStudInfoDTO fichierCVDTO2 = new FichierCVStudInfoDTO();
+        fichierCVDTO2.setId(2L);
+
+        List<FichierCVStudInfoDTO> fichierCVDTOS = new ArrayList<>();
 
         fichierCVDTOS.add(fichierCVDTO);
-        fichierCVDTOS.add(fichierCVDTO);
+        fichierCVDTOS.add(fichierCVDTO2);
 
         // Act
         when(fichierCVService.getWaitingCv(0)).thenReturn(fichierCVDTOS);
 
         // Assert
-        mockMvc.perform(post("/api/cv/waitingcv?page=0"))
+        mockMvc.perform(get("/api/cv/waitingcv?page=0"))
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[1].id").value(2))
                 .andExpect(status().isOk());
     }
 

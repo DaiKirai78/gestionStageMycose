@@ -4,6 +4,7 @@ import com.projet.mycose.modele.FichierCV;
 import com.projet.mycose.repository.EtudiantRepository;
 import com.projet.mycose.repository.FichierCVRepository;
 import com.projet.mycose.service.dto.FichierCVDTO;
+import com.projet.mycose.service.dto.FichierCVStudInfoDTO;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
@@ -76,7 +77,7 @@ public class FichierCVService {
         return convertToDTO(fileRepository.save(fichierCV));
     }
 
-    public List<FichierCVDTO> getWaitingCv(int page) {
+    public List<FichierCVStudInfoDTO> getWaitingCv(int page) {
         Optional<List<FichierCV>> fichierCVSOptional = fileRepository.getFichierCVSByStatusEquals(FichierCV.Status.WAITING,
                 PageRequest.of(page, LIMIT_PER_PAGE));
 
@@ -86,7 +87,7 @@ public class FichierCVService {
 
         List<FichierCV> fichierCVS = fichierCVSOptional.get();
 
-        return fichierCVS.stream().map(this::convertToDTO).toList();
+        return fichierCVS.stream().map(FichierCVStudInfoDTO::toDto).toList();
     }
 
     public Integer getAmountOfPages() {
