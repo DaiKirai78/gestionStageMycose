@@ -48,6 +48,15 @@ public class UtilisateurService {
         throw new AccessDeniedException("Accès refusé : Token manquant");
     }
 
+    public Utilisateur getMeUtilisateur(String token) throws AccessDeniedException {
+        if (token != null && token.startsWith("Bearer")) {
+            token = token.substring(7);
+            String courriel = jwtTokenProvider.getEmailFromJWT(token);
+            return utilisateurRepository.findUtilisateurByCourriel(courriel).orElseThrow(UserNotFoundException::new);
+        }
+        throw new AccessDeniedException("Accès refusé : Token manquant");
+    }
+
     public EtudiantDTO getEtudiantDTO(Long id) {
         final Optional<Etudiant> etudiantOptional = etudiantRepository.findById(id);
         return etudiantOptional.isPresent() ?
