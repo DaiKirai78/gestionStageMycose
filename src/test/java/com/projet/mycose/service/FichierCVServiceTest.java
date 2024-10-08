@@ -55,6 +55,7 @@ public class FichierCVServiceTest {
 
     @BeforeEach
     void setUp() throws IOException {
+        // Arrange
         fichierCV = new FichierCV();
         fichierCV.setId(1L);
         fichierCV.setFilename("test.pdf");
@@ -273,7 +274,15 @@ public class FichierCVServiceTest {
         when(fileRepository.count()).thenReturn(43L);
 
         // Assert
-        Assertions.assertThat(fichierCVService.getAmountOfPages()).isEqualTo(4);
+        Assertions.assertThat(fichierCVService.getAmountOfPages()).isEqualTo(5);
+    }
+    @Test
+    void testGetAmountOfPage_NothingInBd_Success() {
+        // Act
+        when(fileRepository.count()).thenReturn(0L);
+
+        // Assert
+        Assertions.assertThat(fichierCVService.getAmountOfPages()).isEqualTo(0);
     }
     @Test
     void testChangeStatus_Success() throws ChangeSetPersister.NotFoundException {
