@@ -17,10 +17,11 @@ import org.springframework.web.multipart.MultipartFile;
 @SpringBootApplication
 public class MycoseApplication implements CommandLineRunner {
 
-    public MycoseApplication(EnseignantService enseignantService, EtudiantService etudiantService, OffreStageService offreStageService) {
+    public MycoseApplication(EnseignantService enseignantService, EtudiantService etudiantService, OffreStageService offreStageService, EmployeurService employeurService) {
         this.enseignantService = enseignantService;
         this.etudiantService = etudiantService;
 		this.offreStageService = offreStageService;
+		this.employeurService = employeurService;
     }
 
     public static void main(String[] args) {
@@ -30,14 +31,18 @@ public class MycoseApplication implements CommandLineRunner {
 	private final EnseignantService enseignantService;
 	private final EtudiantService etudiantService;
 	private final OffreStageService offreStageService;
+	private final EmployeurService employeurService;
 
 	@Override
 	public void run(String... args) {
 		//enseignantService.creationDeCompte("Guillaume", "Courtemanche", "283-948-2738", "courtemanche@gmail.com", "courte123$");
 		//etudiantService.creationDeCompte("Roberto", "Berrios", "273-389-2937", "roby@gmail.com", "Roby123$", "Technique de l'informatique");
-		FormulaireOffreStageDTO formulaireOffreStageDTO = new FormulaireOffreStageDTO(1L, "SUUPER", "Vicente", "vicen@mail.com", "www.vicen.ca", "Software Engineer", "Montrèal", "95 000", "J'adore ingénieur!");
-		FormulaireOffreStageDTO formulaireOffreStageDTO2 = new FormulaireOffreStageDTO(2L, "MMM", "Vicente2", "vicen@mail.com", "www.vicen2.ca", "Software Engineer 2", "Montrèal 2", "95 000", "J'adore ingénieur! 2");
-		FormulaireOffreStageDTO formulaireOffreStageDTO3 = new FormulaireOffreStageDTO(3L, "MMMSUUPER", "Vicente3", "vicen@mail.com", "www.vicen3.ca", "Software Engineer 3", "Montrèal 3", "16", "J'adore ingénieur! 3");
+
+		employeurService.creationDeCompte("Willy", "Wonka", "555-6565-9876", "wonka@mail.com", "Chocolatayy1", "Wonka INC");
+
+		FormulaireOffreStageDTO formulaireOffreStageDTO = new FormulaireOffreStageDTO(1L, "SUUPER", "Vicente", "vicen@mail.com", "www.vicen.ca", "Software Engineer", "Montrèal", "95 000", "J'adore ingénieur!", 1L);
+		FormulaireOffreStageDTO formulaireOffreStageDTO2 = new FormulaireOffreStageDTO(2L, "MMM", "Vicente2", "vicen@mail.com", "www.vicen2.ca", "Software Engineer 2", "Montrèal 2", "95 000", "J'adore ingénieur! 2", 1L);
+		FormulaireOffreStageDTO formulaireOffreStageDTO3 = new FormulaireOffreStageDTO(3L, "MMMSUUPER", "Vicente3", "vicen@mail.com", "www.vicen3.ca", "Software Engineer 3", "Montrèal 3", "16", "J'adore ingénieur! 3", 1L);
 		offreStageService.saveForm(formulaireOffreStageDTO);
 		offreStageService.saveForm(formulaireOffreStageDTO2);
 		offreStageService.saveForm(formulaireOffreStageDTO3);
@@ -49,7 +54,7 @@ public class MycoseApplication implements CommandLineRunner {
 		//enseignantService.creationDeCompte("Guillaume", "Courtemanche", "283-948-2738", "courtebite@gmail.com", "courte123$");
 		etudiantService.creationDeCompte("Guillaume", "Courtemanche", "283-948-2738", "gc@gmail.com", "courte123$", Programme.GENIE_LOGICIEL);
 
-		offreStageService.assignerOffre(1L, 1L);
-		offreStageService.assignerOffre(2L, 3L);
+		offreStageService.assignerOffre(2L, 1L);
+		offreStageService.assignerOffre(3L, 3L);
 	}
 }

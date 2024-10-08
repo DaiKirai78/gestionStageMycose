@@ -3,6 +3,9 @@ package com.projet.mycose.service.dto;
 import com.projet.mycose.modele.FichierOffreStage;
 import com.projet.mycose.modele.FormulaireOffreStage;
 import com.projet.mycose.modele.OffreStage;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,15 +13,28 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class OffreStageDTO {
     private long id;
 
-    public OffreStageDTO(long id) {
-        this.id = id;
-    }
+
+//    @NotBlank(message = "Title is required.")
+//    @Size(max = 100, message = "Title cannot exceed 100 characters.")
+    private String title;
+
+
+//    @NotBlank(message = "Enterprise name is required.")
+    private String entrepriseName;
+
+    private Long createur_id;
+//    public OffreStageDTO(long id, String title, String entrepriseName, ) {
+//        this.id = id;
+//        this.
+//    }
 
     public static OffreStageDTO toOffreStageInstaceDTO(OffreStage offreStage) {
         OffreStageDTO offreStageDTO = null;
+        System.out.println(offreStage.getCreateur());
 
         if(offreStage instanceof FormulaireOffreStage) {
             offreStageDTO = FormulaireOffreStageDTO.toDTO((FormulaireOffreStage) offreStage);
@@ -27,6 +43,8 @@ public class OffreStageDTO {
             offreStageDTO = FichierOffreStageDTO.toDTO((FichierOffreStage) offreStage);
         }
 
+        System.out.println("HEYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY");
+        System.out.println(offreStageDTO);
         return offreStageDTO;
     }
 }

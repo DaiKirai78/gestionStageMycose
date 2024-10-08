@@ -37,12 +37,15 @@ public class EtudiantService {
     }
 
     private List<OffreStageDTO> listeOffreStageToDTO(List<OffreStage> listeAMapper) {
-
+        System.out.println(listeAMapper);
         List<OffreStageDTO> listeMappee = new ArrayList<>();
         for(OffreStage offreStage : listeAMapper) {
+            System.out.println("mec jadore loop");
             listeMappee.add(OffreStageDTO.toOffreStageInstaceDTO(offreStage));
+            //System.out.println("mec jadore loop");
         }
-
+        System.out.println("rnaodm");
+        System.out.println(listeMappee);
         return listeMappee;
     }
 
@@ -51,12 +54,16 @@ public class EtudiantService {
         Long idEtudiant = utilisateurService.getUserIdByToken(token);
         PageRequest pageRequest = PageRequest.of(page, LIMIT_PER_PAGE);
 
-        Page<OffreStage> offresRetourneeEnPages = offreStageRepository.findOffresByEtudiantId(idEtudiant, pageRequest);
+        System.out.print("ID ETUDIANT:");
+        System.out.println(idEtudiant);
 
+        Page<OffreStage> offresRetourneeEnPages = offreStageRepository.findOffresByEtudiantId(idEtudiant, pageRequest);
+        //System.out.println(offresRetourneeEnPages.getContent());
         if(offresRetourneeEnPages.isEmpty()) {
+            System.out.println("null?");
             return null;
         }
-
+        System.out.println(listeOffreStageToDTO(offresRetourneeEnPages.getContent()) + "POURQUOI VIIIIDE");
         return listeOffreStageToDTO(offresRetourneeEnPages.getContent());
     }
 
@@ -64,15 +71,26 @@ public class EtudiantService {
         Long etudiantId = utilisateurService.getUserIdByToken(token);
         long amountOfRows = offreStageRepository.countByEtudiantsId(etudiantId);
 
-        return (int) Math.floor((double) amountOfRows / LIMIT_PER_PAGE);
+        if (amountOfRows == 0)
+            return 0;
+
+        int nombrePages = (int) Math.floor((double) amountOfRows / LIMIT_PER_PAGE);
+
+        if (amountOfRows % 10 > 0) {
+            // Return ++ (équivalent -> nombrePage + 1) parce que
+            // floor(13/10) = 1 mais il y a 2 page et pas 1
+            nombrePages++;
+        }
+
+        return nombrePages;
     }
 
-    public List<OffreStageDTO> getStagesByRecherche(String token, String recherche, int page) {
+    public List<OffreStageDTO> getStagesByRecherche(String token, int page, String recherche) {
         Long idEtudiant = utilisateurService.getUserIdByToken(token);
         PageRequest pageRequest = PageRequest.of(page, LIMIT_PER_PAGE);
 
-        //Page<OffreStage> offreStagesEnPages = offreStageRepository;
-        return null;
+        Page<OffreStage> offreStagesEnPages = offreStageRepository.findOffresByEtudiantIdWithSearch(idEtudiant, recherche, pageRequest);
+        return listeOffreStageToDTO(offreStagesEnPages.getContent());
     }
 
 }

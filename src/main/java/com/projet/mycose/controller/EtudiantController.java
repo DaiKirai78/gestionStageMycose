@@ -63,9 +63,10 @@ public class EtudiantController {
     }
 
     @PostMapping("/recherche-offre")
-    public ResponseEntity<List<OffreStageDTO>> rechercherOffres(HttpServletRequest request ,@RequestParam String recherche, @RequestParam int page) {
+    public ResponseEntity<List<OffreStageDTO>> rechercherOffres(HttpServletRequest request , @RequestParam int pageNumber, @RequestParam String recherche) {
         try {
-            return null;
+            return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
+                    etudiantService.getStagesByRecherche(request.getHeader("Authorization"), pageNumber, recherche));
         } catch (Exception e) {
             return ResponseEntity.noContent().build();
         }

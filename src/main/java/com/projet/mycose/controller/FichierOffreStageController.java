@@ -2,7 +2,9 @@ package com.projet.mycose.controller;
 
 
 import com.projet.mycose.service.FichierOffreStageService;
+import com.projet.mycose.service.UtilisateurService;
 import com.projet.mycose.service.dto.FichierOffreStageDTO;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -22,16 +24,18 @@ public class FichierOffreStageController {
 
     private final FichierOffreStageService fichierOffreStageService;
     private final ModelMapper modelMapper;
+    private final UtilisateurService utilisateurService;
 
-    public FichierOffreStageController(FichierOffreStageService fichierOffreStageService, ModelMapper modelMapper) {
+    public FichierOffreStageController(FichierOffreStageService fichierOffreStageService, ModelMapper modelMapper, UtilisateurService utilisateurService) {
         this.fichierOffreStageService = fichierOffreStageService;
         this.modelMapper = modelMapper;
+        this.utilisateurService = utilisateurService;
     }
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file, @RequestHeader("Authorization") String token) {
         try {
-            FichierOffreStageDTO savedFileDTO = fichierOffreStageService.saveFile(file);
+            FichierOffreStageDTO savedFileDTO = fichierOffreStageService.saveFile(file, token);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(savedFileDTO);
         } catch (ConstraintViolationException e) {

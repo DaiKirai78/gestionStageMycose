@@ -10,16 +10,11 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-//@Table(name = "formulairesOffresStage")
 @Getter
 @Setter
 @NoArgsConstructor
 @DiscriminatorValue("FORM")
 public class FormulaireOffreStage extends OffreStage{
-
-    //@Id
-    //@GeneratedValue(strategy = GenerationType.IDENTITY)
-    //private Long id;
 
     @CreationTimestamp
     @Column(updatable = false)
@@ -28,12 +23,24 @@ public class FormulaireOffreStage extends OffreStage{
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    private String entrepriseName;
+
     private String employerName;
     private String email;
     private String website;
-    private String title;
     private String location;
     private String salary;
     private String description;
+
+    public FormulaireOffreStage(long id, String title, String entrepriseName, String employerName, String email, String website, String location, String salary, String description, Utilisateur createur) {
+        super(id, title, entrepriseName, null, createur);
+//        this.setTitle(title);
+//        this.setEntrepriseName(entrepriseName);
+//        this.setCreateur(createur);
+        this.employerName = employerName;
+        this.email = email;
+        this.website = website;
+        this.location = location;
+        this.salary = salary;
+        this.description = description;
+    }
 }

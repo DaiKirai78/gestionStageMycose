@@ -1,8 +1,12 @@
 package com.projet.mycose.service;
 
+import com.projet.mycose.modele.Employeur;
 import com.projet.mycose.modele.FichierOffreStage;
+import com.projet.mycose.modele.Utilisateur;
 import com.projet.mycose.repository.FichierOffreStageRepository;
+import com.projet.mycose.repository.UtilisateurRepository;
 import com.projet.mycose.service.dto.FichierOffreStageDTO;
+import com.projet.mycose.service.dto.UtilisateurDTO;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
@@ -31,6 +35,9 @@ public class FichierOffreStageServiceTest {
     private FichierOffreStageRepository fileRepository;
 
     @Mock
+    private UtilisateurRepository utilisateurRepository;
+
+    @Mock
     private ModelMapper modelMapper;
 
     @Mock
@@ -38,6 +45,9 @@ public class FichierOffreStageServiceTest {
 
     @Mock
     private MultipartFile multipartFile;
+
+    @Mock
+    private UtilisateurService utilisateurService;
 
     @InjectMocks
     private FichierOffreStageService fichierOffreStageService;
@@ -47,17 +57,26 @@ public class FichierOffreStageServiceTest {
 
     @BeforeEach
     void setUp() throws IOException {
+        Employeur createur = new Employeur();
+        createur.setId(1L);
+
+
         fichierOffreStage = new FichierOffreStage();
         fichierOffreStage.setId(1L);
         fichierOffreStage.setFilename("test.pdf");
         fichierOffreStage.setData("Test file data".getBytes());
+        fichierOffreStage.setCreateur(createur);
 
         fichierOffreStageDTO = new FichierOffreStageDTO();
         fichierOffreStageDTO.setFilename("test.pdf");
         fichierOffreStageDTO.setFileData(Base64.getEncoder().encodeToString("Test file data".getBytes()));
+        fichierOffreStageDTO.setCreateur_id(1L);
 
         when(multipartFile.getOriginalFilename()).thenReturn("test.pdf");
         when(multipartFile.getBytes()).thenReturn("Test file data".getBytes());
+
+        when(utilisateurService.getUserIdByToken(anyString()))
+                .thenReturn(1L);
     }
 
     @Test
@@ -67,9 +86,12 @@ public class FichierOffreStageServiceTest {
         when(fileRepository.save(any(FichierOffreStage.class))).thenReturn(fichierOffreStage);
         when(modelMapper.map(any(FichierOffreStage.class), eq(FichierOffreStageDTO.class))).thenReturn(fichierOffreStageDTO);
         when(modelMapper.map(any(FichierOffreStageDTO.class), eq(FichierOffreStage.class))).thenReturn(fichierOffreStage);
+        when(utilisateurRepository.findById(1L)).thenReturn(java.util.Optional.of(new Employeur()));
+
 
         // Act
-        FichierOffreStageDTO result = fichierOffreStageService.saveFile(multipartFile);
+
+        FichierOffreStageDTO result = fichierOffreStageService.saveFile(multipartFile, "1L");
 
         // Assert
         assertNotNull(result);
@@ -87,7 +109,7 @@ public class FichierOffreStageServiceTest {
 
         // Act & Assert
         assertThrows(ConstraintViolationException.class, () -> {
-            fichierOffreStageService.saveFile(multipartFile);
+            fichierOffreStageService.saveFile(multipartFile, "1L");
         });
         verify(fileRepository, never()).save(any(FichierOffreStage.class));
     }
@@ -99,7 +121,7 @@ public class FichierOffreStageServiceTest {
 
         // Act & Assert
         assertThrows(IOException.class, () -> {
-            fichierOffreStageService.saveFile(multipartFile);
+            fichierOffreStageService.saveFile(multipartFile, "1L");
         });
         verify(fileRepository, never()).save(any(FichierOffreStage.class));
     }

@@ -15,11 +15,6 @@ import lombok.Setter;
 @Setter
 public class FormulaireOffreStageDTO extends OffreStageDTO {
 
-    //private Long id;
-
-    @NotBlank(message = "Enterprise name is required.")
-    private String entrepriseName;
-
     @NotBlank(message = "Employer name is required.")
     private String employerName;
 
@@ -31,10 +26,6 @@ public class FormulaireOffreStageDTO extends OffreStageDTO {
     @Pattern(regexp = "^(https?:\\/\\/)?(www\\.)?([a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,}(\\/[^\\s]*)?$",
             message = "Invalid website URL.")
     private String website;
-
-    @NotBlank(message = "Title is required.")
-    @Size(max = 100, message = "Title cannot exceed 100 characters.")
-    private String title;
 
     @NotBlank(message = "Location is required.")
     private String location;
@@ -48,29 +39,28 @@ public class FormulaireOffreStageDTO extends OffreStageDTO {
     private String description;
 
     @Builder
-    public FormulaireOffreStageDTO(Long id, String entrepriseName, String employerName, String email, String website, String title, String location, String salary, String description) {
-        super(id);
-        this.entrepriseName = entrepriseName;
+    public FormulaireOffreStageDTO(Long id, String entrepriseName,  String employerName, String email, String website, String title,  String location, String salary, String description, Long createur_id) {
+        super(id, title, entrepriseName, createur_id);
         this.employerName = employerName;
         this.email = email;
         this.website = website;
-        this.title = title;
         this.location = location;
         this.salary = salary;
         this.description = description;
     }
 
     public static FormulaireOffreStageDTO toDTO(FormulaireOffreStage formulaireOffreStage) {
-        return FormulaireOffreStageDTO.builder()
-                .id(formulaireOffreStage.getId())
-                .entrepriseName(formulaireOffreStage.getEntrepriseName())
-                .employerName(formulaireOffreStage.getEmployerName())
-                .email(formulaireOffreStage.getEmail())
-                .website(formulaireOffreStage.getWebsite())
-                .title(formulaireOffreStage.getTitle())
-                .location(formulaireOffreStage.getLocation())
-                .salary(formulaireOffreStage.getSalary())
-                .location(formulaireOffreStage.getLocation())
-                .build();
+        System.out.println(formulaireOffreStage.getTitle());
+        return new FormulaireOffreStageDTO(
+                formulaireOffreStage.getId(),
+                formulaireOffreStage.getEntrepriseName(),
+                formulaireOffreStage.getEmployerName(),
+                formulaireOffreStage.getEmail(),
+                formulaireOffreStage.getWebsite(),
+                formulaireOffreStage.getTitle(),
+                formulaireOffreStage.getLocation(),
+                formulaireOffreStage.getSalary(),
+                formulaireOffreStage.getDescription(),
+                formulaireOffreStage.getCreateur().getId());
     }
 }

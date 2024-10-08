@@ -13,6 +13,7 @@ function FileOffreStage() {
     const [uploadError, setUploadError] = useState("");
     
     const handleFileUpload = async () => {
+        let token = localStorage.getItem("token");
         const formData = new FormData();
         formData.append("file", file);
 
@@ -20,6 +21,7 @@ function FileOffreStage() {
             const response = await axios.post("http://localhost:8080/api/offres-stage/upload", formData,
             {
                 headers: {
+                    Authorization: `Bearer ${token}`,
                     "Content-Type": "multipart/form-data",
                 },
             });
