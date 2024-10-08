@@ -72,7 +72,7 @@ public class OffreStageService {
 
     public FormulaireOffreStageDTO saveForm(FormulaireOffreStageDTO formulaireOffreStageDTO) {
         //FormulaireOffreStage formulaireOffreStage = modelMapper.map(formulaireOffreStageDTO, FormulaireOffreStage.class);
-        Optional<Utilisateur> createur = utilisateurRepository.findById(formulaireOffreStageDTO.getId());
+        Optional<Utilisateur> createur = utilisateurRepository.findById(formulaireOffreStageDTO.getCreateur_id());
         if(createur.isEmpty()) {
             return null;
         }

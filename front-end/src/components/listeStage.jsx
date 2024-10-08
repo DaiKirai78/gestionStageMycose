@@ -18,16 +18,17 @@ const listeStage = () => {
     const [uneRechercheEstFaite, setUneRechercheEstFaite] = useState(false);
 
     const [pageActuelle, setPageActuelle] = useState(0);
-    const [nombreDePage, setNombreDePage] = useState(4);
+    const [nombreDePage, setNombreDePage] = useState(0);
 
     let localhost = "http://localhost:8080/";
-    let urlGetFormulaireStage = "etudiant/getStages?pageNumber=0";
+    let urlGetFormulaireStage = "etudiant/getStages?pageNumber=";
     let urlGetNombreDePage = "etudiant/pages"
     // let sendTokenToBackend = "etudiant/sendToken"
 
 
     useEffect(() => {
         fetchStages();
+        fetchNombrePages();
         isThereANextPage();
         isItTheFirstPage();
     }, [pageActuelle]);
@@ -39,10 +40,26 @@ const listeStage = () => {
     //     }
     // }
 
+    const fetchNombrePages = async () => {
+        let token = localStorage.getItem("token");
+        try {
+            const response = await axios.get(localhost + urlGetNombreDePage, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            setNombreDePage(response.data);
+            console.log("Nombre de page : " + response.data);
+            return response.data;
+        } catch (error) {
+            console.error("Erreur lors de la récupération du nombre de page:", error);
+        }
+    };
     const fetchStages = async () => {
         let token = localStorage.getItem("token");
         try {
-            const responseForms = await axios.post(localhost + urlGetFormulaireStage, {}, {
+            const responseForms = await axios.post(localhost + urlGetFormulaireStage + pageActuelle, {}, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -216,13 +233,17 @@ const listeStage = () => {
     }
 
     function nextPage() {
-        if (isThereANextPage() === true)
+        if (isThereANextPage() === true) {
             setPageActuelle(pageActuelle + 1);
+            fetchStages();
+        }
     }
 
     function previousPage() {
-        if (isItTheFirstPage() === false)
+        if (isItTheFirstPage() === false) {
             setPageActuelle(pageActuelle - 1);
+            fetchStages();
+        }
     }
 
     return (
