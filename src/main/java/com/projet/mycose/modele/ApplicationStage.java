@@ -27,7 +27,7 @@ public class ApplicationStage {
     @JoinColumn(name = "etudiant_id", nullable = false)
     private Etudiant etudiant;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "offre_stage_id", nullable = false)
     private OffreStage offreStage;
 

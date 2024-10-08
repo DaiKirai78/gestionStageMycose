@@ -47,9 +47,6 @@ public class ApplicationStageAvecInfosDTO {
         dto.setUpdatedAt(applicationStage.getOffreStage().getUpdatedAt());
         dto.setTitle(applicationStage.getOffreStage().getTitle());
         dto.setEntrepriseName(applicationStage.getOffreStage().getEntrepriseName());
-        //Ensure that the offreStage object is fully initialized before the instanceof (hibernate lazy loading)
-        System.out.println("Actual class: " + applicationStage.getOffreStage().getClass().getName());
-        Hibernate.initialize(applicationStage.getOffreStage());
         if (applicationStage.getOffreStage() instanceof FichierOffreStage fichier) {
             System.out.println("FichierOffreStage");
             dto.setFilename(fichier.getFilename());
