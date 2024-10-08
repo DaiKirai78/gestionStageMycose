@@ -75,7 +75,6 @@ public class UtilisateurService {
     }
 
     public UtilisateurDTO getUtilisateurByCourriel(String courriel) {
-        System.out.println(utilisateurRepository.findUtilisateurByCourriel(courriel));
         Optional<Utilisateur> optionalUtilisateur = utilisateurRepository.findUtilisateurByCourriel(courriel);
         return optionalUtilisateur.map(UtilisateurDTO::toDTO).orElse(null);
     }
