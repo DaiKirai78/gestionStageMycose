@@ -1,8 +1,6 @@
 package com.projet.mycose.service;
 
-import com.projet.mycose.modele.FichierOffreStage;
-import com.projet.mycose.modele.FormulaireOffreStage;
-import com.projet.mycose.modele.Utilisateur;
+import com.projet.mycose.modele.*;
 import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.repository.FichierOffreStageRepository;
 import com.projet.mycose.repository.FormulaireOffreStageRepository;
@@ -14,12 +12,14 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import jakarta.validation.Validator;
+import org.hibernate.dialect.pagination.OffsetFetchLimitHandler;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.Base64;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class OffreStageService {
@@ -30,6 +30,7 @@ public class OffreStageService {
     private final UtilisateurRepository utilisateurRepository;
     private final FormulaireOffreStageRepository formulaireOffreStageRepository;
     private final FichierOffreStageRepository ficherOffreStageRepository;
+    private static final int LIMIT_PER_PAGE = 10;
 
     public OffreStageService(OffreStageRepository offreStageRepository, ModelMapper modelMapper, Validator validator, UtilisateurService utilisateurService, UtilisateurRepository utilisateurRepository, FormulaireOffreStageRepository formulaireOffreStageRepository, FichierOffreStageRepository ficherOffreStageRepository) {
         this.offreStageRepository = offreStageRepository;
@@ -139,5 +140,50 @@ public class OffreStageService {
         FormulaireOffreStage savedForm = formulaireOffreStageRepository.save(formulaireOffreStage);
 
         return convertToDTO(savedForm);
+    }
+
+    public List<OffreStageAvecUtilisateurInfoDTO> getWaitingOffreStage(int page) {
+        Optional<List<OffreStage>> optionalOffreStageList = offreStageRepository.getOffreStageByStatusEquals(OffreStage.Status.WAITING,
+                PageRequest.of(page, LIMIT_PER_PAGE));
+
+        if (optionalOffreStageList.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<OffreStage> offreStages = optionalOffreStageList.get();
+
+        return offreStages.stream().map(OffreStageAvecUtilisateurInfoDTO::toDto).toList();
+    }
+
+    public Integer getAmountOfPages() {
+        long amountOfRows = offreStageRepository.countByStatus(OffreStage.Status.WAITING);
+
+        if (amountOfRows == 0)
+            return 0;
+
+        int nombrePages = (int) Math.floor((double) amountOfRows / LIMIT_PER_PAGE);
+
+        if (amountOfRows % 10 > 0) {
+            nombrePages++;
+        }
+
+        return nombrePages;
+    }
+
+    public void changeStatus(Long id, OffreStage.Status status, String description) throws ChangeSetPersister.NotFoundException {
+        Optional<OffreStage> offreStageOptional = offreStageRepository.findById(id);
+
+        if (offreStageOptional.isEmpty())
+            throw new ChangeSetPersister.NotFoundException();
+
+        OffreStage offreStage = offreStageOptional.get();
+        offreStage.setStatus(status);
+        offreStage.setStatusDescription(description);
+        offreStageRepository.save(offreStage);
+    }
+
+    public OffreStageAvecUtilisateurInfoDTO getOffreStageWithUtilisateurInfo(Long id) {
+        OffreStage offreStage = offreStageRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("OffreStage not found with ID: " + id));
+        return OffreStageAvecUtilisateurInfoDTO.toDto(offreStage);
     }
 }

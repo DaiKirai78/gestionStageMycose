@@ -16,13 +16,6 @@ import java.time.LocalDateTime;
 @DiscriminatorValue("FILE")
 public class FichierOffreStage extends OffreStage{
 
-    @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
-
     private String filename;
 
     @Column(name = "data", columnDefinition = "BYTEA")

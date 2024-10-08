@@ -1,11 +1,15 @@
 package com.projet.mycose.controller;
 
+import com.projet.mycose.modele.FichierCV;
+import com.projet.mycose.modele.OffreStage;
 import com.projet.mycose.service.OffreStageService;
 import com.projet.mycose.service.dto.FichierOffreStageDTO;
 import com.projet.mycose.service.dto.FormulaireOffreStageDTO;
+import com.projet.mycose.service.dto.OffreStageAvecUtilisateurInfoDTO;
 import com.projet.mycose.service.dto.UploadFicherOffreStageDTO;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -55,4 +60,39 @@ public class OffreStageController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedForm);
     }
 
+    @GetMapping("/waiting-offres-stage")
+    public ResponseEntity<List<OffreStageAvecUtilisateurInfoDTO>> getWaitingOffreStage(@RequestParam int page) {
+        List<OffreStageAvecUtilisateurInfoDTO> offreStagesDTOList = offreStageService.getWaitingOffreStage(page);
+        return ResponseEntity.status(HttpStatus.OK).body(offreStagesDTOList);
+    }
+
+    @GetMapping("/pages")
+    public ResponseEntity<Integer> getAmountOfPages() {
+        return ResponseEntity.status((HttpStatus.OK)).body(offreStageService.getAmountOfPages());
+    }
+
+    @PatchMapping("/accept")
+    public ResponseEntity<?> acceptOffreStage(@RequestParam Long id, @RequestBody String description) {
+        try {
+            offreStageService.changeStatus(id, OffreStage.Status.ACCEPTED, description);
+            return ResponseEntity.ok().build();
+        } catch (ChangeSetPersister.NotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+    @PatchMapping("/refuse")
+    public ResponseEntity<?> refuseOffreStage(@RequestParam Long id, @RequestBody String description) {
+        try {
+            offreStageService.changeStatus(id, OffreStage.Status.REFUSED, description);
+            return ResponseEntity.ok().build();
+        } catch (ChangeSetPersister.NotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/offre-stage/{id}")
+    public ResponseEntity<OffreStageAvecUtilisateurInfoDTO> getOffreStage(@PathVariable Long id) {
+        OffreStageAvecUtilisateurInfoDTO offreStageDTO = offreStageService.getOffreStageWithUtilisateurInfo(id);
+        return ResponseEntity.status(HttpStatus.OK).body(offreStageDTO);
+    }
 }

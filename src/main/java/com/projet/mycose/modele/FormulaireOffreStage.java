@@ -16,13 +16,6 @@ import java.time.LocalDateTime;
 @DiscriminatorValue("FORM")
 public class FormulaireOffreStage extends OffreStage{
 
-    @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
-
 
     private String employerName;
     private String email;
