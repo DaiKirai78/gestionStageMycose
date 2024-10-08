@@ -60,7 +60,7 @@ public class OffreStageController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedForm);
     }
 
-    @GetMapping("/waiting-offres-stage")
+    @GetMapping("/waiting")
     public ResponseEntity<List<OffreStageAvecUtilisateurInfoDTO>> getWaitingOffreStage(@RequestParam int page) {
         List<OffreStageAvecUtilisateurInfoDTO> offreStagesDTOList = offreStageService.getWaitingOffreStage(page);
         return ResponseEntity.status(HttpStatus.OK).body(offreStagesDTOList);
@@ -90,7 +90,7 @@ public class OffreStageController {
         }
     }
 
-    @GetMapping("/offre-stage/{id}")
+    @GetMapping("/id/{id}")
     public ResponseEntity<OffreStageAvecUtilisateurInfoDTO> getOffreStage(@PathVariable Long id) {
         OffreStageAvecUtilisateurInfoDTO offreStageDTO = offreStageService.getOffreStageWithUtilisateurInfo(id);
         return ResponseEntity.status(HttpStatus.OK).body(offreStageDTO);

@@ -144,7 +144,7 @@ public class OffreStageService {
 
     public List<OffreStageAvecUtilisateurInfoDTO> getWaitingOffreStage(int page) {
         Optional<List<OffreStage>> optionalOffreStageList = offreStageRepository.getOffreStageByStatusEquals(OffreStage.Status.WAITING,
-                PageRequest.of(page, LIMIT_PER_PAGE));
+                PageRequest.of(page - 1, LIMIT_PER_PAGE));
 
         if (optionalOffreStageList.isEmpty()) {
             return new ArrayList<>();

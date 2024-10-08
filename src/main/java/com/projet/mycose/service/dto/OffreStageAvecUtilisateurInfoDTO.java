@@ -43,7 +43,6 @@ public class OffreStageAvecUtilisateurInfoDTO {
         setCommonFields(dto, offreStage);
 
         if (offreStage instanceof FormulaireOffreStage formulaire) {
-            dto.setEntrepriseName(formulaire.getEntrepriseName());
             dto.setEmployerName(formulaire.getEmployerName());
             dto.setEmail(formulaire.getEmail());
             dto.setWebsite(formulaire.getWebsite());
@@ -61,6 +60,7 @@ public class OffreStageAvecUtilisateurInfoDTO {
         dto.setId(offreStage.getId());
         dto.setTitle(offreStage.getTitle());
         dto.setCreatedAt(offreStage.getCreatedAt());
+        dto.setEntrepriseName(offreStage.getEntrepriseName());
 
         Utilisateur createur = offreStage.getCreateur();
         dto.setCreateur_id(createur.getId());
