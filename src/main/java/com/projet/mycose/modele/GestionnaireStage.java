@@ -14,6 +14,15 @@ import lombok.Setter;
 @Setter
 @Entity
 public class GestionnaireStage extends Utilisateur {
+
+    @Builder
+    public GestionnaireStage(Long id, String prenom, String nom, String numeroDeTelephone, String courriel, String motDePasse) {
+        super(id,
+                prenom,
+                nom,
+                numeroDeTelephone,
+                Credentials.builder().email(courriel).password(motDePasse).role(Role.GESTIONNAIRE_STAGE).build());
+    }
     @Builder
     public GestionnaireStage(String prenom, String nom, String numeroDeTelephone, String courriel, String motDePasse) {
         super(prenom,
