@@ -56,7 +56,6 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/cv/pages").hasAuthority("GESTIONNAIRE_STAGE")
                         .requestMatchers("/api/cv/accept").hasAuthority("GESTIONNAIRE_STAGE")
                         .requestMatchers("/api/cv/refuse").hasAuthority("GESTIONNAIRE_STAGE")
-                        .requestMatchers("/**").permitAll()
                         .anyRequest().denyAll()
                 )
                 .sessionManagement((secuManagement) -> {
