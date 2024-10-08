@@ -115,6 +115,12 @@ const listeStage = () => {
         trierStages(stagesDetails, mapStageSort);
     }
 
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            rechercher(e);
+        }
+    };
+
     function stageEtNbreDeCorrespondances() {
         let mapStages = new Map();
         let arrayMotsTrouvesTitre = [];
@@ -261,6 +267,7 @@ const listeStage = () => {
                                activerDesactiverRecherche(e);
                                changeRechercheStage(e);
                            }}
+                           onKeyDown={handleKeyDown}
                            className={`mt-6 mb-9 pt-3 pb-3 pl-14 text-md sm:text-xl rounded-l-3xl outline-0 w-full ${
                                uneRechercheEstFaite ? 'w-80' : 'w-full'
                            }`}></input>
