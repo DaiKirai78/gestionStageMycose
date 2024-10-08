@@ -26,10 +26,6 @@ function FileOffreStage() {
                 });
                 const userData = response.data;
                 setRole(userData.role);
-                if (userData.role === "EMPLOYEUR") {
-                    setCompanyName(userData.nomOrganisation);
-                    console.log("Nom de l'entreprise :", userData.nomOrganisation);
-                }
             } catch (error) {
                 console.error("Erreur lors de la récupération des informations de l'utilisateur :", error);
             }
@@ -43,7 +39,10 @@ function FileOffreStage() {
         const formData = new FormData();
         formData.append("file", file);
         formData.append("title", title);
-        formData.append("entreprise_name", companyName);
+
+        if (role === "GESTIONNAIRE") {
+            formData.append("entreprise_name", companyName);
+        }
 
         try {
             const response = await axios.post("http://localhost:8080/api/offres-stages/upload-file", formData,
