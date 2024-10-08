@@ -1,16 +1,9 @@
 package com.projet.mycose.service;
 
-import com.projet.mycose.modele.Employeur;
-import com.projet.mycose.modele.Enseignant;
-import com.projet.mycose.modele.Etudiant;
-import com.projet.mycose.modele.Utilisateur;
-import com.projet.mycose.repository.EmployeurRepository;
-import com.projet.mycose.repository.EnseignantRepository;
-import com.projet.mycose.repository.EtudiantRepository;
-import com.projet.mycose.repository.UtilisateurRepository;
+import com.projet.mycose.modele.*;
+import com.projet.mycose.repository.*;
 import com.projet.mycose.security.JwtTokenProvider;
 import com.projet.mycose.service.dto.*;
-import jdk.jshell.execution.Util;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -31,6 +24,7 @@ public class UtilisateurService {
     private final EnseignantRepository enseignantRepository;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
+    private final GestionnaireStageRepository gestionnaireStageRepository;
 
     public String authentificationUtilisateur(LoginDTO loginDTO) {
         Authentication authentication = authenticationManager.authenticate(
@@ -45,7 +39,7 @@ public class UtilisateurService {
             String courriel = jwtTokenProvider.getEmailFromJWT(token);
             Utilisateur utilisateur = utilisateurRepository.findUtilisateurByCourriel(courriel).orElseThrow(UserNotFoundException::new);
             return switch (utilisateur.getRole()) {
-                case GESTIONNAIRE_STAGE -> null; // TODO: RETOURNER UN getGestionnaireDTO
+                case GESTIONNAIRE_STAGE -> getGestionnaireDTO(utilisateur.getId());
                 case ETUDIANT -> getEtudiantDTO(utilisateur.getId());
                 case EMPLOYEUR -> getEmployeurDTO(utilisateur.getId());
                 case ENSEIGNANT -> getEnseignantDTO(utilisateur.getId());
@@ -75,6 +69,11 @@ public class UtilisateurService {
                 EnseignantDTO.empty();
     }
 
+    public GestionnaireStageDTO getGestionnaireDTO(Long id) {
+        final Optional<GestionnaireStage> gestionnaireStageOptional = gestionnaireStageRepository.findById(id);
+        return gestionnaireStageOptional.map(GestionnaireStageDTO::toDTO).orElseGet(GestionnaireStageDTO::empty);
+    }
+
     public UtilisateurDTO getUtilisateurByCourriel(String courriel) {
         Optional<Utilisateur> optionalUtilisateur = utilisateurRepository.findUtilisateurByCourriel(courriel);
         return optionalUtilisateur.map(UtilisateurDTO::toDTO).orElse(null);
@@ -97,8 +96,6 @@ public class UtilisateurService {
             return null;
         }
     }
-
-    // TODO: AJOUTER getGestionnaireDTO
 
     // TODO: Finir les tests non couverts
 }

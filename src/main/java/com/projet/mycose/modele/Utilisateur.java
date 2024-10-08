@@ -78,4 +78,17 @@ public abstract class Utilisateur {
     public Collection<? extends GrantedAuthority> getAuthorities(){
         return credentials.getAuthorities();
     }
+
+    @Override
+    public String toString(){
+        return "Utilisateur{" +
+                "id=" + id +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", prenom='" + prenom + '\'' +
+                ", nom='" + nom + '\'' +
+                ", numeroDeTelephone='" + numeroDeTelephone + '\'' +
+                ", credentials=" + credentials +
+                '}';
+    }
 }

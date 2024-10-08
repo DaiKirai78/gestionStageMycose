@@ -34,3 +34,4 @@ build/
 
 ### Postgres ###
 /postgres/projet_local_pgdata/*
+/postgres/projet_pgadmin-data/sessions/*

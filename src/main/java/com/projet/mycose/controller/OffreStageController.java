@@ -3,6 +3,7 @@ package com.projet.mycose.controller;
 import com.projet.mycose.service.OffreStageService;
 import com.projet.mycose.service.dto.FichierOffreStageDTO;
 import com.projet.mycose.service.dto.FormulaireOffreStageDTO;
+import com.projet.mycose.service.dto.UploadFicherOffreStageDTO;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -27,10 +28,11 @@ public class OffreStageController {
     }
 
 
-    @PostMapping(value = "/upload-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) {
+    @PostMapping(value = "/upload-file", consumes = "multipart/form-data")
+    public ResponseEntity<?> uploadFile(@Valid @ModelAttribute UploadFicherOffreStageDTO uploadFicherOffreStageDTO,  @RequestHeader("Authorization") String token) {
         try {
-            FichierOffreStageDTO savedFileDTO = offreStageService.saveFile(file);
+
+            FichierOffreStageDTO savedFileDTO = offreStageService.saveFile(uploadFicherOffreStageDTO, token);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(savedFileDTO);
         } catch (ConstraintViolationException e) {
@@ -48,8 +50,8 @@ public class OffreStageController {
 
     @PostMapping("/upload-form")
     public ResponseEntity<FormulaireOffreStageDTO> uploadForm(
-            @Valid @RequestBody FormulaireOffreStageDTO formulaireOffreStageDTO) {
-        FormulaireOffreStageDTO savedForm = offreStageService.saveForm(formulaireOffreStageDTO);
+            @Valid @RequestBody FormulaireOffreStageDTO formulaireOffreStageDTO, @RequestHeader("Authorization") String token) {
+        FormulaireOffreStageDTO savedForm = offreStageService.saveForm(formulaireOffreStageDTO, token);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedForm);
     }
 
