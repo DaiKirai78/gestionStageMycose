@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Base64;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -70,7 +71,23 @@ public class OffreStageService {
     }
 
     public FormulaireOffreStageDTO saveForm(FormulaireOffreStageDTO formulaireOffreStageDTO) {
-        FormulaireOffreStage formulaireOffreStage = modelMapper.map(formulaireOffreStageDTO, FormulaireOffreStage.class);
+        //FormulaireOffreStage formulaireOffreStage = modelMapper.map(formulaireOffreStageDTO, FormulaireOffreStage.class);
+        Optional<Utilisateur> createur = utilisateurRepository.findById(formulaireOffreStageDTO.getId());
+        if(createur.isEmpty()) {
+            return null;
+        }
+
+        FormulaireOffreStage formulaireOffreStage = new FormulaireOffreStage(
+                formulaireOffreStageDTO.getId(),
+                formulaireOffreStageDTO.getTitle(),
+                formulaireOffreStageDTO.getEntrepriseName(),
+                formulaireOffreStageDTO.getEmployerName(),
+                formulaireOffreStageDTO.getEmail(),
+                formulaireOffreStageDTO.getWebsite(),
+                formulaireOffreStageDTO.getLocation(),
+                formulaireOffreStageDTO.getSalary(),
+                formulaireOffreStageDTO.getDescription(),
+                createur.get());
         FormulaireOffreStage savedForm = offreStageRepository.save(formulaireOffreStage);
         return modelMapper.map(savedForm, FormulaireOffreStageDTO.class);
     }

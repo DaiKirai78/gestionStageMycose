@@ -39,31 +39,28 @@ public class FormulaireOffreStageDTO extends OffreStageDTO {
     private String description;
 
     @Builder
-    public FormulaireOffreStageDTO(Long id, String employerName, String email, String website, String location, String salary, String description, String title, String entrepriseName, Long createur_id) {
-        super(id);
+    public FormulaireOffreStageDTO(Long id, String entrepriseName,  String employerName, String email, String website, String title,  String location, String salary, String description, Long createur_id) {
+        super(id, title, entrepriseName, createur_id);
         this.employerName = employerName;
         this.email = email;
         this.website = website;
         this.location = location;
         this.salary = salary;
         this.description = description;
-        this.setTitle(title);
-        this.setEntrepriseName(entrepriseName);
-        this.setCreateur_id(createur_id);
     }
 
     public static FormulaireOffreStageDTO toDTO(FormulaireOffreStage formulaireOffreStage) {
-        return FormulaireOffreStageDTO.builder()
-                .id(formulaireOffreStage.getId())
-                .entrepriseName(formulaireOffreStage.getEntrepriseName())
-                .employerName(formulaireOffreStage.getEmployerName())
-                .email(formulaireOffreStage.getEmail())
-                .website(formulaireOffreStage.getWebsite())
-                .title(formulaireOffreStage.getTitle())
-                .location(formulaireOffreStage.getLocation())
-                .salary(formulaireOffreStage.getSalary())
-                .location(formulaireOffreStage.getLocation())
-                .createur_id(formulaireOffreStage.getCreateur().getId())
-                .build();
+        System.out.println(formulaireOffreStage.getTitle());
+        return new FormulaireOffreStageDTO(
+                formulaireOffreStage.getId(),
+                formulaireOffreStage.getEntrepriseName(),
+                formulaireOffreStage.getEmployerName(),
+                formulaireOffreStage.getEmail(),
+                formulaireOffreStage.getWebsite(),
+                formulaireOffreStage.getTitle(),
+                formulaireOffreStage.getLocation(),
+                formulaireOffreStage.getSalary(),
+                formulaireOffreStage.getDescription(),
+                formulaireOffreStage.getCreateur().getId());
     }
 }

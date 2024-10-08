@@ -28,11 +28,11 @@ public class FichierOffreStage extends OffreStage{
     @Column(name = "data", columnDefinition = "BYTEA")
     private byte[] data;
 
-    public FichierOffreStage(String title, String entrepriseName, String filename, byte[] data, Utilisateur createur) {
-        super();
-        this.setTitle(title);
-        this.setEntrepriseName(entrepriseName);
-        this.setCreateur(createur);
+    public FichierOffreStage(long id, String title, String entrepriseName, String filename, byte[] data, Utilisateur createur) {
+        super(id, title, entrepriseName, null, createur);
+//        this.setTitle(title);
+//        this.setEntrepriseName(entrepriseName);
+//        this.setCreateur(createur);
         this.filename = filename;
         this.data = data;
     }

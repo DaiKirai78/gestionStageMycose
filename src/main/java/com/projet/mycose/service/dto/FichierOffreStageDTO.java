@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Arrays;
 import java.util.Base64;
 
 
@@ -32,23 +33,23 @@ public class FichierOffreStageDTO extends OffreStageDTO{
 
     @Builder
     public FichierOffreStageDTO(long id, String filename, String fileData, String title, String entrepriseName, Long createur_id) {
-        super(id);
+        super(id, title, entrepriseName, createur_id);
         this.filename = filename;
         this.fileData = fileData;
-        this.setTitle(title);
-        this.setEntrepriseName(entrepriseName);
-        this.setCreateur_id(createur_id);
+        //this.setTitle(title);
+        //this.setEntrepriseName(entrepriseName);
+        //this.setCreateur_id(createur_id);
     }
 
     public static FichierOffreStageDTO toDTO(FichierOffreStage fichierOffreStage) {
-        return FichierOffreStageDTO.builder()
-                .id(fichierOffreStage.getId())
-                .filename(fichierOffreStage.getFilename())
-                .fileData(Base64.getEncoder().encodeToString(fichierOffreStage.getData()))
-                .title(fichierOffreStage.getTitle())
-                .entrepriseName(fichierOffreStage.getEntrepriseName())
-                .createur_id(fichierOffreStage.getCreateur().getId())
-                .build();
+        return new FichierOffreStageDTO(
+                fichierOffreStage.getId(),
+                fichierOffreStage.getFilename(),
+                Arrays.toString(fichierOffreStage.getData()),
+                fichierOffreStage.getTitle(),
+                fichierOffreStage.getEntrepriseName(),
+                fichierOffreStage.getCreateur().getId()
+        );
     }
 
     //TODO: Ajouter les champs title et entrepriseName au front-end pour qu'on puisse les envoyer au DTO avec validation

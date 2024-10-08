@@ -5,6 +5,7 @@ import com.projet.mycose.modele.FormulaireOffreStage;
 import com.projet.mycose.modele.OffreStage;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,6 +13,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class OffreStageDTO {
     private long id;
 
@@ -25,7 +27,24 @@ public class OffreStageDTO {
     private String entrepriseName;
 
     private Long createur_id;
-    public OffreStageDTO(long id) {
-        this.id = id;
+//    public OffreStageDTO(long id, String title, String entrepriseName, ) {
+//        this.id = id;
+//        this.
+//    }
+
+    public static OffreStageDTO toOffreStageInstaceDTO(OffreStage offreStage) {
+        OffreStageDTO offreStageDTO = null;
+        System.out.println(offreStage.getCreateur());
+
+        if(offreStage instanceof FormulaireOffreStage) {
+            offreStageDTO = FormulaireOffreStageDTO.toDTO((FormulaireOffreStage) offreStage);
+        }
+        else if(offreStage instanceof FichierOffreStage) {
+            offreStageDTO = FichierOffreStageDTO.toDTO((FichierOffreStage) offreStage);
+        }
+
+        System.out.println("HEYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY");
+        System.out.println(offreStageDTO);
+        return offreStageDTO;
     }
 }
