@@ -16,6 +16,5 @@ public class UploadFicherOffreStageDTO {
     @NotBlank(message = "Title is required")
     private String title;
 
-    @NotBlank(message = "Entreprise name is required")
     private String entrepriseName;
 }

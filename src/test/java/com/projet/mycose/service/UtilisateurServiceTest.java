@@ -90,7 +90,7 @@ public class UtilisateurServiceTest {
                 .numeroDeTelephone("098-765-4321")
                 .courriel("jane.smith@techcorp.com")
                 .motDePasse("securePass!")
-                .nomOrganisation("TechCorp")
+                .entrepriseName("TechCorp")
                 .build();
 
         enseignant = Enseignant.builder()

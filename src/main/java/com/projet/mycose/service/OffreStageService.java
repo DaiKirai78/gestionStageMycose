@@ -3,13 +3,12 @@ package com.projet.mycose.service;
 import com.projet.mycose.modele.FichierOffreStage;
 import com.projet.mycose.modele.FormulaireOffreStage;
 import com.projet.mycose.modele.Utilisateur;
+import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.repository.FichierOffreStageRepository;
 import com.projet.mycose.repository.FormulaireOffreStageRepository;
 import com.projet.mycose.repository.OffreStageRepository;
 import com.projet.mycose.repository.UtilisateurRepository;
-import com.projet.mycose.service.dto.FichierOffreStageDTO;
-import com.projet.mycose.service.dto.FormulaireOffreStageDTO;
-import com.projet.mycose.service.dto.UploadFicherOffreStageDTO;
+import com.projet.mycose.service.dto.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -102,8 +101,21 @@ public class OffreStageService {
 
     public FichierOffreStageDTO saveFile(@Valid UploadFicherOffreStageDTO uploadFicherOffreStageDTO, String token) throws ConstraintViolationException, IOException {
 
-        Long createur_id = utilisateurService.getUserIdByToken(token);
+        UtilisateurDTO utilisateurDTO = utilisateurService.getMe(token);
+        Long createur_id = utilisateurDTO.getId();
+
         FichierOffreStageDTO fichierOffreStageDTO = new FichierOffreStageDTO(uploadFicherOffreStageDTO, createur_id);
+
+        // Si l'utilisateur est un employeur, on prend directement le champ entrepriseName de son entité
+        // Sinon, s'il s'agit d'un gestionnaire de stage, on prend le champ entrepriseName du formulaire
+        // Sinon, on renvoit une erreur
+        if (utilisateurDTO.getRole() == Role.EMPLOYEUR) {
+            fichierOffreStageDTO.setEntrepriseName(((EmployeurDTO) utilisateurDTO).getEntrepriseName());
+        } else if (utilisateurDTO.getRole() == Role.GESTIONNAIRE_STAGE) {
+            fichierOffreStageDTO.setEntrepriseName(uploadFicherOffreStageDTO.getEntrepriseName());
+        } else {
+            throw new IllegalArgumentException("Utilisateur n'est pas un employeur ou un gestionnaire de stage");
+        }
 
         Set<ConstraintViolation<FichierOffreStageDTO>> violations = validator.validate(fichierOffreStageDTO);
         if (!violations.isEmpty()) {
