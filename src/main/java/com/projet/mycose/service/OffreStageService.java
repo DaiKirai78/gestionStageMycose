@@ -42,6 +42,14 @@ public class OffreStageService {
         this.ficherOffreStageRepository = ficherOffreStageRepository;
     }
 
+    public OffreStageDTO convertToDTO(OffreStage offreStage){
+        if (offreStage instanceof FormulaireOffreStage) {
+            return convertToDTO((FormulaireOffreStage) offreStage);
+        } else {
+            return convertToDTO((FichierOffreStage) offreStage);
+        }
+    }
+
 
     // Convert Entity to DTO
     public FichierOffreStageDTO convertToDTO(FichierOffreStage fichierOffreStage) {
@@ -185,5 +193,10 @@ public class OffreStageService {
     public OffreStageAvecUtilisateurInfoDTO getOffreStageWithUtilisateurInfo(Long id) {
         OffreStage offreStage = offreStageRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("OffreStage not found with ID: " + id));
         return OffreStageAvecUtilisateurInfoDTO.toDto(offreStage);
+    }
+
+    public List<OffreStageDTO> getAvailableOffreStagesForEtudiant(String token) {
+        Long etudiantId = utilisateurService.getUserIdByToken(token);
+        return offreStageRepository.findAllByEtudiantNotApplied(etudiantId).stream().map(this::convertToDTO).toList();
     }
 }

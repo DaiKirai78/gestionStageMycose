@@ -10,7 +10,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-@DiscriminatorValue("FILE")
+@DiscriminatorValue("Fichier")
 public class FichierOffreStage extends OffreStage{
 
     private String filename;

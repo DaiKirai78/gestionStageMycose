@@ -39,8 +39,19 @@ public class OffreStageAvecUtilisateurInfoDTO {
     public static OffreStageAvecUtilisateurInfoDTO toDto(OffreStage offreStage) {
         OffreStageAvecUtilisateurInfoDTO dto = new OffreStageAvecUtilisateurInfoDTO();
 
-        // Set common fields
-        setCommonFields(dto, offreStage);
+
+        dto.setId(offreStage.getId());
+        dto.setTitle(offreStage.getTitle());
+        dto.setCreatedAt(offreStage.getCreatedAt());
+        dto.setEntrepriseName(offreStage.getEntrepriseName());
+
+        Utilisateur createur = offreStage.getCreateur();
+        dto.setCreateur_id(createur.getId());
+        dto.setCreateur_prenom(createur.getPrenom());
+        dto.setCreateur_nom(createur.getNom());
+        dto.setCreateur_email(createur.getCourriel());
+        dto.setCreateur_role(createur.getRole());
+        dto.setCreateur_telephone(createur.getNumeroDeTelephone());
 
         if (offreStage instanceof FormulaireOffreStage formulaire) {
             dto.setEmployerName(formulaire.getEmployerName());
@@ -54,20 +65,5 @@ public class OffreStageAvecUtilisateurInfoDTO {
             dto.setFileData(Base64.getEncoder().encodeToString(fichier.getData()));
         }
         return dto;
-    }
-
-    private static void setCommonFields(OffreStageAvecUtilisateurInfoDTO dto, OffreStage offreStage) {
-        dto.setId(offreStage.getId());
-        dto.setTitle(offreStage.getTitle());
-        dto.setCreatedAt(offreStage.getCreatedAt());
-        dto.setEntrepriseName(offreStage.getEntrepriseName());
-
-        Utilisateur createur = offreStage.getCreateur();
-        dto.setCreateur_id(createur.getId());
-        dto.setCreateur_prenom(createur.getPrenom());
-        dto.setCreateur_nom(createur.getNom());
-        dto.setCreateur_email(createur.getCourriel());
-        dto.setCreateur_role(createur.getRole());
-        dto.setCreateur_telephone(createur.getNumeroDeTelephone());
     }
 }

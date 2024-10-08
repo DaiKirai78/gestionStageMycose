@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-@DiscriminatorValue("FORM")
+@DiscriminatorValue("Formulaire")
 public class FormulaireOffreStage extends OffreStage{
 
 

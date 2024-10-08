@@ -3,10 +3,7 @@ package com.projet.mycose.controller;
 import com.projet.mycose.modele.FichierCV;
 import com.projet.mycose.modele.OffreStage;
 import com.projet.mycose.service.OffreStageService;
-import com.projet.mycose.service.dto.FichierOffreStageDTO;
-import com.projet.mycose.service.dto.FormulaireOffreStageDTO;
-import com.projet.mycose.service.dto.OffreStageAvecUtilisateurInfoDTO;
-import com.projet.mycose.service.dto.UploadFicherOffreStageDTO;
+import com.projet.mycose.service.dto.*;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import org.springframework.data.crossstore.ChangeSetPersister;
@@ -95,4 +92,11 @@ public class OffreStageController {
         OffreStageAvecUtilisateurInfoDTO offreStageDTO = offreStageService.getOffreStageWithUtilisateurInfo(id);
         return ResponseEntity.status(HttpStatus.OK).body(offreStageDTO);
     }
+
+    @GetMapping("/my-offres")
+    public ResponseEntity<List<OffreStageDTO>> getMyOffres(@RequestHeader("Authorization") String token) {
+        List<OffreStageDTO> offreStageDTOList = offreStageService.getAvailableOffreStagesForEtudiant(token);
+        return ResponseEntity.status(HttpStatus.OK).body(offreStageDTOList);
+    }
+
 }
