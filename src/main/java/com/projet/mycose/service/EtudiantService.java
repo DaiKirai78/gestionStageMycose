@@ -74,12 +74,12 @@ public class EtudiantService {
         return (int) Math.floor((double) amountOfRows / LIMIT_PER_PAGE);
     }
 
-    public List<OffreStageDTO> getStagesByRecherche(String token, String recherche, int page) {
+    public List<OffreStageDTO> getStagesByRecherche(String token, int page, String recherche) {
         Long idEtudiant = utilisateurService.getUserIdByToken(token);
         PageRequest pageRequest = PageRequest.of(page, LIMIT_PER_PAGE);
 
-        //Page<OffreStage> offreStagesEnPages = offreStageRepository;
-        return null;
+        Page<OffreStage> offreStagesEnPages = offreStageRepository.findOffresByEtudiantIdWithSearch(idEtudiant, recherche, pageRequest);
+        return listeOffreStageToDTO(offreStagesEnPages.getContent());
     }
 
 }
