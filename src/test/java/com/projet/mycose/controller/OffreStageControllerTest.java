@@ -45,19 +45,14 @@ public class OffreStageControllerTest {
         id = 1L;
 
         uploadFicherOffreStageDTO = new UploadFicherOffreStageDTO();
-        // Initialize fields as needed
 
         fichierOffreStageDTO = new FichierOffreStageDTO();
-        // Initialize fields as needed
 
         formulaireOffreStageDTO = new FormulaireOffreStageDTO();
-        // Initialize fields as needed
 
         offreStageAvecUtilisateurInfoDTO = new OffreStageAvecUtilisateurInfoDTO();
-        // Initialize fields as needed
 
         offreStageDTO = new OffreStageDTO();
-        // Initialize fields as needed
 
         offreStageAvecUtilisateurInfoDTOList = Arrays.asList(offreStageAvecUtilisateurInfoDTO);
         offreStageDTOList = Arrays.asList(offreStageDTO);
@@ -85,7 +80,6 @@ public class OffreStageControllerTest {
 
         assertNotNull(response);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        // Further assertions can be made on the errors map if initialized
         verify(offreStageService, times(1)).saveFile(uploadFicherOffreStageDTO, token);
     }
 
