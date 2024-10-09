@@ -41,8 +41,8 @@ public class MycoseApplication implements CommandLineRunner {
 		etudiantService.creationDeCompte("Guillaume", "Courtemanche", "283-948-2738", "gc@gmail.com", "courte123$", Programme.GENIE_LOGICIEL);
 
 		employeurService.creationDeCompte("Willy", "Wonka", "555-333-4343", "wonka@gmail.com", "Chocolatayyy$", "Wonka INC");
-		FormulaireOffreStageDTO formulaireOffreStageDTO = new FormulaireOffreStageDTO(1L, "Chco Factory", "Willy Wonka", "wonka@mail.com", "wonka.com", "Master Chocolatier", "New York", "100 000", "Make Chocolate");
-		offreStageService.saveForm(formulaireOffreStageDTO);
-		offreStageService.assignerEmployeur(3L, 1L);
+//		FormulaireOffreStageDTO formulaireOffreStageDTO = new FormulaireOffreStageDTO(1L, "Chco Factory", "Willy Wonka", "wonka@mail.com", "wonka.com", "Master Chocolatier", "New York", "100 000", "Make Chocolate");
+//		offreStageService.saveForm(formulaireOffreStageDTO);
+//		offreStageService.assignerEmployeur(3L, 1L);
 	}
 }
