@@ -36,5 +36,6 @@ public class MycoseApplication implements CommandLineRunner {
 	public void run(String... args) {
 		employeurService.creationDeCompte("Willy", "Wonka", "555-6565-9876", "wonka@mail.com", "Chocolatayy1", "Wonka INC");
 		gestionnaireStageService.creationDeCompte("Elie", "Boucher-Gendron", "450-948-2738", "eliescrummaster@gmail.com", "Passw0rd");
+		etudiantService.creationDeCompte("Elie", "Boucher-Gendron", "450-948-2728", "elie@gmail.com", "Passw0rd", Programme.TECHNIQUE_INFORMATIQUE);
 	}
 }

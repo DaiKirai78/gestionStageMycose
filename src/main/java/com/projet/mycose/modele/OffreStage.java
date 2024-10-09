@@ -23,7 +23,6 @@ import java.util.Set;
 public abstract class OffreStage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "offre_id")
     private long id;
 
     private String title;
