@@ -45,7 +45,7 @@ const router = createBrowserRouter([
     path: "/validerCV",
     element: <ValiderCVPage />
   },
-  { path: "/validerCV/:id",
+  { path: "/validerCV/:name",
     element: <ValiderCV />
   }
 

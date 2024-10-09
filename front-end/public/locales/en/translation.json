@@ -80,5 +80,16 @@
     "TECHNIQUE_INFORMATIQUE": "Computer Science",
     "GENIE_LOGICIEL": "Software Engineering",
     "RESEAU_TELECOMMUNICATION": "Telecommunication Network",
-    "choisirProgramme": "Choose a program"
+    "choisirProgramme": "Choose a program",
+    "errorRetrievingStudents": "Error retrieving students",
+    "errorRetrievingNbPages": "Error retrieving the number of pages",
+    "waitingCV": "CV waiting",
+    "noCVWaiting": "No CV waiting",
+    "programme": "Program",
+    "page": "Page",
+    "previous": "Previous",
+    "next": "Next",
+    "ErrorAcceptingCV": "Error accepting CV",
+    "ErrorRefusingCV": "Error refusing CV",
+    "noCVFound": "No CV found"
 }

@@ -11,34 +11,40 @@ function EtudiantsCV() {
     const [totalPages, setTotalPages] = useState(1);
     const navigate = useNavigate();
 
+    const token = localStorage.getItem("token");
+
     useEffect(() => {
         const fetchStudents = async () => {
             try {
                 setLoading(true);
-                const response = await fetch(`http://localhost:8080/api/cv/waitingcv?page=${currentPage}`);
+                const response = await fetch(`http://localhost:8080/api/cv/waitingcv?page=${currentPage}`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
                 if (!response.ok) {
-                    throw new Error("Erreur lors de la récupération des étudiants");
+                    throw new Error(t("errorRetrievingStudents"));
                 }
                 const data = await response.json();
                 setStudents(data);
                 setLoading(false);
             } catch (error) {
-                console.error("Erreur lors de la récupération des étudiants:", error);
-                setError("Erreur lors de la récupération des étudiants.");
+                console.error(t("errorRetrievingStudents"), error);
+                setError(t("errorRetrievingStudents"));
                 setLoading(false);
             }
         };
 
         const fetchTotalPages = async () => {
             try {
-                const response = await fetch('http://localhost:8080/api/cv/pages');
+                const response = await fetch('http://localhost:8080/api/cv/pages', {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
                 if (!response.ok) {
-                    throw new Error("Erreur lors de la récupération du nombre de pages");
+                    throw new Error(t("errorRetrievingNbPages"));
                 }
                 const pages = await response.json();
                 setTotalPages(pages);
             } catch (error) {
-                console.error("Erreur lors de la récupération du nombre de pages:", error);
+                console.error(t("errorRetrievingNbPages"), error);
             }
         };
 
@@ -54,15 +60,21 @@ function EtudiantsCV() {
             <div className="bg-[#FFF8F2] rounded-lg shadow-lg p-8 w-screen max-w-3xl">
                 <h1 className="text-4xl font-bold mb-6 mt-6 text-center">{t("studentList")}</h1>
                 <h2 className="mb-8 text-xl text-center">{t("clickStudentCV")}</h2>
+                {students.length > 0 ? (
+                    <p className="text-center text-gray-700 mb-4">{students.length} {t("waitingCV")}</p>
+                ) : (
+                    <p className="text-center text-gray-700 mb-4">{t("noCVWaiting")}</p>
+                )}
                 <ul className="space-y-4">
                     {students.map((student) => (
                         <li
                             key={student.id}
                             className="p-6 border border-gray-300 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer"
-                            onClick={() => navigate(`/validerCV/${student.id}`)}
+                            onClick={() => {
+                                navigate(`/validerCV/${student.studentFirstName}${student.studentLastName}`, { state: { cv: student } })}}
                         >
                             <h2 className="text-2xl font-semibold">{student.studentFirstName} {student.studentLastName}</h2>
-                            <p className="text-gray-700">Programme : {student.programme}</p>
+                            <p className="text-gray-700">{t("program")} : {t(student.programme)}</p>
                         </li>
                     ))}
                 </ul>
