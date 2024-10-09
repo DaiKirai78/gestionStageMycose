@@ -131,7 +131,7 @@ const FormConnection = () => {
     return (
 
         <div className='flex flex-col px-10'>
-            {(errorKeyResponse !== "") ? renderMessageErreur() : null}
+            {(errorKeyResponse != "") ? renderMessageErreur() : null}
             <form method="get" className='flex flex-col sm:gap-5 gap-3'>
                 <div>
                     <div className="w-full">

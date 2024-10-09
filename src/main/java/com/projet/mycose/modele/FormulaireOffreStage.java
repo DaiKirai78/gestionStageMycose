@@ -13,15 +13,8 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-@DiscriminatorValue("FORM")
+@DiscriminatorValue("Formulaire")
 public class FormulaireOffreStage extends OffreStage{
-
-    @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
 
 
     private String employerName;
@@ -31,11 +24,11 @@ public class FormulaireOffreStage extends OffreStage{
     private String salary;
     private String description;
 
-    public FormulaireOffreStage(long id, String title, String entrepriseName, String employerName, String email, String website, String location, String salary, String description, Utilisateur createur) {
-        super(id, title, entrepriseName, null, createur);
-//        this.setTitle(title);
-//        this.setEntrepriseName(entrepriseName);
-//        this.setCreateur(createur);
+    public FormulaireOffreStage(String title, String entrepriseName, String employerName, String email, String website, String location, String salary, String description, Utilisateur createur) {
+        super();
+        this.setTitle(title);
+        this.setEntrepriseName(entrepriseName);
+        this.setCreateur(createur);
         this.employerName = employerName;
         this.email = email;
         this.website = website;
