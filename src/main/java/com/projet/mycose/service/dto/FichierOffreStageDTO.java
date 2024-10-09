@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.IOException;
 import java.util.Base64;
 
 
@@ -49,6 +50,14 @@ public class FichierOffreStageDTO extends OffreStageDTO{
                 .entrepriseName(fichierOffreStage.getEntrepriseName())
                 .createur_id(fichierOffreStage.getCreateur().getId())
                 .build();
+    }
+
+    public FichierOffreStageDTO(UploadFicherOffreStageDTO uploadFicherOffreStageDTO, Long createur_id) throws IOException {
+        this.filename = uploadFicherOffreStageDTO.getFile().getOriginalFilename();
+        this.fileData = Base64.getEncoder().encodeToString(uploadFicherOffreStageDTO.getFile().getBytes());
+        this.setTitle(uploadFicherOffreStageDTO.getTitle());
+        this.setEntrepriseName(uploadFicherOffreStageDTO.getEntrepriseName());
+        this.setCreateur_id(createur_id);
     }
 
     //TODO: Ajouter les champs title et entrepriseName au front-end pour qu'on puisse les envoyer au DTO avec validation

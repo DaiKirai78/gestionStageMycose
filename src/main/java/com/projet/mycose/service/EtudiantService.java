@@ -5,12 +5,9 @@ import com.projet.mycose.modele.FichierOffreStage;
 import com.projet.mycose.modele.FormulaireOffreStage;
 import com.projet.mycose.modele.Programme;
 import com.projet.mycose.repository.EtudiantRepository;
-import com.projet.mycose.repository.FichierOffreStageRepository;
-import com.projet.mycose.repository.FormulaireOffreStageRepository;
 import com.projet.mycose.service.dto.EtudiantDTO;
 import com.projet.mycose.service.dto.FichierOffreStageDTO;
 import com.projet.mycose.service.dto.FormulaireOffreStageDTO;
-import com.projet.mycose.service.dto.OffresStagesDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,8 +15,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import static com.projet.mycose.service.dto.EtudiantDTO.toDTO;
 
 @Service
 @RequiredArgsConstructor
