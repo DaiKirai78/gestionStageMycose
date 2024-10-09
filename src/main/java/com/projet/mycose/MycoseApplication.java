@@ -18,11 +18,13 @@ public class MycoseApplication implements CommandLineRunner {
 	private final EtudiantService etudiantService;
 	private final GestionnaireStageService gestionnaireStageService;
 	private final UtilisateurRepository utilisateurRepository;
+	private final EmployeurService employeurService;
 
-	public MycoseApplication(EtudiantService etudiantService, GestionnaireStageService gestionnaireStageService, UtilisateurRepository utilisateurRepository) {
+	public MycoseApplication(EtudiantService etudiantService, GestionnaireStageService gestionnaireStageService, UtilisateurRepository utilisateurRepository, EmployeurService employeurService) {
         this.etudiantService = etudiantService;
 		this.gestionnaireStageService = gestionnaireStageService;
 		this.utilisateurRepository = utilisateurRepository;
+		this.employeurService = employeurService;
 	}
 
     public static void main(String[] args) {
@@ -37,5 +39,6 @@ public class MycoseApplication implements CommandLineRunner {
 		//enseignantService.creationDeCompte("Guillaume", "Courtemanche", "283-948-2738", "courtebite@gmail.com", "courte123$");
 		etudiantService.creationDeCompte("Guillaume", "Courtemanche", "283-948-2738", "gc@gmail.com", "courte123$", Programme.GENIE_LOGICIEL);
 		gestionnaireStageService.creationDeCompte("Elie", "Boucher-Gendron", "450-948-2738", "eliescrummaster@gmail.com", "Passw0rd");
+		employeurService.creationDeCompte("Jean", "Tremblay", "450-978-2738", "jt@gmail.com", "Jean123$", "Google");
 	}
 }
