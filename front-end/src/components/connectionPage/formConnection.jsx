@@ -61,7 +61,7 @@ const FormConnection = () => {
             if (res.status === REPSONSE_CODE_ACCEPTED) {
                 const data = await res.json();
                 localStorage.setItem('token', data.accessToken);
-                navigate("/accueil")
+                navigate("/accueil");
             } else if (res.status === ERROR_CODE_UNAUTHORIZED) {
                 setErrorKeyResponse("wrongEmailOrPassword")
             } else {

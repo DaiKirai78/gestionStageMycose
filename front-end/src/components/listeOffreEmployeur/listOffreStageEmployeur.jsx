@@ -7,7 +7,7 @@ const ListOffreStageEmployeur = ({data}) => {
 
     const [activeOffer, setActiveOffer] = useState(null);
 
-    useEffect(() => {        
+    useEffect(() => {
         if (!isMediumScreen()) {
             setActiveOffer(data[0]);
         }
@@ -23,7 +23,7 @@ const ListOffreStageEmployeur = ({data}) => {
                     key={index}
                     onClick={() => {setActiveOffer(offre)}}
                     className={`group relative px-6 flex items-center w-full  flex-col pb-3 pt-3 border rounded ${activeOffer === offre ? "border-deep-orange-200 cursor-default": "border-deep-orange-50 cursor-pointer"}`}>
-                        <div className={`absolute left-0 top-0 w-full h-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all z-10 ${activeOffer === offre ? "group-hover:opacity-0" : ""}`}>
+                        <div className={`absolute left-0 top-0 w-full h-full flex items-center justify-center opacity-0 transition-all z-10 ${activeOffer === offre ? "group-hover:opacity-0" : "group-hover:opacity-100"}`}>
                         <div className='absolute left-0 top-0 w-full h-full bg-orange opacity-10'></div>
                             <p className='text-2xl text-orange relative ease-in-out flex items-center gap-1'>Détails <BsArrowRight /></p>
                         </div>
@@ -59,7 +59,7 @@ const ListOffreStageEmployeur = ({data}) => {
     }
 
     return (
-        <div className='min-w-screen bg-orange-light flex gap-5 py-10'>
+        <div className='min-w-screen bg-orange-light flex gap-5 pt-10'>
             <div className='flex flex-col gap-2 w-full h-full overflow-auto'>
                 {
                     data.map((offre, index) => {

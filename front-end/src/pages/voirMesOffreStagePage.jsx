@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import TokenPageContainer from './tokenPageContainer';
 import ListOffreStageEmployeur from '../components/listeOffreEmployeur/listOffreStageEmployeur.jsx'
 import PageIsLoading from "../components/pageIsLoading.jsx"
+import { BsArrowLeft, BsArrowRight } from "react-icons/bs";
 
 const fakeData = [
     {
@@ -159,6 +160,15 @@ const VoirMesOffreStagePage = () => {
                         data.length > 0 ? <ListOffreStageEmployeur data={data} /> :
                             <h1>Aucune offre</h1>
                 }
+                </div>
+                <div className='w-full h-10 mb-12 flex justify-center'>
+                    <div className='w-10/12 sm:w-1/2 md:w-1/3 flex gap-1'>
+                        <button className='w-2/6 h-full bg-orange rounded cursor-pointer flex justify-center items-center'><BsArrowLeft /></button>
+                        <button className='w-1/6 h-full border rounded'>1</button>
+                        <button className='w-1/6 h-full border border-deep-orange-100 rounded'>17</button>
+                        <button className='w-1/6 h-full border rounded'>60</button>
+                        <button className='w-2/6 h-full bg-orange rounded cursor-pointer flex justify-center items-center'><BsArrowRight /></button>
+                    </div>
                 </div>
             </div>
         </TokenPageContainer>
