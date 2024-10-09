@@ -4,11 +4,16 @@ package com.projet.mycose.service.dto;
 
 import com.projet.mycose.modele.FormulaireOffreStage;
 import com.projet.mycose.modele.OffreStage;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @Getter
@@ -38,8 +43,15 @@ public class FormulaireOffreStageDTO extends OffreStageDTO {
     @Size(max = 500, message = "Description cannot exceed 500 characters.")
     private String description;
 
+    @CreationTimestamp
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
+
     @Builder
-    public FormulaireOffreStageDTO(Long id, String entrepriseName,  String employerName, String email, String website, String title,  String location, String salary, String description, Long createur_id) {
+    public FormulaireOffreStageDTO(Long id, String entrepriseName,  String employerName, String email, String website, String title,  String location, String salary, String description, Long createur_id, LocalDateTime createdAt, LocalDateTime updatedAt) {
         super(id, title, entrepriseName, createur_id);
         this.employerName = employerName;
         this.email = email;
@@ -47,6 +59,8 @@ public class FormulaireOffreStageDTO extends OffreStageDTO {
         this.location = location;
         this.salary = salary;
         this.description = description;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     public static FormulaireOffreStageDTO toDTO(FormulaireOffreStage formulaireOffreStage) {
@@ -61,6 +75,8 @@ public class FormulaireOffreStageDTO extends OffreStageDTO {
                 formulaireOffreStage.getLocation(),
                 formulaireOffreStage.getSalary(),
                 formulaireOffreStage.getDescription(),
-                formulaireOffreStage.getCreateur().getId());
+                formulaireOffreStage.getCreateur().getId(),
+                formulaireOffreStage.getCreatedAt(),
+                formulaireOffreStage.getUpdatedAt());
     }
 }

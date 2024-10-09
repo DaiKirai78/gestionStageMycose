@@ -2,6 +2,7 @@ package com.projet.mycose;
 
 import com.projet.mycose.modele.Etudiant;
 import com.projet.mycose.modele.FichierOffreStage;
+import com.projet.mycose.modele.FormulaireOffreStage;
 import com.projet.mycose.modele.Programme;
 import com.projet.mycose.service.EnseignantService;
 import com.projet.mycose.service.EmployeurService;
@@ -13,6 +14,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.time.LocalDateTime;
 
 @SpringBootApplication
 public class MycoseApplication implements CommandLineRunner {
@@ -40,28 +43,28 @@ public class MycoseApplication implements CommandLineRunner {
 
 		employeurService.creationDeCompte("Willy", "Wonka", "555-6565-9876", "wonka@mail.com", "Chocolatayy1", "Wonka INC");
 
-		FormulaireOffreStageDTO formulaireOffreStageDTO = new FormulaireOffreStageDTO(1L, "SUUPER", "Vicente", "vicen@mail.com", "www.vicen.ca", "Software Engineer", "Montrèal", "95 000", "J'adore ingénieur!", 1L);
-		FormulaireOffreStageDTO formulaireOffreStageDTO2 = new FormulaireOffreStageDTO(2L, "MMM", "Vicente2", "vicen@mail.com", "www.vicen2.ca", "Software Engineer 2", "Montrèal 2", "95 000", "J'adore ingénieur! 2", 1L);
-		FormulaireOffreStageDTO formulaireOffreStageDTO3 = new FormulaireOffreStageDTO(3L, "MMMSUUPER", "Vicente3", "vicen@mail.com", "www.vicen3.ca", "Software Engineer 3", "Montrèal 3", "16", "J'adore ingénieur! 3", 1L);
-		FormulaireOffreStageDTO formulaireOffreStageDTO4 = new FormulaireOffreStageDTO(4L, "SUUPER", "Vicente444", "vicenere@mail.com", "www.vicenrere.ca", "Software Engineerrr", "Montrèalll", "95 001", "J'adore ingénieur!!!", 1L);
-		FormulaireOffreStageDTO formulaireOffreStageDTO5 = new FormulaireOffreStageDTO(5L, "MMM", "Vicente2", "vicen@mail.com", "www.vicen2.ca", "Software Engineer 2", "Montrèal 2", "95 000", "J'adore ingénieur! 2", 1L);
-		FormulaireOffreStageDTO formulaireOffreStageDTO6 = new FormulaireOffreStageDTO(6L, "MMMSUUPER", "Vicente3", "vicen@mail.com", "www.vicen3.ca", "Software Engineer 3", "Montrèal 3", "16", "J'adore ingénieur! 3", 1L);
-		FormulaireOffreStageDTO formulaireOffreStageDTO7 = new FormulaireOffreStageDTO(7L, "SUUPER", "Vicente", "vicen@mail.com", "www.vicen.ca", "Software Engineer", "Montrèal", "95 000", "J'adore ingénieur!", 1L);
-		FormulaireOffreStageDTO formulaireOffreStageDTO8 = new FormulaireOffreStageDTO(8L, "MMM", "Vicente2", "vicen@mail.com", "www.vicen2.ca", "Software Engineer 2", "Montrèal 2", "95 000", "J'adore ingénieur! 2", 1L);
-		FormulaireOffreStageDTO formulaireOffreStageDTO9 = new FormulaireOffreStageDTO(9L, "MMMSUUPER", "Vicente3", "vicen@mail.com", "www.vicen3.ca", "Software Engineer 3", "Montrèal 3", "16", "J'adore ingénieur! 3", 1L);
-		FormulaireOffreStageDTO formulaireOffreStageDTO10 = new FormulaireOffreStageDTO(10L, "SUUPER", "Vicente", "vicen@mail.com", "www.vicen.ca", "Software Engineer", "Montrèal", "95 000", "J'adore ingénieur!", 1L);
-		FormulaireOffreStageDTO formulaireOffreStageDTO11 = new FormulaireOffreStageDTO(11L, "MMM", "Vicente2", "vicen@mail.com", "www.vicen2.ca", "Software Engineer 2", "Montrèal 2", "95 000", "J'adore ingénieur! 2", 1L);
-		FormulaireOffreStageDTO formulaireOffreStageDTO12 = new FormulaireOffreStageDTO(12L, "MMMSUUPER", "Vicente3", "vicen@mail.com", "www.vicen3.ca", "Software Engineer 3", "Montrèal 3", "16", "J'adore ingénieur! 3", 1L);
-		FormulaireOffreStageDTO formulaireOffreStageDTO13 = new FormulaireOffreStageDTO(13L, "SUUPER", "Vicente", "vicen@mail.com", "www.vicen.ca", "Software Engineer", "Montrèal", "95 000", "J'adore ingénieur!", 1L);
-		FormulaireOffreStageDTO formulaireOffreStageDTO14 = new FormulaireOffreStageDTO(14L, "MMM", "Vicente2", "vicen@mail.com", "www.vicen2.ca", "Software Engineer 2", "Montrèal 2", "95 000", "J'adore ingénieur! 2", 1L);
-		FormulaireOffreStageDTO formulaireOffreStageDTO15 = new FormulaireOffreStageDTO(15L, "MMMSUUPER", "Vicente3", "vicen@mail.com", "www.vicen3.ca", "Software Engineer 3", "Montrèal 3", "16", "J'adore ingénieur! 3", 1L);
-		FormulaireOffreStageDTO formulaireOffreStageDTO16 = new FormulaireOffreStageDTO(16L, "SUUPER", "Vicente", "vicen@mail.com", "www.vicen.ca", "Software Engineer", "Montrèal", "95 000", "J'adore ingénieur!", 1L);
-		FormulaireOffreStageDTO formulaireOffreStageDTO17 = new FormulaireOffreStageDTO(17L, "MMM", "Vicente2", "vicen@mail.com", "www.vicen2.ca", "Software Engineer 2", "Montrèal 2", "95 000", "J'adore ingénieur! 2", 1L);
-		FormulaireOffreStageDTO formulaireOffreStageDTO18 = new FormulaireOffreStageDTO(18L, "SUUPER", "Vicente", "vicen@mail.com", "www.vicen.ca", "Software Engineer", "Montrèal", "95 000", "J'adore ingénieur!", 1L);
-		FormulaireOffreStageDTO formulaireOffreStageDTO19 = new FormulaireOffreStageDTO(19L, "MMM", "Vicente2", "vicen@mail.com", "www.vicen2.ca", "Software Engineer 2", "Montrèal 2", "95 000", "J'adore ingénieur! 2", 1L);
-		FormulaireOffreStageDTO formulaireOffreStageDTO20 = new FormulaireOffreStageDTO(20L, "MMMSUUPER", "Vicente3", "vicen@mail.com", "www.vicen3.ca", "Software Engineer 3", "Montrèal 3", "16", "J'adore ingénieur! 3", 1L);
-		FormulaireOffreStageDTO formulaireOffreStageDTO21 = new FormulaireOffreStageDTO(21L, "SUUPER", "Vicente", "vicen@mail.com", "www.vicen.ca", "Software Engineer", "Montrèal", "95 000", "J'adore ingénieur!", 1L);
-		FormulaireOffreStageDTO formulaireOffreStageDTO22 = new FormulaireOffreStageDTO(22L, "MMM", "Vicente2", "vicen@mail.com", "www.vicen2.ca", "Software Engineer 2", "Montrèal 2", "95 000", "J'adore ingénieur! 2", 1L);
+		FormulaireOffreStageDTO formulaireOffreStageDTO = new FormulaireOffreStageDTO(1L, "SUUPER", "Vicente", "vicen@mail.com", "www.vicen.ca", "Software Engineer", "Montrèal", "95 000", "J'adore ingénieur!", 1L, LocalDateTime.now(), LocalDateTime.now());
+		FormulaireOffreStageDTO formulaireOffreStageDTO2 = new FormulaireOffreStageDTO(2L, "MMM", "Vicente2", "vicen@mail.com", "www.vicen2.ca", "Software Engineer 2", "Montrèal 2", "95 000", "J'adore ingénieur! 2", 1L, LocalDateTime.now(), LocalDateTime.now());
+		FormulaireOffreStageDTO formulaireOffreStageDTO3 = new FormulaireOffreStageDTO(3L, "MMMSUUPER", "Vicente3", "vicen@mail.com", "www.vicen3.ca", "Software Engineer 3", "Montrèal 3", "16", "J'adore ingénieur! 3", 1L, LocalDateTime.now(), LocalDateTime.now());
+		FormulaireOffreStageDTO formulaireOffreStageDTO4 = new FormulaireOffreStageDTO(4L, "SUUPER", "Vicente444", "vicenere@mail.com", "www.vicenrere.ca", "Software Engineerrr", "Montrèalll", "95 001", "J'adore ingénieur!!!", 1L, LocalDateTime.now(), LocalDateTime.now());
+		FormulaireOffreStageDTO formulaireOffreStageDTO5 = new FormulaireOffreStageDTO(5L, "MMM", "Vicente2", "vicen@mail.com", "www.vicen2.ca", "Software Engineer 2", "Montrèal 2", "95 000", "J'adore ingénieur! 2", 1L, LocalDateTime.now(), LocalDateTime.now());
+		FormulaireOffreStageDTO formulaireOffreStageDTO6 = new FormulaireOffreStageDTO(6L, "MMMSUUPER", "Vicente3", "vicen@mail.com", "www.vicen3.ca", "Software Engineer 3", "Montrèal 3", "16", "J'adore ingénieur! 3", 1L, LocalDateTime.now(), LocalDateTime.now());
+		FormulaireOffreStageDTO formulaireOffreStageDTO7 = new FormulaireOffreStageDTO(7L, "SUUPER", "Vicente", "vicen@mail.com", "www.vicen.ca", "Software Engineer", "Montrèal", "95 000", "J'adore ingénieur!", 1L, LocalDateTime.now(), LocalDateTime.now());
+		FormulaireOffreStageDTO formulaireOffreStageDTO8 = new FormulaireOffreStageDTO(8L, "MMM", "Vicente2", "vicen@mail.com", "www.vicen2.ca", "Software Engineer 2", "Montrèal 2", "95 000", "J'adore ingénieur! 2", 1L, LocalDateTime.now(), LocalDateTime.now());
+		FormulaireOffreStageDTO formulaireOffreStageDTO9 = new FormulaireOffreStageDTO(9L, "MMMSUUPER", "Vicente3", "vicen@mail.com", "www.vicen3.ca", "Software Engineer 3", "Montrèal 3", "16", "J'adore ingénieur! 3", 1L, LocalDateTime.now(), LocalDateTime.now());
+		FormulaireOffreStageDTO formulaireOffreStageDTO10 = new FormulaireOffreStageDTO(10L, "SUUPER", "Vicente", "vicen@mail.com", "www.vicen.ca", "Software Engineer", "Montrèal", "95 000", "J'adore ingénieur!", 1L, LocalDateTime.now(), LocalDateTime.now());
+		FormulaireOffreStageDTO formulaireOffreStageDTO11 = new FormulaireOffreStageDTO(11L, "MMM", "Vicente2", "vicen@mail.com", "www.vicen2.ca", "Software Engineer 2", "Montrèal 2", "95 000", "J'adore ingénieur! 2", 1L, LocalDateTime.now(), LocalDateTime.now());
+		FormulaireOffreStageDTO formulaireOffreStageDTO12 = new FormulaireOffreStageDTO(12L, "MMMSUUPER", "Vicente3", "vicen@mail.com", "www.vicen3.ca", "Software Engineer 3", "Montrèal 3", "16", "J'adore ingénieur! 3", 1L, LocalDateTime.now(), LocalDateTime.now());
+		FormulaireOffreStageDTO formulaireOffreStageDTO13 = new FormulaireOffreStageDTO(13L, "SUUPER", "Vicente", "vicen@mail.com", "www.vicen.ca", "Software Engineer", "Montrèal", "95 000", "J'adore ingénieur!", 1L, LocalDateTime.now(), LocalDateTime.now());
+		FormulaireOffreStageDTO formulaireOffreStageDTO14 = new FormulaireOffreStageDTO(14L, "MMM", "Vicente2", "vicen@mail.com", "www.vicen2.ca", "Software Engineer 2", "Montrèal 2", "95 000", "J'adore ingénieur! 2", 1L, LocalDateTime.now(), LocalDateTime.now());
+		FormulaireOffreStageDTO formulaireOffreStageDTO15 = new FormulaireOffreStageDTO(15L, "MMMSUUPER", "Vicente3", "vicen@mail.com", "www.vicen3.ca", "Software Engineer 3", "Montrèal 3", "16", "J'adore ingénieur! 3", 1L, LocalDateTime.now(), LocalDateTime.now());
+		FormulaireOffreStageDTO formulaireOffreStageDTO16 = new FormulaireOffreStageDTO(16L, "SUUPER", "Vicente", "vicen@mail.com", "www.vicen.ca", "Software Engineer", "Montrèal", "95 000", "J'adore ingénieur!", 1L, LocalDateTime.now(), LocalDateTime.now());
+		FormulaireOffreStageDTO formulaireOffreStageDTO17 = new FormulaireOffreStageDTO(17L, "MMM", "Vicente2", "vicen@mail.com", "www.vicen2.ca", "Software Engineer 2", "Montrèal 2", "95 000", "J'adore ingénieur! 2", 1L, LocalDateTime.now(), LocalDateTime.now());
+		FormulaireOffreStageDTO formulaireOffreStageDTO18 = new FormulaireOffreStageDTO(18L, "SUUPER", "Vicente", "vicen@mail.com", "www.vicen.ca", "Software Engineer", "Montrèal", "95 000", "J'adore ingénieur!", 1L, LocalDateTime.now(), LocalDateTime.now());
+		FormulaireOffreStageDTO formulaireOffreStageDTO19 = new FormulaireOffreStageDTO(19L, "MMM", "Vicente2", "vicen@mail.com", "www.vicen2.ca", "Software Engineer 2", "Montrèal 2", "95 000", "J'adore ingénieur! 2", 1L, LocalDateTime.now(), LocalDateTime.now());
+		FormulaireOffreStageDTO formulaireOffreStageDTO20 = new FormulaireOffreStageDTO(20L, "MMMSUUPER", "Vicente3", "vicen@mail.com", "www.vicen3.ca", "Software Engineer 3", "Montrèal 3", "16", "J'adore ingénieur! 3", 1L, LocalDateTime.now(), LocalDateTime.now());
+		FormulaireOffreStageDTO formulaireOffreStageDTO21 = new FormulaireOffreStageDTO(21L, "SUUPER", "Vicente", "vicen@mail.com", "www.vicen.ca", "Software Engineer", "Montrèal", "95 000", "J'adore ingénieur!", 1L, LocalDateTime.now(), LocalDateTime.now());
+		FormulaireOffreStageDTO formulaireOffreStageDTO22 = new FormulaireOffreStageDTO(22L, "MMM", "Vicente2", "vicen@mail.com", "www.vicen2.ca", "Software Engineer 2", "Montrèal 2", "95 000", "J'adore ingénieur! 2", 1L, LocalDateTime.now(), LocalDateTime.now());
 
 		offreStageService.saveForm(formulaireOffreStageDTO);
 		offreStageService.saveForm(formulaireOffreStageDTO2);

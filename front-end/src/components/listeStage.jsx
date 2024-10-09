@@ -5,14 +5,15 @@ import {useTranslation} from "react-i18next";
 const listeStage = () => {
 
     const [stages, setStages] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     const [recherche, setRecherche] = useState("");
-    const [motsContenantRechercheTitre, setMotsContenantRechercheTitre] = useState(null);
-    const [motsContenantRechercheEntreprise, setMotsContenantRechercheEntreprise] = useState(null);
     const [buttonDisabled, setButtonDisabled] = useState(true);
     const [nextPageDisabled, setNextPageDisabled] = useState(false);
-    const [previousPageDisabled, setPreviousPageDisabled] = useState(false);
+    const [previousPageDisabled, setPreviousPageDisabled] = useState(true);
 
+    const [isSearching, setIsSearching] = useState(false);
+    const [recherchePageActuelle, setRecherchePageActuelle] = useState(0);
 
     const [stageClique, setStageClique] = useState(null);
     const [unStageEstClique, setUnStageEstClique] = useState(false);
@@ -21,7 +22,7 @@ const listeStage = () => {
     const [pageActuelle, setPageActuelle] = useState(0);
     const [nombreDePage, setNombreDePage] = useState(0);
 
-    const { t } = useTranslation();
+    const {t} = useTranslation();
 
     let localhost = "http://localhost:8080/";
     let urlGetFormulaireStage = "etudiant/getStages?pageNumber=";
@@ -31,11 +32,18 @@ const listeStage = () => {
     let token = localStorage.getItem("token");
 
     useEffect(() => {
-        fetchStages();
+        fetchStages(0);
+    }, []);
+
+    useEffect(() => {
         fetchNombrePages();
-        isThereANextPage();
-        isItTheFirstPage();
-    }, [pageActuelle]);
+    }, []);
+
+    useEffect(() => {
+        isThereANextPage(false);
+        isItTheFirstPage(false);
+    }, [nombreDePage]);
+
 
     const fetchNombrePages = async () => {
         try {
@@ -46,28 +54,33 @@ const listeStage = () => {
                 }
             });
             setNombreDePage(response.data);
-            console.log("Nombre de page : " + response.data);
             return response.data;
         } catch (error) {
             console.error("Erreur lors de la récupération du nombre de page:", error);
         }
     };
-    const fetchStages = async () => {
+    const fetchStages = async (pageNumber) => {
+        setLoading(true);
         try {
-            const responseForms = await axios.post(localhost + urlGetFormulaireStage + pageActuelle, {}, {
+            const responseForms = await axios.post(localhost + urlGetFormulaireStage + pageNumber, {}, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 },
+                params: {
+                    pageNumber,
+                }
             });
             setStages(responseForms.data);
+            setLoading(false);
             return responseForms.data;
         } catch (error) {
             console.error("Erreur lors de la récupération des stages:", error);
+            setLoading(false);
         }
     };
-    const fetchStagesByRecherche = async () => {
-        let pageNumber = 0;
+    const fetchStagesByRecherche = async (pageNumber, doesItComeFromUseEffect) => {
+        setLoading(true);
         try {
             const responseRecherche = await axios.post(localhost + urlRechercheOffres, {}, {
                 headers: {
@@ -79,11 +92,13 @@ const listeStage = () => {
                     recherche
                 }
             });
-            console.log("Voici les infos : " + responseRecherche.data);
-            setStages(responseRecherche.data);
+            if (!doesItComeFromUseEffect)
+                setStages(responseRecherche.data);
+            setLoading(false);
             return responseRecherche.data;
         } catch (error) {
             console.error("Erreur lors de la récupération des stages recherchés:", error);
+            setLoading(false);
         }
     };
 
@@ -91,8 +106,6 @@ const listeStage = () => {
         setUnStageEstClique(true);
         setStageClique(stage);
     }
-
-    console.log(stageClique);
 
     function activerDesactiverRecherche(e) {
         if (e.target.value.length > 0)
@@ -105,18 +118,24 @@ const listeStage = () => {
         setRecherche(e.target.value)
     }
 
-    function rechercher(e) {
+    async function rechercher(e) {
         e.preventDefault();
 
-        if (recherche !== "")
+        if (recherche !== "") {
             setUneRechercheEstFaite(true);
-
-        const stagesDetails = fetchStagesByRecherche();
-        let mapStages = stageEtNbreDeCorrespondances();
-
-        const mapStageSort = [...mapStages.entries()].sort((a, b) => b[1] - a[1]).map(([key, value]) => key);
-        trierStages(stagesDetails, mapStageSort);
+            setIsSearching(true);
+            setRecherchePageActuelle(0);
+            setStages([]);
+            await fetchStagesByRecherche(0, false);
+        }
     }
+
+    useEffect(() => {
+        if (isSearching) {
+            isThereANextPage(false);
+            isItTheFirstPage(false);
+        }
+    }, [isSearching]);
 
     const handleKeyDown = (e) => {
         if (e.key === 'Enter' && recherche !== "") {
@@ -124,138 +143,98 @@ const listeStage = () => {
         }
     };
 
-    function stageEtNbreDeCorrespondances() {
-        let mapStages = new Map();
-        let arrayMotsTrouvesTitre = [];
-        let arrayMotsTrouvesEntreprise = [];
-        Object.entries(stages).forEach(([key, stage]) => {
-            const arrayofStringTitre = stage.titre.match(/\b[\wÀ-ÿ]+\b/gu);
-            const arrayofStringEntreprise = stage.entreprise.match(/\b[\wÀ-ÿ]+\b/gu);
-            const arrayofStringRecherche = recherche.match(/\b[\wÀ-ÿ]+\b/gu);
-
-            rechercheStageParTitre(stage, mapStages, arrayofStringRecherche, arrayofStringTitre, arrayMotsTrouvesTitre);
-            rechercheStageParEntreprise(stage, mapStages, arrayofStringRecherche, arrayofStringEntreprise, arrayMotsTrouvesEntreprise);
-        });
-
-        setMotsContenantRechercheTitre(arrayMotsTrouvesTitre);
-        setMotsContenantRechercheEntreprise(arrayMotsTrouvesEntreprise);
-        return mapStages;
-    }
-
-    function rechercheStageParTitre(stage, mapStages, arrayofStringRecherche, arrayofStringTitre, arrayMotsTrouvesTitre) {
-        let nbreDeMots = 0;
-        for (let i = 0; i < arrayofStringTitre.length; i++) {
-            for (let j = 0; j < arrayofStringRecherche.length; j++) {
-                if (arrayofStringRecherche[j].toLowerCase().trim() === arrayofStringTitre[i].toLowerCase()) {
-                    nbreDeMots++;
-                    arrayMotsTrouvesTitre.push(arrayofStringTitre[i].toLowerCase().trim());
-                }
-            }
-            mapStages.set(stage.titre, nbreDeMots);
-        }
-    }
-
-    function rechercheStageParEntreprise(stage, mapStages, arrayofStringRecherche, arrayofStringEntreprise, arrayMotsTrouvesEntreprise) {
-        let nbreDeMots = 0;
-        for (let i = 0; i < arrayofStringEntreprise.length; i++) {
-            for (let j = 0; j < arrayofStringRecherche.length; j++) {
-                if (arrayofStringRecherche[j].toLowerCase().trim() === arrayofStringEntreprise[i].toLowerCase()) {
-                    nbreDeMots++;
-                    arrayMotsTrouvesEntreprise.push(arrayofStringEntreprise[i].toLowerCase().trim())
-                }
-            }
-            mapStages.set(stage.entreprise, nbreDeMots);
-        }
-    }
-
-    function trierStages(stagesDetails, mapStageSort) {
-        stagesDetails.then(function (resultat) {
-            const titresAjoutes = new Set();
-
-            const resultatsFinals = mapStageSort
-                .map(titreOuEntreprise =>
-                    resultat.find(stage => {
-                        const estCorrespondant = stage.titre === titreOuEntreprise || stage.entreprise === titreOuEntreprise;
-                        if (estCorrespondant && !titresAjoutes.has(stage.titre)) {
-                            titresAjoutes.add(stage.titre);
-                            return stage;
-                        }
-                        return null;
-                    })
-                )
-                .filter(Boolean);
-
-            setStages(resultatsFinals);
-        });
-    }
-
-    const surlignerRecherche = (texte, motsRecherche) => {
-        if (!motsRecherche || motsRecherche.length === 0) return texte;
-
-        const regex = new RegExp(`(${motsRecherche.join('|')})`, "gi");
-        const parties = texte.split(regex);
-
-        return (
-            <>
-                {parties.map((partie, index) =>
-                    regex.test(partie) ? (
-                        <span key={index} style={{
-                            backgroundColor: "#ffd0ae",
-                            paddingRight: "2px",
-                            paddingLeft: "2px",
-                            borderRadius: "8px"
-                        }}>
-                        {partie}
-                    </span>
-                    ) : (
-                        <span key={index}>{partie}</span>
-                    )
-                )}
-            </>
-        );
-    };
-
     function supprimerRecherche() {
         setUneRechercheEstFaite(false);
         setRecherche('');
-        setMotsContenantRechercheTitre(null);
-        setMotsContenantRechercheEntreprise(null);
-        setButtonDisabled(true);
-        fetchStages();
+        setIsSearching(false);
+        setRecherchePageActuelle(0);
+        setPageActuelle(0);
+        fetchStages(0);
     }
 
-    function isThereANextPage() {
-        if (pageActuelle === nombreDePage) {
-            setNextPageDisabled(true);
-            return false;
+    async function isThereANextPage(doesItComeFromNextPage) {
+        if (isSearching) {
+            const response = await fetchStagesByRecherche(recherchePageActuelle + 1, false);
+            if (!doesItComeFromNextPage)
+                await fetchStagesByRecherche(recherchePageActuelle, false);
+            return response.length !== 0;
         } else {
-            setNextPageDisabled(false);
-            return true;
+            if (!doesItComeFromNextPage)
+                await fetchStages(recherchePageActuelle);
+            return pageActuelle < nombreDePage - 1;
         }
     }
 
-    function isItTheFirstPage() {
-        if (pageActuelle === 0) {
-            setPreviousPageDisabled(true);
-            return true;
+    async function isItTheFirstPage(doesItComeFromPreviousPage) {
+        if (isSearching) {
+            const response = await fetchStagesByRecherche(recherchePageActuelle - 1, false)
+            if (!doesItComeFromPreviousPage)
+                await fetchStagesByRecherche(recherchePageActuelle, false);
+            return response.length === 0;
         } else {
-            setPreviousPageDisabled(false);
-            return false;
+            if (!doesItComeFromPreviousPage)
+                await fetchStages(recherchePageActuelle);
+            return pageActuelle === 0;
         }
     }
 
-    function nextPage() {
-        if (isThereANextPage() === true) {
-            setPageActuelle(pageActuelle + 1);
-            fetchStages();
+    async function nextPage() {
+        let nextPage = true;
+        const hasNextPage = await isThereANextPage(nextPage);
+        if (hasNextPage) {
+            if (isSearching) {
+                setRecherchePageActuelle((prevPage) => {
+                    const newPage = prevPage + 1;
+                    fetchStagesByRecherche(newPage, false);
+                    return newPage;
+                });
+            } else {
+                setPageActuelle((prevPage) => {
+                    const newPage = prevPage + 1;
+                    fetchStages(newPage);
+                    return newPage;
+                });
+            }
         }
     }
 
-    function previousPage() {
-        if (isItTheFirstPage() === false) {
-            setPageActuelle(pageActuelle - 1);
-            fetchStages();
+    async function previousPage() {
+        let previousPage = true;
+        let isFirstPage = await isItTheFirstPage(previousPage);
+        if (!isFirstPage) {
+            if (isSearching) {
+                setRecherchePageActuelle((prevPage) => {
+                    const newPage = prevPage - 1;
+                    fetchStagesByRecherche(newPage, false);
+                    return newPage;
+                });
+            } else {
+                setPageActuelle((prevPage) => {
+                    const newPage = prevPage - 1;
+                    fetchStages(newPage);
+                    return newPage;
+                });
+            }
         }
+    }
+
+    useEffect(() => {
+        const verifierBoutonsPagination = async () => {
+            if (isSearching) {
+                const hasNextPage = await fetchStagesByRecherche(recherchePageActuelle + 1, true);
+                setNextPageDisabled(hasNextPage.length === 0);
+                setPreviousPageDisabled(recherchePageActuelle <= 0);
+            } else {
+                setNextPageDisabled(pageActuelle >= nombreDePage - 1);
+                setPreviousPageDisabled(pageActuelle <= 0);
+            }
+        };
+
+        verifierBoutonsPagination();
+    }, [pageActuelle, recherchePageActuelle, nombreDePage, isSearching]);
+
+    function formaterDate(dateAFormater) {
+        return new Date(dateAFormater).toISOString().split('T')[0];
     }
 
     return (
@@ -263,7 +242,8 @@ const listeStage = () => {
             <div className="w-2/3 lg:w-1/2">
                 <h1 className="pt-12 text-3xl md:text-4xl text-pretty font-accueilTitreFont font-bold text-black">{t("titrePageAfficherOffreStage")}</h1>
                 <div className="flex flex-row">
-                    <input type="search" placeholder={t("placeholderRechercherUnStage")} id="searchInput" value={recherche}
+                    <input type="search" placeholder={t("placeholderRechercherUnStage")} id="searchInput"
+                           value={recherche}
                            onChange={(e) => {
                                activerDesactiverRecherche(e);
                                changeRechercheStage(e);
@@ -296,12 +276,13 @@ const listeStage = () => {
                                          onClick={() => elementStageClique(stage)}>
                                         <div>
                                             <h3 key={index}
-                                                className="text-black text-xl pl-2 max-w-max pr-2">{surlignerRecherche(stage.title, motsContenantRechercheTitre)}</h3>
-                                            <h4 className="text-lg pl-2 max-w-max pr-2">{surlignerRecherche(stage.entrepriseName, motsContenantRechercheEntreprise)}</h4>
-                                            <h4 className="pl-2 max-w-max pr-2">{stage.created_at}</h4>
+                                                className="text-black text-xl pl-2 max-w-max pr-2">{stage.title}</h3>
+                                            <h4 className="text-lg pl-2 max-w-max pr-2">{stage.entrepriseName}</h4>
+                                            <h4 className="pl-2 max-w-max pr-2">{formaterDate(stage.createdAt)}</h4>
                                         </div>
                                         <button
-                                            className="bg-orange text-white md:absolute md:bottom-2 lg:bottom-12 lg:top-4 md:right-2 px-4 md:px-8 py-2 rounded-2xl mt-3 lg:mt-0 w-1/2 md:w-1/3 lg:w-36 hover:bg-orange-dark shadow-md">{t("boutonAppliquerAUnStage")}
+                                            className="bg-orange text-white md:absolute md:bottom-2 lg:bottom-12 lg:top-4 md:right-2 px-4 md:px-8 py-2 rounded-2xl mt-3 lg:mt-0 w-1/2 md:w-1/3 lg:w-36 hover:bg-orange-dark shadow-md"
+                                            onClick={(e) => e.stopPropagation()}>{t("boutonAppliquerAUnStage")}
                                         </button>
                                     </div>
                                     <hr className="bg-deep-orange-100"/>
@@ -311,15 +292,23 @@ const listeStage = () => {
                             <h3 className="text-xl mt-5">{t("messageAucunStageDisponible")}</h3>
                     }
                 </div>
-                <div className="text-center mb-7">
-                    <button
-                        className="decoration-0 bg-orange pt-0 pb-1 pl-4 pr-4 mr-2 hover:bg-amber-900 justify-center items-center w-10 text-xl shadow-md disabled:bg-orange disabled:opacity-70"
-                        disabled={previousPageDisabled} onClick={() => previousPage()}>&#8249;</button>
-                    {pageActuelle + 1}
-                    <button
-                        className="decoration-0 bg-orange pt-0 pb-1 pl-4 pr-4 ml-2 hover:bg-amber-900 justify-center items-center w-10 text-xl shadow-md disabled:bg-orange disabled:opacity-70"
-                        disabled={nextPageDisabled} onClick={() => nextPage()}>&#8250;</button>
-                </div>
+                {loading ? (
+                    <div></div>
+                ) : (
+                    <div className="text-center mb-28">
+                        <button
+                            className="decoration-0 bg-orange pt-0 pb-1 pl-4 pr-4 mr-2 hover:bg-amber-900 justify-center items-center w-10 text-xl shadow-md disabled:bg-orange disabled:opacity-70"
+                            disabled={previousPageDisabled} onClick={() => previousPage()}>&#8249;</button>
+                        {
+                            isSearching ?
+                                recherchePageActuelle + 1 :
+                                pageActuelle + 1
+                        }
+                        <button
+                            className="decoration-0 bg-orange pt-0 pb-1 pl-4 pr-4 ml-2 hover:bg-amber-900 justify-center items-center w-10 text-xl shadow-md disabled:bg-orange disabled:opacity-70"
+                            disabled={nextPageDisabled} onClick={() => nextPage()}>&#8250;</button>
+                    </div>)
+                }
             </div>
             {
                 //stageClique.type === "fichier" ? //TODO : AJOUTER LE TYPE DE FICHIER SELON SI C'EST FILE OU FORM
@@ -341,8 +330,10 @@ const listeStage = () => {
                                     className="text-gray-600 hover:text-gray-900 transition-colors duration-200 focus:outline-none"
                                     onClick={() => setUnStageEstClique(false)}
                                 >
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none"
+                                         viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                              d="M6 18L18 6M6 6l12 12"/>
                                     </svg>
                                 </button>
                             </div>
@@ -386,7 +377,7 @@ const listeStage = () => {
                                         )}
 
                                         <p className="text-gray-400 text-sm">
-                                            {t("publieLe") + new Date(stageClique.create_at).toLocaleDateString()}
+                                            {t("publieLe") + formaterDate(stageClique.createdAt)}
                                         </p>
                                     </>
                                 ) : (
