@@ -91,5 +91,15 @@
     "next": "Next",
     "ErrorAcceptingCV": "Error accepting CV",
     "ErrorRefusingCV": "Error refusing CV",
-    "noCVFound": "No CV found"
+    "noCVFound": "No CV found",
+    "errorRetrievingEmployeurs": "Error retrieving employers",
+    "clickEmployeurOffreStage": "Click on an internship offer to view and validate it",
+    "waitingInternship": "Internship offer waiting",
+    "internshipOfferList": "List of internship offers",
+    "noInternshipWaiting": "No internship offer waiting",
+    "errorAcceptingInternship": "Error accepting the internship offer",
+    "errorRefusingInternship": "Error refusing the internship offer",
+    "noInternshipFound": "No internship offer found",
+    "employerInternship": "Employer internship offer",
+    "acceptOrRefuseInternship": "Accept or refuse the internship offer"
 }

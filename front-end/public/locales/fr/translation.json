@@ -91,5 +91,15 @@
     "next": "Suivant",
     "ErrorAcceptingCV": "Erreur lors de l'acceptation du CV",
     "ErrorRefusingCV": "Erreur lors du refus du CV",
-    "noCVFound": "Aucun CV trouvé"
+    "noCVFound": "Aucun CV trouvé",
+    "errorRetrievingEmployeurs": "Erreur lors de la récupération des employeurs",
+    "clickEmployeurOffreStage": "Cliquer sur un offre de stage pour la voir et la valider",
+    "waitingInternship": "Offre de stage en attente",
+    "internshipOfferList": "Liste des offres de stage",
+    "noInternshipWaiting": "Aucune offre de stage en attente",
+    "errorAcceptingInternship": "Erreur lors de l'acceptation de l'offre de stage",
+    "errorRefusingInternship": "Erreur lors du refus de l'offre de stage",
+    "noInternshipFound": "Aucune offre de stage trouvée",
+    "employerInternship": "Offre de stage de l'employeur",
+    "acceptOrRefuseInternship": "Accepter ou refuser l'offre de stage"
 }
