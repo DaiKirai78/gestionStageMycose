@@ -14,11 +14,6 @@ import lombok.Setter;
 @Setter
 public class FormulaireOffreStageDTO extends OffreStageDTO {
 
-    //private Long id;
-
-    @NotBlank(message = "Enterprise name is required.")
-    private String entrepriseName;
-
     @NotBlank(message = "Employer name is required.")
     private String employerName;
 
@@ -30,10 +25,6 @@ public class FormulaireOffreStageDTO extends OffreStageDTO {
     @Pattern(regexp = "^(https?:\\/\\/)?(www\\.)?([a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,}(\\/[^\\s]*)?$",
             message = "Invalid website URL.")
     private String website;
-
-    @NotBlank(message = "Title is required.")
-    @Size(max = 100, message = "Title cannot exceed 100 characters.")
-    private String title;
 
     @NotBlank(message = "Location is required.")
     private String location;
@@ -47,16 +38,17 @@ public class FormulaireOffreStageDTO extends OffreStageDTO {
     private String description;
 
     @Builder
-    public FormulaireOffreStageDTO(Long id, String entrepriseName, String employerName, String email, String website, String title, String location, String salary, String description) {
+    public FormulaireOffreStageDTO(Long id, String employerName, String email, String website, String location, String salary, String description, String title, String entrepriseName, Long createur_id) {
         super(id);
-        this.entrepriseName = entrepriseName;
         this.employerName = employerName;
         this.email = email;
         this.website = website;
-        this.title = title;
         this.location = location;
         this.salary = salary;
         this.description = description;
+        this.setTitle(title);
+        this.setEntrepriseName(entrepriseName);
+        this.setCreateur_id(createur_id);
     }
 
     public static FormulaireOffreStageDTO toDTO(FormulaireOffreStage formulaireOffreStage) {
@@ -70,6 +62,7 @@ public class FormulaireOffreStageDTO extends OffreStageDTO {
                 .location(formulaireOffreStage.getLocation())
                 .salary(formulaireOffreStage.getSalary())
                 .location(formulaireOffreStage.getLocation())
+                .createur_id(formulaireOffreStage.getCreateur().getId())
                 .build();
     }
 }

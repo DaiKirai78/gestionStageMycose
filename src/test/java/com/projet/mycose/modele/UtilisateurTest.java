@@ -33,7 +33,7 @@ class UtilisateurTest {
                 .numeroDeTelephone("0987654321")
                 .courriel("employer@example.com")
                 .motDePasse("employerPass")
-                .nomOrganisation("TechCorp")
+                .entrepriseName("TechCorp")
                 .build();
     }
 
