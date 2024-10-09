@@ -1,10 +1,12 @@
 package com.projet.mycose.controller;
 
+import com.projet.mycose.modele.FichierCV;
+import com.projet.mycose.modele.OffreStage;
 import com.projet.mycose.service.OffreStageService;
-import com.projet.mycose.service.dto.FichierOffreStageDTO;
-import com.projet.mycose.service.dto.FormulaireOffreStageDTO;
+import com.projet.mycose.service.dto.*;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -27,10 +30,11 @@ public class OffreStageController {
     }
 
 
-    @PostMapping(value = "/upload-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) {
+    @PostMapping(value = "/upload-file", consumes = "multipart/form-data")
+    public ResponseEntity<?> uploadFile(@Valid @ModelAttribute UploadFicherOffreStageDTO uploadFicherOffreStageDTO,  @RequestHeader("Authorization") String token) {
         try {
-            FichierOffreStageDTO savedFileDTO = offreStageService.saveFile(file);
+
+            FichierOffreStageDTO savedFileDTO = offreStageService.saveFile(uploadFicherOffreStageDTO, token);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(savedFileDTO);
         } catch (ConstraintViolationException e) {
@@ -48,9 +52,51 @@ public class OffreStageController {
 
     @PostMapping("/upload-form")
     public ResponseEntity<FormulaireOffreStageDTO> uploadForm(
-            @Valid @RequestBody FormulaireOffreStageDTO formulaireOffreStageDTO) {
-        FormulaireOffreStageDTO savedForm = offreStageService.saveForm(formulaireOffreStageDTO);
+            @Valid @RequestBody FormulaireOffreStageDTO formulaireOffreStageDTO, @RequestHeader("Authorization") String token) {
+        FormulaireOffreStageDTO savedForm = offreStageService.saveForm(formulaireOffreStageDTO, token);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedForm);
+    }
+
+    @GetMapping("/waiting")
+    public ResponseEntity<List<OffreStageAvecUtilisateurInfoDTO>> getWaitingOffreStage(@RequestParam int page) {
+        List<OffreStageAvecUtilisateurInfoDTO> offreStagesDTOList = offreStageService.getWaitingOffreStage(page);
+        return ResponseEntity.status(HttpStatus.OK).body(offreStagesDTOList);
+    }
+
+    @GetMapping("/pages")
+    public ResponseEntity<Integer> getAmountOfPages() {
+        return ResponseEntity.status((HttpStatus.OK)).body(offreStageService.getAmountOfPages());
+    }
+
+    @PatchMapping("/accept")
+    public ResponseEntity<?> acceptOffreStage(@RequestParam Long id, @RequestBody String description) {
+        try {
+            offreStageService.changeStatus(id, OffreStage.Status.ACCEPTED, description);
+            return ResponseEntity.ok().build();
+        } catch (ChangeSetPersister.NotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+    @PatchMapping("/refuse")
+    public ResponseEntity<?> refuseOffreStage(@RequestParam Long id, @RequestBody String description) {
+        try {
+            offreStageService.changeStatus(id, OffreStage.Status.REFUSED, description);
+            return ResponseEntity.ok().build();
+        } catch (ChangeSetPersister.NotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/id/{id}")
+    public ResponseEntity<OffreStageAvecUtilisateurInfoDTO> getOffreStage(@PathVariable Long id) {
+        OffreStageAvecUtilisateurInfoDTO offreStageDTO = offreStageService.getOffreStageWithUtilisateurInfo(id);
+        return ResponseEntity.status(HttpStatus.OK).body(offreStageDTO);
+    }
+
+    @GetMapping("/my-offres")
+    public ResponseEntity<List<OffreStageDTO>> getMyOffres(@RequestHeader("Authorization") String token) {
+        List<OffreStageDTO> offreStageDTOList = offreStageService.getAvailableOffreStagesForEtudiant(token);
+        return ResponseEntity.status(HttpStatus.OK).body(offreStageDTOList);
     }
 
 }
