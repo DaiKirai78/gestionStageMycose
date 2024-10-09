@@ -162,4 +162,51 @@ public class EtudiantControllerTest {
 
     }
 
+    @Test
+    public void testRechercheOffre_Success() throws Exception{
+        //Arrange
+
+        FormulaireOffreStageDTO mockFormulaire = new FormulaireOffreStageDTO(
+                1L,
+                "unNomEntreprise",
+                "unNomEmployeur",
+                "unEmail@mail.com",
+                "unSite.com",
+                "unTitreStage",
+                "uneLcalisation",
+                "1000",
+                "uneDescription",
+                1L
+        );
+
+        List<OffreStageDTO> mockListeOffres = new ArrayList<>();
+        mockListeOffres.add(mockFormulaire);
+        when(etudiantService.getStagesByRecherche("tokenValide", 0, "uneRecherche")).thenReturn(mockListeOffres);
+
+        //Act & Assert
+        mockMvc.perform(post("/etudiant/recherche-offre")
+                        .header("token", "tokenValide")
+                        .param("pageNumber", String.valueOf(0))
+                        .param("recherche", "uneRecherche")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isAccepted())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].id").value(1L));
+    }
+
+    @Test
+    public void testRechercheOffre_Error() throws Exception {
+        //Arrange
+        when(etudiantService.getStagesByRecherche("token", 0, "uneRecherche")).thenThrow(new RuntimeException());
+
+
+        //Act & Assert
+        mockMvc.perform(post("/etudiant/recherche-offre")
+                        .header("token", "unToken")
+                        .param("pageNumber", String.valueOf(0))
+                        .param("recherche", "uneRecherche")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+    }
+
 }
