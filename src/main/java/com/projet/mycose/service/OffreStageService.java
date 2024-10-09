@@ -156,18 +156,18 @@ public class OffreStageService {
         return convertToDTO(savedForm);
     }
 
-    @Transactional
-    public void assignerOffre(long etudiantId, long offreStageId) {
-        if(!etudiantIdEtOffreStageIdValides(etudiantId, offreStageId)) {
-            return;
-        }
-
-        Etudiant etudiant = (Etudiant) utilisateurRepository.findById(etudiantId).get();
-        OffreStage offreStage = offreStageRepository.findById(offreStageId).get();
-        etudiant.getOffres().add(offreStage);
-        offreStage.getEtudiants().add(etudiant);
-        utilisateurRepository.save(etudiant);
-    }
+//    @Transactional
+//    public void assignerOffre(long etudiantId, long offreStageId) {
+//        if(!etudiantIdEtOffreStageIdValides(etudiantId, offreStageId)) {
+//            return;
+//        }
+//
+//        Etudiant etudiant = (Etudiant) utilisateurRepository.findById(etudiantId).get();
+//        OffreStage offreStage = offreStageRepository.findById(offreStageId).get();
+//        etudiant.getOffres().add(offreStage);
+//        offreStage.getEtudiants().add(etudiant);
+//        utilisateurRepository.save(etudiant);
+//    }
 
     private boolean etudiantIdEtOffreStageIdValides(long etudiantId, long offreStageId) {
         if(!utilisateurRepository.existsById(etudiantId) || !offreStageRepository.existsById(offreStageId)){

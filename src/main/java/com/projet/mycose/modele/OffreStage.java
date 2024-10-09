@@ -35,8 +35,9 @@ public abstract class OffreStage {
     private OffreStage.Status status;
 
     private String statusDescription;
-    @ManyToMany(cascade = CascadeType.ALL)
-    private Set<Etudiant> etudiants;
+
+    @OneToMany(mappedBy = "offreStage", cascade = CascadeType.ALL)
+    private List<EtudiantOffreStagePrivee> offresStagePrivees;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "createur_id")

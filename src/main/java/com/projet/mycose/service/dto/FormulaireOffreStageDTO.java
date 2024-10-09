@@ -50,7 +50,7 @@ public class FormulaireOffreStageDTO extends OffreStageDTO {
     }
 
     public static FormulaireOffreStageDTO toDTO(FormulaireOffreStage formulaireOffreStage) {
-        System.out.println(formulaireOffreStage.getTitle());
+        //System.out.println(formulaireOffreStage.getId());
         return new FormulaireOffreStageDTO(
                 formulaireOffreStage.getId(),
                 formulaireOffreStage.getEntrepriseName(),

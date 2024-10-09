@@ -40,10 +40,10 @@ public class EtudiantController {
         }
 
     @PostMapping("/getStages")
-    public ResponseEntity<List<OffreStageDTO>> getStages(HttpServletRequest request, @RequestParam int pageNumber) {
+    public ResponseEntity<List<OffreStageDTO>> getStages(@RequestHeader String token, @RequestParam int pageNumber) {
         try {
             return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
-                    etudiantService.getStages(request.getHeader("Authorization"), pageNumber));
+                    etudiantService.getStages(token, pageNumber));
             //return ResponseEntity.status(HttpStatus.OK).body(etudiantService.getStages(token));
         } catch (Exception e) {
             return ResponseEntity.noContent().build();
@@ -51,22 +51,20 @@ public class EtudiantController {
     }
 
     @GetMapping("/pages")
-    public ResponseEntity<Integer> getAmountOfPages(HttpServletRequest request) {
-        //return ResponseEntity.status((HttpStatus.OK)).body(etudiantService.getAmountOfPages(idEtudiant));
+    public ResponseEntity<Integer> getAmountOfPages(@RequestHeader String token) {
         try {
             return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
-                    etudiantService.getAmountOfPages(request.getHeader("Authorization")));
-            //return ResponseEntity.status(HttpStatus.OK).body(etudiantService.getStages(token));
+                    etudiantService.getAmountOfPages(token));
         } catch (Exception e) {
             return ResponseEntity.noContent().build();
         }
     }
 
     @PostMapping("/recherche-offre")
-    public ResponseEntity<List<OffreStageDTO>> rechercherOffres(HttpServletRequest request , @RequestParam int pageNumber, @RequestParam String recherche) {
+    public ResponseEntity<List<OffreStageDTO>> rechercherOffres(@RequestHeader String token, @RequestParam int pageNumber, @RequestParam String recherche) {
         try {
             return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
-                    etudiantService.getStagesByRecherche(request.getHeader("Authorization"), pageNumber, recherche));
+                    etudiantService.getStagesByRecherche(token, pageNumber, recherche));
         } catch (Exception e) {
             return ResponseEntity.noContent().build();
         }

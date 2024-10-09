@@ -58,7 +58,7 @@ public class EtudiantService {
         System.out.println(idEtudiant);
 
         Page<OffreStage> offresRetourneeEnPages = offreStageRepository.findOffresByEtudiantId(idEtudiant, pageRequest);
-        //System.out.println(offresRetourneeEnPages.getContent());
+        System.out.println(offresRetourneeEnPages.getContent());
         if(offresRetourneeEnPages.isEmpty()) {
             System.out.println("null?");
             return null;
