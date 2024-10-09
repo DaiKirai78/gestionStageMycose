@@ -3,10 +3,8 @@ package com.projet.mycose;
 import com.projet.mycose.modele.Etudiant;
 import com.projet.mycose.modele.FichierOffreStage;
 import com.projet.mycose.modele.Programme;
-import com.projet.mycose.service.EnseignantService;
-import com.projet.mycose.service.EmployeurService;
-import com.projet.mycose.service.EtudiantService;
-import com.projet.mycose.service.OffreStageService;
+import com.projet.mycose.repository.UtilisateurRepository;
+import com.projet.mycose.service.*;
 import com.projet.mycose.service.dto.EtudiantDTO;
 import com.projet.mycose.service.dto.FormulaireOffreStageDTO;
 import org.springframework.boot.CommandLineRunner;
@@ -17,10 +15,15 @@ import org.springframework.web.multipart.MultipartFile;
 @SpringBootApplication
 public class MycoseApplication implements CommandLineRunner {
 
-	public MycoseApplication(EnseignantService enseignantService, EtudiantService etudiantService, OffreStageService offreStageService, EmployeurService employeurService) {
-		this.enseignantService = enseignantService;
-		this.etudiantService = etudiantService;
-		this.offreStageService = offreStageService;
+	private final EtudiantService etudiantService;
+	private final GestionnaireStageService gestionnaireStageService;
+	private final UtilisateurRepository utilisateurRepository;
+	private final EmployeurService employeurService;
+
+	public MycoseApplication(EtudiantService etudiantService, GestionnaireStageService gestionnaireStageService, UtilisateurRepository utilisateurRepository, EmployeurService employeurService) {
+        this.etudiantService = etudiantService;
+		this.gestionnaireStageService = gestionnaireStageService;
+		this.utilisateurRepository = utilisateurRepository;
 		this.employeurService = employeurService;
 	}
 
@@ -95,5 +98,7 @@ public class MycoseApplication implements CommandLineRunner {
 		offreStageService.assignerOffre(2L, 1L);
 		offreStageService.assignerOffre(3L, 3L);
 		offreStageService.assignerOffre(2L, 4L);
+		gestionnaireStageService.creationDeCompte("Elie", "Boucher-Gendron", "450-948-2738", "eliescrummaster@gmail.com", "Passw0rd");
+		employeurService.creationDeCompte("Jean", "Tremblay", "450-978-2738", "jt@gmail.com", "Jean123$", "Google");
 	}
 }

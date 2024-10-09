@@ -13,15 +13,8 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-@DiscriminatorValue("FORM")
+@DiscriminatorValue("Formulaire")
 public class FormulaireOffreStage extends OffreStage{
-
-    @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
 
 
     private String employerName;

@@ -130,7 +130,7 @@ function FormOffreStage() {
         }
 
         try {
-            const response = await axios.post("http://localhost:8080/api/offres/upload", formData,
+            const response = await axios.post("http://localhost:8080/api/offres-stages/upload-form", formData,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
