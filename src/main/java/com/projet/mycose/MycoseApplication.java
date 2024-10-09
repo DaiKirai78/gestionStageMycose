@@ -42,7 +42,6 @@ public class MycoseApplication implements CommandLineRunner {
 		etudiantService.creationDeCompte("Roberto", "Berrios", "273-389-2937", "roby@gmail.com", "Roby123$", Programme.TECHNIQUE_INFORMATIQUE);
 		gestionnaireStageService.creationDeCompte("Elie", "Boucher-Gendron", "450-948-2738", "eliescrummaster@gmail.com", "Passw0rd");
 
-
 		// Hydrater BD, pour tester front end
 		String token = utilisateurService.authentificationUtilisateur(new LoginDTO("wonka@mail.com", "Chocolatayy1"));
 
@@ -96,7 +95,5 @@ public class MycoseApplication implements CommandLineRunner {
 			System.out.println("Erreur Main 75: " + e);
 			System.out.println(token);
 		}
-
-
 	}
 }

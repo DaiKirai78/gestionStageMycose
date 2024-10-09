@@ -9,7 +9,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -23,7 +22,6 @@ import java.util.Set;
 public abstract class OffreStage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "offre_id")
     private long id;
 
     private String title;
@@ -34,6 +32,7 @@ public abstract class OffreStage {
     @Column(nullable = false)
     private OffreStage.Status status;
 
+    //TODO : À ENLEVER AU PLUS SACRANT
     private String statusDescription;
 
     @OneToMany(mappedBy = "offreStage", cascade = CascadeType.ALL)

@@ -1,13 +1,8 @@
 package com.projet.mycose.modele;
-import com.projet.mycose.service.UtilisateurService;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -16,13 +11,6 @@ import java.util.List;
 @NoArgsConstructor
 @DiscriminatorValue("Fichier")
 public class FichierOffreStage extends OffreStage{
-
-    @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
 
     private String filename;
 

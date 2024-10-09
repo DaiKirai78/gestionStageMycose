@@ -25,8 +25,10 @@ public class Etudiant extends Utilisateur {
     @OneToMany(mappedBy = "etudiant", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FichierCV> fichiersCV;
 
+
     @OneToMany(mappedBy = "etudiant",cascade = CascadeType.ALL)
     private List<EtudiantOffreStagePrivee> offresStagePrivees;
+
 
     @OneToMany(mappedBy = "etudiant", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ApplicationStage> applications;
