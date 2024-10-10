@@ -28,4 +28,15 @@ public class OffreStageDTO {
     public OffreStageDTO(long id) {
         this.id = id;
     }
+
+    public static OffreStageDTO toOffreStageInstaceDTO(OffreStage offreStage) {
+        OffreStageDTO offreStageDTO = null;
+        if(offreStage instanceof FormulaireOffreStage) {
+            offreStageDTO = FormulaireOffreStageDTO.toDTO((FormulaireOffreStage) offreStage);
+        }
+        else if(offreStage instanceof FichierOffreStage) {
+            offreStageDTO = FichierOffreStageDTO.toDTO((FichierOffreStage) offreStage);
+        }
+        return offreStageDTO;
+    }
 }

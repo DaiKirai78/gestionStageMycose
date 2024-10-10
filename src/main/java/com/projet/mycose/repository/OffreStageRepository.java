@@ -2,6 +2,7 @@ package com.projet.mycose.repository;
 
 import com.projet.mycose.modele.FichierCV;
 import com.projet.mycose.modele.OffreStage;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,4 +19,6 @@ public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
 
     @Query("SELECT o FROM OffreStage o LEFT JOIN o.applicationStages a ON a.etudiant.id = :etudiantId WHERE a.id IS NULL")
     List<OffreStage> findAllByEtudiantNotApplied(@Param("etudiantId") Long etudiantId);
+
+    Page<OffreStage> findOffreStageByEmployeurId(@Param("employeurId") Long employeurId, Pageable pageable);
 }
