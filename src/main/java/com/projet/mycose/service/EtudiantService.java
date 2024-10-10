@@ -54,16 +54,10 @@ public class EtudiantService {
         Long idEtudiant = utilisateurService.getUserIdByToken(token);
         PageRequest pageRequest = PageRequest.of(page, LIMIT_PER_PAGE);
 
-        System.out.print("ID ETUDIANT:");
-        System.out.println(idEtudiant);
-
         Page<OffreStage> offresRetourneeEnPages = offreStageRepository.findOffresByEtudiantId(idEtudiant, pageRequest);
-        System.out.println(offresRetourneeEnPages.getContent());
         if(offresRetourneeEnPages.isEmpty()) {
-            System.out.println("null?");
             return null;
         }
-        System.out.println(listeOffreStageToDTO(offresRetourneeEnPages.getContent()) + "POURQUOI VIIIIDE");
         return listeOffreStageToDTO(offresRetourneeEnPages.getContent());
     }
 
@@ -86,17 +80,11 @@ public class EtudiantService {
     }
 
     public List<OffreStageDTO> getStagesByRecherche(String token, int page, String recherche) {
-        System.out.println("nbre de page : " + page);
-        System.out.println("recherche : " + recherche);
-
         Long idEtudiant = utilisateurService.getUserIdByToken(token);
         PageRequest pageRequest = PageRequest.of(page, LIMIT_PER_PAGE);
 
-        System.out.println("page request : " + pageRequest);
         Page<OffreStage> offreStagesEnPages = offreStageRepository.findOffresByEtudiantIdWithSearch(idEtudiant, recherche, pageRequest);
 
-        System.out.println("offresPAges" + offreStagesEnPages);
-        System.out.println("stages : " + offreStagesEnPages.getContent());
         return listeOffreStageToDTO(offreStagesEnPages.getContent());
     }
 

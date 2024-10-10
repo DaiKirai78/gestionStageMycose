@@ -44,7 +44,6 @@ public class EtudiantController {
         try {
             return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
                     etudiantService.getStages(token, pageNumber));
-            //return ResponseEntity.status(HttpStatus.OK).body(etudiantService.getStages(token));
         } catch (Exception e) {
             return ResponseEntity.noContent().build();
         }
