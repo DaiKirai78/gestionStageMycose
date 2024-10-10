@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Base64;
 
 
@@ -43,12 +44,14 @@ public class FichierOffreStageDTO extends OffreStageDTO{
     }
 
     @Builder
-    public FichierOffreStageDTO(long id, String filename, String fileData, String title, String entrepriseName, Long createur_id, OffreStage.Status status) {
+    public FichierOffreStageDTO(long id, String filename, String fileData, String title, String entrepriseName, LocalDateTime createdAt, LocalDateTime updateAt, Long createur_id, OffreStage.Status status) {
         super(id);
         this.filename = filename;
         this.fileData = fileData;
         this.setTitle(title);
         this.setEntrepriseName(entrepriseName);
+        this.setCreatedAt(createdAt);
+        this.setUpdatedAt(updateAt);
         this.setCreateur_id(createur_id);
         this.setStatus(status);
     }
@@ -72,6 +75,8 @@ public class FichierOffreStageDTO extends OffreStageDTO{
                 Base64.getEncoder().encodeToString(fichierOffreStage.getData()),
                 fichierOffreStage.getTitle(),
                 fichierOffreStage.getEntrepriseName(),
+                fichierOffreStage.getCreatedAt(),
+                fichierOffreStage.getUpdatedAt(),
                 fichierOffreStage.getCreateur().getId(),
                 fichierOffreStage.getStatus()
         );
