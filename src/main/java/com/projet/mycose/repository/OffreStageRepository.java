@@ -26,6 +26,10 @@ public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
     List<OffreStage> findAllByEtudiantNotApplied(@Param("etudiantId") Long etudiantId);
 
 
-    @Query("SELECT o FROM OffreStage o JOIN EtudiantOffreStagePrivee eop ON o.id = eop.offreStage.id WHERE eop.etudiant.id = :etudiantId OR eop.id IS NULL AND (o.title LIKE concat('%', :rechercheValue, '%') OR o.entrepriseName LIKE concat('%', :rechercheValue, '%'))")
+    @Query("SELECT o FROM OffreStage o " +
+            "LEFT JOIN EtudiantOffreStagePrivee eop ON o.id = eop.offreStage.id " +
+            "WHERE (eop.etudiant.id = :etudiantId OR eop.id IS NULL) " +
+            "AND (LOWER(o.title) LIKE LOWER(concat('%', :rechercheValue, '%')) " +
+            "OR LOWER(o.entrepriseName) LIKE LOWER(concat('%', :rechercheValue, '%')))")
     Page<OffreStage> findOffresByEtudiantIdWithSearch(@Param("etudiantId") long etudiantId, @Param("rechercheValue") String rechercheValue , Pageable pageable);
 }

@@ -95,6 +95,7 @@ public class EtudiantService {
         System.out.println("page request : " + pageRequest);
         Page<OffreStage> offreStagesEnPages = offreStageRepository.findOffresByEtudiantIdWithSearch(idEtudiant, recherche, pageRequest);
 
+        System.out.println("offresPAges" + offreStagesEnPages);
         System.out.println("stages : " + offreStagesEnPages.getContent());
         return listeOffreStageToDTO(offreStagesEnPages.getContent());
     }

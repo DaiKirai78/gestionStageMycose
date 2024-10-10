@@ -40,7 +40,7 @@ public class EtudiantController {
         }
 
     @PostMapping("/getStages")
-    public ResponseEntity<List<OffreStageDTO>> getStages(@RequestHeader String token, @RequestParam int pageNumber) {
+    public ResponseEntity<List<OffreStageDTO>> getStages(@RequestHeader("Authorization") String token, @RequestParam int pageNumber) {
         try {
             return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
                     etudiantService.getStages(token, pageNumber));
@@ -51,7 +51,7 @@ public class EtudiantController {
     }
 
     @GetMapping("/pages")
-    public ResponseEntity<Integer> getAmountOfPages(@RequestHeader String token) {
+    public ResponseEntity<Integer> getAmountOfPages(@RequestHeader("Authorization") String token) {
         try {
             return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
                     etudiantService.getAmountOfPages(token));
@@ -61,7 +61,7 @@ public class EtudiantController {
     }
 
     @PostMapping("/recherche-offre")
-    public ResponseEntity<List<OffreStageDTO>> rechercherOffres(@RequestHeader String token, @RequestParam int pageNumber, @RequestParam String recherche) {
+    public ResponseEntity<List<OffreStageDTO>> rechercherOffres(@RequestHeader("Authorization") String token, @RequestParam int pageNumber, @RequestParam String recherche) {
         try {
             return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
                     etudiantService.getStagesByRecherche(token, pageNumber, recherche));

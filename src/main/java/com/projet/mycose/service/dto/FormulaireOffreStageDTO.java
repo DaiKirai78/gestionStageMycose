@@ -51,16 +51,14 @@ public class FormulaireOffreStageDTO extends OffreStageDTO {
     //private LocalDateTime updatedAt;
 
     @Builder
-    public FormulaireOffreStageDTO(Long id, String entrepriseName,  String employerName, String email, String website, String title,  String location, String salary, String description, Long createur_id) {
-        super(id, title, entrepriseName, createur_id);
+    public FormulaireOffreStageDTO(Long id, String entrepriseName,  String employerName, String email, String website, String title,  String location, String salary, String description, LocalDateTime createdAt, LocalDateTime updatedAt, Long createur_id) {
+        super(id, title, entrepriseName, createur_id, createdAt, updatedAt);
         this.employerName = employerName;
         this.email = email;
         this.website = website;
         this.location = location;
         this.salary = salary;
         this.description = description;
-        //this.createdAt = createdAt;
-        //this.updatedAt = updatedAt;
     }
 
     public static FormulaireOffreStageDTO toDTO(FormulaireOffreStage formulaireOffreStage) {
@@ -75,8 +73,8 @@ public class FormulaireOffreStageDTO extends OffreStageDTO {
                 formulaireOffreStage.getLocation(),
                 formulaireOffreStage.getSalary(),
                 formulaireOffreStage.getDescription(),
+                formulaireOffreStage.getCreatedAt(),
+                formulaireOffreStage.getUpdatedAt(),
                 formulaireOffreStage.getCreateur().getId());
-                //formulaireOffreStage.getCreatedAt(),
-                //formulaireOffreStage.getUpdatedAt());
     }
 }

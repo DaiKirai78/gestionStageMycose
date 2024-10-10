@@ -33,6 +33,13 @@ public class OffreStageDTO {
 
     private Long createur_id;
 
+//    @CreationTimestamp
+//    @Column(updatable = false)
+    private LocalDateTime createdAt;
+
+    //@UpdateTimestamp
+    private LocalDateTime updatedAt;
+
     public OffreStageDTO(long id) {
         this.id = id;
     }

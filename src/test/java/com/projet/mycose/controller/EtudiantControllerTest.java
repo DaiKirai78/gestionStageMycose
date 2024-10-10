@@ -18,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -106,6 +107,8 @@ public class EtudiantControllerTest {
                 "uneLcalisation",
                 "1000",
                 "uneDescription",
+                LocalDateTime.now(),
+                LocalDateTime.now(),
                 1L
                 );
 
@@ -176,6 +179,8 @@ public class EtudiantControllerTest {
                 "uneLcalisation",
                 "1000",
                 "uneDescription",
+                LocalDateTime.now(),
+                LocalDateTime.now(),
                 1L
         );
 
