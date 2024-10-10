@@ -33,13 +33,14 @@ public class FichierOffreStageDTO extends OffreStageDTO{
     private String fileData;
 
     @Builder
-    public FichierOffreStageDTO(long id, String filename, String fileData, String title, String entrepriseName, Long createur_id) {
+    public FichierOffreStageDTO(long id, String filename, String fileData, String title, String entrepriseName, Long createur_id, LocalDateTime createdAt) {
         super(id);
         this.filename = filename;
         this.fileData = fileData;
         this.setTitle(title);
         this.setEntrepriseName(entrepriseName);
         this.setCreateur_id(createur_id);
+        this.setCreatedAt(createdAt);
     }
 
     @Builder
@@ -64,6 +65,7 @@ public class FichierOffreStageDTO extends OffreStageDTO{
                 .title(fichierOffreStage.getTitle())
                 .entrepriseName(fichierOffreStage.getEntrepriseName())
                 .createur_id(fichierOffreStage.getCreateur().getId())
+                .createdAt(fichierOffreStage.getCreatedAt())
                 .build();
     }
 
