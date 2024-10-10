@@ -44,6 +44,8 @@ public class FichierCVService {
 
         fichierCVDTO.setEtudiant_id(fichierCV.getEtudiant().getId());
 
+        fichierCVDTO.setStatus(fichierCV.getStatus().toString());
+
         return fichierCVDTO;
     }
 
