@@ -22,3 +22,7 @@ Sam
 Jason
   1. Prendre plus de temps pour décrire les story au début du sprint.
   2. A chaque qu'on entame quelque chose qui pourrait affecter d'autre personne, informer tout le groupe via un message.
+
+Elie
+  1.
+  2.
