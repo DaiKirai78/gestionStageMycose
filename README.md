@@ -10,3 +10,7 @@ Points à améiorer:
 Zach:
   1. Prendre des tâches différentes pour ne pas avoir à attendre après quelqu'un
   2. Mieux répartir les tâches entre les gens pour avoir un nombre d'heure plus équivalent
+
+Vicente
+1) Après chaque fonctionnalité complète (Controlleur, service, repository), écrire les tests nécessaires et merge avec sprint 2, puis avertir les autres du merge et de la fonctionnalité intégré.
+2) Avant de commencer une nouvelle fonctionnalité, prendre un 5 minutes pour comprendre les ajouts et changements des co équipier, soit en consultant les commits ou demander directement aux coéquipiers.
