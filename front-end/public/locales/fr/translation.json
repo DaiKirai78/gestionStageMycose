@@ -140,5 +140,20 @@
     "errorRefusingInternship": "Erreur lors du refus de l'offre de stage",
     "noInternshipFound": "Aucune offre de stage trouvée",
     "employerInternship": "Offre de stage de l'employeur",
-    "acceptOrRefuseInternship": "Accepter ou refuser l'offre de stage"
+    "acceptOrRefuseInternship": "Accepter ou refuser l'offre de stage",
+    "boutonConsulterUnStage": "Consulter",
+    "chargementInfosStages": "Chargement des informations du stage...",
+    "fermerPDF": "Fermer PDF",
+    "offreDeStage": "Offre de stage",
+    "EntrepriseInconnue": "Entreprise Inconnue",
+    "AdresseNonValide": "Adresse non disponible",
+    "DescriptionNonValide": "Description non disponible",
+    "DateNonDisponible": "Date non disponible",
+    "ApplicationEffectueeSuccess": "Application au stage effectuée.",
+    "ErreurRecuperationStage": "Erreur lors de la récupération des données du stage.",
+    "ApplicationEffectueeErreur": "La tentative d'application au stage a échoué.",
+    "VousAvezDejaPostule": "Vous avez déjà postulé à cette offre de stage.",
+    "CetteOffreNestPlusDisponible": "L'offre de stage n'est plus disponible.",
+    "AfficherPDF": "Afficher PDF",
+    "RetourAccueil": "Retour à l'accueil"
 }
