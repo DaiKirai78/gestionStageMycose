@@ -1,14 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { BsArrowLeft, BsArrowRight } from "react-icons/bs";
 
-const BoutonAvancerReculer = () => {
-    const [pages, setPages] = useState({minPages: 1, maxPages: 11, currentPage: 1});
-
-    useEffect(() => {
-        console.log("HEEEEEee");
-        
-        // fetch("")
-    }, [pages])
+const BoutonAvancerReculer = ({pages, setPages}) => {
 
     function pagesUp(amount = 1) {        
         if (pages.currentPage + amount > pages.maxPages)

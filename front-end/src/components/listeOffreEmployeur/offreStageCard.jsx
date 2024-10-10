@@ -2,7 +2,7 @@ import React from 'react';
 import { BsArrowRight } from "react-icons/bs";
 import { useTranslation } from 'react-i18next';
 
-const OffreStageCard = ({offre, index, getColorOffreStatus, activeOffer, setActiveOffer}) => {
+const OffreStageCard = ({offre, getColorOffreStatus, activeOffer, setActiveOffer}) => {
 
     const { t } = useTranslation();
 
@@ -10,7 +10,6 @@ const OffreStageCard = ({offre, index, getColorOffreStatus, activeOffer, setActi
 
     return (
         <button id="elementStage" 
-                    key={index}
                     onClick={() => {setActiveOffer(offre)}}
                     className={`group relative px-6 flex items-center w-full  flex-col pb-3 pt-3 border rounded ${activeOffer === offre ? "border-deep-orange-200 cursor-default": "border-deep-orange-50 cursor-pointer"}`}>
                         <div className={`absolute left-0 top-0 w-full h-full flex items-center justify-center opacity-0 transition-all z-10 ${activeOffer === offre ? "group-hover:opacity-0" : "group-hover:opacity-100"}`}>

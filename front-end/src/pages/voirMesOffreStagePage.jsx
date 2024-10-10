@@ -13,21 +13,27 @@ const VoirMesOffreStagePage = () => {
     const [isFetching, setIsFetching] = useState(true);
     const [data, setData] = useState(null)
     const [voirPdf, setVoirPdf] = useState(false);
-    const [pages, setPages] = useState({minPages: 1, maxPages: 11, currentPage: 1});
+    const [pages, setPages] = useState({minPages: 1, maxPages: null, currentPage: 1});
     const [activeOffer, setActiveOffer] = useState(null);
     
     const { t } = useTranslation()
 
     useEffect(() => {
-
-        fetchOffreStage()
-
         window.onkeydown = (e) => {
             if (e.key == "Escape")
                 setVoirPdf(false)
         }
+    }, [])
 
-    }, []);
+    useEffect(() => {
+
+        fetchAll()
+
+        window.scrollTo({
+            top: 0,
+        });
+
+    }, [pages]);
 
     useEffect(() => {
         document.body.style.overflow = voirPdf ? "hidden" : "auto";
@@ -35,10 +41,8 @@ const VoirMesOffreStagePage = () => {
 
     async function fetchOffreStage() {
         const token = localStorage.getItem("token");
-
-        setIsFetching(true);
         
-        try {            
+        try {
             const response = await fetch(
                 `http://localhost:8080/entreprise/getOffresPosted?pageNumber=${pages.currentPage - 1}`,
                 {
@@ -50,16 +54,51 @@ const VoirMesOffreStagePage = () => {
             if (response.status == STATUS_CODE_ACCEPTED) {                
                 const fetchedData = await response.json();
                 setData(fetchedData);
-                console.log(fetchedData);
                 
             } else if (response.status == STATUS_CODE_NO_CONTENT) {
-                setData(fakeData)
+                console.log("Nothing found");
+                
             }
         } catch (e) {
             console.log(e);
-        } finally {
-            setIsFetching(false);
         }
+    }
+
+    async function fetchNombrePage() {
+        const token = localStorage.getItem("token");
+
+        try {
+            const response = await fetch(
+                "http://localhost:8080/entreprise/pages",
+                {
+                    method: "GET",
+                    headers: {Authorization: `Bearer ${token}`}
+                }
+            );
+
+            if (response.status == STATUS_CODE_ACCEPTED) {                
+                const fetchedData = await response.json();                
+                setPages({
+                    ...pages,
+                    maxPages: fetchedData
+                });
+                
+            } else if (response.status == STATUS_CODE_NO_CONTENT) {
+                setData("Nothing found")
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    async function fetchAll() {
+        setIsFetching(true);        
+
+        if (!pages.maxPages)
+            await fetchNombrePage();
+        await fetchOffreStage();
+
+        setIsFetching(false);
     }
 
     return (
@@ -77,7 +116,7 @@ const VoirMesOffreStagePage = () => {
                                 <h1>{t("noOffer")}</h1>
                     }
                 </div>
-                <BoutonAvancerReculer pages={pages} setPages={setPages} />
+                <BoutonAvancerReculer pages={pages} setPages={setPages}/>
             </div>
             { voirPdf && <AfficherPdf setVoirPdf={setVoirPdf} activePdf={activeOffer.fileData} /> }
         </TokenPageContainer>

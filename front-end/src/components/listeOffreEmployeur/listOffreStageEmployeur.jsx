@@ -36,7 +36,7 @@ const ListOffreStageEmployeur = ({data, voirPdf, setVoirPdf, activeOffer, setAct
             <div className='flex flex-col gap-2 w-full h-full overflow-auto'>
                 {
                     data.map((offre, index) => {
-                        return <OffreStageCard setActiveOffer={setActiveOffer} activeOffer={activeOffer} offre={offre} index={index} getColorOffreStatus={getColorOffreStatus} />;
+                        return <OffreStageCard key={index} setActiveOffer={setActiveOffer} activeOffer={activeOffer} offre={offre} index={index} getColorOffreStatus={getColorOffreStatus} />;
                     })
                 }
             </div>
