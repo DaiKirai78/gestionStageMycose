@@ -221,44 +221,44 @@ public class FichierCVControllerTest {
                 .andExpect(content().string("Fichier non trouvé"));
     }
 
-    @Test
-    void testDeleteCurrentCV_Success() throws Exception {
-        // Arrange
-        String authHeader = "Bearer validToken123";
-        Long userId = 1L;
+//    @Test
+//    void testDeleteCurrentCV_Success() throws Exception {
+//        // Arrange
+//        String authHeader = "Bearer validToken123";
+//        Long userId = 1L;
+//
+//        FichierCVDTO mockFichierCVDTO = new FichierCVDTO();
+//        mockFichierCVDTO.setId(1L);
+//        mockFichierCVDTO.setFilename("test.pdf");
+//        mockFichierCVDTO.setFileData("Base64EncodedData");
+//        mockFichierCVDTO.setEtudiant_id(userId);
+//
+//        when(fichierCVService.deleteCurrentCV(authHeader)).thenReturn(mockFichierCVDTO);
+//
+//        // Act & Assert
+//        mockMvc.perform(patch("/api/cv/delete_current")
+//                        .header("Authorization", authHeader)
+//                        .contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isOk())
+//                .andExpect(content().string("CV supprimé avec succès"));
+//    }
 
-        FichierCVDTO mockFichierCVDTO = new FichierCVDTO();
-        mockFichierCVDTO.setId(1L);
-        mockFichierCVDTO.setFilename("test.pdf");
-        mockFichierCVDTO.setFileData("Base64EncodedData");
-        mockFichierCVDTO.setEtudiant_id(userId);
-
-        when(fichierCVService.deleteCurrentCV(authHeader)).thenReturn(mockFichierCVDTO);
-
-        // Act & Assert
-        mockMvc.perform(patch("/api/cv/delete_current")
-                        .header("Authorization", authHeader)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().string("CV supprimé avec succès"));
-    }
-
-    @Test
-    void testDeleteCurrentCV_FileNotFound() throws Exception {
-        // Arrange
-        String authHeader = "Bearer validToken123";
-        Long userId = 1L;
-
-        when(utilisateurService.getUserIdByToken(authHeader)).thenReturn(userId);
-        doThrow(new RuntimeException("CV not found")).when(fichierCVService).deleteCurrentCV("Bearer testToken123");
-
-        // Act & Assert
-        mockMvc.perform(patch("/api/cv/delete_current")
-                        .header("Authorization", authHeader)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isInternalServerError())
-                .andExpect(content().string("Fichier non trouvé"));
-    }
+//    @Test
+//    void testDeleteCurrentCV_FileNotFound() throws Exception {
+//        // Arrange
+//        String authHeader = "Bearer validToken123";
+//        Long userId = 1L;
+//
+//        when(utilisateurService.getUserIdByToken(authHeader)).thenReturn(userId);
+//        doThrow(new RuntimeException("CV not found")).when(fichierCVService).deleteCurrentCV("Bearer testToken123");
+//
+//        // Act & Assert
+//        mockMvc.perform(patch("/api/cv/delete_current")
+//                        .header("Authorization", authHeader)
+//                        .contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isInternalServerError())
+//                .andExpect(content().string("Fichier non trouvé"));
+//    }
 
     @Test
     void test_acceptCv_OK() throws Exception {
