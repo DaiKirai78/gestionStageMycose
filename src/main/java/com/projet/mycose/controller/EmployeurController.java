@@ -41,5 +41,15 @@ public class EmployeurController {
             return ResponseEntity.noContent().build();
         }
     }
+
+    @GetMapping("/pages")
+    public ResponseEntity<Integer> getAmountOfPages(@RequestHeader("Authorization") String token) {
+        try{
+            return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
+                    employeurService.getAmountOfPages(token));
+        } catch(Exception e) {
+            return ResponseEntity.noContent().build();
+        }
+    }
 }
 

@@ -214,25 +214,4 @@ public class OffreStageService {
         Long etudiantId = utilisateurService.getUserIdByToken(token);
         return offreStageRepository.findAllByEtudiantNotApplied(etudiantId).stream().map(this::convertToDTO).toList();
     }
-
-    @Transactional
-    public void assignerEmployeur(long employeurId, long offreStageId) {
-        if(!employeurIdEtOffreStageIdValides(employeurId, offreStageId)) {
-            return;
-        }
-
-        Employeur employeur = (Employeur) utilisateurRepository.findById(employeurId).get();
-        OffreStage offreStage = offreStageRepository.findById(offreStageId).get();
-        employeur.getOffres().add(offreStage);
-        offreStage.setEmployeur(employeur);
-        utilisateurRepository.save(employeur);
-    }
-
-    private boolean employeurIdEtOffreStageIdValides(long employeurId, long offreStageId) {
-        if(!utilisateurRepository.existsById(employeurId) || !offreStageRepository.existsById(offreStageId)) {
-            return false;
-        }
-
-        return utilisateurRepository.findById(employeurId).get() instanceof Employeur;
-    }
 }
