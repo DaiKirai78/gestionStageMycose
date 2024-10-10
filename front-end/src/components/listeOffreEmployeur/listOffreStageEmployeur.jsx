@@ -3,7 +3,7 @@ import { BsArrowRight } from "react-icons/bs";
 import { BsX } from "react-icons/bs";
 
 
-const ListOffreStageEmployeur = ({data}) => {
+const ListOffreStageEmployeur = ({data, voirPdf, setVoirPdf}) => {
 
     const [activeOffer, setActiveOffer] = useState(null);
 
@@ -67,8 +67,8 @@ const ListOffreStageEmployeur = ({data}) => {
                     })
                 }
             </div>
-            <div className={`pb-16 sm:pt-0 bg-orange-light z-20 rounded border border-deep-orange-200 w-full md:h-[calc(100vh-1rem)] h-[90vh] fixed left-0 md:sticky md:top-2 flex flex-col md:transition-none transition-all ease-in-out ${activeOffer === null ? "bottom-[-90vh]" : "bottom-0"}`}>
-                <button className='absolute right-1/2 translate-x-[50%] bottom-2 bg-orange rounded-full p-2 text-white md:hidden'
+            <div className={`pb-8 sm:pt-0 bg-orange-light z-20 rounded border border-deep-orange-200 w-full md:h-[calc(100vh-1rem)] h-[90vh] fixed left-0 md:sticky md:top-2 flex flex-col md:transition-none transition-all ease-in-out overflow-y-auto ${activeOffer === null ? "bottom-[-90vh]" : "bottom-0"}`}>
+                <button className='absolute right-2 top-2 md:hidden'
                     onClick={() => {setActiveOffer(null)}}>
                     <BsX size={25}/>
                 </button>
@@ -98,13 +98,14 @@ const ListOffreStageEmployeur = ({data}) => {
                         { activeOffer.format === "file" &&
                             <button
                                 className='bg-orange px-4 py-2 rounded text-white mt-3 cursor-pointer'
-                                onClick={() => console.log("LAWL")}
+                                onClick={() => setVoirPdf(!voirPdf)}
                             >
                                 Voir pdf</button>
                         }
                     </div>
                 }
             </div>
+            
         </div>
     );
 }

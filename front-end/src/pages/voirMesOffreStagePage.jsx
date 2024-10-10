@@ -10,7 +10,7 @@ const fakeData = [
         id: "id1",
         created_at: "2024-01-10",
         data: "data1",
-        filename: "rapport1.pdf",
+        filename: "fake_CV.pdf",
         updated_at: "2024-04-21",
         description: null,
         email: "jean.dupont@example.com",
@@ -114,12 +114,22 @@ const fakeData = [
 const VoirMesOffreStagePage = () => {
     const [isFetching, setIsFetching] = useState(true);
     const [data, setData] = useState()
+    const [voirPdf, setVoirPdf] = useState(false);
 
     useEffect(() => {
 
         fetchOffreStage()
 
+        window.onkeydown = (e) => {
+            if (e.key == "Escape")
+                setVoirPdf(false)
+        }
+
     }, []);
+
+    useEffect(() => {
+        document.body.style.overflow = voirPdf ? "hidden" : "auto";
+    }, [voirPdf])
 
     async function fetchOffreStage() {
         const token = localStorage.getItem("token");
@@ -149,7 +159,7 @@ const VoirMesOffreStagePage = () => {
 
     return (
         <TokenPageContainer>
-            <div className="bg-orange-light w-full min-h-screen flex flex-col items-center gap-10">
+            <div className={`bg-orange-light w-full min-h-screen flex flex-col items-center gap-10`}>
                 <div className="h-20 border-b-2 border-deep-orange-100 pl-8 items-center flex w-full">
                     (Logo) Mycose
                 </div>
@@ -157,7 +167,7 @@ const VoirMesOffreStagePage = () => {
                 {
                     isFetching ? 
                         <PageIsLoading /> : 
-                        data.length > 0 ? <ListOffreStageEmployeur data={data} /> :
+                        data.length > 0 ? <ListOffreStageEmployeur data={data} voirPdf={voirPdf} setVoirPdf={setVoirPdf} /> :
                             <h1>Aucune offre</h1>
                 }
                 </div>
@@ -171,6 +181,21 @@ const VoirMesOffreStagePage = () => {
                     </div>
                 </div>
             </div>
+            { voirPdf &&
+                <div 
+                    className="fixed left-0 top-0 w-full h-full p-8 bg-orange-light z-50 flex flex-col items-center gap-4"
+                >
+                    <iframe
+                        src="/fake_CV.pdf"
+                        title="CV"
+                        className="w-full h-full border"
+                    ></iframe>
+                    <button 
+                        className='bg-orange px-4 py-2 rounded text-white'
+                        onClick={() => {setVoirPdf(false)}}
+                    >Fermer</button>
+                </div>
+            }
         </TokenPageContainer>
     );
 };
