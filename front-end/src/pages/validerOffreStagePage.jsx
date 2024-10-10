@@ -4,7 +4,7 @@ import EmployeursOffreStage from "../components/validerOffreStagePage/employeurs
 
 const ValiderOffreStagePage = () => {
     return (
-        <TokenPageContainer>
+        <TokenPageContainer role={["GESTIONNAIRE_STAGE"]}>
             <EmployeursOffreStage />
         </TokenPageContainer>
     )

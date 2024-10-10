@@ -4,7 +4,7 @@ import UploadCV from "../components/uploadCVPage/uploadCV.jsx";
 
 const UploadCvPage = () => {
     return (
-        <TokenPageContainer>
+        <TokenPageContainer role={["ETUDIANT"]}>
             <UploadCV />
         </TokenPageContainer>
     );

@@ -4,7 +4,7 @@ import EtudiantsCV from "../components/validerCVPage/etudiantsCV.jsx";
 
 const ValiderCVPage = () => {
     return (
-        <TokenPageContainer>
+        <TokenPageContainer role={["GESTIONNAIRE_STAGE"]}>
             <EtudiantsCV />
         </TokenPageContainer>
     )

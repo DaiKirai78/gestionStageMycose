@@ -45,6 +45,8 @@ const AccueilPage = () => {
                 return <AcceuilEtudiant />
             case "EMPLOYEUR":
                 return <AcceuilEmployeur />
+            case "GESTIONNAIRE_STAGE":
+                return <div>Acceuil</div>
             default:
                 navigate("/")
                 break;
@@ -52,7 +54,7 @@ const AccueilPage = () => {
     }
 
     return (
-        <TokenPageContainer role={["ETUDIANT", "EMPLOYEUR", "GESTIONNAIRE_STAGE"]}>
+        <TokenPageContainer role={["ETUDIANT", "EMPLOYEUR", "GESTIONNAIRE_STAGE", "ENSEIGNANT"]}>
             {getAccueil()}
         </TokenPageContainer>
     );

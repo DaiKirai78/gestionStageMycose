@@ -13,7 +13,7 @@ const appliquerStagePage = (vraiProps) => {
         pdfUrl: pdfUrl
     }
     return (
-        <TokenPageContainer>
+        <TokenPageContainer role={["ETUDIANT"]}>
             <div className="bg-orange-light w-full min-h-screen">
                 <div className="h-20 border-b-2 border-deep-orange-100 pl-8 items-center flex w-full">
                     (Logo) Mycose
