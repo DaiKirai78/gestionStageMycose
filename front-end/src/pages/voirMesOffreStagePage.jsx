@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import TokenPageContainer from './tokenPageContainer';
 import ListOffreStageEmployeur from '../components/listeOffreEmployeur/listOffreStageEmployeur.jsx'
 import PageIsLoading from "../components/pageIsLoading.jsx"
-import { BsArrowLeft, BsArrowRight } from "react-icons/bs";
 import { useTranslation } from "react-i18next"
+import AfficherPdf from '../components/listeOffreEmployeur/afficherPdf.jsx';
+import BoutonAvancerReculer from '../components/listeOffreEmployeur/boutonAvancerReculer.jsx';
 
 const fakeData = [
     {
@@ -116,7 +117,6 @@ const VoirMesOffreStagePage = () => {
     const [isFetching, setIsFetching] = useState(true);
     const [data, setData] = useState()
     const [voirPdf, setVoirPdf] = useState(false);
-    const [pages, setPages] = useState({minPages: 1, maxPages: 11, actualPage: 1});
     
     const { t } = useTranslation()
 
@@ -134,12 +134,6 @@ const VoirMesOffreStagePage = () => {
     useEffect(() => {
         document.body.style.overflow = voirPdf ? "hidden" : "auto";
     }, [voirPdf])
-
-    useEffect(() => {
-        console.log("HEEEEEee");
-        
-        // fetch("")
-    }, [pages])
 
     async function fetchOffreStage() {
         const token = localStorage.getItem("token");
@@ -167,34 +161,6 @@ const VoirMesOffreStagePage = () => {
         }
     }
 
-    function pagesUp(amount = 1) {        
-        if (pages.actualPage + amount > pages.maxPages)
-            return;
-
-        setPages({
-            ...pages,
-            actualPage: pages.actualPage + 1
-        });
-
-    }
-
-    function pagesDown(amount = 1) {        
-        if (pages.actualPage - amount < pages.minPages)
-            return;
-    
-        setPages({
-            ...pages,
-            actualPage: pages.actualPage - 1
-        });
-    }
-
-    function goTo(destinationPage) {
-        setPages({
-            ...pages,
-            actualPage: destinationPage
-        });
-    }
-
     return (
         <TokenPageContainer>
             <div className={`bg-orange-light w-full min-h-screen flex flex-col items-center gap-10`}>
@@ -202,46 +168,17 @@ const VoirMesOffreStagePage = () => {
                     (Logo) Mycose
                 </div>
                 <div className='w-4/5'>
-                {
-                    isFetching ? 
-                        <PageIsLoading /> : 
-                        data.length > 0 ? <ListOffreStageEmployeur data={data} voirPdf={voirPdf} setVoirPdf={setVoirPdf} /> :
-                            <h1>{t("noOffer")}</h1>
-                }
+                    {
+                        isFetching ? 
+                            <PageIsLoading /> : 
+                            data.length > 0 ? 
+                                <ListOffreStageEmployeur data={data} voirPdf={voirPdf} setVoirPdf={setVoirPdf} /> :
+                                <h1>{t("noOffer")}</h1>
+                    }
                 </div>
-                <div className='w-full h-10 mb-12 flex justify-center'>
-                    <div className='w-10/12 sm:w-1/2 md:w-1/3 flex gap-1'>
-                        <button className='w-2/6 h-full bg-orange rounded cursor-pointer flex justify-center items-center'
-                            onClick={() => {pagesDown(1)}}
-                        ><BsArrowLeft /></button>
-                        <button className='w-1/6 h-full border rounded'
-                            onClick={() => (goTo(pages.minPages))}
-                        >{pages.minPages}</button>
-                        <div className='w-1/6 h-full border border-deep-orange-100 rounded flex justify-center items-center'>{pages.actualPage}</div>
-                        <button className='w-1/6 h-full border rounded'
-                            onClick={() => (goTo(pages.maxPages))}
-                        >{pages.maxPages}</button>
-                        <button className='w-2/6 h-full bg-orange rounded cursor-pointer flex justify-center items-center'
-                            onClick={() => {pagesUp(1)}}
-                        ><BsArrowRight /></button>
-                    </div>
-                </div>
+                <BoutonAvancerReculer />
             </div>
-            { voirPdf &&
-                <div 
-                    className="fixed left-0 top-0 w-full h-full p-8 bg-orange-light z-50 flex flex-col items-center gap-4"
-                >
-                    <iframe
-                        src="/fake_CV.pdf"
-                        title="CV"
-                        className="w-full h-full border"
-                    ></iframe>
-                    <button 
-                        className='bg-orange px-4 py-2 rounded text-white'
-                        onClick={() => {setVoirPdf(false)}}
-                    >{t("close")}</button>
-                </div>
-            }
+            { voirPdf && <AfficherPdf setVoirPdf={setVoirPdf} /> }
         </TokenPageContainer>
     );
 };
