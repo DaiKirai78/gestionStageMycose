@@ -2,9 +2,9 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-function EtudiantsCV() {
+function EmployeursOffreStage() {
     const { t } = useTranslation();
-    const [students, setStudents] = useState([]);
+    const [employeurs, setEmployeurs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
@@ -14,31 +14,31 @@ function EtudiantsCV() {
     const token = localStorage.getItem("token");
 
     useEffect(() => {
-        const fetchStudents = async () => {
+        const fetchEmployeurs = async () => {
             try {
                 setLoading(true);
-                const response = await fetch(`http://localhost:8080/api/cv/waitingcv?page=${currentPage}`, {
+                const response = await fetch(`http://localhost:8080/api/offres-stages/waiting?page=${currentPage}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 if (!response.ok) {
-                    throw new Error(t("errorRetrievingStudents"));
+                    throw new Error(t("errorRetrievingEmployeurs"));
                 }
                 const data = await response.json();
 
                 const sortedData = data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-                setStudents(sortedData);
+                setEmployeurs(sortedData);
                 setLoading(false);
             } catch (error) {
-                console.error(t("errorRetrievingStudents"), error);
-                setError(t("errorRetrievingStudents"));
+                console.error(t("errorRetrievingEmployeurs"), error);
+                setError(t("errorRetrievingEmployeurs"));
                 setLoading(false);
             }
         };
 
         const fetchTotalPages = async () => {
             try {
-                const response = await fetch('http://localhost:8080/api/cv/pages', {
+                const response = await fetch('http://localhost:8080/api/offres-stages/pages', {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 if (!response.ok) {
@@ -51,7 +51,7 @@ function EtudiantsCV() {
             }
         };
 
-        fetchStudents();
+        fetchEmployeurs();
         fetchTotalPages();
     }, [currentPage]);
 
@@ -61,23 +61,23 @@ function EtudiantsCV() {
     return (
         <div className="flex items-start justify-center min-h-screen p-8">
             <div className="bg-[#FFF8F2] rounded-lg shadow-lg p-8 w-screen max-w-3xl">
-                <h1 className="text-4xl font-bold mb-6 mt-6 text-center">{t("studentList")}</h1>
-                <h2 className="mb-8 text-xl text-center">{t("clickStudentCV")}</h2>
-                {students.length > 0 ? (
-                    <p className="text-center text-gray-700 mb-4">{students.length} {t("waitingCV")}</p>
+                <h1 className="text-4xl font-bold mb-6 mt-6 text-center">{t("internshipOfferList")}</h1>
+                <h2 className="mb-8 text-xl text-center">{t("clickEmployeurOffreStage")}</h2>
+                {employeurs.length > 0 ? (
+                    <p className="text-center text-gray-700 mb-4">{employeurs.length} {t("waitingInternship")}</p>
                 ) : (
-                    <p className="text-center text-gray-700 mb-4">{t("noCVWaiting")}</p>
+                    <p className="text-center text-gray-700 mb-4">{t("noInternshipWaiting")}</p>
                 )}
                 <ul className="space-y-4">
-                    {students.map((student) => (
+                    {employeurs.map((employeur) => (
                         <li
-                            key={student.id}
+                            key={employeur.id}
                             className="p-6 border border-gray-300 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer"
                             onClick={() => {
-                                navigate(`/validerCV/${student.studentFirstName}${student.studentLastName}`, { state: { cv: student } })}}
+                                navigate(`/validerOffreStage/${employeur.entrepriseName}`, { state: { offreStage: employeur } })}}
                         >
-                            <h2 className="text-2xl font-semibold">{student.studentFirstName} {student.studentLastName}</h2>
-                            <p className="text-gray-700">{t("program")} : {t(student.programme)}</p>
+                            <h2 className="text-2xl font-semibold">{employeur.title}</h2>
+                            <p className="text-gray-700">{t("companyName")} : {t(employeur.entrepriseName)}</p>
                         </li>
                     ))}
                 </ul>
@@ -105,4 +105,4 @@ function EtudiantsCV() {
     );
 }
 
-export default EtudiantsCV;
+export default EmployeursOffreStage;

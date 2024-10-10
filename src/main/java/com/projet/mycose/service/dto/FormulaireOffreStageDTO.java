@@ -43,13 +43,6 @@ public class FormulaireOffreStageDTO extends OffreStageDTO {
     @Size(max = 500, message = "Description cannot exceed 500 characters.")
     private String description;
 
-    //@CreationTimestamp
-    //@Column(updatable = false)
-    //private LocalDateTime createdAt;
-
-    //@UpdateTimestamp
-    //private LocalDateTime updatedAt;
-
     @Builder
     public FormulaireOffreStageDTO(Long id, String entrepriseName,  String employerName, String email, String website, String title,  String location, String salary, String description, LocalDateTime createdAt, LocalDateTime updatedAt, Long createur_id) {
         super(id, title, entrepriseName, createur_id, createdAt, updatedAt);

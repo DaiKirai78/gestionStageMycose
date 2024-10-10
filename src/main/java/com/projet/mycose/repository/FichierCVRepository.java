@@ -13,5 +13,9 @@ import java.util.OptionalInt;
 public interface FichierCVRepository extends JpaRepository<FichierCV, Long> {
     Optional<List<FichierCV>> getFichierCVSByStatusEquals(FichierCV.Status status, Pageable pageable);
 
-    Optional<FichierCV> getFirstByEtudiant_IdAndStatusEquals(Long etudiant_id, FichierCV.Status status);
+    Optional<FichierCV> getFirstByEtudiant_IdAndStatusEqualsOrStatusEqualsOrStatusEquals(Long etudiant_id, FichierCV.Status status, FichierCV.Status status1, FichierCV.Status status2);
+
+    Optional<FichierCV> getCurrentCvByEtudiant_id(Long etudiant_id);
+
+    long countAllByStatusEquals(FichierCV.Status status);
 }

@@ -6,10 +6,8 @@ import com.projet.mycose.service.dto.EtudiantDTO;
 import com.projet.mycose.service.dto.RegisterEnseignantDTO;
 import com.projet.mycose.service.dto.RegisterEtudiantDTO;
 import com.projet.mycose.service.dto.*;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
