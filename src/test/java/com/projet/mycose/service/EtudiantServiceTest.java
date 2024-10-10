@@ -29,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+
 @ExtendWith(MockitoExtension.class)
 public class EtudiantServiceTest {
 
@@ -157,22 +158,6 @@ public class EtudiantServiceTest {
     }
 
     @Test
-    public void testListeOffreStageToDTO() {
-        //Arrange
-        List<OffreStage> mockOffreStageList = new ArrayList<>();
-        FormulaireOffreStage mockFormulaireOffreStage = new FormulaireOffreStage("unTitre", "uneEntreprise", "unEmployeur", "unEmail@mail.com", "unsite.com", "uneLocalisation", "1000", "uneDescription", null);
-        FichierOffreStage mockFichierOffreStage = new FichierOffreStage("unTitre", "uneEntreprise", "nom.pdf", "data".getBytes(), null);
-
-        mockOffreStageList.add(mockFormulaireOffreStage);
-        mockOffreStageList.add(mockFichierOffreStage);
-
-        //Act
-        //List<OffreStageDTO> resultat = etudiantService.
-
-        //Assert
-    }
-
-    @Test
     public void testGetStages_Success() {
         // Arrange
         String token = "unTokenValide";
@@ -225,6 +210,34 @@ public class EtudiantServiceTest {
 
         verify(utilisateurService, times(1)).getUserIdByToken(token);
         verify(offreStageRepositoryMock, times(1)).findOffresByEtudiantId(etudiantId, pageRequest);
+    }
+
+    @Test
+    public void testGetAmountOfPage_NumberEndWithZero() {
+        //Arrange
+        when(utilisateurService.getUserIdByToken("tokenValide")).thenReturn(1L);
+        when(offreStageRepositoryMock.countByEtudiantsId(1L)).thenReturn(30);
+
+        //Act
+        int nombrePage = etudiantService.getAmountOfPages("tokenValide");
+
+        //Assert
+        assertEquals(nombrePage, 3);
+        verify(offreStageRepositoryMock, times(1)).countByEtudiantsId(1L);
+    }
+
+    @Test
+    public void testGetAmountOfPage_NumberNotEndWithZero() {
+        //Arrange
+        when(utilisateurService.getUserIdByToken("tokenValide")).thenReturn(1L);
+        when(offreStageRepositoryMock.countByEtudiantsId(1L)).thenReturn(43);
+
+        //Act
+        int nombrePage = etudiantService.getAmountOfPages("tokenValide");
+
+        //Assert
+        assertEquals(nombrePage, 5);
+        verify(offreStageRepositoryMock, times(1)).countByEtudiantsId(1L);
     }
 
 }
