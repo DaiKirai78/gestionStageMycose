@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Base64;
 
 
@@ -17,8 +18,6 @@ import java.util.Base64;
 @Getter
 @Setter
 public class FichierOffreStageDTO extends OffreStageDTO{
-
-    //private Long id;
 
     @NotBlank(message = "Filename is required.")
     @Size(max = 255, message = "Filename cannot exceed 255 characters.")
@@ -59,6 +58,7 @@ public class FichierOffreStageDTO extends OffreStageDTO{
         this.setEntrepriseName(uploadFicherOffreStageDTO.getEntrepriseName());
         this.setCreateur_id(createur_id);
     }
+
 
     //TODO: Ajouter les champs title et entrepriseName au front-end pour qu'on puisse les envoyer au DTO avec validation
 

@@ -81,6 +81,7 @@
     "GENIE_LOGICIEL": "Software Engineering",
     "RESEAU_TELECOMMUNICATION": "Telecommunication Network",
     "choisirProgramme": "Choose a program",
+<<<<<<< HEAD
     "titrePageAfficherOffreStage": "Explore internships with a variety of companies",
     "placeholderRechercherUnStage": "Search for an internship",
     "boutonAppliquerAUnStage": "Apply",
@@ -92,7 +93,8 @@
     "salaireDeOffre": "Salary : ",
     "rendezVousSurPagePourInfos": "Go to the application page for more details about this offer.",
     "publieLe": "Published on ",
-    "aucunStageSelectionne": "No internship selected.",
+    "aucunStageSelectionne": "No internship selected."
+=======
     "errorRetrievingStudents": "Error retrieving students",
     "errorRetrievingNbPages": "Error retrieving the number of pages",
     "waitingCV": "CV waiting",
@@ -113,7 +115,7 @@
     "errorRefusingInternship": "Error refusing the internship offer",
     "noInternshipFound": "No internship offer found",
     "employerInternship": "Employer internship offer",
-    "acceptOrRefuseInternship": "Accept or refuse the internship offer",
+    "acceptOrRefuseInternship": "Accept or refuse the internship offer"
     "ACCEPTED": "Accepted",
     "REFUSED": "Refused",
     "WAITING": "Waiting",
@@ -127,4 +129,5 @@
     "acceptedMessage": "Your CV has been accepted. You can now see the available internship offers.",
     "waitingMessage": "Your CV is currently being validated. You will be able to see the internship offers as soon as it is validated by one of our managers.",
     "refusedMessage": "Your CV has been rejected. You must make the necessary modifications to it and then upload it so that one of our managers can validate it again."
+>>>>>>> sprint2
 }

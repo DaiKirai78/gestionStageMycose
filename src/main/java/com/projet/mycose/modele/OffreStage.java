@@ -1,6 +1,7 @@
 package com.projet.mycose.modele;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,11 +10,13 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @DiscriminatorColumn(name = "FORMAT")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public abstract class OffreStage {
@@ -29,7 +32,11 @@ public abstract class OffreStage {
     @Column(nullable = false)
     private OffreStage.Status status;
 
+    //TODO : À ENLEVER AU PLUS SACRANT
     private String statusDescription;
+
+    @OneToMany(mappedBy = "offreStage", cascade = CascadeType.ALL)
+    private List<EtudiantOffreStagePrivee> offresStagePrivees;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "createur_id")

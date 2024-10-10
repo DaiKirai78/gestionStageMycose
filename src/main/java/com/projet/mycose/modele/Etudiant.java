@@ -8,7 +8,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @NoArgsConstructor
 @DiscriminatorValue("Etudiant")
@@ -19,11 +21,14 @@ public class Etudiant extends Utilisateur {
 
     @Enumerated(EnumType.STRING)
     private Programme programme;
-//    private List<FichierOffreStage> stagesVisiblesFichiers;
-//    private List<FormulaireOffreStage> stagesVisiblesFormulaires;
 
     @OneToMany(mappedBy = "etudiant", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FichierCV> fichiersCV;
+
+
+    @OneToMany(mappedBy = "etudiant",cascade = CascadeType.ALL)
+    private List<EtudiantOffreStagePrivee> offresStagePrivees;
+
 
     @OneToMany(mappedBy = "etudiant", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ApplicationStage> applications;
