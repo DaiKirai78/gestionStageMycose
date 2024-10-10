@@ -2,6 +2,7 @@ package com.projet.mycose;
 
 import com.projet.mycose.modele.Etudiant;
 import com.projet.mycose.modele.FichierOffreStage;
+import com.projet.mycose.modele.FormulaireOffreStage;
 import com.projet.mycose.modele.Programme;
 import com.projet.mycose.repository.UtilisateurRepository;
 import com.projet.mycose.service.*;
@@ -13,6 +14,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.time.LocalDateTime;
 
 @SpringBootApplication
 public class MycoseApplication implements CommandLineRunner {
