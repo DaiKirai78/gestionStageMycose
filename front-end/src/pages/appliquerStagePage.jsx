@@ -1,6 +1,6 @@
 import TokenPageContainer from "./tokenPageContainer.jsx";
 import React from "react";
-import AppliquerStage from "../components/appliquerStage.jsx";
+import AppliquerStage from "../components/acceuil/appliquerStage.jsx";
 import {useLocation} from "react-router-dom";
 
 const appliquerStagePage = () => {

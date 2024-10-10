@@ -1,6 +1,6 @@
 import React from 'react';
 import TokenPageContainer from './tokenPageContainer';
-import VoirMonCV from "../components/voirMonCV.jsx";
+import VoirMonCV from "../components/voirMonCVPage/voirMonCV.jsx";
 const VoirMonCVPage = () => {
 
 

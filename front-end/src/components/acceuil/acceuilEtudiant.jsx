@@ -1,5 +1,5 @@
 import React from 'react';
-import ListStage from "../listeStage.jsx"
+import ListStage from "./listeStage.jsx"
 
 const AcceuilEtudiant = () => {
     return (
