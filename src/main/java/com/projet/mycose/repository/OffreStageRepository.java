@@ -14,7 +14,7 @@ import java.util.Optional;
 @Repository
 public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
     Optional<List<OffreStage>> getOffreStageByStatusEquals(OffreStage.Status status, Pageable pageable);
-    @Query("SELECT o FROM OffreStage o LEFT JOIN EtudiantOffreStagePrivee eop ON o.id = eop.offreStage.id WHERE eop.etudiant.id = :etudiantId OR eop.id IS NULL ORDER BY o.createdAt")
+    @Query("SELECT o FROM OffreStage o LEFT JOIN EtudiantOffreStagePrivee eop ON o.id = eop.offreStage.id WHERE eop.etudiant.id = :etudiantId OR eop.id IS NULL AND o.status = 'ACCEPTED' ORDER BY o.createdAt")
     Page<OffreStage> findOffresByEtudiantId(@Param("etudiantId") long etudiantId, Pageable pageable);
 
     long countByStatus(OffreStage.Status status);
