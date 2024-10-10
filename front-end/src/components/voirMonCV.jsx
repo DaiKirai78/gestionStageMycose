@@ -91,7 +91,7 @@ const VoirMonCV = () => {
                         <iframe
                             src={pdfUrl}
                             title="Mon CV"
-                            className={`w-full h-[66vh] border ${isFullscreen ? "h-[100vh]" : ""}`}
+                            className={`w-full border ${isFullscreen ? "h-[100vh]" : "h-[66vh]"}`}
                             allowFullScreen
                         ></iframe>
                         <div className="fixed bottom-4 left-0 right-0 flex justify-center">
