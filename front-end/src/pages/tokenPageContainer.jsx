@@ -13,14 +13,11 @@ const TokenPageContainer = ({children, role}) => {
     useEffect(() => {
         
         fetchToken()
-        
+
     }, []);
 
     async function fetchToken() {
         const is_tokenValid = await verifToken(token, role);
-
-        console.log("YEAAA");
-        console.log(is_tokenValid);
 
         setIsFetching(false)
     

@@ -60,6 +60,8 @@ const FormConnection = () => {
 
             if (res.status === REPSONSE_CODE_ACCEPTED) {
                 const data = await res.json();
+                console.log(data);
+                
                 localStorage.setItem('token', data.accessToken);
                 navigate("/accueil");
             } else if (res.status === ERROR_CODE_UNAUTHORIZED) {
