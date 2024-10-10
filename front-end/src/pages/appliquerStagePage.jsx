@@ -2,16 +2,12 @@ import TokenPageContainer from "./tokenPageContainer.jsx";
 import React from "react";
 import AppliquerStage from "../components/appliquerStage.jsx";
 import pdfUrl from "../../public/EH-8.pdf";
+import {useLocation} from "react-router-dom";
 
-const appliquerStagePage = (vraiProps) => {
-    const props = {
-        title: "Software Engineer",
-        entrepriseName: "Google",
-        location: "Mountain View, CA",
-        description: "We are looking for a software engineer to join our team",
-        createdAt: "2021-08-01",
-        pdfUrl: pdfUrl
-    }
+const appliquerStagePage = () => {
+    const location = useLocation();
+    const { idStage } = location.state || {};
+
     return (
         <TokenPageContainer>
             <div className="bg-orange-light w-full min-h-screen">
@@ -19,7 +15,7 @@ const appliquerStagePage = (vraiProps) => {
                     (Logo) Mycose
                 </div>
                 <div className="flex h-3/5 justify-center">
-                    <AppliquerStage vraiProps={props}/>
+                    <AppliquerStage id={ idStage }/>
                 </div>
             </div>
         </TokenPageContainer>

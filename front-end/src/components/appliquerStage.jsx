@@ -1,24 +1,68 @@
-import React, {useState} from "react";
-import {Worker, Viewer} from '@react-pdf-viewer/core';
-import {defaultLayoutPlugin} from '@react-pdf-viewer/default-layout';
+import React, { useEffect, useState } from "react";
+import { Worker, Viewer } from '@react-pdf-viewer/core';
+import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import '@react-pdf-viewer/default-layout/lib/styles/index.css';
+import axios from "axios";
 
-const AppliquerStage = ({vraiProps}) => {
-    const {pdfUrl} = vraiProps;
+const AppliquerStage = ({ id }) => {
+    const { idStage } = id;
     const [showPDF, setShowPDF] = useState(false);
-
+    const [unStage, setUnStage] = useState(null);
     const defaultLayoutPluginInstance = defaultLayoutPlugin();
+
+    let localhost = "http://localhost:8080/";
+    let urlApplicationStageAPI = "api/application-stage";
+    let urlOffreStageAPI = "api/offres-stages";
 
     const togglePDF = () => {
         setShowPDF(!showPDF);
     };
 
+    useEffect(() => {
+        fetchStage();
+    }, [idStage]);
+
+    const fetchStage = async () => {
+        try {
+            const response = await axios.get(localhost + urlOffreStageAPI + "/id/" + idStage);
+            console.log(response.data[0]);
+            setUnStage(response.data[0]);
+        } catch (error) {
+            console.error("Erreur lors de la récupération du stage:", error);
+        }
+    };
+
+    const createBlobUrl = (byteArray) => {
+        const blob = new Blob([new Uint8Array(byteArray)], { type: 'application/pdf' });
+        return URL.createObjectURL(blob);
+    };
+
+    const pdfUrl = unStage && unStage.data ? createBlobUrl(unStage.data) : null;
+
+    console.log("mon stage : ", unStage);
+
+    const applyForStage = async () => {
+        const token = localStorage.getItem("token");
+
+        try {
+            const response = await axios.post(localhost + urlApplicationStageAPI + "/apply", null, {
+                params: { id: idStage },
+                headers: {
+                    Authorization: token,
+                },
+            });
+            console.log("Candidature envoyée:", response.data);
+        } catch (error) {
+            console.error("Erreur lors de l'application au stage:", error);
+        }
+    };
+
     return (
-        pdfUrl ? (
-            <div className="w-full 2xl:w-3/4 flex justify-center h-1/2 p-8">
-                <div className="w-full 2xl:w-5/6 h-auto lg:bg-gray-50 p-4 flex lg:flex-row flex-col rounded-2xl">
-                    <>
+        unStage ? (
+            unStage.filename ? (
+                <div className="w-full 2xl:w-3/4 flex justify-center h-1/2 p-8">
+                    <div className="w-full 2xl:w-5/6 h-auto lg:bg-gray-50 p-4 flex lg:flex-row flex-col rounded-2xl">
                         <div
                             className={`lg:w-[90vh] w-full h-[70vh] border-2 border-gray-300 shadow-lg ${showPDF ? 'block' : 'hidden lg:block'}`}>
                             <div className="w-full h-full overflow-hidden">
@@ -27,7 +71,7 @@ const AppliquerStage = ({vraiProps}) => {
                                         fileUrl={pdfUrl}
                                         plugins={[defaultLayoutPluginInstance]}
                                         className="w-full h-full"
-                                        style={{padding: 0, minHeight: '70vh'}}
+                                        style={{ padding: 0, minHeight: '70vh' }}
                                     />
                                 </Worker>
                             </div>
@@ -39,16 +83,17 @@ const AppliquerStage = ({vraiProps}) => {
                                 Fermer PDF
                             </button>
                         </div>
+
                         <div
                             className={`lg:w-96 w-full bg-white shadow-md p-6 lg:ml-8 break-words overflow-y-auto rounded-2xl lg:rounded-none ${showPDF ? 'hidden' : 'block'}`}>
-                            <h2 className="text-2xl font-bold mb-4">{vraiProps.title || 'Offre de stage'}</h2>
-                            <p className="text-gray-700 text-xl">{vraiProps.entrepriseName || "Entreprise Inconnu"}</p>
-                            <p className="text-gray-500 mb-6">{vraiProps.location || 'Lieu par défaut'}</p>
-                            <p className="text-gray-600">{vraiProps.description || 'Pas de description'}</p>
-                            <p className="text-gray-500 mt-4">{vraiProps.createdAt || 'Date de création par défaut'}</p>
+                            <h2 className="text-2xl font-bold mb-4">{unStage.title || 'Offre de stage'}</h2>
+                            <p className="text-gray-700 text-xl">{unStage.entrepriseName || "Entreprise Inconnu"}</p>
+                            <p className="text-gray-500 mb-6">{unStage.location || 'Lieu par défaut'}</p>
+                            <p className="text-gray-600">{unStage.description || 'Pas de description'}</p>
+                            <p className="text-gray-500 mt-4">{unStage.createdAt || 'Date de création par défaut'}</p>
 
                             <button
-                                onClick={() => alert('Application confirmed!')}
+                                onClick={applyForStage}
                                 className="mt-6 bg-orange w-48 text-white px-12 py-3 rounded-lg hover:bg-orange-dark"
                             >
                                 Appliquer
@@ -61,9 +106,9 @@ const AppliquerStage = ({vraiProps}) => {
                                 {showPDF ? 'Fermer PDF' : 'Afficher PDF'}
                             </button>
                         </div>
-                    </>
+                    </div>
 
-                    {showPDF && pdfUrl && (
+                    {showPDF && (
                         <div className="fixed inset-0 bg-gray-100 z-50 flex justify-center items-center lg:hidden">
                             <div className="w-full h-full">
                                 <Worker workerUrl={`https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js`}>
@@ -71,7 +116,7 @@ const AppliquerStage = ({vraiProps}) => {
                                         fileUrl={pdfUrl}
                                         plugins={[defaultLayoutPluginInstance]}
                                         className="w-full h-full"
-                                        style={{padding: 0, minHeight: '100vh'}}
+                                        style={{ padding: 0, minHeight: '100vh' }}
                                     />
                                     <button
                                         onClick={togglePDF}
@@ -84,26 +129,26 @@ const AppliquerStage = ({vraiProps}) => {
                         </div>
                     )}
                 </div>
-            </div>
-        ) : (
-            <div className=" w-3/4 lg:w-1/2 mt-8 h-96 bg-white shadow-md p-6 overflow-y-auto break-words rounded-2xl">
-                <h2 className="text-2xl font-bold mb-4">{vraiProps.title || 'Offre de stage'}</h2>
-                <p className="text-gray-700 text-xl">{vraiProps.entrepriseName || "Entreprise Inconnu"}</p>
-                <p className="text-gray-500 mb-6">{vraiProps.location || 'Lieu par défaut'}</p>
-                <p className="text-gray-600">{vraiProps.description || 'Pas de description'}</p>
-                <p className="text-gray-500 mt-4">{vraiProps.createdAt || 'Date de création par défaut'}</p>
+            ) : (
+                <div className="w-3/4 lg:w-1/2 mt-8 h-96 bg-white shadow-md p-6 overflow-y-auto break-words rounded-2xl">
+                    <h2 className="text-2xl font-bold mb-4">{unStage.title || 'Offre de stage'}</h2>
+                    <p className="text-gray-700 text-xl">{unStage.entrepriseName || "Entreprise Inconnu"}</p>
+                    <p className="text-gray-500 mb-6">{unStage.location || 'Lieu par défaut'}</p>
+                    <p className="text-gray-600">{unStage.description || 'Pas de description'}</p>
+                    <p className="text-gray-500 mt-4">{unStage.createdAt || 'Date de création par défaut'}</p>
 
-                <button
-                    onClick={() => alert('Application confirmed!')}
-                    className="mt-24 bg-orange w-48 text-white px-12 py-3 rounded-lg hover:bg-orange-dark"
-                >
-                    Appliquer
-                </button>
-            </div>
+                    <button
+                        onClick={applyForStage}
+                        className="mt-24 bg-orange w-48 text-white px-12 py-3 rounded-lg hover:bg-orange-dark"
+                    >
+                        Appliquer
+                    </button>
+                </div>
+            )
+        ) : (
+            <div>Chargement des informations du stage...</div>
         )
     );
 };
 
 export default AppliquerStage;
-
-

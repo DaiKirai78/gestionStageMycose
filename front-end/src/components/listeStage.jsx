@@ -1,4 +1,5 @@
 import {useEffect, useRef, useState} from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const listeStage = () => {
@@ -170,6 +171,14 @@ const listeStage = () => {
     }
 
 
+    let navigate = useNavigate();
+
+    const changerDePage = (idStage) => {
+        let path = '/appliquer';
+        navigate(path, { state: { idStage } });
+    };
+
+
     return (
         <>
             <div className="w-2/3 lg:w-1/2">
@@ -213,7 +222,8 @@ const listeStage = () => {
                                             <h4 className="pl-2 max-w-max pr-2">{stage.date}</h4>
                                         </div>
                                         <button
-                                            className="bg-orange text-white md:absolute md:bottom-2 lg:bottom-12 lg:top-4 md:right-2 px-4 md:px-8 py-2 rounded-2xl mt-3 lg:mt-0 w-1/2 md:w-1/3 lg:w-36 hover:bg-orange-dark shadow-md">Appliquer
+                                            className="bg-orange text-white md:absolute md:bottom-2 lg:bottom-12 lg:top-4 md:right-2 px-4 md:px-8 py-2 rounded-2xl mt-3 lg:mt-0 w-1/2 md:w-1/3 lg:w-36 hover:bg-orange-dark shadow-md"
+                                        onClick={() => changerDePage(stage.id)}>Appliquer
                                         </button>
                                     </div>
                                     <hr className="bg-deep-orange-100"/>
