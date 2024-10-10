@@ -25,6 +25,8 @@ const listeStage = () => {
 
     const {t} = useTranslation();
 
+    let navigate = useNavigate();
+
     let localhost = "http://localhost:8080/";
     let urlGetFormulaireStage = "etudiant/getStages?pageNumber=";
     let urlGetNombreDePage = "etudiant/pages"
@@ -238,8 +240,6 @@ const listeStage = () => {
         return new Date(dateAFormater).toISOString().split('T')[0];
     }
 
-    let navigate = useNavigate();
-
     const changerDePage = (idStage) => {
         let path = '/appliquer';
         navigate(path, { state: { idStage } });
@@ -292,7 +292,6 @@ const listeStage = () => {
                                         <button
                                             className="bg-orange text-white md:absolute md:bottom-2 lg:bottom-12 lg:top-4 md:right-2 px-4 md:px-8 py-2 rounded-2xl mt-3 lg:mt-0 w-1/2 md:w-1/3 lg:w-36 hover:bg-orange-dark shadow-md"
                                             onClick={() => changerDePage(stage.id)}>{t("boutonAppliquerAUnStage")}
-                                        >Appliquer
                                         </button>
                                     </div>
                                     <hr className="bg-deep-orange-100"/>
@@ -321,7 +320,6 @@ const listeStage = () => {
                 }
             </div>
             {
-                //stageClique.type === "fichier" ? //TODO : AJOUTER LE TYPE DE FICHIER SELON SI C'EST FILE OU FORM
                 unStageEstClique && (
                     <div
                         className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50 transition-opacity duration-300"

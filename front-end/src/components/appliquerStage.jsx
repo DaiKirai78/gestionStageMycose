@@ -4,59 +4,94 @@ import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 import axios from "axios";
+import { useNavigate } from 'react-router-dom';
 
-const AppliquerStage = ({ id }) => {
-    const { idStage } = id;
+const AppliquerStage = ({ idStage }) => {
     const [showPDF, setShowPDF] = useState(false);
     const [unStage, setUnStage] = useState(null);
+    const [pdfUrl, setPdfUrl] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [successMessage, setSuccessMessage] = useState(null);
+    const [errorMessage, setErrorMessage] = useState(null);
     const defaultLayoutPluginInstance = defaultLayoutPlugin();
+    const navigate = useNavigate();
 
-    let localhost = "http://localhost:8080/";
-    let urlApplicationStageAPI = "api/application-stage";
-    let urlOffreStageAPI = "api/offres-stages";
+    const localhost = "http://localhost:8080/";
+    const urlApplicationStageAPI = "api/application-stage";
+    const urlOffreStageAPI = "api/offres-stages";
 
     const togglePDF = () => {
         setShowPDF(!showPDF);
     };
 
     useEffect(() => {
-        fetchStage();
+        if (idStage) {
+            fetchStage();
+        }
     }, [idStage]);
 
     const fetchStage = async () => {
         try {
             const response = await axios.get(localhost + urlOffreStageAPI + "/id/" + idStage);
-            console.log(response.data[0]);
-            setUnStage(response.data[0]);
+            const stageData = response.data;
+            setUnStage(stageData);
+
+            if (stageData.fileData) {
+                const base64String = stageData.fileData;
+                const dataUrl = `data:application/pdf;base64,${base64String}`;
+                setPdfUrl(dataUrl);
+            }
+
+            setLoading(false);
         } catch (error) {
             console.error("Erreur lors de la récupération du stage:", error);
+            setError("Erreur lors de la récupération des données du stage.");
+            setLoading(false);
         }
     };
 
-    const createBlobUrl = (byteArray) => {
-        const blob = new Blob([new Uint8Array(byteArray)], { type: 'application/pdf' });
-        return URL.createObjectURL(blob);
-    };
-
-    const pdfUrl = unStage && unStage.data ? createBlobUrl(unStage.data) : null;
-
-    console.log("mon stage : ", unStage);
-
     const applyForStage = async () => {
         const token = localStorage.getItem("token");
+        setSuccessMessage(null);
+        setErrorMessage(null);
 
         try {
             const response = await axios.post(localhost + urlApplicationStageAPI + "/apply", null, {
                 params: { id: idStage },
                 headers: {
-                    Authorization: token,
+                    Authorization: `Bearer ${token}`,
                 },
             });
-            console.log("Candidature envoyée:", response.data);
+            setSuccessMessage("Application au stage effectuée.");
         } catch (error) {
             console.error("Erreur lors de l'application au stage:", error);
+            setErrorMessage("La tentative d'application au stage a échoué.");
+            if (error.response) {
+                if (error.response.status === 409) {
+                    setErrorMessage("Vous avez déjà postulé à cette offre de stage.");
+                } else if (error.response.status === 403) {
+                    setErrorMessage("L'offre de stage n'est plus disponible.");
+                }
+            }
         }
     };
+
+    const formaterDate = (dateAFormater) => {
+        return new Date(dateAFormater).toISOString().split('T')[0];
+    };
+
+    const handleReturnHome = () => {
+        navigate('/accueil');
+    };
+
+    if (loading) {
+        return <div>Chargement des informations du stage...</div>;
+    }
+
+    if (error) {
+        return <div>{error}</div>;
+    }
 
     return (
         unStage ? (
@@ -87,10 +122,10 @@ const AppliquerStage = ({ id }) => {
                         <div
                             className={`lg:w-96 w-full bg-white shadow-md p-6 lg:ml-8 break-words overflow-y-auto rounded-2xl lg:rounded-none ${showPDF ? 'hidden' : 'block'}`}>
                             <h2 className="text-2xl font-bold mb-4">{unStage.title || 'Offre de stage'}</h2>
-                            <p className="text-gray-700 text-xl">{unStage.entrepriseName || "Entreprise Inconnu"}</p>
-                            <p className="text-gray-500 mb-6">{unStage.location || 'Lieu par défaut'}</p>
-                            <p className="text-gray-600">{unStage.description || 'Pas de description'}</p>
-                            <p className="text-gray-500 mt-4">{unStage.createdAt || 'Date de création par défaut'}</p>
+                            <p className="text-gray-700 text-xl">{unStage.entrepriseName || "Entreprise Inconnue"}</p>
+                            <p className="text-gray-500 mb-6">{unStage.location || 'Adresse non disponible'}</p>
+                            <p className="text-gray-600">{unStage.description || 'Description non disponible'}</p>
+                            <p className="text-gray-500 mt-4">{formaterDate(unStage.createdAt) || 'Date non disponible'}</p>
 
                             <button
                                 onClick={applyForStage}
@@ -105,6 +140,9 @@ const AppliquerStage = ({ id }) => {
                             >
                                 {showPDF ? 'Fermer PDF' : 'Afficher PDF'}
                             </button>
+
+                            {successMessage && <p className="text-green-500 mt-4">{successMessage}</p>}
+                            {errorMessage && <p className="text-red-500 mt-4">{errorMessage}</p>}
                         </div>
                     </div>
 
@@ -128,21 +166,42 @@ const AppliquerStage = ({ id }) => {
                             </div>
                         </div>
                     )}
+
+                    <div className="w-full h-20 flex justify-center mt-4">
+                        <button
+                            onClick={handleReturnHome}
+                            className="bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600"
+                        >
+                            Retour à l'accueil
+                        </button>
+                    </div>
                 </div>
             ) : (
                 <div className="w-3/4 lg:w-1/2 mt-8 h-96 bg-white shadow-md p-6 overflow-y-auto break-words rounded-2xl">
                     <h2 className="text-2xl font-bold mb-4">{unStage.title || 'Offre de stage'}</h2>
-                    <p className="text-gray-700 text-xl">{unStage.entrepriseName || "Entreprise Inconnu"}</p>
-                    <p className="text-gray-500 mb-6">{unStage.location || 'Lieu par défaut'}</p>
-                    <p className="text-gray-600">{unStage.description || 'Pas de description'}</p>
-                    <p className="text-gray-500 mt-4">{unStage.createdAt || 'Date de création par défaut'}</p>
+                    <p className="text-gray-700 text-xl">{unStage.entrepriseName || "Entreprise inconnue"}</p>
+                    <p className="text-gray-500 mb-6">{unStage.location || 'Adresse non disponible'}</p>
+                    <p className="text-gray-600">{unStage.description || 'Description non disponible'}</p>
+                    <p className="text-gray-500 mt-4">{formaterDate(unStage.createdAt) || 'Date non disponible'}</p>
 
                     <button
                         onClick={applyForStage}
-                        className="mt-24 bg-orange w-48 text-white px-12 py-3 rounded-lg hover:bg-orange-dark"
+                        className="mt-20 bg-orange w-48 text-white px-12 py-3 rounded-lg hover:bg-orange-dark"
                     >
                         Appliquer
                     </button>
+
+                    {successMessage && <p className="text-green-500 mt-4">{successMessage}</p>}
+                    {errorMessage && <p className="text-red-500 mt-4">{errorMessage}</p>}
+
+                    <div className="w-full flex justify-center mt-4">
+                        <button
+                            onClick={handleReturnHome}
+                            className="bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600"
+                        >
+                            Retour à l'accueil
+                        </button>
+                    </div>
                 </div>
             )
         ) : (
@@ -152,3 +211,4 @@ const AppliquerStage = ({ id }) => {
 };
 
 export default AppliquerStage;
+

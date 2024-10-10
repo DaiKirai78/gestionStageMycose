@@ -1,7 +1,6 @@
 import TokenPageContainer from "./tokenPageContainer.jsx";
 import React from "react";
 import AppliquerStage from "../components/appliquerStage.jsx";
-import pdfUrl from "../../public/EH-8.pdf";
 import {useLocation} from "react-router-dom";
 
 const appliquerStagePage = () => {
@@ -15,7 +14,7 @@ const appliquerStagePage = () => {
                     (Logo) Mycose
                 </div>
                 <div className="flex h-3/5 justify-center">
-                    <AppliquerStage id={ idStage }/>
+                    <AppliquerStage idStage={ idStage }/>
                 </div>
             </div>
         </TokenPageContainer>
