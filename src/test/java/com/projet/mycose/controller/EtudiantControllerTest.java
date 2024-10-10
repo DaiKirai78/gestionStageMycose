@@ -118,7 +118,7 @@ public class EtudiantControllerTest {
 
         // Act & Assert
         mockMvc.perform(post("/etudiant/getStages")
-                .header("token", authHeader).param("pageNumber", String.valueOf(0))
+                .header("Authorization", authHeader).param("pageNumber", String.valueOf(0))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isAccepted())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -134,7 +134,7 @@ public class EtudiantControllerTest {
 
         //Act & Assert
         mockMvc.perform(post("/etudiant/getStages")
-                .header("token", "unToken")
+                .header("Authorization", "unToken")
                 .param("pageNumber", String.valueOf(0))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
@@ -147,7 +147,7 @@ public class EtudiantControllerTest {
 
         //Act & Assert
         mockMvc.perform(get("/etudiant/pages")
-                        .header("token", "tokenValide"))
+                        .header("Authorization", "tokenValide"))
                 .andExpect(status().isAccepted())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().string("2"));
@@ -160,7 +160,7 @@ public class EtudiantControllerTest {
 
         //Act & Assert
         mockMvc.perform(get("/etudiant/pages")
-                .header("token", "tokenValide"))
+                .header("Authorization", "tokenValide"))
                 .andExpect(status().isNoContent());
 
     }
@@ -190,7 +190,7 @@ public class EtudiantControllerTest {
 
         //Act & Assert
         mockMvc.perform(post("/etudiant/recherche-offre")
-                        .header("token", "tokenValide")
+                        .header("Authorization", "tokenValide")
                         .param("pageNumber", String.valueOf(0))
                         .param("recherche", "uneRecherche")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -207,7 +207,7 @@ public class EtudiantControllerTest {
 
         //Act & Assert
         mockMvc.perform(post("/etudiant/recherche-offre")
-                        .header("token", "unToken")
+                        .header("Authorization", "unToken")
                         .param("pageNumber", String.valueOf(0))
                         .param("recherche", "uneRecherche")
                         .contentType(MediaType.APPLICATION_JSON))
