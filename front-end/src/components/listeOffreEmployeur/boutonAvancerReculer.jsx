@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { BsArrowLeft, BsArrowRight } from "react-icons/bs";
 
 const BoutonAvancerReculer = () => {
-    const [pages, setPages] = useState({minPages: 1, maxPages: 11, actualPage: 1});
+    const [pages, setPages] = useState({minPages: 1, maxPages: 11, currentPage: 1});
 
     useEffect(() => {
         console.log("HEEEEEee");
@@ -11,30 +11,30 @@ const BoutonAvancerReculer = () => {
     }, [pages])
 
     function pagesUp(amount = 1) {        
-        if (pages.actualPage + amount > pages.maxPages)
+        if (pages.currentPage + amount > pages.maxPages)
             return;
 
         setPages({
             ...pages,
-            actualPage: pages.actualPage + 1
+            currentPage: pages.currentPage + 1
         });
 
     }
 
     function pagesDown(amount = 1) {        
-        if (pages.actualPage - amount < pages.minPages)
+        if (pages.currentPage - amount < pages.minPages)
             return;
     
         setPages({
             ...pages,
-            actualPage: pages.actualPage - 1
+            currentPage: pages.currentPage - 1
         });
     }
 
     function goTo(destinationPage) {
         setPages({
             ...pages,
-            actualPage: destinationPage
+            currentPage: destinationPage
         });
     }
 
@@ -47,7 +47,7 @@ const BoutonAvancerReculer = () => {
                 <button className='w-1/6 h-full border rounded'
                     onClick={() => (goTo(pages.minPages))}
                 >{pages.minPages}</button>
-                <div className='w-1/6 h-full border border-deep-orange-100 rounded flex justify-center items-center'>{pages.actualPage}</div>
+                <div className='w-1/6 h-full border border-deep-orange-100 rounded flex justify-center items-center'>{pages.currentPage}</div>
                 <button className='w-1/6 h-full border rounded'
                     onClick={() => (goTo(pages.maxPages))}
                 >{pages.maxPages}</button>

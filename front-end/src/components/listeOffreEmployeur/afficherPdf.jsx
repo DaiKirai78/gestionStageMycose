@@ -1,7 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-const AfficherPdf = ({setVoirPdf}) => {
+const AfficherPdf = ({setVoirPdf, activePdf}) => {
 
     const { t } = useTranslation();
     
@@ -9,7 +9,7 @@ const AfficherPdf = ({setVoirPdf}) => {
         className="fixed left-0 top-0 w-full h-full p-8 bg-orange-light z-50 flex flex-col items-center gap-4"
     >
         <iframe
-            src="/fake_CV.pdf"
+            src={`data:application/pdf;base64,${activePdf}`}
             title="CV"
             className="w-full h-full border"
         ></iframe>

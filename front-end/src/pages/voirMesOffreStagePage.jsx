@@ -6,117 +6,15 @@ import { useTranslation } from "react-i18next"
 import AfficherPdf from '../components/listeOffreEmployeur/afficherPdf.jsx';
 import BoutonAvancerReculer from '../components/listeOffreEmployeur/boutonAvancerReculer.jsx';
 
-const fakeData = [
-    {
-        format: "file",
-        id: "id1",
-        created_at: "2024-01-10",
-        data: "data1",
-        filename: "fake_CV.pdf",
-        updated_at: "2024-04-21",
-        description: null,
-        email: "jean.dupont@example.com",
-        employer_name: "Solutions Tech",
-        entreprise_name: "Solutions Tech Inc.",
-        location: null,
-        salary: "80 000 $",
-        title: "Ingénieur Logiciel",
-        website: null,
-        status: "ACCEPTED"
-    },
-    {
-        format: "form",
-        id: "id2",
-        created_at: "2024-04-03",
-        data: null,
-        filename: null,
-        updated_at: "2024-04-01",
-        description: "Nous recherchons un designer créatif pour rejoindre notre équipe.",
-        email: "jane.smith@example.com",
-        employer_name: "Agence Créative",
-        entreprise_name: "Innovations Design SARL",
-        location: "New York, NY",
-        salary: "70 000 $",
-        title: "Designer Graphique",
-        website: "https://agencecreative.com",
-        status: "ACCEPTED"
-    },
-    {
-        format: "form",
-        id: "id3",
-        created_at: "2024-10-05",
-        data: null,
-        filename: null,
-        updated_at: "2024-08-07",
-        description: "Poste de vente disponible dans notre équipe dynamique.",
-        email: "michael.johnson@example.com",
-        employer_name: "Vente Co.",
-        entreprise_name: "Vente Corp.",
-        location: "Austin, TX",
-        salary: "60 000 $",
-        title: "Représentant Commercial",
-        website: "https://venteco.com",
-        status: "REFUSED"
-    },
-    {
-        format: "form",
-        id: "id4",
-        created_at: "2024-07-18",
-        data: null,
-        filename: null,
-        updated_at: "2024-11-12",
-        description: "Recherche un chef de projet expérimenté pour superviser les opérations.",
-        email: "alice.brown@example.com",
-        employer_name: "Gestion de Projet Inc.",
-        entreprise_name: "Solutions PM",
-        location: "Los Angeles, CA",
-        salary: "90 000 $",
-        title: "Chef de Projet",
-        website: "https://pm-solutions.com",
-        status: "WAITING"
-    },
-    {
-        format: "form",
-        id: "id5",
-        created_at: "2024-05-15",
-        data: null,
-        filename: null,
-        updated_at: "2024-06-01",
-        description: "Rejoignez notre équipe en tant que spécialiste du marketing.",
-        email: "charles.davis@example.com",
-        employer_name: "Experts Marketing",
-        entreprise_name: "Experts Marketing Inc.",
-        location: "Seattle, WA",
-        salary: "75 000 $",
-        title: "Spécialiste Marketing",
-        website: "https://expertsmarketing.com",
-        status: "ACCEPTED"
-    },
-    {
-        format: "form",
-        id: "id6",
-        created_at: "2024-08-25",
-        data: null,
-        filename: null,
-        updated_at: "2024-09-10",
-        description: "Recherche un analyste de données pour analyser les tendances du marché.",
-        email: "emily.wilson@example.com",
-        employer_name: "Data Insights",
-        entreprise_name: "Data Insights SARL",
-        location: "Boston, MA",
-        salary: "85 000 $",
-        title: "Analyste de Données",
-        website: "https://datainsights.com",
-        status: "WAITING"
-    }
-];
-
-
+const STATUS_CODE_ACCEPTED = 202;
+const STATUS_CODE_NO_CONTENT = 204;
 
 const VoirMesOffreStagePage = () => {
     const [isFetching, setIsFetching] = useState(true);
-    const [data, setData] = useState()
+    const [data, setData] = useState(null)
     const [voirPdf, setVoirPdf] = useState(false);
+    const [pages, setPages] = useState({minPages: 1, maxPages: 11, currentPage: 1});
+    const [activeOffer, setActiveOffer] = useState(null);
     
     const { t } = useTranslation()
 
@@ -140,22 +38,25 @@ const VoirMesOffreStagePage = () => {
 
         setIsFetching(true);
         
-        try {
-            const response = await fetch("http://localhost:8080/api/offres-stages/getMine", {
-                method: "GET",
-                headers: {Authorization: `Bearer ${token}`}
-            });
+        try {            
+            const response = await fetch(
+                `http://localhost:8080/entreprise/getOffresPosted?pageNumber=${pages.currentPage - 1}`,
+                {
+                    method: "POST",
+                    headers: {Authorization: `Bearer ${token}`}
+                }
+            );
 
-            if (response.ok) {
+            if (response.status == STATUS_CODE_ACCEPTED) {                
                 const fetchedData = await response.json();
-                // setData(fetchedData);
+                setData(fetchedData);
                 console.log(fetchedData);
-                setData(fakeData)
-            } else {
+                
+            } else if (response.status == STATUS_CODE_NO_CONTENT) {
                 setData(fakeData)
             }
-        } catch {
-            console.log("ERROR");
+        } catch (e) {
+            console.log(e);
         } finally {
             setIsFetching(false);
         }
@@ -168,17 +69,17 @@ const VoirMesOffreStagePage = () => {
                     (Logo) Mycose
                 </div>
                 <div className='w-4/5'>
-                    {
-                        isFetching ? 
+                    {   
+                        isFetching && !data ? 
                             <PageIsLoading /> : 
-                            data.length > 0 ? 
-                                <ListOffreStageEmployeur data={data} voirPdf={voirPdf} setVoirPdf={setVoirPdf} /> :
+                            data.length > 0 ?
+                                <ListOffreStageEmployeur data={data} voirPdf={voirPdf} setVoirPdf={setVoirPdf} activeOffer={activeOffer} setActiveOffer={setActiveOffer} /> :
                                 <h1>{t("noOffer")}</h1>
                     }
                 </div>
-                <BoutonAvancerReculer />
+                <BoutonAvancerReculer pages={pages} setPages={setPages} />
             </div>
-            { voirPdf && <AfficherPdf setVoirPdf={setVoirPdf} /> }
+            { voirPdf && <AfficherPdf setVoirPdf={setVoirPdf} activePdf={activeOffer.fileData} /> }
         </TokenPageContainer>
     );
 };

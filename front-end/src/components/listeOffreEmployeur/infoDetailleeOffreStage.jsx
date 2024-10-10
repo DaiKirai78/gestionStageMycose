@@ -1,10 +1,17 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BsX } from "react-icons/bs";
 
 const InfoDetailleeOffreStage = ({setActiveOffer, activeOffer, getColorOffreStatus, setVoirPdf, voirPdf}) => {
 
     const { t } = useTranslation();
+
+    const format = getFormat();
+
+    function getFormat() {
+        if(activeOffer)
+            return activeOffer.fileData ? "file" : "form";
+    }
 
     return (
         <div className={`pb-8 sm:pt-0 bg-orange-light z-20 rounded border border-deep-orange-200 w-full md:h-[calc(100vh-1rem)] h-[90vh] fixed left-0 md:sticky md:top-2 flex flex-col md:transition-none transition-all ease-in-out overflow-y-auto ${activeOffer === null ? "bottom-[-90vh]" : "bottom-0"}`}>
@@ -21,8 +28,10 @@ const InfoDetailleeOffreStage = ({setActiveOffer, activeOffer, getColorOffreStat
                     { activeOffer.description &&
                         <p className="mt-2"><strong>{t("description")} :</strong> {activeOffer.description}</p>
                     }
-                    <p className="mt-2"><strong>{t("employer")} :</strong> {activeOffer.employer_name}</p>
-                    <p className="mt-2"><strong>{t("company")} :</strong> {activeOffer.entreprise_name}</p>
+                    { activeOffer.employerName &&
+                        <p className="mt-2"><strong>{t("employer")} :</strong> {activeOffer.employerName}</p>
+                    }
+                    <p className="mt-2"><strong>{t("company")} :</strong> {activeOffer.entrepriseName}</p>
                     { activeOffer.location &&
                         <p className="mt-2"><strong>{t("locationStage")} :</strong> {activeOffer.location}</p>
                     }
@@ -35,7 +44,7 @@ const InfoDetailleeOffreStage = ({setActiveOffer, activeOffer, getColorOffreStat
                             <strong>{t("websiteStage")} :</strong> <a href={activeOffer.website} target="_blank" className="text-blue-500 underline cursor-pointer">{activeOffer.website}</a>
                         </p>
                     }
-                    { activeOffer.format === "file" &&
+                    { format === "file" &&
                         <button
                             className='bg-orange px-4 py-2 rounded text-white mt-3 cursor-pointer'
                             onClick={() => setVoirPdf(!voirPdf)}

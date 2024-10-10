@@ -96,5 +96,7 @@
     "locationStage": "Location",
     "salaryStage": "Salary",
     "status": "Status",
-    "websiteStage": "Website"
+    "websiteStage": "Website",
+    "file": "File",
+    "form": "Form"
 }

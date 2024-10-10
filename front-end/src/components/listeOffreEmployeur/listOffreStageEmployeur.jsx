@@ -1,11 +1,9 @@
-import React, { act, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import OffreStageCard from './offreStageCard';
 import InfoDetailleeOffreStage from './infoDetailleeOffreStage';
 
 
-const ListOffreStageEmployeur = ({data, voirPdf, setVoirPdf}) => {
-
-    const [activeOffer, setActiveOffer] = useState(null);
+const ListOffreStageEmployeur = ({data, voirPdf, setVoirPdf, activeOffer, setActiveOffer}) => {
 
     useEffect(() => {
         if (!isMediumScreen()) {
