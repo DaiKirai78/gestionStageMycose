@@ -56,6 +56,12 @@ function FileOffreStage() {
             console.log("Fichier envoyé avec succès :", response.data);
             setSuccessMessage(t("fileUploadSuccess"));
             setUploadError("");
+
+            setFile(null);
+            setTitle("");
+            setCompanyName("");
+            document.getElementById("file").value = "";
+
         } catch (error) {
             console.error("Erreur lors de l'envoi du fichier :", error);
             setUploadError(t("fileUploadError"));

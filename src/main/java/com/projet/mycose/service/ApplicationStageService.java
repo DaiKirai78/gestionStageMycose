@@ -59,10 +59,6 @@ public class ApplicationStageService {
         return applicationStageRepository.findByEtudiantIdAndStatusEquals(etudiantId, status).stream().map(this::convertToDTOAvecInfos).toList();
     }
 
-    public List<ApplicationStageDTO> getApplicationsByOffreStage(Long offreStageId) {
-        return applicationStageRepository.findByOffreStageId(offreStageId).stream().map(this::convertToDTO).toList();
-    }
-
     public ApplicationStageAvecInfosDTO getApplicationById(String token, Long applicationId) throws ChangeSetPersister.NotFoundException {
         Long etudiantId = utilisateurService.getUserIdByToken(token);
         return applicationStageRepository.findByEtudiantIdAndOffreStageId(etudiantId, applicationId).map(this::convertToDTOAvecInfos).orElseThrow(ChangeSetPersister.NotFoundException::new);

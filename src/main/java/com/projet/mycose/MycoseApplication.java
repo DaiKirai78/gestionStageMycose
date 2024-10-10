@@ -9,6 +9,8 @@ import com.projet.mycose.service.*;
 import com.projet.mycose.service.dto.EtudiantDTO;
 import com.projet.mycose.service.dto.FormulaireOffreStageDTO;
 import com.projet.mycose.service.dto.LoginDTO;
+import com.projet.mycose.service.dto.FormulaireOffreStageDTO;
+import com.projet.mycose.service.dto.LoginDTO;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -16,8 +18,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class MycoseApplication implements CommandLineRunner {
 
-    public MycoseApplication(EnseignantService enseignantService, EtudiantService etudiantService, EmployeurService employeurService, OffreStageService offreStageService, UtilisateurService utilisateurService) {
-        this.enseignantService = enseignantService;
+
+	public MycoseApplication(EnseignantService enseignantService, EtudiantService etudiantService, EmployeurService employeurService, OffreStageService offreStageService, UtilisateurService utilisateurService) {
         this.etudiantService = etudiantService;
 		this.employeurService = employeurService;
 		this.offreStageService = offreStageService;
@@ -28,22 +30,18 @@ public class MycoseApplication implements CommandLineRunner {
 		SpringApplication.run(MycoseApplication.class, args);
 		System.out.println("Hello world!");
 	}
-	private final EnseignantService enseignantService;
 	private final EtudiantService etudiantService;
 	private final EmployeurService employeurService;
 	private final OffreStageService offreStageService;
 	private final UtilisateurService utilisateurService;
 	@Override
 	public void run(String... args) {
-		//enseignantService.creationDeCompte("Guillaume", "Courtemanche", "283-948-2738", "courtemanche@gmail.com", "courte123$");
-		etudiantService.creationDeCompte("Roberto", "Berrios", "273-389-2937", "roby@gmail.com", "Roby123$", Programme.TECHNIQUE_INFORMATIQUE);
-		//enseignantService.creationDeCompte("Guillaume", "Courtemanche", "283-948-2738", "courtebite@gmail.com", "courte123$");
-		etudiantService.creationDeCompte("Guillaume", "Courtemanche", "283-948-2738", "gc@gmail.com", "courte123$", Programme.GENIE_LOGICIEL);
 
-		employeurService.creationDeCompte("Willy", "Wonka", "555-333-4343", "wonka@gmail.com", "Chocolatayyy$", "Wonka INC");
-		String token = utilisateurService.authentificationUtilisateur(new LoginDTO("wonka@gmail.com", "Chocolatayyy$"));
-		FormulaireOffreStageDTO formulaireOffreStageDTO = new FormulaireOffreStageDTO(1L, "Chco Factory", "Willy Wonka", "wonka@mail.com", "wonka.com", "Master Chocolatier", "New York", "100 000", "Make Chocolate", 4L);
-		offreStageService.saveForm(formulaireOffreStageDTO, "Bearer " + token);
+        employeurService.creationDeCompte("Willy", "Wonka", "555-333-4343", "wonka@gmail.com", "Chocolatayyy$", "Wonka INC");
+        String token = utilisateurService.authentificationUtilisateur(new LoginDTO("wonka@gmail.com", "Chocolatayyy$"));
+        FormulaireOffreStageDTO formulaireOffreStageDTO = new FormulaireOffreStageDTO(1L, "Willy Wona", "wonka@gmail.com", "wonka.com", "New York", "100 000", "OHH CHOCOLATE", "Data Analyst", "Wonka INC", 4L);
+        //FormulaireOffreStageDTO formulaireOffreStageDTO2 = new FormulaireOffreStageDTO(2L, "MMM", "Vicente2", "vicen@mail.com", "www.vicen2.ca", "Software Engineer 2", "Montrèal 2", "95 000", "J'adore ingénieur! 2", 1L);
+        offreStageService.saveForm(formulaireOffreStageDTO, "Bearer " + token);
 //		offreStageService.assignerEmployeur(3L, 1L);
 	}
 }
