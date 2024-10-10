@@ -3,6 +3,7 @@ import TokenPageContainer from './tokenPageContainer';
 import ListOffreStageEmployeur from '../components/listeOffreEmployeur/listOffreStageEmployeur.jsx'
 import PageIsLoading from "../components/pageIsLoading.jsx"
 import { BsArrowLeft, BsArrowRight } from "react-icons/bs";
+import { useTranslation } from "react-i18next"
 
 const fakeData = [
     {
@@ -116,6 +117,8 @@ const VoirMesOffreStagePage = () => {
     const [data, setData] = useState()
     const [voirPdf, setVoirPdf] = useState(false);
     const [pages, setPages] = useState({minPages: 1, maxPages: 11, actualPage: 1});
+    
+    const { t } = useTranslation()
 
     useEffect(() => {
 
@@ -203,7 +206,7 @@ const VoirMesOffreStagePage = () => {
                     isFetching ? 
                         <PageIsLoading /> : 
                         data.length > 0 ? <ListOffreStageEmployeur data={data} voirPdf={voirPdf} setVoirPdf={setVoirPdf} /> :
-                            <h1>Aucune offre</h1>
+                            <h1>{t("noOffer")}</h1>
                 }
                 </div>
                 <div className='w-full h-10 mb-12 flex justify-center'>
@@ -236,7 +239,7 @@ const VoirMesOffreStagePage = () => {
                     <button 
                         className='bg-orange px-4 py-2 rounded text-white'
                         onClick={() => {setVoirPdf(false)}}
-                    >Fermer</button>
+                    >{t("close")}</button>
                 </div>
             }
         </TokenPageContainer>

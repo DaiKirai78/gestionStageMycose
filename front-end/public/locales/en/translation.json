@@ -80,5 +80,21 @@
     "TECHNIQUE_INFORMATIQUE": "Computer Science",
     "GENIE_LOGICIEL": "Software Engineering",
     "RESEAU_TELECOMMUNICATION": "Telecommunication Network",
-    "choisirProgramme": "Choose a program"
+    "choisirProgramme": "Choose a program",
+    "noOffer": "No offer",
+    "close": "Close",
+    "details": "Details",
+    "ACCEPTED": "ACCEPTED",
+    "REFUSED": "REFUSED",
+    "WAITING": "WAITING",
+    "seePDF": "See PDF",
+    "postedOn": "Posted on",
+    "updatedOn": "Updated on",
+    "offerDetails": "Offer Details",
+    "employer": "Employer",
+    "company": "Company",
+    "locationStage": "Location",
+    "salaryStage": "Salary",
+    "status": "Status",
+    "websiteStage": "Website"
 }
