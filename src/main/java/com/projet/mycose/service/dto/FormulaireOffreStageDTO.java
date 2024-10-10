@@ -15,6 +15,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
+import java.time.LocalDateTime;
+
 @NoArgsConstructor
 @Getter
 @Setter
@@ -46,6 +48,8 @@ public class FormulaireOffreStageDTO extends OffreStageDTO {
     @Builder
     public FormulaireOffreStageDTO(Long id, String entrepriseName,  String employerName, String email, String website, String title,  String location, String salary, String description, LocalDateTime createdAt, LocalDateTime updatedAt, Long createur_id) {
         super(id, title, entrepriseName, createur_id, createdAt, updatedAt);
+    public FormulaireOffreStageDTO(Long id, String entrepriseName, String employerName, String email, String website, String title, String location, String salary, String description, LocalDateTime createdAt, LocalDateTime updatedAt, Long createur_id) {
+        super(id, title, entrepriseName, createur_id, createdAt, updatedAt);
         this.employerName = employerName;
         this.email = email;
         this.website = website;
@@ -54,7 +58,48 @@ public class FormulaireOffreStageDTO extends OffreStageDTO {
         this.description = description;
     }
 
+    @Builder
+    public FormulaireOffreStageDTO(Long id, String entrepriseName, String employerName, String email, String website, String title, String location, String salary, String description, LocalDateTime createdAt, LocalDateTime updatedAt, Long createur_id, OffreStage.Status status) {
+        super(id, title, entrepriseName, createur_id, createdAt, updatedAt, status);
+        this.employerName = employerName;
+        this.email = email;
+        this.website = website;
+        this.location = location;
+        this.salary = salary;
+        this.description = description;
+    }
     public static FormulaireOffreStageDTO toDTO(FormulaireOffreStage formulaireOffreStage) {
+        return new FormulaireOffreStageDTO(
+                formulaireOffreStage.getId(),
+                formulaireOffreStage.getEntrepriseName(),
+                formulaireOffreStage.getEmployerName(),
+                formulaireOffreStage.getEmail(),
+                formulaireOffreStage.getWebsite(),
+                formulaireOffreStage.getTitle(),
+                formulaireOffreStage.getLocation(),
+                formulaireOffreStage.getSalary(),
+                formulaireOffreStage.getDescription(),
+                formulaireOffreStage.getCreatedAt(),
+                formulaireOffreStage.getUpdatedAt(),
+                formulaireOffreStage.getCreateur().getId());
+    }
+
+    public static FormulaireOffreStageDTO toDTOAll(FormulaireOffreStage formulaireOffreStage) {
+        return new FormulaireOffreStageDTO(
+                formulaireOffreStage.getId(),
+                formulaireOffreStage.getEntrepriseName(),
+                formulaireOffreStage.getEmployerName(),
+                formulaireOffreStage.getEmail(),
+                formulaireOffreStage.getWebsite(),
+                formulaireOffreStage.getTitle(),
+                formulaireOffreStage.getLocation(),
+                formulaireOffreStage.getSalary(),
+                formulaireOffreStage.getDescription(),
+                formulaireOffreStage.getCreatedAt(),
+                formulaireOffreStage.getUpdatedAt(),
+                formulaireOffreStage.getCreateur().getId(),
+                formulaireOffreStage.getStatus()
+        );
         //System.out.println(formulaireOffreStage.getId());
         return new FormulaireOffreStageDTO(
                 formulaireOffreStage.getId(),

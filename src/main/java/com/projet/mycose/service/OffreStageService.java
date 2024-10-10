@@ -4,12 +4,16 @@ import com.projet.mycose.modele.*;
 import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.repository.FichierOffreStageRepository;
 import com.projet.mycose.repository.FormulaireOffreStageRepository;
+import com.projet.mycose.modele.FichierOffreStage;
+import com.projet.mycose.modele.FormulaireOffreStage;
+import com.projet.mycose.modele.OffreStage;
 import com.projet.mycose.repository.OffreStageRepository;
 import com.projet.mycose.repository.UtilisateurRepository;
 import com.projet.mycose.service.dto.*;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
+import com.projet.mycose.service.dto.FichierOffreStageDTO;
+import com.projet.mycose.service.dto.FormulaireOffreStageDTO;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import jakarta.validation.Validator;
@@ -17,7 +21,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
@@ -154,27 +157,6 @@ public class OffreStageService {
         FormulaireOffreStage savedForm = formulaireOffreStageRepository.save(formulaireOffreStage);
 
         return convertToDTO(savedForm);
-    }
-
-//    @Transactional
-//    public void assignerOffre(long etudiantId, long offreStageId) {
-//        if(!etudiantIdEtOffreStageIdValides(etudiantId, offreStageId)) {
-//            return;
-//        }
-//
-//        Etudiant etudiant = (Etudiant) utilisateurRepository.findById(etudiantId).get();
-//        OffreStage offreStage = offreStageRepository.findById(offreStageId).get();
-//        etudiant.getOffres().add(offreStage);
-//        offreStage.getEtudiants().add(etudiant);
-//        utilisateurRepository.save(etudiant);
-//    }
-
-    private boolean etudiantIdEtOffreStageIdValides(long etudiantId, long offreStageId) {
-        if(!utilisateurRepository.existsById(etudiantId) || !offreStageRepository.existsById(offreStageId)){
-            return false;
-        }
-
-        return utilisateurRepository.findById(etudiantId).get() instanceof Etudiant;
     }
 
     public List<OffreStageAvecUtilisateurInfoDTO> getWaitingOffreStage(int page) {
