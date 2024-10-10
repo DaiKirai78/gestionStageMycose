@@ -1,6 +1,7 @@
 package com.projet.mycose.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.projet.mycose.modele.OffreStage;
 import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.service.EmployeurService;
 import com.projet.mycose.service.UtilisateurService;
@@ -87,39 +88,43 @@ public class EmployeurControllerTest {
     }
 
 
-//    @Test
-//    public void testGetStages_Success() throws Exception{
-//        // Arrange
-//        String authHeader = "Bearer unTokenValide";
-//
-//        FormulaireOffreStageDTO mockFormulaire = new FormulaireOffreStageDTO(
-//                1L,
-//                "unNomEntreprise",
-//                "unNomEmployeur",
-//                "unEmail@mail.com",
-//                "unSite.com",
-//                "unTitreStage",
-//                "uneLcalisation",
-//                "1000",
-//                "uneDescription",
-//                LocalDateTime.now(),
-//                LocalDateTime.now(),
-//                1L
-//        );
-//
-//        List<OffreStageDTO> mockListeOffres = new ArrayList<>();
-//        mockListeOffres.add(mockFormulaire);
-//        when(employeurService.getStages(authHeader, 0)).thenReturn(mockListeOffres);
-//
-//        // Act & Assert
-//        mockMvc.perform(post("/entreprise/getOffresPosted")
-//                        .header("Authorization", authHeader).param("pageNumber", String.valueOf(0))
-//                        .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isAccepted())
-//                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(jsonPath("$[0].id").value(1L));
-//
-//    }
+    @Test
+    public void testGetStages_Success() throws Exception{
+        // Arrange
+        String authHeader = "Bearer unTokenValide";
+
+        //nouveau contructeur
+
+        FormulaireOffreStageDTO mockFormulaire = new FormulaireOffreStageDTO(
+                1L,
+                "unNomEntreprise",
+                "unNomEmployeur",
+                "unEmail@mail.com",
+                "unSite.com",
+                "unTitreStage",
+                "uneLcalisation",
+                "1000",
+                "uneDescription",
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                1L,
+                OffreStage.Status.WAITING
+        );
+
+        List<OffreStageDTO> mockListeOffres = new ArrayList<>();
+        mockListeOffres.add(mockFormulaire);
+        when(employeurService.getStages(authHeader, 0)).thenReturn(mockListeOffres);
+
+        // Act & Assert
+        mockMvc.perform(post("/entreprise/getOffresPosted")
+                        .header("Authorization", authHeader).param("pageNumber", String.valueOf(0))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isAccepted())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].id").value(1L))
+                .andExpect(jsonPath("$[0].status").value("WAITING"));
+
+    }
 
     @Test
     public void testGetStages_Error() throws Exception {
