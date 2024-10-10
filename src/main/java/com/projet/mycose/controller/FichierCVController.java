@@ -1,6 +1,7 @@
 package com.projet.mycose.controller;
 
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.projet.mycose.modele.FichierCV;
 import com.projet.mycose.security.exception.AuthenticationException;
 import com.projet.mycose.service.FichierCVService;
@@ -111,8 +112,15 @@ public class FichierCVController {
     }
 
     @PatchMapping("/accept")
-    public ResponseEntity<?> acceptCV(@RequestParam Long id, @RequestBody String description) {
+    public ResponseEntity<?> acceptCV(@RequestParam Long id,@RequestBody JsonNode jsonNode) {
         try {
+            JsonNode descriptionNode = jsonNode.get("commentaire");
+
+            if (descriptionNode == null || descriptionNode.isNull()) {
+                return ResponseEntity.badRequest().body("Description field is missing");
+            }
+
+            String description = descriptionNode.asText();
             fichierCVService.changeStatus(id, FichierCV.Status.ACCEPTED, description);
             return ResponseEntity.ok().build();
         } catch (ChangeSetPersister.NotFoundException e) {
@@ -120,8 +128,15 @@ public class FichierCVController {
         }
     }
     @PatchMapping("/refuse")
-    public ResponseEntity<?> refuseCV(@RequestParam Long id, @RequestBody String description) {
+    public ResponseEntity<?> refuseCV(@RequestParam Long id, @RequestBody JsonNode jsonNode) {
         try {
+            JsonNode descriptionNode = jsonNode.get("commentaire");
+
+            if (descriptionNode == null || descriptionNode.isNull()) {
+                return ResponseEntity.badRequest().body("Description field is missing");
+            }
+
+            String description = descriptionNode.asText();
             fichierCVService.changeStatus(id, FichierCV.Status.REFUSED, description);
             return ResponseEntity.ok().build();
         } catch (ChangeSetPersister.NotFoundException e) {

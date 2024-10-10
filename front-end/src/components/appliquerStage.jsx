@@ -179,7 +179,7 @@ const AppliquerStage = ({ idStage }) => {
                     </div>
                 </div>
             ) : (
-                <div className="w-3/4 lg:w-1/2 mt-8 h-96 bg-white shadow-md p-6 overflow-y-auto break-words rounded-2xl">
+                <div className="w-3/4 lg:w-1/2 mt-8 h-[30vh] bg-white shadow-md p-6 overflow-y-auto break-words rounded-2xl">
                     <h2 className="text-2xl font-bold mb-4">{unStage.title || t("offreDeStage")}</h2>
                     <p className="text-gray-700 text-xl">{unStage.entrepriseName || t("EntrepriseInconnue")}</p>
                     <p className="text-gray-500 mb-6">{unStage.location || t("AdresseNonValide")}</p>
@@ -188,7 +188,7 @@ const AppliquerStage = ({ idStage }) => {
 
                     <button
                         onClick={applyForStage}
-                        className="mt-20 bg-orange w-48 text-white px-12 py-3 rounded-lg hover:bg-orange-dark"
+                        className="mt-14 bg-orange w-48 text-white px-12 py-3 rounded-lg hover:bg-orange-dark"
                     >
                         {t("boutonAppliquerAUnStage")}
                     </button>
@@ -196,7 +196,7 @@ const AppliquerStage = ({ idStage }) => {
                     {successMessage && <p className="text-green-500 mt-4">{successMessage}</p>}
                     {errorMessage && <p className="text-red-500 mt-4">{errorMessage}</p>}
 
-                    <div className="w-full flex justify-center mt-4">
+                    <div className="w-full mt-4">
                         <button
                             onClick={handleReturnHome}
                             className="bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600"
