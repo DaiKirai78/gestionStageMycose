@@ -25,6 +25,10 @@ public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
     @Query("SELECT o FROM OffreStage o LEFT JOIN o.applicationStages a ON a.etudiant.id = :etudiantId WHERE a.id IS NULL")
     List<OffreStage> findAllByEtudiantNotApplied(@Param("etudiantId") Long etudiantId);
 
+    Page<OffreStage> findOffreStageByCreateurId(@Param("employeurId") Long employeurId, Pageable pageable);
+
+    int countByCreateurId(Long employeurId);
+
 
     @Query("SELECT o FROM OffreStage o " +
             "LEFT JOIN EtudiantOffreStagePrivee eop ON o.id = eop.offreStage.id " +

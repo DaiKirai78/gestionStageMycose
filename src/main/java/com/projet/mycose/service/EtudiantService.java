@@ -37,15 +37,11 @@ public class EtudiantService {
     }
 
     private List<OffreStageDTO> listeOffreStageToDTO(List<OffreStage> listeAMapper) {
-        System.out.println(listeAMapper);
         List<OffreStageDTO> listeMappee = new ArrayList<>();
         for(OffreStage offreStage : listeAMapper) {
-            System.out.println("mec jadore loop");
             listeMappee.add(OffreStageDTO.toOffreStageInstaceDTO(offreStage));
-            //System.out.println("mec jadore loop");
         }
-        System.out.println("rnaodm");
-        System.out.println(listeMappee);
+
         return listeMappee;
     }
 

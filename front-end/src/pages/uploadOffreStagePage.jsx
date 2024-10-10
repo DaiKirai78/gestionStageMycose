@@ -4,7 +4,7 @@ import UploadOffreStage from "../components/uploadOffreStagePage/uploadOffreStag
 
 const UploadOffreStagePage = () => {
     return (
-        <TokenPageContainer>
+        <TokenPageContainer role={["EMPLOYEUR"]}>
             <UploadOffreStage />
         </TokenPageContainer>
     );

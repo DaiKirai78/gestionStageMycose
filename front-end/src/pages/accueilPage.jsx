@@ -1,20 +1,59 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import TokenPageContainer from './tokenPageContainer';
-import ListeStage from "../components/listeStage.jsx";
+import { useNavigate } from 'react-router-dom';
+import AcceuilEtudiant from '../components/acceuil/acceuilEtudiant';
+import AcceuilEmployeur from '../components/acceuil/acceuilEmployeur';
 
 const AccueilPage = () => {
 
+    const [role, setRole] = useState();
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        getRole()
+    });
+
+    async function getRole() {
+        let token = localStorage.getItem("token");
+
+        if (!token) {
+            return;
+        }
+            
+        try {
+            await fetch('http://localhost:8080/utilisateur/me', {
+                method: "POST",
+                headers: {Authorization: `Bearer ${token}`}
+            })
+                .then(async (res) => {
+                    if (!res.ok) {
+                        return;
+                    }
+                    const data = await res.json();
+                    setRole(data.role);
+                }
+                )
+    
+            } catch (err) {
+                return;
+            }
+    }
+
+    function getAccueil() {
+        switch (role) {
+            case "ETUDIANT":
+                return <AcceuilEtudiant />
+            case "EMPLOYEUR":
+                return <AcceuilEmployeur />
+            default:
+                navigate("/")
+                break;
+        }
+    }
 
     return (
-        <TokenPageContainer>
-            <div className="bg-orange-light w-full min-h-screen">
-                <div className="h-20 border-b-2 border-deep-orange-100 pl-8 items-center flex w-full">
-                    (Logo) Mycose
-                </div>
-                <div className="flex h-3/5 justify-center">
-                    <ListeStage/>
-                </div>
-            </div>
+        <TokenPageContainer role={["ETUDIANT", "EMPLOYEUR", "GESTIONNAIRE_STAGE"]}>
+            {getAccueil()}
         </TokenPageContainer>
     );
 };
