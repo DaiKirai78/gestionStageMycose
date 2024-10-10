@@ -30,6 +30,7 @@ public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
             "LEFT JOIN EtudiantOffreStagePrivee eop ON o.id = eop.offreStage.id " +
             "WHERE (eop.etudiant.id = :etudiantId OR eop.id IS NULL) " +
             "AND (LOWER(o.title) LIKE LOWER(concat('%', :rechercheValue, '%')) " +
-            "OR LOWER(o.entrepriseName) LIKE LOWER(concat('%', :rechercheValue, '%')))")
+            "OR LOWER(o.entrepriseName) LIKE LOWER(concat('%', :rechercheValue, '%')))" +
+            "ORDER BY o.createdAt")
     Page<OffreStage> findOffresByEtudiantIdWithSearch(@Param("etudiantId") long etudiantId, @Param("rechercheValue") String rechercheValue , Pageable pageable);
 }
