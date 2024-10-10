@@ -240,4 +240,64 @@ public class EtudiantServiceTest {
         verify(offreStageRepositoryMock, times(1)).countByEtudiantsId(1L);
     }
 
+    @Test
+    public void testGetStagesByRecherche_Success() {
+        // Arrange
+        String token = "unTokenValide";
+        Long etudiantId = 1L;
+        int page = 0;
+        String recherche = "Developpeur";
+
+        PageRequest pageRequest = PageRequest.of(page, 10);
+        Employeur createur = new Employeur(2L, "unPrenom", "unNom", "514-222-0385", "courriel@courriel.com", "123123123", "uneEntreprise");
+
+        FormulaireOffreStage mockFormulaireOffreStage = new FormulaireOffreStage("Titre Form", "Entreprise A", "Employeur A", "emailA@mail.com", "siteA.com", "Localisation A", "1000", "Description A", createur);
+        FichierOffreStage mockFichierOffreStage = new FichierOffreStage("Titre Fichier", "Entreprise B", "nomB.pdf", "data".getBytes(), createur);
+        List<OffreStage> mockOffresListe = new ArrayList<>();
+        mockOffresListe.add(mockFormulaireOffreStage);
+        mockOffresListe.add(mockFichierOffreStage);
+
+        Page<OffreStage> offresPage = new PageImpl<>(mockOffresListe, pageRequest, mockOffresListe.size());
+
+        when(utilisateurService.getUserIdByToken(token)).thenReturn(etudiantId);
+        when(offreStageRepositoryMock.findOffresByEtudiantIdWithSearch(etudiantId, recherche, pageRequest)).thenReturn(offresPage);
+
+        // Act
+        List<OffreStageDTO> result = etudiantService.getStagesByRecherche(token, page, recherche);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals("Titre Form", result.get(0).getTitle());
+        assertEquals("Titre Fichier", result.get(1).getTitle());
+
+        verify(utilisateurService, times(1)).getUserIdByToken(token);
+        verify(offreStageRepositoryMock, times(1)).findOffresByEtudiantIdWithSearch(etudiantId, recherche, pageRequest);
+    }
+
+    @Test
+    public void testGetStagesByRecherche_Null() {
+        // Arrange
+        String token = "unTokenValide";
+        Long etudiantId = 1L;
+        int page = 0;
+        String recherche = "NonExistant";
+
+        PageRequest pageRequest = PageRequest.of(page, 10);
+        Page<OffreStage> offresPage = new PageImpl<>(List.of(), pageRequest, 0);  // Page vide
+
+        when(utilisateurService.getUserIdByToken(token)).thenReturn(etudiantId);
+        when(offreStageRepositoryMock.findOffresByEtudiantIdWithSearch(etudiantId, recherche, pageRequest)).thenReturn(offresPage);
+
+        // Act
+        List<OffreStageDTO> result = etudiantService.getStagesByRecherche(token, page, recherche);
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+
+        verify(utilisateurService, times(1)).getUserIdByToken(token);
+        verify(offreStageRepositoryMock, times(1)).findOffresByEtudiantIdWithSearch(etudiantId, recherche, pageRequest);
+    }
+
 }
