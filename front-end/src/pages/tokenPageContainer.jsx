@@ -2,29 +2,33 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import verifToken from "../utils/verifTokenValid"
 
-const TokenPageContainer = (props) => {
-
+const TokenPageContainer = ({children, role}) => {
+    
     const navigate = useNavigate();
     const [isFetching, setIsFetching] = useState(true)
 
     let token = localStorage.getItem('token');
 
+
     useEffect(() => {
         
-        const isTokenValid = async () => {
-            return await verifToken(token)
-        }
-
-        isTokenValid()
-            .then(async (tokenValid) => {
-                setIsFetching(false)
-                if (!tokenValid) {
-                    navigate("/");
-                    return;
-                }
-            })
+        fetchToken()
         
-    }, [token]);
+    }, []);
+
+    async function fetchToken() {
+        const is_tokenValid = await verifToken(token, role);
+
+        console.log("YEAAA");
+        console.log(is_tokenValid);
+
+        setIsFetching(false)
+    
+        if (!is_tokenValid) {
+            navigate("/");
+            return;
+        }
+    }
 
     function showContent() {
         if (isFetching) {
@@ -33,7 +37,7 @@ const TokenPageContainer = (props) => {
         
         return (
             <div>
-                {props.children}
+                {children}
             </div>
         );
     }

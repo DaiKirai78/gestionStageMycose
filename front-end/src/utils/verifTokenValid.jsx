@@ -1,29 +1,27 @@
-export default async function verifToken(token) {
+export default async function verifToken(token, role) {
     if (!token) {
         return false;
     }
     
+    let returnValue = false;
 
     try {
-        fetch('http://localhost:8080/utilisateur/me', {
+        await fetch('http://localhost:8080/utilisateur/me', {
             method: "POST",
             headers: {Authorization: `Bearer ${token}`}
         })
           .then(async (res) => {
               if (!res.ok) {
-                return false;
+                return false
               }
               const data = await res.json();
-              let newUser = {...data, isLoggedIn: true};
-              console.log(newUser);
+              returnValue = role.includes(data.role);
             }
-          ).catch(async () => {
-            return false;
-        })
+          )
 
       } catch (err) {
-        return false;
+        returnValue = false;
       }
 
-      return true
+      return returnValue;
 }

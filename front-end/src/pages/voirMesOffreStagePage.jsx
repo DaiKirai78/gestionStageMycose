@@ -102,7 +102,7 @@ const VoirMesOffreStagePage = () => {
     }
 
     return (
-        <TokenPageContainer>
+        <TokenPageContainer role={["EMPLOYEUR"]}>
             <div className={`bg-orange-light w-full min-h-screen flex flex-col items-center gap-10`}>
                 <div className="h-20 border-b-2 border-deep-orange-100 pl-8 items-center flex w-full">
                     (Logo) Mycose
