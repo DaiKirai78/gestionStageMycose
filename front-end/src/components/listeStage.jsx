@@ -291,7 +291,7 @@ const listeStage = () => {
                                         </div>
                                         <button
                                             className="bg-orange text-white md:absolute md:bottom-2 lg:bottom-12 lg:top-4 md:right-2 px-4 md:px-8 py-2 rounded-2xl mt-3 lg:mt-0 w-1/2 md:w-1/3 lg:w-36 hover:bg-orange-dark shadow-md"
-                                            onClick={() => changerDePage(stage.id)}>{t("boutonAppliquerAUnStage")}
+                                            onClick={() => changerDePage(stage.id)}>{t("boutonConsulterUnStage")}
                                         </button>
                                     </div>
                                     <hr className="bg-deep-orange-100"/>

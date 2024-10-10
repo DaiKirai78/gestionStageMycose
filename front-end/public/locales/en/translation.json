@@ -126,5 +126,19 @@
     "internshipManagerComment": "Internship Manager Comment",
     "acceptedMessage": "Your CV has been accepted. You can now see the available internship offers.",
     "waitingMessage": "Your CV is currently being validated. You will be able to see the internship offers as soon as it is validated by one of our managers.",
-    "refusedMessage": "Your CV has been rejected. You must make the necessary modifications to it and then upload it so that one of our managers can validate it again."
+    "refusedMessage": "Your CV has been rejected. You must make the necessary modifications to it and then upload it so that one of our managers can validate it again.",
+    "boutonConsulterUnStage": "Consult",
+    "chargementInfosStages": "Loading internship informations...",
+    "fermerPDF": "Close PDF",
+    "offreDeStage": "Internship offer",
+    "EntrepriseInconnue": "Unknown Company",
+    "AdresseNonValide": "Address not available",
+    "DescriptionNonValide": "Description not available",
+    "ApplicationEffectueeSuccess": "Application to internship carried out.",
+    "ErreurRecuperationStage": "Error while retrieving internship data.",
+    "ApplicationEffectueeErreur": "Attempt to apply for the internship was unsuccessful.",
+    "VousAvezDejaPostule": "You have already applied for this internship.",
+    "CetteOffreNestPlusDisponible": "The internship offer is no longer available.",
+    "AfficherPDF": "Show PDF",
+    "RetourAccueil": "Back to home page"
 }
