@@ -39,7 +39,7 @@ public class EmployeurService {
         System.out.println(listeAMapper);
         List<OffreStageDTO> listeMappee = new ArrayList<>();
         for(OffreStage offreStage : listeAMapper) {
-            listeMappee.add(OffreStageDTO.toOffreStageInstaceDTO(offreStage));
+            listeMappee.add(OffreStageDTO.toOffreStageInstaceDTOAll(offreStage));
         }
         return listeMappee;
     }

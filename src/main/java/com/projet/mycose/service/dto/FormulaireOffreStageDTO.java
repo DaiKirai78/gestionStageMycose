@@ -10,6 +10,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @NoArgsConstructor
 @Getter
 @Setter
@@ -39,31 +41,57 @@ public class FormulaireOffreStageDTO extends OffreStageDTO {
     private String description;
 
     @Builder
-    public FormulaireOffreStageDTO(Long id, String employerName, String email, String website, String location, String salary, String description, String title, String entrepriseName, Long createur_id) {
-        super(id);
+    public FormulaireOffreStageDTO(Long id, String entrepriseName, String employerName, String email, String website, String title, String location, String salary, String description, LocalDateTime createdAt, LocalDateTime updatedAt, Long createur_id) {
+        super(id, title, entrepriseName, createur_id, createdAt, updatedAt);
         this.employerName = employerName;
         this.email = email;
         this.website = website;
         this.location = location;
         this.salary = salary;
         this.description = description;
-        this.setTitle(title);
-        this.setEntrepriseName(entrepriseName);
-        this.setCreateur_id(createur_id);
     }
 
+    @Builder
+    public FormulaireOffreStageDTO(Long id, String entrepriseName, String employerName, String email, String website, String title, String location, String salary, String description, LocalDateTime createdAt, LocalDateTime updatedAt, Long createur_id, OffreStage.Status status) {
+        super(id, title, entrepriseName, createur_id, createdAt, updatedAt, status);
+        this.employerName = employerName;
+        this.email = email;
+        this.website = website;
+        this.location = location;
+        this.salary = salary;
+        this.description = description;
+    }
     public static FormulaireOffreStageDTO toDTO(FormulaireOffreStage formulaireOffreStage) {
-        return FormulaireOffreStageDTO.builder()
-                .id(formulaireOffreStage.getId())
-                .entrepriseName(formulaireOffreStage.getEntrepriseName())
-                .employerName(formulaireOffreStage.getEmployerName())
-                .email(formulaireOffreStage.getEmail())
-                .website(formulaireOffreStage.getWebsite())
-                .title(formulaireOffreStage.getTitle())
-                .location(formulaireOffreStage.getLocation())
-                .salary(formulaireOffreStage.getSalary())
-                .location(formulaireOffreStage.getLocation())
-                .createur_id(formulaireOffreStage.getCreateur().getId())
-                .build();
+        return new FormulaireOffreStageDTO(
+                formulaireOffreStage.getId(),
+                formulaireOffreStage.getEntrepriseName(),
+                formulaireOffreStage.getEmployerName(),
+                formulaireOffreStage.getEmail(),
+                formulaireOffreStage.getWebsite(),
+                formulaireOffreStage.getTitle(),
+                formulaireOffreStage.getLocation(),
+                formulaireOffreStage.getSalary(),
+                formulaireOffreStage.getDescription(),
+                formulaireOffreStage.getCreatedAt(),
+                formulaireOffreStage.getUpdatedAt(),
+                formulaireOffreStage.getCreateur().getId());
+    }
+
+    public static FormulaireOffreStageDTO toDTOAll(FormulaireOffreStage formulaireOffreStage) {
+        return new FormulaireOffreStageDTO(
+                formulaireOffreStage.getId(),
+                formulaireOffreStage.getEntrepriseName(),
+                formulaireOffreStage.getEmployerName(),
+                formulaireOffreStage.getEmail(),
+                formulaireOffreStage.getWebsite(),
+                formulaireOffreStage.getTitle(),
+                formulaireOffreStage.getLocation(),
+                formulaireOffreStage.getSalary(),
+                formulaireOffreStage.getDescription(),
+                formulaireOffreStage.getCreatedAt(),
+                formulaireOffreStage.getUpdatedAt(),
+                formulaireOffreStage.getCreateur().getId(),
+                formulaireOffreStage.getStatus()
+        );
     }
 }
