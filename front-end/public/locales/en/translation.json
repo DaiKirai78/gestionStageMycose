@@ -80,5 +80,18 @@
     "TECHNIQUE_INFORMATIQUE": "Computer Science",
     "GENIE_LOGICIEL": "Software Engineering",
     "RESEAU_TELECOMMUNICATION": "Telecommunication Network",
-    "choisirProgramme": "Choose a program"
+    "choisirProgramme": "Choose a program",
+    "ACCEPTED": "Accepted",
+    "REFUSED": "Refused",
+    "WAITING": "Waiting",
+    "errorNoPDF": "No PDF data found in the response.",
+    "impossibleLoadCV": "Unable to load CV. Please try again later.",
+    "myCV": "My CV",
+    "status": "Status",
+    "fullScreen": "Full Screen",
+    "exitFullScreen": "Exit Full Screen",
+    "internshipManagerComment": "Internship Manager Comment",
+    "acceptedMessage": "Your CV has been accepted. You can now see the available internship offers.",
+    "waitingMessage": "Your CV is currently being validated. You will be able to see the internship offers as soon as it is validated by one of our managers.",
+    "refusedMessage": "Your CV has been rejected. You must make the necessary modifications to it and then upload it so that one of our managers can validate it again."
 }

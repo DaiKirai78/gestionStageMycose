@@ -80,5 +80,18 @@
     "TECHNIQUE_INFORMATIQUE": "Technique de l'informatique",
     "GENIE_LOGICIEL": "Génie logiciel",
     "RESEAU_TELECOMMUNICATION": "Réseau et télécommunication",
-    "choisirProgramme": "Choisir un programme"
+    "choisirProgramme": "Choisir un programme",
+    "ACCEPTED": "Accepté",
+    "REFUSED": "Refusé",
+    "WAITING": "En attente",
+    "errorNoPDF": "No PDF data found in the response.",
+    "impossibleLoadCV": "Impossible de charger le CV. Veuillez réessayer plus tard.",
+    "myCV": "Mon CV",
+    "status": "Statut",
+    "fullScreen": "Plein écran",
+    "exitFullScreen": "Quitter le plein écran",
+    "internshipManagerComment": "Commentaire du gestionnaire de stage",
+    "acceptedMessage": "Votre CV a été accepté. Vous pouvez maintenant voir les offres de stage disponibles.",
+    "waitingMessage": "Votre CV est présentement en cours de validation. Vous allez pouvoir voir les offres de stage dès que celui-ci est validé par l'un de nos gestionnaires.",
+    "refusedMessage": "Votre CV a été refusé. Vous devez apporter les modifications nécessaires à celui-ci puis le téléverser pour que l'un de nos gestionnaires puisse le valider à nouveau."
 }
