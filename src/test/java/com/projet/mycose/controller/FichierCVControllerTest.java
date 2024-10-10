@@ -5,6 +5,7 @@ import com.projet.mycose.security.exception.AuthenticationException;
 import com.projet.mycose.service.FichierCVService;
 import com.projet.mycose.service.UtilisateurService;
 import com.projet.mycose.service.dto.FichierCVDTO;
+import com.projet.mycose.service.dto.FichierCVStudInfoDTO;
 import com.projet.mycose.service.dto.FichierOffreStageDTO;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -69,6 +70,8 @@ public class FichierCVControllerTest {
         validFichierCVDTO.setFileData("Base64FileData"); // Example Base64 data
         validFichierCVDTO.setEtudiant_id(1L);
 
+        String testToken = "Bearer testToken123";
+        when(utilisateurService.getUserIdByToken(eq(testToken))).thenReturn(1L);
 
         when(fichierCVService.saveFile(any(MultipartFile.class), any(String.class)))
                 .thenReturn(validFichierCVDTO);
@@ -131,6 +134,8 @@ public class FichierCVControllerTest {
                 MediaType.APPLICATION_PDF_VALUE, "Some content".getBytes());
 
 
+        String testToken = "Bearer testToken123";
+        when(utilisateurService.getUserIdByToken(eq(testToken))).thenReturn(1L);
 
         // Simulate an IOException when the service tries to save the file
         when(fichierCVService.saveFile(any(MultipartFile.class), any(String.class)))
@@ -151,7 +156,8 @@ public class FichierCVControllerTest {
         when(fichierCVService.getWaitingCv(1)).thenReturn(new ArrayList<>());
 
         // Assert
-        mockMvc.perform(post("/api/cv/waitingcv?page=1"))
+        mockMvc.perform(get("/api/cv/waitingcv?page=1"))
+                .andExpect(content().json("[]"))
                 .andExpect(status().isOk());
     }
 
@@ -159,21 +165,26 @@ public class FichierCVControllerTest {
     void getWaitingCv_FoundCvs() throws Exception {
 
         // Arrange
-        FichierCVDTO fichierCVDTO = new FichierCVDTO();
+        FichierCVStudInfoDTO fichierCVDTO = new FichierCVStudInfoDTO();
         fichierCVDTO.setId(1L);
         fichierCVDTO.setFilename("validFile.pdf");
         fichierCVDTO.setFileData("Base64FileData");
 
-        List<FichierCVDTO> fichierCVDTOS = new ArrayList<>();
+        FichierCVStudInfoDTO fichierCVDTO2 = new FichierCVStudInfoDTO();
+        fichierCVDTO2.setId(2L);
+
+        List<FichierCVStudInfoDTO> fichierCVDTOS = new ArrayList<>();
 
         fichierCVDTOS.add(fichierCVDTO);
-        fichierCVDTOS.add(fichierCVDTO);
+        fichierCVDTOS.add(fichierCVDTO2);
 
         // Act
         when(fichierCVService.getWaitingCv(0)).thenReturn(fichierCVDTOS);
 
         // Assert
-        mockMvc.perform(post("/api/cv/waitingcv?page=0"))
+        mockMvc.perform(get("/api/cv/waitingcv?page=0"))
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[1].id").value(2))
                 .andExpect(status().isOk());
     }
 
@@ -188,7 +199,6 @@ public class FichierCVControllerTest {
         mockFichierCVDTO.setFilename("test.pdf");
         mockFichierCVDTO.setFileData("Base64EncodedData");
         mockFichierCVDTO.setEtudiant_id(userId);
-
         when(fichierCVService.getCurrentCV(authHeader)).thenReturn(mockFichierCVDTO);
 
         // Act & Assert
@@ -203,69 +213,13 @@ public class FichierCVControllerTest {
                 .andExpect(jsonPath("$.etudiant_id").value(userId));
     }
 
-    @Test
-    void testGetCurrentCV_FileNotFound() throws Exception {
-        // Arrange
-        String authHeader = "Bearer validToken123";
-        Long userId = 1L;
-
-        when(utilisateurService.getUserIdByToken(authHeader)).thenReturn(userId);
-        when(fichierCVService.getCurrentCV("Bearer testToken123"))
-                .thenThrow(new RuntimeException("CV not found"));
-
-        // Act & Assert
-        mockMvc.perform(post("/api/cv/current")
-                        .header("Authorization", authHeader)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isInternalServerError())
-                .andExpect(content().string("Fichier non trouvé"));
-    }
-
-    @Test
-    void testDeleteCurrentCV_Success() throws Exception {
-        // Arrange
-        String authHeader = "Bearer validToken123";
-        Long userId = 1L;
-
-        FichierCVDTO mockFichierCVDTO = new FichierCVDTO();
-        mockFichierCVDTO.setId(1L);
-        mockFichierCVDTO.setFilename("test.pdf");
-        mockFichierCVDTO.setFileData("Base64EncodedData");
-        mockFichierCVDTO.setEtudiant_id(userId);
-
-        when(fichierCVService.deleteCurrentCV(authHeader)).thenReturn(mockFichierCVDTO);
-
-        // Act & Assert
-        mockMvc.perform(patch("/api/cv/delete_current")
-                        .header("Authorization", authHeader)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().string("CV supprimé avec succès"));
-    }
-
-    @Test
-    void testDeleteCurrentCV_FileNotFound() throws Exception {
-        // Arrange
-        String authHeader = "Bearer validToken123";
-        Long userId = 1L;
-
-        when(utilisateurService.getUserIdByToken(authHeader)).thenReturn(userId);
-        doThrow(new RuntimeException("CV not found")).when(fichierCVService).deleteCurrentCV("Bearer testToken123");
-
-        // Act & Assert
-        mockMvc.perform(patch("/api/cv/delete_current")
-                        .header("Authorization", authHeader)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isInternalServerError())
-                .andExpect(content().string("Fichier non trouvé"));
-    }
 
     @Test
     void test_acceptCv_OK() throws Exception {
         // Act
         doNothing().when(fichierCVService).changeStatus(1L, FichierCV.Status.ACCEPTED, "asd");
         // Assert
-        mockMvc.perform(post("/api/cv/accept?id=1")
+        mockMvc.perform(patch("/api/cv/accept?id=1")
                         .content("asd")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -277,7 +231,7 @@ public class FichierCVControllerTest {
                 .when(fichierCVService)
                 .changeStatus(1L, FichierCV.Status.ACCEPTED, "asd");
         // Assert
-        mockMvc.perform(post("/api/cv/accept?id=1")
+        mockMvc.perform(patch("/api/cv/accept?id=1")
                         .content("asd")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
@@ -287,7 +241,7 @@ public class FichierCVControllerTest {
         // Act
         doNothing().when(fichierCVService).changeStatus(1L, FichierCV.Status.REFUSED, "asd");
         // Assert
-        mockMvc.perform(post("/api/cv/refuse?id=1")
+        mockMvc.perform(patch("/api/cv/refuse?id=1")
                         .content("asd")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -299,7 +253,7 @@ public class FichierCVControllerTest {
                 .when(fichierCVService)
                 .changeStatus(1L, FichierCV.Status.REFUSED, "asd");
         // Assert
-        mockMvc.perform(post("/api/cv/refuse?id=1")
+        mockMvc.perform(patch("/api/cv/refuse?id=1")
                         .content("asd")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());

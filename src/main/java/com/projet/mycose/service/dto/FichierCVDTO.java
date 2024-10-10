@@ -1,19 +1,19 @@
 package com.projet.mycose.service.dto;
 
+import com.projet.mycose.modele.FichierCV;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.modelmapper.internal.bytebuddy.implementation.bind.annotation.Empty;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString(exclude = "fileData")
 public class FichierCVDTO {
 
     private Long id;

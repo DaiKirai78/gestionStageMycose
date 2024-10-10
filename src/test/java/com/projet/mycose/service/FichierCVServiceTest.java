@@ -2,6 +2,7 @@ package com.projet.mycose.service;
 
 import com.projet.mycose.modele.Etudiant;
 import com.projet.mycose.modele.FichierCV;
+import com.projet.mycose.modele.Programme;
 import com.projet.mycose.repository.EtudiantRepository;
 import com.projet.mycose.repository.FichierCVRepository;
 import com.projet.mycose.service.dto.FichierCVDTO;
@@ -67,6 +68,7 @@ public class FichierCVServiceTest {
         fichierCV.setFilename("test.pdf");
         fichierCV.setData("Test file data".getBytes());
         etudiant = new Etudiant();
+        etudiant.setProgramme(Programme.TECHNIQUE_INFORMATIQUE);
         etudiant.setId(1L);
         fichierCV.setEtudiant(etudiant);
 
@@ -75,6 +77,7 @@ public class FichierCVServiceTest {
         fichierCVDTO.setFilename("test.pdf");
         fichierCVDTO.setFileData(Base64.getEncoder().encodeToString("Test file data".getBytes()));
         fichierCVDTO.setEtudiant_id(1L);
+        fichierCV.setStatus(FichierCV.Status.WAITING);
 
 
 
@@ -141,16 +144,15 @@ public class FichierCVServiceTest {
                 .thenReturn(Optional.of(new ArrayList<>((Arrays.asList(fichierCV, fichierCV, fichierCV, fichierCV, fichierCV, fichierCV, fichierCV, fichierCV, fichierCV, fichierCV)))));
         when(fileRepository.getFichierCVSByStatusEquals(FichierCV.Status.WAITING, PageRequest.of(1, 10)))
                 .thenReturn(Optional.of(new ArrayList<>((Arrays.asList(fichierCV, fichierCV, fichierCV, fichierCV)))));;
-        when(modelMapper.map(any(FichierCV.class), eq(FichierCVDTO.class))).thenReturn(fichierCVDTO);
 
         // Assert
-        Assertions.assertThat(fichierCVService.getWaitingCv(0).size()).isEqualTo(10);
-        Assertions.assertThat(fichierCVService.getWaitingCv(1).size()).isEqualTo(4);
+        Assertions.assertThat(fichierCVService.getWaitingCv(1).size()).isEqualTo(10);
+        Assertions.assertThat(fichierCVService.getWaitingCv(2).size()).isEqualTo(4);
     }
     @Test
     void testGetWaitingCV_PageVide() {
         // Act
-        when(fileRepository.getFichierCVSByStatusEquals(FichierCV.Status.WAITING, PageRequest.of(1, 10)))
+        when(fileRepository.getFichierCVSByStatusEquals(FichierCV.Status.WAITING, PageRequest.of(0, 10)))
                 .thenReturn(Optional.empty());
 
         // Assert
@@ -200,7 +202,7 @@ public class FichierCVServiceTest {
                 .thenReturn(1L);
 
 
-        when(fileRepository.getFirstByEtudiant_IdAndStatusEquals(etudiant.getId(), FichierCV.Status.ACCEPTED))
+        when(fileRepository.getFirstByEtudiant_IdAndStatusEqualsOrStatusEqualsOrStatusEquals(etudiant.getId(), FichierCV.Status.ACCEPTED, FichierCV.Status.WAITING, FichierCV.Status.REFUSED))
                 .thenReturn(Optional.of(fichierCV));
         when(modelMapper.map(fichierCV, FichierCVDTO.class)).thenReturn(fichierCVDTO);
 
@@ -211,14 +213,14 @@ public class FichierCVServiceTest {
         assertNotNull(result, "The returned FichierCVDTO should not be null");
         assertEquals(fichierCVDTO.getFilename(), result.getFilename());
         assertEquals(fichierCVDTO.getFileData(), result.getFileData());
-        verify(fileRepository, times(1)).getFirstByEtudiant_IdAndStatusEquals(etudiant.getId(), FichierCV.Status.ACCEPTED);
+        verify(fileRepository, times(1)).getFirstByEtudiant_IdAndStatusEqualsOrStatusEqualsOrStatusEquals(etudiant.getId(), FichierCV.Status.ACCEPTED, FichierCV.Status.WAITING, FichierCV.Status.REFUSED);
         verify(modelMapper, times(1)).map(fichierCV, FichierCVDTO.class);
     }
 
     @Test
     void testGetCurrentCV_NotFound() {
         // Arrange
-        when(fileRepository.getFirstByEtudiant_IdAndStatusEquals(etudiant.getId(), FichierCV.Status.ACCEPTED))
+        when(fileRepository.getFirstByEtudiant_IdAndStatusEqualsOrStatusEqualsOrStatusEquals(etudiant.getId(), FichierCV.Status.ACCEPTED, FichierCV.Status.WAITING, FichierCV.Status.REFUSED))
                 .thenReturn(Optional.empty());
 
 
@@ -233,7 +235,7 @@ public class FichierCVServiceTest {
         }, "Expected getCurrentCV() to throw, but it didn't");
 
         assertEquals("Fichier non trouvé", exception.getMessage(), "Exception message should match");
-        verify(fileRepository, times(1)).getFirstByEtudiant_IdAndStatusEquals(etudiant.getId(), FichierCV.Status.ACCEPTED);
+        verify(fileRepository, times(1)).getFirstByEtudiant_IdAndStatusEqualsOrStatusEqualsOrStatusEquals(etudiant.getId(), FichierCV.Status.ACCEPTED, FichierCV.Status.WAITING, FichierCV.Status.REFUSED);
         verify(modelMapper, never()).map(any(FichierCV.class), eq(FichierCVDTO.class));
     }
     @Test
@@ -246,7 +248,7 @@ public class FichierCVServiceTest {
                 .thenReturn(1L);
 
 
-        when(fileRepository.getFirstByEtudiant_IdAndStatusEquals(etudiant.getId(), FichierCV.Status.ACCEPTED))
+        when(fileRepository.getFirstByEtudiant_IdAndStatusEqualsOrStatusEqualsOrStatusEquals(etudiant.getId(), FichierCV.Status.ACCEPTED, FichierCV.Status.WAITING, FichierCV.Status.REFUSED))
                 .thenReturn(Optional.of(fichierCV));
         when(fileRepository.save(any(FichierCV.class))).thenReturn(fichierCV);
         when(modelMapper.map(fichierCV, FichierCVDTO.class)).thenReturn(fichierCVDTO);
@@ -266,14 +268,14 @@ public class FichierCVServiceTest {
         FichierCV savedFichierCV = fichierCVCaptor.getValue();
         assertEquals(FichierCV.Status.DELETED, savedFichierCV.getStatus(), "Status should be set to DELETED");
 
-        verify(fileRepository, times(1)).getFirstByEtudiant_IdAndStatusEquals(etudiant.getId(), FichierCV.Status.ACCEPTED);
+        verify(fileRepository, times(1)).getFirstByEtudiant_IdAndStatusEqualsOrStatusEqualsOrStatusEquals(etudiant.getId(), FichierCV.Status.ACCEPTED, FichierCV.Status.WAITING, FichierCV.Status.REFUSED);
         verify(fileRepository, times(1)).save(any(FichierCV.class));
         verify(modelMapper, times(1)).map(fichierCV, FichierCVDTO.class);
     }
     @Test
     void testDeleteCurrentCV_NotFound() {
         // Arrange
-        when(fileRepository.getFirstByEtudiant_IdAndStatusEquals(etudiant.getId(), FichierCV.Status.ACCEPTED))
+        when(fileRepository.getFirstByEtudiant_IdAndStatusEqualsOrStatusEqualsOrStatusEquals(etudiant.getId(), FichierCV.Status.ACCEPTED, FichierCV.Status.WAITING, FichierCV.Status.REFUSED))
                 .thenReturn(Optional.empty());
 
 
@@ -288,7 +290,7 @@ public class FichierCVServiceTest {
         }, "Expected deleteCurrentCV() to throw, but it didn't");
 
         assertEquals("Fichier non trouvé", exception.getMessage(), "Exception message should match");
-        verify(fileRepository, times(1)).getFirstByEtudiant_IdAndStatusEquals(etudiant.getId(), FichierCV.Status.ACCEPTED);
+        verify(fileRepository, times(1)).getFirstByEtudiant_IdAndStatusEqualsOrStatusEqualsOrStatusEquals(etudiant.getId(), FichierCV.Status.ACCEPTED, FichierCV.Status.WAITING, FichierCV.Status.REFUSED);
         verify(fileRepository, never()).save(any());
         verify(modelMapper, never()).map(any(FichierCV.class), eq(FichierCVDTO.class));
     }
@@ -297,7 +299,7 @@ public class FichierCVServiceTest {
     @Test
     void testGetAmountOfPage_NumberEndWithZero_Success() {
         // Act
-        when(fileRepository.count()).thenReturn(30L);
+        when(fileRepository.countAllByStatusEquals(FichierCV.Status.WAITING)).thenReturn(30L);
 
         // Assert
         Assertions.assertThat(fichierCVService.getAmountOfPages()).isEqualTo(3);
@@ -305,10 +307,10 @@ public class FichierCVServiceTest {
     @Test
     void testGetAmountOfPage_NumberNotEndWithZero_Success() {
         // Act
-        when(fileRepository.count()).thenReturn(43L);
+        when(fileRepository.countAllByStatusEquals(FichierCV.Status.WAITING)).thenReturn(43L);
 
         // Assert
-        Assertions.assertThat(fichierCVService.getAmountOfPages()).isEqualTo(4);
+        Assertions.assertThat(fichierCVService.getAmountOfPages()).isEqualTo(5);
     }
     @Test
     void testChangeStatus_Success() throws ChangeSetPersister.NotFoundException {

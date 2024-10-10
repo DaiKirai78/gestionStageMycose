@@ -6,10 +6,12 @@ import com.projet.mycose.modele.OffreStage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public interface ApplicationStageRepository extends JpaRepository<ApplicationStage, Long> {
     List<ApplicationStage> findByEtudiantId(Long etudiantId);
     List<ApplicationStage> findByOffreStageId(Long offreStageId);
@@ -18,5 +20,5 @@ public interface ApplicationStageRepository extends JpaRepository<ApplicationSta
 
     Optional<ApplicationStage> findByEtudiantIdAndOffreStageId(Long etudiantId, Long offreStageId);
 
-    Optional<ApplicationStage> findByEtudiantIdAndStatusEquals(Long etudiantId, ApplicationStage.ApplicationStatus status);
+    List<ApplicationStage> findByEtudiantIdAndStatusEquals(Long etudiantId, ApplicationStage.ApplicationStatus status);
 }

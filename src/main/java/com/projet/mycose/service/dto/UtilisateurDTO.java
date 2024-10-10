@@ -3,7 +3,6 @@ package com.projet.mycose.service.dto;
 import com.projet.mycose.modele.*;
 import com.projet.mycose.modele.auth.Role;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

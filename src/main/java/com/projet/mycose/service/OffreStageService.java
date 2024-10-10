@@ -8,15 +8,16 @@ import com.projet.mycose.repository.OffreStageRepository;
 import com.projet.mycose.repository.UtilisateurRepository;
 import com.projet.mycose.service.dto.*;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import jakarta.validation.Validator;
-import org.hibernate.dialect.pagination.OffsetFetchLimitHandler;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
@@ -33,7 +34,7 @@ public class OffreStageService {
     private final FichierOffreStageRepository ficherOffreStageRepository;
     private static final int LIMIT_PER_PAGE = 10;
 
-    public OffreStageService(OffreStageRepository offreStageRepository, ModelMapper modelMapper, Validator validator, UtilisateurService utilisateurService, UtilisateurRepository utilisateurRepository, FormulaireOffreStageRepository formulaireOffreStageRepository, FichierOffreStageRepository ficherOffreStageRepository) {
+    public OffreStageService(OffreStageRepository offreStageRepository, ModelMapper modelMapper, Validator validator, UtilisateurRepository utilisateurRepository, UtilisateurService utilisateurService, FormulaireOffreStageRepository formulaireOffreStageRepository, FichierOffreStageRepository ficherOffreStageRepository) {
         this.offreStageRepository = offreStageRepository;
         this.modelMapper = modelMapper;
         this.validator = validator;
@@ -108,7 +109,6 @@ public class OffreStageService {
         return formulaireOffreStage;
     }
 
-
     public FichierOffreStageDTO saveFile(@Valid UploadFicherOffreStageDTO uploadFicherOffreStageDTO, String token) throws ConstraintViolationException, IOException {
 
         UtilisateurDTO utilisateurDTO = utilisateurService.getMe(token);
@@ -154,6 +154,27 @@ public class OffreStageService {
         FormulaireOffreStage savedForm = formulaireOffreStageRepository.save(formulaireOffreStage);
 
         return convertToDTO(savedForm);
+    }
+
+//    @Transactional
+//    public void assignerOffre(long etudiantId, long offreStageId) {
+//        if(!etudiantIdEtOffreStageIdValides(etudiantId, offreStageId)) {
+//            return;
+//        }
+//
+//        Etudiant etudiant = (Etudiant) utilisateurRepository.findById(etudiantId).get();
+//        OffreStage offreStage = offreStageRepository.findById(offreStageId).get();
+//        etudiant.getOffres().add(offreStage);
+//        offreStage.getEtudiants().add(etudiant);
+//        utilisateurRepository.save(etudiant);
+//    }
+
+    private boolean etudiantIdEtOffreStageIdValides(long etudiantId, long offreStageId) {
+        if(!utilisateurRepository.existsById(etudiantId) || !offreStageRepository.existsById(offreStageId)){
+            return false;
+        }
+
+        return utilisateurRepository.findById(etudiantId).get() instanceof Etudiant;
     }
 
     public List<OffreStageAvecUtilisateurInfoDTO> getWaitingOffreStage(int page) {

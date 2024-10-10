@@ -1,17 +1,16 @@
-// src/components/VoirMonCV.js
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import {data} from "autoprefixer";
-//import pdfFile from "../assets/pdf.pdf";
+import { useTranslation } from "react-i18next";
 
 const VoirMonCV = () => {
     const [isFullscreen, setIsFullscreen] = useState(false);
     const pdfContainerRef = useRef(null);
     const [pdfUrl, setPdfUrl] = useState(null);
+    const [cvStatus, setCvStatus] = useState(null);
+    const [statusDescription, setStatusDescription] = useState(null);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
-
-
+    const { t } = useTranslation();
 
     useEffect(() => {
         fetchCV();
@@ -23,69 +22,47 @@ const VoirMonCV = () => {
             const response = await axios.post("http://localhost:8080/api/cv/current", {}, {
                 headers: {
                     Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json'
+                    "Content-Type": "application/json",
                 },
             });
             const base64String = response.data.fileData;
+            const status = response.data.status;
+            const description = response.data.statusDescription;
 
             if (!base64String) {
-                throw new Error("No PDF data found in the response.");
+                throw new Error(t("errorNoPDF"));
             }
 
             const dataUrl = `data:application/pdf;base64,${base64String}`;
             setPdfUrl(dataUrl);
+            setCvStatus(status);
+            setStatusDescription(description);
             setLoading(false);
-
-
         } catch (error) {
             console.error("Erreur lors de la récupération du CV:", error);
-            setError("Impossible de charger le CV. Veuillez réessayer plus tard.");
+            setError(t("impossibleLoadCV"));
             setLoading(false);
         }
     };
 
-    const supprimerCV = async () => {
-        let token = localStorage.getItem("token");
-        try {
-            const response = await axios.patch("http://localhost:8080/api/cv/delete_current", {}, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-            });
+    const enterFullscreen = () => {
+        const PDFContainer = pdfContainerRef.current;
 
-
-            setError("PDF supprimé avec succès.");
-
-
-
-
-        } catch (error) {
-            console.error("Erreur lors de la suppression du CV:", error);
-            setError("Erreur lors de la suppression du CV");
-        }
-    }
-
-
-
-
-
-
-
-
-    const toggleFullscreen = () => {
-        const container = pdfContainerRef.current;
         if (!document.fullscreenElement) {
-            container.requestFullscreen().then(() => {
+            PDFContainer.requestFullscreen().then(() => {
                 setIsFullscreen(true);
             }).catch(err => {
-                console.error(`Error attempting to enable fullscreen mode: ${err.message} (${err.name})`);
+                console.error(`Erreur lors de l'activation du mode plein écran: ${err.message}`);
             });
-        } else {
+        }
+    };
+
+    const exitFullscreen = () => {
+        if (document.fullscreenElement) {
             document.exitFullscreen().then(() => {
                 setIsFullscreen(false);
             }).catch(err => {
-                console.error(`Error attempting to exit fullscreen mode: ${err.message} (${err.name})`);
+                console.error(`Erreur lors de la sortie du mode plein écran: ${err.message}`);
             });
         }
     };
@@ -105,42 +82,66 @@ const VoirMonCV = () => {
     }, []);
 
     return (
-        <div className="flex flex-col items-center w-full p-4">
-            <div className="flex flex-col items-center w-full py-1" id="pdf-parent"
-                  ref={pdfContainerRef}>
-                <div
-                    id="pdf-container"
-                    className="w-full max-w-4xl h-[80vh] sm:h-[90vh] md:h-[100vh] overflow-hidden rounded shadow-lg"
-                >
-                    {loading ? (
-                        <div className="flex items-center justify-center w-full h-full">
-                            <p>Loading PDF...</p>
+        <div className="min-h-screen flex items-start justify-center p-8">
+            <div className="bg-[#FFF8F2] shadow-lg rounded-lg flex flex-col md:flex-row w-full max-w-6xl">
+                {/* Section PDF */}
+                <div className="w-full md:w-[70%] p-8 border-b md:border-b-0 md:border-r border-gray-300">
+                    <h1 className="text-4xl font-bold mb-8 mt-4 text-center">{t("myCV")}</h1>
+                    <div className="flex justify-center" id="pdfContainer" ref={pdfContainerRef}>
+                        <iframe
+                            src={pdfUrl}
+                            title="Mon CV"
+                            className={`w-full h-[66vh] border ${isFullscreen ? "h-[100vh]" : ""}`}
+                            allowFullScreen
+                        ></iframe>
+                        <div className="fixed bottom-4 left-0 right-0 flex justify-center">
+                            {isFullscreen && (
+                                <button
+                                    onClick={exitFullscreen}
+                                    className="mt-4 px-4 py-2 bg-[#afafea] font-bold text-black p-2 rounded-lg hover:bg-[#7d7ded] cursor-pointer disabled:hover:bg-[#afafea] disabled:cursor-auto"
+                                >
+                                    {t("exitFullScreen")}
+                                </button>
+                            )}
                         </div>
-                    ) : error ? (
-                        <div className="flex items-center justify-center w-full h-full text-red-500">
-                            {error}
-                        </div>
-                    ) : (
-                    <iframe
-                        src={pdfUrl}
-                        title="Mon CV"
-                        className="w-full h-full border-0"
-                        allowFullScreen
-                    ></iframe>
-                    )}
+                    </div>
                 </div>
-                <div className="flex space-x-4">
+
+                {/* Section des infos de statut et commentaire */}
+                <div className="w-full md:w-[30%] p-8 flex flex-col items-center justify-center md:items-start">
+                    {cvStatus && (
+                        <div className="mb-4 w-full">
+                            <p className="text-lg font-semibold mb-4">{t("status")}: {t(cvStatus)}</p>
+
+                            {cvStatus === "ACCEPTED" && (
+                                <p className="text-green-600 mb-4">
+                                    {t("acceptedMessage")}
+                                </p>
+                            )}
+                            {cvStatus === "WAITING" && (
+                                <p className="text-yellow-600 mb-4">
+                                    {t("waitingMessage")}
+                                </p>
+                            )}
+                            {cvStatus === "REFUSED" && (
+                                <p className="text-red-600 mb-4">
+                                    {t("refusedMessage")}
+                                </p>
+                            )}
+
+                            {(cvStatus === "ACCEPTED" || cvStatus === "REFUSED") && statusDescription && (
+                                <p className="text-md text-gray-700 mb-4">
+                                    {t("internshipManagerComment")}: {statusDescription}
+                                </p>
+                            )}
+                        </div>
+                    )}
+
                     <button
-                        onClick={toggleFullscreen}
-                        className="mt-4 px-4 py-2 bg-[#afafea] font-bold text-black p-2 rounded-lg hover:bg-[#7d7ded] cursor-pointer disabled:hover:bg-[#afafea] disabled:cursor-auto"
+                        onClick={enterFullscreen}
+                        className="mt-4 px-4 py-2 bg-[#afafea] font-bold text-black p-2 rounded-lg hover:bg-[#7d7ded] cursor-pointer"
                     >
-                        {isFullscreen ? "Exit Full Screen" : "Full Screen"}
-                    </button>
-                    <button
-                        onClick={supprimerCV}
-                        className="mt-4 px-4 py-2 bg-[#dc3545] font-bold text-black p-2 rounded-lg hover:bg-[#c43540] cursor-pointer disabled:hover:bg-[#dc3545] disabled:cursor-auto"
-                    >
-                        Supprimer CV
+                        {t("fullScreen")}
                     </button>
                 </div>
             </div>

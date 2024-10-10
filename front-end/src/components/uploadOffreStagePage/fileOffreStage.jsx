@@ -182,7 +182,10 @@ function FileOffreStage() {
                     id="title"
                     name="title"
                     value={title}
-                    onChange={(e) => setTitle(e.target.value)}
+                    onChange={(e) => {
+                        setTitle(e.target.value);
+                        setTitleError("")
+                }}
                     className={`mt-1 p-2 w-full border ${titleError ? 'border-red-500' : 'border-black'} rounded-md bg-transparent`}
                 />
                 {titleError && <p className="text-red-500 text-sm">{t("titleRequired")}</p>}
