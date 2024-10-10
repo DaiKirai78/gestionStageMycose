@@ -1,7 +1,7 @@
 import TokenPageContainer from "./tokenPageContainer.jsx";
 import React from "react";
 import AppliquerStage from "../components/appliquerStage.jsx";
-import pdfUrl from "../../public/EH-8.pdf";
+import pdfUrl from "/EH-8.pdf";
 
 const appliquerStagePage = (vraiProps) => {
     const props = {

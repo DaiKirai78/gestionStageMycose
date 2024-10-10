@@ -4,18 +4,14 @@ package com.projet.mycose.service.dto;
 
 import com.projet.mycose.modele.FormulaireOffreStage;
 import com.projet.mycose.modele.OffreStage;
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
-import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @Getter
@@ -46,8 +42,6 @@ public class FormulaireOffreStageDTO extends OffreStageDTO {
     private String description;
 
     @Builder
-    public FormulaireOffreStageDTO(Long id, String entrepriseName,  String employerName, String email, String website, String title,  String location, String salary, String description, LocalDateTime createdAt, LocalDateTime updatedAt, Long createur_id) {
-        super(id, title, entrepriseName, createur_id, createdAt, updatedAt);
     public FormulaireOffreStageDTO(Long id, String entrepriseName, String employerName, String email, String website, String title, String location, String salary, String description, LocalDateTime createdAt, LocalDateTime updatedAt, Long createur_id) {
         super(id, title, entrepriseName, createur_id, createdAt, updatedAt);
         this.employerName = employerName;
@@ -100,19 +94,5 @@ public class FormulaireOffreStageDTO extends OffreStageDTO {
                 formulaireOffreStage.getCreateur().getId(),
                 formulaireOffreStage.getStatus()
         );
-        //System.out.println(formulaireOffreStage.getId());
-        return new FormulaireOffreStageDTO(
-                formulaireOffreStage.getId(),
-                formulaireOffreStage.getEntrepriseName(),
-                formulaireOffreStage.getEmployerName(),
-                formulaireOffreStage.getEmail(),
-                formulaireOffreStage.getWebsite(),
-                formulaireOffreStage.getTitle(),
-                formulaireOffreStage.getLocation(),
-                formulaireOffreStage.getSalary(),
-                formulaireOffreStage.getDescription(),
-                formulaireOffreStage.getCreatedAt(),
-                formulaireOffreStage.getUpdatedAt(),
-                formulaireOffreStage.getCreateur().getId());
     }
 }
