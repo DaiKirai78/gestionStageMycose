@@ -1,6 +1,7 @@
 package com.projet.mycose.service.dto;
 
 import com.projet.mycose.modele.FichierOffreStage;
+import com.projet.mycose.modele.OffreStage;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -41,6 +42,18 @@ public class FichierOffreStageDTO extends OffreStageDTO{
         this.setCreateur_id(createur_id);
     }
 
+    @Builder
+    public FichierOffreStageDTO(long id, String filename, String fileData, String title, String entrepriseName, Long createur_id, OffreStage.Status status) {
+        super(id);
+        this.filename = filename;
+        this.fileData = fileData;
+        this.setTitle(title);
+        this.setEntrepriseName(entrepriseName);
+        this.setCreateur_id(createur_id);
+        this.setStatus(status);
+    }
+
+
     public static FichierOffreStageDTO toDTO(FichierOffreStage fichierOffreStage) {
         return FichierOffreStageDTO.builder()
                 .id(fichierOffreStage.getId())
@@ -50,6 +63,18 @@ public class FichierOffreStageDTO extends OffreStageDTO{
                 .entrepriseName(fichierOffreStage.getEntrepriseName())
                 .createur_id(fichierOffreStage.getCreateur().getId())
                 .build();
+    }
+
+    public static FichierOffreStageDTO toDTOAll(FichierOffreStage fichierOffreStage) {
+        return new FichierOffreStageDTO(
+                fichierOffreStage.getId(),
+                fichierOffreStage.getFilename(),
+                Base64.getEncoder().encodeToString(fichierOffreStage.getData()),
+                fichierOffreStage.getTitle(),
+                fichierOffreStage.getEntrepriseName(),
+                fichierOffreStage.getCreateur().getId(),
+                fichierOffreStage.getStatus()
+        );
     }
 
     public FichierOffreStageDTO(UploadFicherOffreStageDTO uploadFicherOffreStageDTO, Long createur_id) throws IOException {

@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 import java.util.*;
 
 @Service
@@ -147,10 +148,15 @@ public class OffreStageService {
         return convertToDTO(ficherOffreStageRepository.save(fichierOffreStage));
     }
 
-    public FormulaireOffreStageDTO saveForm(FormulaireOffreStageDTO formulaireOffreStageDTO, String token) {
-        Long createur_id = utilisateurService.getUserIdByToken(token);
-        formulaireOffreStageDTO.setCreateur_id(createur_id);
+    public FormulaireOffreStageDTO saveForm(FormulaireOffreStageDTO formulaireOffreStageDTO, String token) throws AccessDeniedException {
+        UtilisateurDTO utilisateurDTO = utilisateurService.getMe(token);
+        Long createur_id = utilisateurDTO.getId();
 
+        if (utilisateurDTO.getRole() != Role.EMPLOYEUR && utilisateurDTO.getRole() != Role.GESTIONNAIRE_STAGE) {
+            throw new AccessDeniedException("Utilisateur n'est pas un employeur");
+        }
+
+        formulaireOffreStageDTO.setCreateur_id(createur_id);
 
         FormulaireOffreStage formulaireOffreStage = convertToEntity(formulaireOffreStageDTO);
 
@@ -207,26 +213,5 @@ public class OffreStageService {
     public List<OffreStageDTO> getAvailableOffreStagesForEtudiant(String token) {
         Long etudiantId = utilisateurService.getUserIdByToken(token);
         return offreStageRepository.findAllByEtudiantNotApplied(etudiantId).stream().map(this::convertToDTO).toList();
-    }
-
-    @Transactional
-    public void assignerEmployeur(long employeurId, long offreStageId) {
-        if(!employeurIdEtOffreStageIdValides(employeurId, offreStageId)) {
-            return;
-        }
-
-        Employeur employeur = (Employeur) utilisateurRepository.findById(employeurId).get();
-        OffreStage offreStage = offreStageRepository.findById(offreStageId).get();
-        employeur.getOffres().add(offreStage);
-        offreStage.setEmployeur(employeur);
-        utilisateurRepository.save(employeur);
-    }
-
-    private boolean employeurIdEtOffreStageIdValides(long employeurId, long offreStageId) {
-        if(!utilisateurRepository.existsById(employeurId) || !offreStageRepository.existsById(offreStageId)) {
-            return false;
-        }
-
-        return utilisateurRepository.findById(employeurId).get() instanceof Employeur;
     }
 }

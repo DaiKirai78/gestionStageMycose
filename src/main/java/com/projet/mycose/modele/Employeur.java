@@ -19,10 +19,6 @@ import java.util.Set;
 @DiscriminatorValue("Employeur")
 public class Employeur extends Utilisateur {
 
-    @OneToMany(mappedBy = "employeur", cascade = CascadeType.ALL)
-    @ToString.Exclude
-    private Set<OffreStage> offres;
-
     private String entrepriseName;
     @Builder
     public Employeur(Long id, String prenom, String nom, String numeroDeTelephone, String courriel, String motDePasse, String entrepriseName) {

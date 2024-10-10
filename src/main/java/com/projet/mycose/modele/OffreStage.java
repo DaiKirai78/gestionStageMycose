@@ -52,10 +52,6 @@ public abstract class OffreStage {
         }
     }
 
-    @ManyToOne
-    @JoinColumn(name = "USER_ID")
-    private Employeur employeur;
-
     public enum Status {
         WAITING,
         ACCEPTED,
