@@ -17,6 +17,7 @@ import UploadCvPage from "./pages/uploadCvPage.jsx";
 import UploadOffreStagePage from "./pages/uploadOffreStagePage.jsx";
 import AppliquerStagePage from "./pages/appliquerStagePage.jsx";
 import ValiderOffreStage from "./components/validerOffreStagePage/validerOffreStage.jsx";
+import ValiderOffreStagePage from "./pages/validerOffreStagePage.jsx";
 
 const router = createBrowserRouter([
   {
@@ -57,6 +58,10 @@ const router = createBrowserRouter([
   {
     path: "/validerOffreStage/:name",
     element: <ValiderOffreStage />
+  },
+  {
+    path: "/validerOffreStage",
+    element: <ValiderOffreStagePage />
   }
 
 ]);
