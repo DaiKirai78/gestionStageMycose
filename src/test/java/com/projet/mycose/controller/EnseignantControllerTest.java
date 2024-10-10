@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.service.EnseignantService;
 import com.projet.mycose.service.UtilisateurService;
-import com.projet.mycose.service.dto.CourrielTelephoneDTO;
 import com.projet.mycose.service.dto.EnseignantDTO;
 import com.projet.mycose.service.dto.RegisterEnseignantDTO;
 import org.junit.jupiter.api.BeforeEach;

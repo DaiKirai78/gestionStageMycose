@@ -1,6 +1,7 @@
 package com.projet.mycose.service.dto;
 
 import com.projet.mycose.modele.Etudiant;
+import com.projet.mycose.modele.Programme;
 import com.projet.mycose.modele.auth.Role;
 import lombok.*;
 
@@ -9,9 +10,9 @@ import lombok.*;
 @Setter
 @ToString
 public class EtudiantDTO extends UtilisateurDTO {
-    private String programme;
+    private Programme programme;
     @Builder
-    public EtudiantDTO(Long id, String prenom, String nom, String courriel, String numeroDeTelephone, Role role, String programme) {
+    public EtudiantDTO(Long id, String prenom, String nom, String courriel, String numeroDeTelephone, Role role, Programme programme) {
         super(id, prenom, nom, courriel, numeroDeTelephone, role);
         this.programme = programme;
     }

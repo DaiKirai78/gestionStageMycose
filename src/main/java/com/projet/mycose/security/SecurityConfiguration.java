@@ -52,7 +52,12 @@ public class SecurityConfiguration {
                         .requestMatchers("/entreprise/**").hasAuthority("EMPLOYEUR")
                         .requestMatchers("/enseignant/**").hasAuthority("ENSEIGNANT")
                         .requestMatchers("/gestionnaire-stage/**").hasAuthority("GESTIONNAIRE_STAGE")
+                        .requestMatchers("/api/cv/waitingcv").hasAuthority("GESTIONNAIRE_STAGE")
+                        .requestMatchers("/api/cv/pages").hasAuthority("GESTIONNAIRE_STAGE")
+                        .requestMatchers("/api/cv/accept").hasAuthority("GESTIONNAIRE_STAGE")
+                        .requestMatchers("/api/cv/refuse").hasAuthority("GESTIONNAIRE_STAGE")
                         .requestMatchers("/**").permitAll()
+                        //Laisser en commentaire car c'est utile pour faire des postman lorsqu'on veut tester des features :)
                         .anyRequest().denyAll()
                 )
                 .sessionManagement((secuManagement) -> {

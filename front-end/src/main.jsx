@@ -7,12 +7,17 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import ConnectionPage from "./pages/connectionPage.jsx"
-import AcceuilPage from './pages/acceuilPage.jsx';
+import AccueilPage from './pages/accueilPage.jsx';
 import InscriptionPage from './pages/inscriptionPage.jsx';
-
+import ValiderCVPage from './pages/validerCVPage.jsx';
 import "./i18n"
-import UploadOffreStage from "./components/uploadOffreStage.jsx";
-import UploadCV from "./components/uploadCV.jsx";
+import VoirMonCVPage from "./pages/voirMonCVPage.jsx";
+import ValiderCV from "./components/validerCVPage/validerCV.jsx";
+import UploadCvPage from "./pages/uploadCvPage.jsx";
+import UploadOffreStagePage from "./pages/uploadOffreStagePage.jsx";
+import AppliquerStagePage from "./pages/appliquerStagePage.jsx";
+import ValiderOffreStage from "./components/validerOffreStagePage/validerOffreStage.jsx";
+import ValiderOffreStagePage from "./pages/validerOffreStagePage.jsx";
 
 const router = createBrowserRouter([
   {
@@ -20,21 +25,45 @@ const router = createBrowserRouter([
     element: <ConnectionPage />,
   },
   {
-    path: "/acceuil",
-    element: <AcceuilPage />
+    path: "/accueil",
+    element: <AccueilPage />
   },
   {
     path: "/televerserOffreStage",
-    element: <UploadOffreStage />
+    element: <UploadOffreStagePage />
   },
   {
     path: "/televerserCV",
-    element: <UploadCV />
+    element: <UploadCvPage />
   },
   {
     path: "/inscription",
     element: <InscriptionPage />
+  },
+  {
+    path: "/voirMonCV",
+    element: <VoirMonCVPage />
+  },
+  {
+    path: "/validerCV",
+    element: <ValiderCVPage />
+  },
+  { path: "/validerCV/:id",
+    element: <ValiderCV />
+  },
+  {
+    path: "/appliquer",
+    element: <AppliquerStagePage />
+  },
+  {
+    path: "/validerOffreStage/:name",
+    element: <ValiderOffreStage />
+  },
+  {
+    path: "/validerOffreStage",
+    element: <ValiderOffreStagePage />
   }
+
 ]);
 
 createRoot(document.getElementById("root")).render(

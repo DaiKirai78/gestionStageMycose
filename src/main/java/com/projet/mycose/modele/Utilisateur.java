@@ -9,7 +9,9 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 @Getter
 @Setter
@@ -17,10 +19,10 @@ import java.util.Collection;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "type")
-@ToString
 public abstract class Utilisateur {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "USER_ID")
     private Long id;
 
     @CreationTimestamp
@@ -36,11 +38,14 @@ public abstract class Utilisateur {
     @Column(nullable = false)
     private String nom;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String numeroDeTelephone;
 
     @Embedded
     private Credentials credentials;
+
+    @OneToMany(mappedBy = "createur", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OffreStage> offreStagesUploaded = new ArrayList<>();
 
 
     public Utilisateur(Long id, String prenom, String nom, String numeroDeTelephone, Credentials credentials) {
@@ -72,5 +77,18 @@ public abstract class Utilisateur {
 
     public Collection<? extends GrantedAuthority> getAuthorities(){
         return credentials.getAuthorities();
+    }
+
+    @Override
+    public String toString(){
+        return "Utilisateur{" +
+                "id=" + id +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", prenom='" + prenom + '\'' +
+                ", nom='" + nom + '\'' +
+                ", numeroDeTelephone='" + numeroDeTelephone + '\'' +
+                ", credentials=" + credentials +
+                '}';
     }
 }

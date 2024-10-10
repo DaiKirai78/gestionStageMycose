@@ -2,18 +2,21 @@ package com.projet.mycose.service.dto;
 
 
 
+import com.projet.mycose.modele.FormulaireOffreStage;
+import com.projet.mycose.modele.OffreStage;
 import jakarta.validation.constraints.*;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
+
+@NoArgsConstructor
 @Getter
 @Setter
-public class FormulaireOffreStageDTO {
-
-    private Long id;
-
-    @NotBlank(message = "Enterprise name is required.")
-    private String entrepriseName;
+public class FormulaireOffreStageDTO extends OffreStageDTO {
 
     @NotBlank(message = "Employer name is required.")
     private String employerName;
@@ -27,10 +30,6 @@ public class FormulaireOffreStageDTO {
             message = "Invalid website URL.")
     private String website;
 
-    @NotBlank(message = "Title is required.")
-    @Size(max = 100, message = "Title cannot exceed 100 characters.")
-    private String title;
-
     @NotBlank(message = "Location is required.")
     private String location;
 
@@ -41,4 +40,59 @@ public class FormulaireOffreStageDTO {
     @NotBlank(message = "Description is required.")
     @Size(max = 500, message = "Description cannot exceed 500 characters.")
     private String description;
+
+    @Builder
+    public FormulaireOffreStageDTO(Long id, String entrepriseName, String employerName, String email, String website, String title, String location, String salary, String description, LocalDateTime createdAt, LocalDateTime updatedAt, Long createur_id) {
+        super(id, title, entrepriseName, createur_id, createdAt, updatedAt);
+        this.employerName = employerName;
+        this.email = email;
+        this.website = website;
+        this.location = location;
+        this.salary = salary;
+        this.description = description;
+    }
+
+    @Builder
+    public FormulaireOffreStageDTO(Long id, String entrepriseName, String employerName, String email, String website, String title, String location, String salary, String description, LocalDateTime createdAt, LocalDateTime updatedAt, Long createur_id, OffreStage.Status status) {
+        super(id, title, entrepriseName, createur_id, createdAt, updatedAt, status);
+        this.employerName = employerName;
+        this.email = email;
+        this.website = website;
+        this.location = location;
+        this.salary = salary;
+        this.description = description;
+    }
+    public static FormulaireOffreStageDTO toDTO(FormulaireOffreStage formulaireOffreStage) {
+        return new FormulaireOffreStageDTO(
+                formulaireOffreStage.getId(),
+                formulaireOffreStage.getEntrepriseName(),
+                formulaireOffreStage.getEmployerName(),
+                formulaireOffreStage.getEmail(),
+                formulaireOffreStage.getWebsite(),
+                formulaireOffreStage.getTitle(),
+                formulaireOffreStage.getLocation(),
+                formulaireOffreStage.getSalary(),
+                formulaireOffreStage.getDescription(),
+                formulaireOffreStage.getCreatedAt(),
+                formulaireOffreStage.getUpdatedAt(),
+                formulaireOffreStage.getCreateur().getId());
+    }
+
+    public static FormulaireOffreStageDTO toDTOAll(FormulaireOffreStage formulaireOffreStage) {
+        return new FormulaireOffreStageDTO(
+                formulaireOffreStage.getId(),
+                formulaireOffreStage.getEntrepriseName(),
+                formulaireOffreStage.getEmployerName(),
+                formulaireOffreStage.getEmail(),
+                formulaireOffreStage.getWebsite(),
+                formulaireOffreStage.getTitle(),
+                formulaireOffreStage.getLocation(),
+                formulaireOffreStage.getSalary(),
+                formulaireOffreStage.getDescription(),
+                formulaireOffreStage.getCreatedAt(),
+                formulaireOffreStage.getUpdatedAt(),
+                formulaireOffreStage.getCreateur().getId(),
+                formulaireOffreStage.getStatus()
+        );
+    }
 }
