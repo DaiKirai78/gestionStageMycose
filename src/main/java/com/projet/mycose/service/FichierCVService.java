@@ -117,14 +117,14 @@ public class FichierCVService {
 
     public FichierCVDTO getCurrentCV(String token) {
         Long etudiant_id = utilisateurService.getUserIdByToken(token);
-        FichierCV fichierCV = fileRepository.getFirstByEtudiant_IdAndStatusEquals(etudiant_id, FichierCV.Status.ACCEPTED).orElseThrow(() -> new RuntimeException("Fichier non trouvé"));
+        FichierCV fichierCV = fileRepository.getFirstByEtudiant_IdAndStatusEqualsOrStatusEqualsOrStatusEquals(etudiant_id, FichierCV.Status.ACCEPTED, FichierCV.Status.WAITING, FichierCV.Status.REFUSED).orElseThrow(() -> new RuntimeException("Fichier non trouvé"));
         return convertToDTO(fichierCV);
     }
 
-    public FichierCVDTO deleteCurrentCV(String token) {
-        Long etudiant_id = utilisateurService.getUserIdByToken(token);
-        FichierCV fichierCV = fileRepository.getFirstByEtudiant_IdAndStatusEquals(etudiant_id, FichierCV.Status.ACCEPTED).orElseThrow(() -> new RuntimeException("Fichier non trouvé"));
-        fichierCV.setStatus(FichierCV.Status.DELETED);
-        return convertToDTO(fileRepository.save(fichierCV));
-    }
+//    public FichierCVDTO deleteCurrentCV(String token) {
+//        Long etudiant_id = utilisateurService.getUserIdByToken(token);
+//        FichierCV fichierCV = fileRepository.getFirstByEtudiant_IdAndStatusEquals(etudiant_id, FichierCV.Status.ACCEPTED).orElseThrow(() -> new RuntimeException("Fichier non trouvé"));
+//        fichierCV.setStatus(FichierCV.Status.DELETED);
+//        return convertToDTO(fileRepository.save(fichierCV));
+//    }
 }

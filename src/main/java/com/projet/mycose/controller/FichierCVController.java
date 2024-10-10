@@ -76,17 +76,17 @@ public class FichierCVController {
          return ResponseEntity.status(HttpStatus.OK).body(fichierCVDTOS);
     }
 
-    @PatchMapping("/delete_current")
-    public ResponseEntity<?> deleteCurrentCV(@RequestHeader("Authorization") String token) {
-        try {
-            fichierCVService.deleteCurrentCV(token);
-            return ResponseEntity.status(HttpStatus.OK).body("CV supprimé avec succès");
-        } catch (AuthenticationException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized access");
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Fichier non trouvé");
-        }
-    }
+//    @PatchMapping("/delete_current")
+//    public ResponseEntity<?> deleteCurrentCV(@RequestHeader("Authorization") String token) {
+//        try {
+//            fichierCVService.deleteCurrentCV(token);
+//            return ResponseEntity.status(HttpStatus.OK).body("CV supprimé avec succès");
+//        } catch (AuthenticationException e) {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized access");
+//        } catch (RuntimeException e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Fichier non trouvé");
+//        }
+//    }
 
     @GetMapping("/pages")
     public ResponseEntity<Integer> getAmountOfPages() {
