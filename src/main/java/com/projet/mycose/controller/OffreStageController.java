@@ -1,5 +1,6 @@
 package com.projet.mycose.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.projet.mycose.modele.FichierCV;
 import com.projet.mycose.modele.OffreStage;
 import com.projet.mycose.service.OffreStageService;
@@ -70,8 +71,15 @@ public class OffreStageController {
     }
 
     @PatchMapping("/accept")
-    public ResponseEntity<?> acceptOffreStage(@RequestParam Long id, @RequestBody String description) {
+    public ResponseEntity<?> acceptOffreStage(@RequestParam Long id, @RequestBody JsonNode jsonNode) {
         try {
+            JsonNode descriptionNode = jsonNode.get("commentaire");
+
+            if (descriptionNode == null || descriptionNode.isNull()) {
+                return ResponseEntity.badRequest().body("Description field is missing");
+            }
+
+            String description = descriptionNode.asText();
             offreStageService.changeStatus(id, OffreStage.Status.ACCEPTED, description);
             return ResponseEntity.ok().build();
         } catch (ChangeSetPersister.NotFoundException e) {
@@ -79,8 +87,15 @@ public class OffreStageController {
         }
     }
     @PatchMapping("/refuse")
-    public ResponseEntity<?> refuseOffreStage(@RequestParam Long id, @RequestBody String description) {
+    public ResponseEntity<?> refuseOffreStage(@RequestParam Long id, @RequestBody JsonNode jsonNode) {
         try {
+            JsonNode descriptionNode = jsonNode.get("commentaire");
+
+            if (descriptionNode == null || descriptionNode.isNull()) {
+                return ResponseEntity.badRequest().body("Description field is missing");
+            }
+
+            String description = descriptionNode.asText();
             offreStageService.changeStatus(id, OffreStage.Status.REFUSED, description);
             return ResponseEntity.ok().build();
         } catch (ChangeSetPersister.NotFoundException e) {
