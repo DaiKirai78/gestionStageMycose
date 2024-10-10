@@ -1,12 +1,7 @@
 package com.projet.mycose.controller;
 
 import com.projet.mycose.service.EtudiantService;
-import com.projet.mycose.service.dto.CourrielTelephoneDTO;
-import com.projet.mycose.service.dto.EtudiantDTO;
-import com.projet.mycose.service.dto.RegisterEnseignantDTO;
-import com.projet.mycose.service.dto.RegisterEtudiantDTO;
 import com.projet.mycose.service.dto.*;
-import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

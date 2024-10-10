@@ -1,7 +1,6 @@
 package com.projet.mycose.controller;
 
 import com.projet.mycose.service.EnseignantService;
-import com.projet.mycose.service.dto.CourrielTelephoneDTO;
 import com.projet.mycose.service.dto.EnseignantDTO;
 import com.projet.mycose.service.dto.RegisterEnseignantDTO;
 import jakarta.validation.Valid;

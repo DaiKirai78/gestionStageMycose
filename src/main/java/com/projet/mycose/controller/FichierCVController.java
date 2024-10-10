@@ -6,7 +6,7 @@ import com.projet.mycose.security.exception.AuthenticationException;
 import com.projet.mycose.service.FichierCVService;
 import com.projet.mycose.service.UtilisateurService;
 import com.projet.mycose.service.dto.FichierCVDTO;
-import com.projet.mycose.service.dto.FichierOffreStageDTO;
+import com.projet.mycose.service.dto.FichierCVStudInfoDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import org.modelmapper.ModelMapper;
@@ -41,7 +41,17 @@ public class FichierCVController {
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file, @RequestHeader("Authorization") String token) {
         try {
-            FichierCVDTO savedFileDTO = fichierCVService.saveFile(file, token);
+            Long etudiant_id = utilisateurService.getUserIdByToken(token);
+
+            FichierCVDTO fichierCVDTO = fichierCVService.getCurrentCV_returnNullIfEmpty(etudiant_id);
+
+            FichierCVDTO savedFileDTO;
+
+            if(fichierCVDTO != null) {
+                fichierCVService.deleteCurrentCV(token);
+            }
+
+            savedFileDTO = fichierCVService.saveFile(file, token);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(savedFileDTO);
         } catch (ConstraintViolationException e) {
@@ -49,12 +59,15 @@ public class FichierCVController {
             e.getConstraintViolations().forEach(violation ->
                     errors.put(violation.getPropertyPath().toString(), violation.getMessage()));
 
-            System.out.println(errors);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
 
         } catch (IOException e) {
             // Handle IOException for file-related issues
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        } catch (AuthenticationException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized access");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Fichier non trouvé");
         }
     }
 
@@ -70,30 +83,34 @@ public class FichierCVController {
         }
     }
 
-    @PostMapping("/waitingcv")
-    public ResponseEntity<List<FichierCVDTO>> getWaitingCv(@RequestParam int page) {
-         List<FichierCVDTO> fichierCVDTOS = fichierCVService.getWaitingCv(page);
-         return ResponseEntity.status(HttpStatus.OK).body(fichierCVDTOS);
+    @GetMapping("/waitingcv")
+    public ResponseEntity<?> getWaitingCv(@RequestParam int page) {
+         try {
+             List<FichierCVStudInfoDTO> fichierCVDTOS = fichierCVService.getWaitingCv(page);
+             return ResponseEntity.status(HttpStatus.OK).body(fichierCVDTOS);
+         } catch (IllegalArgumentException e) {
+             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+         }
     }
 
-//    @PatchMapping("/delete_current")
-//    public ResponseEntity<?> deleteCurrentCV(@RequestHeader("Authorization") String token) {
-//        try {
-//            fichierCVService.deleteCurrentCV(token);
-//            return ResponseEntity.status(HttpStatus.OK).body("CV supprimé avec succès");
-//        } catch (AuthenticationException e) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized access");
-//        } catch (RuntimeException e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Fichier non trouvé");
-//        }
-//    }
+    @PatchMapping("/delete_current")
+    public ResponseEntity<?> deleteCurrentCV(@RequestHeader("Authorization") String token) {
+        try {
+            fichierCVService.deleteCurrentCV(token);
+            return ResponseEntity.status(HttpStatus.OK).body("CV supprimé avec succès");
+        } catch (AuthenticationException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized access");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Fichier non trouvé");
+        }
+    }
 
     @GetMapping("/pages")
     public ResponseEntity<Integer> getAmountOfPages() {
         return ResponseEntity.status((HttpStatus.OK)).body(fichierCVService.getAmountOfPages());
     }
 
-    @PostMapping("/accept")
+    @PatchMapping("/accept")
     public ResponseEntity<?> acceptCV(@RequestParam Long id, @RequestBody String description) {
         try {
             fichierCVService.changeStatus(id, FichierCV.Status.ACCEPTED, description);
@@ -102,7 +119,7 @@ public class FichierCVController {
             return ResponseEntity.notFound().build();
         }
     }
-    @PostMapping("/refuse")
+    @PatchMapping("/refuse")
     public ResponseEntity<?> refuseCV(@RequestParam Long id, @RequestBody String description) {
         try {
             fichierCVService.changeStatus(id, FichierCV.Status.REFUSED, description);

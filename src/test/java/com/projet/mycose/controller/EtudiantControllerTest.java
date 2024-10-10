@@ -4,10 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.projet.mycose.modele.Programme;
 import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.service.EtudiantService;
-import com.projet.mycose.service.UtilisateurService;
-import com.projet.mycose.service.dto.CourrielTelephoneDTO;
 import com.projet.mycose.service.dto.EtudiantDTO;
-import com.projet.mycose.service.dto.RegisterEnseignantDTO;
 import com.projet.mycose.service.dto.RegisterEtudiantDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,7 +17,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;

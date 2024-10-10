@@ -3,7 +3,6 @@ package com.projet.mycose.service.dto;
 
 
 import com.projet.mycose.modele.FormulaireOffreStage;
-import com.projet.mycose.modele.OffreStage;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Getter;

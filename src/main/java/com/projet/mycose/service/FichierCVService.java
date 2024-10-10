@@ -5,6 +5,7 @@ import com.projet.mycose.modele.FichierOffreStage;
 import com.projet.mycose.repository.EtudiantRepository;
 import com.projet.mycose.repository.FichierCVRepository;
 import com.projet.mycose.service.dto.FichierCVDTO;
+import com.projet.mycose.service.dto.FichierCVStudInfoDTO;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
@@ -82,7 +83,14 @@ public class FichierCVService {
         return convertToDTO(fileRepository.save(fichierCV));
     }
 
-    public List<FichierCVDTO> getWaitingCv(int page) {
+    public List<FichierCVStudInfoDTO> getWaitingCv(int page) throws IllegalArgumentException {
+        //Pageable commence a 0 mais page va commencer a 1
+        page--;
+
+        if(page < 0) {
+            throw new IllegalArgumentException("Page commence à 1");
+        }
+
         Optional<List<FichierCV>> fichierCVSOptional = fileRepository.getFichierCVSByStatusEquals(FichierCV.Status.WAITING,
                 PageRequest.of(page, LIMIT_PER_PAGE));
 
@@ -92,12 +100,24 @@ public class FichierCVService {
 
         List<FichierCV> fichierCVS = fichierCVSOptional.get();
 
-        return fichierCVS.stream().map(this::convertToDTO).toList();
+        return fichierCVS.stream().map(FichierCVStudInfoDTO::toDto).toList();
     }
 
     public Integer getAmountOfPages() {
-        long amoutOfRows = fileRepository.count();
-        return (int) Math.floor((double) amoutOfRows / LIMIT_PER_PAGE);
+        long amountOfRows = fileRepository.countAllByStatusEquals(FichierCV.Status.WAITING);
+
+        if (amountOfRows == 0)
+            return 0;
+
+        int nombrePages = (int) Math.floor((double) amountOfRows / LIMIT_PER_PAGE);
+
+        if (amountOfRows % 10 > 0) {
+            // Return ++ parce que floor(13/10) = 1
+            // mais il y a 2 page et pas 1
+            nombrePages++;
+        }
+
+        return nombrePages;
     }
 
     public void changeStatus(Long id, FichierCV.Status status, String description) throws ChangeSetPersister.NotFoundException {
@@ -123,10 +143,15 @@ public class FichierCVService {
         return convertToDTO(fichierCV);
     }
 
-//    public FichierCVDTO deleteCurrentCV(String token) {
-//        Long etudiant_id = utilisateurService.getUserIdByToken(token);
-//        FichierCV fichierCV = fileRepository.getFirstByEtudiant_IdAndStatusEquals(etudiant_id, FichierCV.Status.ACCEPTED).orElseThrow(() -> new RuntimeException("Fichier non trouvé"));
-//        fichierCV.setStatus(FichierCV.Status.DELETED);
-//        return convertToDTO(fileRepository.save(fichierCV));
-//    }
+    public FichierCVDTO getCurrentCV_returnNullIfEmpty(Long etudiant_id) {
+        Optional<FichierCV> fichierCV = fileRepository.
+                getCurrentCvByEtudiant_id(etudiant_id);
+        return fichierCV.map(this::convertToDTO).orElse(null);
+    }
+    public FichierCVDTO deleteCurrentCV(String token) {
+        Long etudiant_id = utilisateurService.getUserIdByToken(token);
+        FichierCV fichierCV = fileRepository.getFirstByEtudiant_IdAndStatusEqualsOrStatusEqualsOrStatusEquals(etudiant_id, FichierCV.Status.ACCEPTED, FichierCV.Status.WAITING, FichierCV.Status.REFUSED).orElseThrow(() -> new RuntimeException("Fichier non trouvé"));
+        fichierCV.setStatus(FichierCV.Status.DELETED);
+        return convertToDTO(fileRepository.save(fichierCV));
+    }
 }

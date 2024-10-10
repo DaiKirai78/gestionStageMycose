@@ -1,24 +1,17 @@
 package com.projet.mycose.service;
 
-import com.projet.mycose.modele.Employeur;
 import com.projet.mycose.modele.Enseignant;
 import com.projet.mycose.modele.auth.Role;
-import com.projet.mycose.repository.EmployeurRepository;
 import com.projet.mycose.repository.EnseignantRepository;
-import com.projet.mycose.service.dto.EmployeurDTO;
 import com.projet.mycose.service.dto.EnseignantDTO;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
-import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
