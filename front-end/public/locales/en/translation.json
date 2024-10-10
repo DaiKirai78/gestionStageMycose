@@ -92,7 +92,7 @@
     "salaireDeOffre": "Salary : ",
     "rendezVousSurPagePourInfos": "Go to the application page for more details about this offer.",
     "publieLe": "Published on ",
-    "aucunStageSelectionne": "No internship selected."
+    "aucunStageSelectionne": "No internship selected.",
     "errorRetrievingStudents": "Error retrieving students",
     "errorRetrievingNbPages": "Error retrieving the number of pages",
     "waitingCV": "CV waiting",
@@ -113,7 +113,7 @@
     "errorRefusingInternship": "Error refusing the internship offer",
     "noInternshipFound": "No internship offer found",
     "employerInternship": "Employer internship offer",
-    "acceptOrRefuseInternship": "Accept or refuse the internship offer"
+    "acceptOrRefuseInternship": "Accept or refuse the internship offer",
     "ACCEPTED": "Accepted",
     "REFUSED": "Refused",
     "WAITING": "Waiting",

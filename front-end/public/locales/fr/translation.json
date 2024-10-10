@@ -92,7 +92,7 @@
     "salaireDeOffre": "Salaire : ",
     "rendezVousSurPagePourInfos": "Rendez-vous sur la page d'application pour plus de détails concernant cette offre.",
     "publieLe": "Publié le ",
-    "aucunStageSelectionne": "Aucun stage sélectionné."
+    "aucunStageSelectionne": "Aucun stage sélectionné.",
     "ACCEPTED": "Accepté",
     "REFUSED": "Refusé",
     "WAITING": "En attente",
@@ -105,7 +105,7 @@
     "internshipManagerComment": "Commentaire du gestionnaire de stage",
     "acceptedMessage": "Votre CV a été accepté. Vous pouvez maintenant voir les offres de stage disponibles.",
     "waitingMessage": "Votre CV est présentement en cours de validation. Vous allez pouvoir voir les offres de stage dès que celui-ci est validé par l'un de nos gestionnaires.",
-    "refusedMessage": "Votre CV a été refusé. Vous devez apporter les modifications nécessaires à celui-ci puis le téléverser pour que l'un de nos gestionnaires puisse le valider à nouveau."
+    "refusedMessage": "Votre CV a été refusé. Vous devez apporter les modifications nécessaires à celui-ci puis le téléverser pour que l'un de nos gestionnaires puisse le valider à nouveau.",
     "errorRetrievingStudents": "Erreur lors de la récupération des étudiants",
     "errorRetrievingNbPages": "Erreur lors de la récupération du nombre de pages",
     "waitingCV": "CV en attente",
