@@ -153,4 +153,8 @@ public class FichierCVService {
         fichierCV.setStatus(FichierCV.Status.DELETED);
         return convertToDTO(fileRepository.save(fichierCV));
     }
+
+    public long getTotalWaitingCVs() {
+        return fileRepository.countAllByStatusEquals(FichierCV.Status.WAITING);
+    }
 }

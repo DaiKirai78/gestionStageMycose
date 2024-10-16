@@ -109,6 +109,11 @@ public class FichierCVController {
         return ResponseEntity.status((HttpStatus.OK)).body(fichierCVService.getAmountOfPages());
     }
 
+    @GetMapping("/totalwaitingcvs")
+    public ResponseEntity<Long> getTotalWaitingCVs() {
+        return ResponseEntity.status(HttpStatus.OK).body(fichierCVService.getTotalWaitingCVs());
+    }
+
     @PatchMapping("/accept")
     public ResponseEntity<?> acceptCV(@RequestParam Long id,@RequestBody JsonNode jsonNode) {
         try {
