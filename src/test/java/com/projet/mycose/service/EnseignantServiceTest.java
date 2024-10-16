@@ -3,7 +3,7 @@ package com.projet.mycose.service;
 import com.projet.mycose.modele.Enseignant;
 import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.repository.EnseignantRepository;
-import com.projet.mycose.service.dto.EnseignantDTO;
+import com.projet.mycose.dto.EnseignantDTO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

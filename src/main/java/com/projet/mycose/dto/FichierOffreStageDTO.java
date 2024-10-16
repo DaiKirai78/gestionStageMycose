@@ -1,4 +1,4 @@
-package com.projet.mycose.service.dto;
+package com.projet.mycose.dto;
 
 import com.projet.mycose.modele.FichierOffreStage;
 import com.projet.mycose.modele.OffreStage;
@@ -12,7 +12,6 @@ import lombok.Setter;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Base64;
 
 

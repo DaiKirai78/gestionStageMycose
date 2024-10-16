@@ -1,4 +1,4 @@
-package com.projet.mycose.service.dto;
+package com.projet.mycose.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

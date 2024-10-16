@@ -1,9 +1,9 @@
 package com.projet.mycose.controller;
 
 import com.projet.mycose.service.EmployeurService;
-import com.projet.mycose.service.dto.EmployeurDTO;
-import com.projet.mycose.service.dto.OffreStageDTO;
-import com.projet.mycose.service.dto.RegisterEmployeurDTO;
+import com.projet.mycose.dto.EmployeurDTO;
+import com.projet.mycose.dto.OffreStageDTO;
+import com.projet.mycose.dto.RegisterEmployeurDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

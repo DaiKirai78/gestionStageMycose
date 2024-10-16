@@ -2,8 +2,8 @@ package com.projet.mycose.controller;
 
 import com.projet.mycose.modele.ApplicationStage;
 import com.projet.mycose.service.ApplicationStageService;
-import com.projet.mycose.service.dto.ApplicationStageAvecInfosDTO;
-import com.projet.mycose.service.dto.ApplicationStageDTO;
+import com.projet.mycose.dto.ApplicationStageAvecInfosDTO;
+import com.projet.mycose.dto.ApplicationStageDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

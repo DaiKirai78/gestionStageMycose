@@ -1,4 +1,4 @@
-package com.projet.mycose.service.dto;
+package com.projet.mycose.dto;
 
 import com.projet.mycose.modele.Employeur;
 import com.projet.mycose.modele.auth.Role;

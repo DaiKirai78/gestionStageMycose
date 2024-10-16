@@ -1,6 +1,6 @@
 package com.projet.mycose.controller;
 
-import com.projet.mycose.modele.OffreStage;
+import com.projet.mycose.dto.*;
 import com.projet.mycose.service.OffreStageService;
 import com.projet.mycose.service.dto.*;
 import jakarta.validation.ConstraintViolationException;
@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 

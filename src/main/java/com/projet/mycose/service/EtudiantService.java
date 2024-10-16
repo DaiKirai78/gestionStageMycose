@@ -1,5 +1,7 @@
 package com.projet.mycose.service;
 
+import com.projet.mycose.dto.EtudiantDTO;
+import com.projet.mycose.dto.OffreStageDTO;
 import com.projet.mycose.modele.Etudiant;
 import com.projet.mycose.modele.OffreStage;
 import com.projet.mycose.modele.Programme;
@@ -14,9 +16,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
-import static com.projet.mycose.service.dto.EtudiantDTO.toDTO;
+import static com.projet.mycose.dto.EtudiantDTO.toDTO;
 
 @Service
 @RequiredArgsConstructor

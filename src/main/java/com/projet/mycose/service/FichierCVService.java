@@ -1,11 +1,10 @@
 package com.projet.mycose.service;
 
 import com.projet.mycose.modele.FichierCV;
-import com.projet.mycose.modele.FichierOffreStage;
 import com.projet.mycose.repository.EtudiantRepository;
 import com.projet.mycose.repository.FichierCVRepository;
-import com.projet.mycose.service.dto.FichierCVDTO;
-import com.projet.mycose.service.dto.FichierCVStudInfoDTO;
+import com.projet.mycose.dto.FichierCVDTO;
+import com.projet.mycose.dto.FichierCVStudInfoDTO;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;

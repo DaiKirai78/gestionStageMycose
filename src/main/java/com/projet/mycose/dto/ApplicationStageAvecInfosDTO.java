@@ -1,14 +1,12 @@
-package com.projet.mycose.service.dto;
+package com.projet.mycose.dto;
 
 import com.projet.mycose.modele.ApplicationStage;
 import com.projet.mycose.modele.FichierOffreStage;
 import com.projet.mycose.modele.FormulaireOffreStage;
-import com.projet.mycose.modele.auth.Role;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.Hibernate;
 
 import java.time.LocalDateTime;
 import java.util.Base64;

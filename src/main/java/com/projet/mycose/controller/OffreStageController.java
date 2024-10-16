@@ -1,7 +1,7 @@
 package com.projet.mycose.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.projet.mycose.modele.FichierCV;
+import com.projet.mycose.dto.*;
 import com.projet.mycose.modele.OffreStage;
 import com.projet.mycose.service.OffreStageService;
 import com.projet.mycose.service.dto.*;
@@ -9,10 +9,8 @@ import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
@@ -33,7 +31,7 @@ public class OffreStageController {
 
 
     @PostMapping(value = "/upload-file", consumes = "multipart/form-data")
-    public ResponseEntity<?> uploadFile(@Valid @ModelAttribute UploadFicherOffreStageDTO uploadFicherOffreStageDTO,  @RequestHeader("Authorization") String token) {
+    public ResponseEntity<?> uploadFile(@Valid @ModelAttribute UploadFicherOffreStageDTO uploadFicherOffreStageDTO, @RequestHeader("Authorization") String token) {
         try {
 
             FichierOffreStageDTO savedFileDTO = offreStageService.saveFile(uploadFicherOffreStageDTO, token);

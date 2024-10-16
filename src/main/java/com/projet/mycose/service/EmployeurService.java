@@ -4,20 +4,16 @@ import com.projet.mycose.modele.Employeur;
 import com.projet.mycose.modele.OffreStage;
 import com.projet.mycose.repository.EmployeurRepository;
 import com.projet.mycose.repository.OffreStageRepository;
-import com.projet.mycose.service.dto.EmployeurDTO;
-import com.projet.mycose.service.dto.OffreStageDTO;
+import com.projet.mycose.dto.EmployeurDTO;
+import com.projet.mycose.dto.OffreStageDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

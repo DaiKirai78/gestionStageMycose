@@ -1,11 +1,11 @@
 package com.projet.mycose.service;
 
+import com.projet.mycose.dto.*;
 import com.projet.mycose.modele.*;
 import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.repository.*;
 import com.projet.mycose.service.dto.*;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;

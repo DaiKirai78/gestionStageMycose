@@ -1,19 +1,15 @@
-package com.projet.mycose.service.dto;
+package com.projet.mycose.dto;
 
-import com.projet.mycose.modele.Programme;
+import lombok.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class RegisterEtudiantDTO {
+public class RegisterEmployeurDTO {
     @NotBlank(message = "Le prénom ne doit pas être vide.")
     @Pattern(regexp = "[a-zA-ZéÉàÀ\\-\\s']+", message = "Le prénom ne doit pas contenir de chiffre ou de symbole")
     private String prenom;
@@ -35,5 +31,7 @@ public class RegisterEtudiantDTO {
     @Pattern(regexp = "[a-zA-Z0-9$&+,:;=?@#|'<>.^*()%!-]{8,}", message = "Le mot de passe doit être une combinaison de 8 lettres, chiffres et symboles")
     private String motDePasse;
 
-    private Programme programme;
+    @Pattern(regexp = "^[A-Za-zÀ-ÖØ-öø-ÿ0-9'.,&\\s-]{2,100}$", message = "Le nom de l'organisation doit comprendre entre 2 et 100 caractères et peut contenir des lettres, chiffres,  apostrophes, points, virgules, espaces, tirets, et le symbole &")
+    @NotBlank(message = "Le nom de l'organisation ne doit pas être vide.")
+    private String nomOrganisation;
 }

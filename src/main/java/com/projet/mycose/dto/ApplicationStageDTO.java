@@ -1,8 +1,7 @@
-package com.projet.mycose.service.dto;
+package com.projet.mycose.dto;
 
 
 import com.projet.mycose.modele.ApplicationStage;
-import jdk.jshell.Snippet;
 import lombok.*;
 
 @Getter

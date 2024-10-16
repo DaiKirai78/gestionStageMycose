@@ -1,11 +1,10 @@
 package com.projet.mycose.controller;
 
 import com.projet.mycose.service.UtilisateurService;
-import com.projet.mycose.service.dto.CourrielTelephoneDTO;
-import com.projet.mycose.service.dto.JWTAuthResponse;
-import com.projet.mycose.service.dto.LoginDTO;
-import com.projet.mycose.service.dto.UtilisateurDTO;
-import jakarta.servlet.http.HttpServletRequest;
+import com.projet.mycose.dto.CourrielTelephoneDTO;
+import com.projet.mycose.dto.JWTAuthResponse;
+import com.projet.mycose.dto.LoginDTO;
+import com.projet.mycose.dto.UtilisateurDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

@@ -1,5 +1,6 @@
 package com.projet.mycose.service;
 
+import com.projet.mycose.dto.*;
 import com.projet.mycose.modele.*;
 import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.repository.FichierOffreStageRepository;
@@ -12,8 +13,6 @@ import com.projet.mycose.repository.UtilisateurRepository;
 import com.projet.mycose.service.dto.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
-import com.projet.mycose.service.dto.FichierOffreStageDTO;
-import com.projet.mycose.service.dto.FormulaireOffreStageDTO;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import jakarta.validation.Validator;

@@ -4,18 +4,13 @@ import com.projet.mycose.modele.*;
 import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.repository.EtudiantRepository;
 import com.projet.mycose.repository.OffreStageRepository;
-import com.projet.mycose.service.dto.EnseignantDTO;
-import com.projet.mycose.service.dto.EtudiantDTO;
-import com.projet.mycose.service.dto.OffreStageDTO;
-import jdk.jshell.execution.Util;
-import lombok.experimental.UtilityClass;
+import com.projet.mycose.dto.EtudiantDTO;
+import com.projet.mycose.dto.OffreStageDTO;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -23,7 +18,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;

@@ -1,4 +1,4 @@
-package com.projet.mycose.service.dto;
+package com.projet.mycose.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

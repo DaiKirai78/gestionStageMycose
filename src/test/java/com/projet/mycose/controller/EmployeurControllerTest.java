@@ -1,6 +1,10 @@
 package com.projet.mycose.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.projet.mycose.dto.EmployeurDTO;
+import com.projet.mycose.dto.FormulaireOffreStageDTO;
+import com.projet.mycose.dto.OffreStageDTO;
+import com.projet.mycose.dto.RegisterEmployeurDTO;
 import com.projet.mycose.modele.OffreStage;
 import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.service.EmployeurService;

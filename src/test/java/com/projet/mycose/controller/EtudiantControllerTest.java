@@ -1,11 +1,13 @@
 package com.projet.mycose.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.projet.mycose.modele.OffreStage;
+import com.projet.mycose.dto.EtudiantDTO;
+import com.projet.mycose.dto.FormulaireOffreStageDTO;
+import com.projet.mycose.dto.OffreStageDTO;
+import com.projet.mycose.dto.RegisterEtudiantDTO;
 import com.projet.mycose.modele.Programme;
 import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.service.EtudiantService;
-import com.projet.mycose.service.UtilisateurService;
 import com.projet.mycose.service.dto.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,7 +15,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -23,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;

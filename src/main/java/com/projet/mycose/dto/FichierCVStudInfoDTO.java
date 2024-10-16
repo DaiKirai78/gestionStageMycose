@@ -1,13 +1,9 @@
-package com.projet.mycose.service.dto;
+package com.projet.mycose.dto;
 
 import com.projet.mycose.modele.FichierCV;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.util.Base64;

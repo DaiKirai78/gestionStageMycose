@@ -1,5 +1,6 @@
 package com.projet.mycose.service;
 
+import com.projet.mycose.dto.*;
 import com.projet.mycose.modele.*;
 import com.projet.mycose.repository.*;
 import com.projet.mycose.security.JwtTokenProvider;

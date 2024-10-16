@@ -1,8 +1,8 @@
 package com.projet.mycose.controller;
 
 import com.projet.mycose.service.EnseignantService;
-import com.projet.mycose.service.dto.EnseignantDTO;
-import com.projet.mycose.service.dto.RegisterEnseignantDTO;
+import com.projet.mycose.dto.EnseignantDTO;
+import com.projet.mycose.dto.RegisterEnseignantDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

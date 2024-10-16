@@ -2,7 +2,7 @@ package com.projet.mycose.service;
 
 import com.projet.mycose.modele.Enseignant;
 import com.projet.mycose.repository.EnseignantRepository;
-import com.projet.mycose.service.dto.EnseignantDTO;
+import com.projet.mycose.dto.EnseignantDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
