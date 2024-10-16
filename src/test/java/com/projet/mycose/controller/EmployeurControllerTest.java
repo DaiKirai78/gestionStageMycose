@@ -1,9 +1,13 @@
 package com.projet.mycose.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.projet.mycose.dto.EmployeurDTO;
+import com.projet.mycose.dto.FormulaireOffreStageDTO;
+import com.projet.mycose.dto.OffreStageDTO;
+import com.projet.mycose.dto.RegisterEmployeurDTO;
+import com.projet.mycose.modele.OffreStage;
 import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.service.EmployeurService;
-import com.projet.mycose.service.dto.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,19 +18,24 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
 public class EmployeurControllerTest {
     private MockMvc mockMvc;
     @Mock
     private EmployeurService employeurService;
+
     @InjectMocks
     private EmployeurController employeurController;
 
@@ -80,35 +89,80 @@ public class EmployeurControllerTest {
                 .andExpect(status().isConflict());
     }
 
+
     @Test
-    public void testCheckForConflict_Echec() throws Exception {
-        CourrielTelephoneDTO courrielTelephoneDTO = new CourrielTelephoneDTO("mihoubi@gmail.com", "438-639-2638");
+    public void testGetStages_Success() throws Exception{
+        // Arrange
+        String authHeader = "Bearer unTokenValide";
 
-        when(employeurService.credentialsDejaPris("mihoubi@gmail.com", "438-639-2638")).thenReturn(true);
+        //nouveau contructeur
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        String courrielTelephoneString = objectMapper.writeValueAsString(courrielTelephoneDTO);
+        FormulaireOffreStageDTO mockFormulaire = new FormulaireOffreStageDTO(
+                1L,
+                "unNomEntreprise",
+                "unNomEmployeur",
+                "unEmail@mail.com",
+                "unSite.com",
+                "unTitreStage",
+                "uneLcalisation",
+                "1000",
+                "uneDescription",
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                1L,
+                OffreStage.Status.WAITING
+        );
 
-        this.mockMvc.perform(post("/entreprise/register/check-for-conflict")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(courrielTelephoneString)
-                        .with(csrf())
-                        .with(user("karim").password("Mimi123$").roles("EMPLOYEUR")))
-                .andExpect(status().isConflict());
+        List<OffreStageDTO> mockListeOffres = new ArrayList<>();
+        mockListeOffres.add(mockFormulaire);
+        when(employeurService.getStages(authHeader, 0)).thenReturn(mockListeOffres);
+
+        // Act & Assert
+        mockMvc.perform(post("/entreprise/getOffresPosted")
+                        .header("Authorization", authHeader).param("pageNumber", String.valueOf(0))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isAccepted())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].id").value(1L))
+                .andExpect(jsonPath("$[0].status").value("WAITING"));
+
     }
 
     @Test
-    public void testCheckForConflict_Succes() throws Exception {
-        CourrielTelephoneDTO courrielTelephoneDTO = new CourrielTelephoneDTO("mihoubi@gmail.com", "438-639-2638");
+    public void testGetStages_Error() throws Exception {
+        //Arrange
+        when(employeurService.getStages("token", 0)).thenThrow(new RuntimeException());
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        String courrielTelephoneString = objectMapper.writeValueAsString(courrielTelephoneDTO);
 
-        this.mockMvc.perform(post("/entreprise/register/check-for-conflict")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(courrielTelephoneString)
-                        .with(csrf())
-                        .with(user("karim").password("Mimi123$").roles("EMPLOYEUR")))
-                .andExpect(status().isOk());
+        //Act & Assert
+        mockMvc.perform(post("/entreprise/getOffresPosted")
+                        .header("Authorization", "unToken")
+                        .param("pageNumber", String.valueOf(0))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void testGetAmountOfPages_Error() throws Exception {
+        //Arrange
+        when(employeurService.getAmountOfPages("token")).thenThrow(new RuntimeException());
+
+        //Act & Assert
+        mockMvc.perform(get("/entreprise/pages")
+                        .header("Authorization", "tokenValide"))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void testGetAmountOfPages_Success() throws Exception {
+        //Arrange
+        when(employeurService.getAmountOfPages("tokenValide")).thenReturn(2);
+
+        //Act & Assert
+        mockMvc.perform(get("/entreprise/pages")
+                        .header("Authorization", "tokenValide"))
+                .andExpect(status().isAccepted())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().string("2"));
     }
 }

@@ -1,14 +1,17 @@
 package com.projet.mycose.controller;
 
 import com.projet.mycose.service.EmployeurService;
-import com.projet.mycose.service.dto.CourrielTelephoneDTO;
-import com.projet.mycose.service.dto.EmployeurDTO;
-import com.projet.mycose.service.dto.RegisterEmployeurDTO;
+import com.projet.mycose.dto.EmployeurDTO;
+import com.projet.mycose.dto.OffreStageDTO;
+import com.projet.mycose.dto.RegisterEmployeurDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
@@ -28,13 +31,24 @@ public class EmployeurController {
         return employeurResultat != null ? ResponseEntity.status(HttpStatus.CREATED).body(employeurResultat) : ResponseEntity.status(HttpStatus.CONFLICT).body("L'employeur existe déjà ou les credentials sont invalides");
     }
 
+    @PostMapping("/getOffresPosted")
+    public ResponseEntity<List<OffreStageDTO>> getOffresStagesPubliees(@RequestHeader("Authorization") String token, @RequestParam int pageNumber) {
+        try {
+            return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
+                    employeurService.getStages(token, pageNumber));
+        } catch (Exception e) {
+            return ResponseEntity.noContent().build();
+        }
+    }
 
-    @PostMapping("/register/check-for-conflict")
-    public ResponseEntity<Object> CreationDeCompte_CheckForConflict(@Valid @RequestBody CourrielTelephoneDTO courrielTelephoneDTO) {
-        if (employeurService.credentialsDejaPris(courrielTelephoneDTO.getCourriel(), courrielTelephoneDTO.getTelephone()))
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("L'employeur existe déjà ou les credentials sont invalides");
-        else
-            return ResponseEntity.status(HttpStatus.OK).body(courrielTelephoneDTO);
+    @GetMapping("/pages")
+    public ResponseEntity<Integer> getAmountOfPages(@RequestHeader("Authorization") String token) {
+        try{
+            return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
+                    employeurService.getAmountOfPages(token));
+        } catch(Exception e) {
+            return ResponseEntity.noContent().build();
+        }
     }
 }
 

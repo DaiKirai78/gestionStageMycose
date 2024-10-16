@@ -1,69 +1,71 @@
 package com.projet.mycose.service;
 
 import com.projet.mycose.modele.Employeur;
+import com.projet.mycose.modele.FichierOffreStage;
+import com.projet.mycose.modele.FormulaireOffreStage;
+import com.projet.mycose.modele.OffreStage;
 import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.repository.EmployeurRepository;
-import com.projet.mycose.service.dto.EmployeurDTO;
+import com.projet.mycose.repository.OffreStageRepository;
+import com.projet.mycose.dto.EmployeurDTO;
+import com.projet.mycose.dto.OffreStageDTO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.springframework.dao.DataIntegrityViolationException;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
+
+@ExtendWith(MockitoExtension.class)
 public class EmployeurServiceTest {
+
+    @Mock
+    private EmployeurRepository employeurRepository;
+
+    @Mock
+    private UtilisateurService utilisateurService;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private OffreStageRepository offreStageRepositoryMock;
+    @InjectMocks
+    private EmployeurService employeurService;
+
     @Test
     public void creationDeCompteAvecSucces() {
         //Arrange
-        EmployeurRepository employeurRepositoryMock = Mockito.mock(EmployeurRepository.class);
-        PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);
-        EmployeurService employeurService = new EmployeurService(employeurRepositoryMock, passwordEncoder);
-
         Employeur employeur = new Employeur(1L, "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$", "Couche-Tard");
-        when(employeurRepositoryMock.save(any(Employeur.class))).thenReturn(employeur);
+        when(employeurRepository.save(any(Employeur.class))).thenReturn(employeur);
 
         //Act
         EmployeurDTO employeurDTO = employeurService.creationDeCompte("Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$", "Couche-Tard");
 
         //Assert
-        Assertions.assertEquals(employeurDTO.getId(), 1);
-        Assertions.assertEquals(employeurDTO.getPrenom(), "Karim");
-        Assertions.assertEquals(employeurDTO.getNom(), "Mihoubi");
-        Assertions.assertEquals(employeurDTO.getCourriel(), "mihoubi@gmail.com");
-        Assertions.assertEquals(employeurDTO.getNumeroDeTelephone(), "438-532-2729");
-        Assertions.assertEquals(employeurDTO.getRole(), Role.EMPLOYEUR);
-    }
-
-    @Test
-    public void creationDeCompteAvecEchec_CourrielDejaUtilise() {
-        //Arrange
-        EmployeurRepository employeurRepositoryMock = Mockito.mock(EmployeurRepository.class);
-        PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);
-        EmployeurService employeurService = new EmployeurService(employeurRepositoryMock, passwordEncoder);
-
-        doThrow(new DataIntegrityViolationException("Courriel déjà utilisé"))
-                .when(employeurRepositoryMock).save(any(Employeur.class));
-
-        //Act & Assert
-        DataIntegrityViolationException exception = Assertions.assertThrows(
-                DataIntegrityViolationException.class,
-                () -> employeurService.creationDeCompte("Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$", "Couche-Tard")
-        );
-
-        Assertions.assertEquals("Courriel déjà utilisé", exception.getMessage());
+        assertEquals(employeurDTO.getId(), 1);
+        assertEquals(employeurDTO.getPrenom(), "Karim");
+        assertEquals(employeurDTO.getNom(), "Mihoubi");
+        assertEquals(employeurDTO.getCourriel(), "mihoubi@gmail.com");
+        assertEquals(employeurDTO.getNumeroDeTelephone(), "438-532-2729");
+        assertEquals(employeurDTO.getRole(), Role.EMPLOYEUR);
     }
 
     @Test
     public void creationDeCompteAvecEchec_NumeroDeTelephoneInvalide() {
         //Arrange
-        EmployeurRepository employeurRepositoryMock = Mockito.mock(EmployeurRepository.class);
-        PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);
-        EmployeurService employeurService = new EmployeurService(employeurRepositoryMock, passwordEncoder);
 
         String numeroDeTelephoneInvalide = "12345abc";
 
@@ -77,9 +79,6 @@ public class EmployeurServiceTest {
     @Test
     public void creationDeCompteAvecEchec_CourrielInvalide() {
         //Arrange
-        EmployeurRepository employeurRepositoryMock = Mockito.mock(EmployeurRepository.class);
-        PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);
-        EmployeurService employeurService = new EmployeurService(employeurRepositoryMock, passwordEncoder);
 
         String courrielInvalide = "jeSuisUnEmailQuiNeRespectePasLesConventionsDÉcriture";
 
@@ -93,9 +92,6 @@ public class EmployeurServiceTest {
     @Test
     public void creationDeCompteAvecEchec_MotDePasseInvalide_PasEncode() {
         //Arrange
-        EmployeurRepository employeurRepositoryMock = Mockito.mock(EmployeurRepository.class);
-        PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);
-        EmployeurService employeurService = new EmployeurService(employeurRepositoryMock, passwordEncoder);
 
         String motDePasseInvalide = "motDePassePasEncodé";
 
@@ -109,9 +105,6 @@ public class EmployeurServiceTest {
     @Test
     public void creationDeCompteAvecEchec_MotDePasseInvalide_Null() {
         //Arrange
-        EmployeurRepository employeurRepositoryMock = Mockito.mock(EmployeurRepository.class);
-        PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);
-        EmployeurService employeurService = new EmployeurService(employeurRepositoryMock, passwordEncoder);
 
         String motDePasseInvalide = null;
 
@@ -125,9 +118,6 @@ public class EmployeurServiceTest {
     @Test
     public void creationDeCompteAvecEchec_PrenomInvalide() {
         //Arrange
-        EmployeurRepository employeurRepositoryMock = Mockito.mock(EmployeurRepository.class);
-        PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);
-        EmployeurService employeurService = new EmployeurService(employeurRepositoryMock, passwordEncoder);
 
         String prenomInvalide = "3426unPrenomInvalide28382";
 
@@ -141,9 +131,6 @@ public class EmployeurServiceTest {
     @Test
     public void creationDeCompteAvecEchec_NomInvalide() {
         //Arrange
-        EmployeurRepository employeurRepositoryMock = Mockito.mock(EmployeurRepository.class);
-        PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);
-        EmployeurService employeurService = new EmployeurService(employeurRepositoryMock, passwordEncoder);
 
         String nomInvalide = "3426unNomInvalide28382";
 
@@ -155,124 +142,98 @@ public class EmployeurServiceTest {
     }
 
     @Test
-    public void testGetEtudiantByCourriel_EtudiantExiste() {
-        // Arrange
-        EmployeurRepository employeurRepositoryMock = Mockito.mock(EmployeurRepository.class);
-        PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);
-        EmployeurService employeurService = new EmployeurService(employeurRepositoryMock, passwordEncoder);
-
-        Employeur employeur = new Employeur(1L, "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$", "Couche-Tard");
-        when(employeurRepositoryMock.findEmployeurByCourriel("mihoubi@gmail.com")).thenReturn(Optional.of(employeur));
-
-        // Act
-        EmployeurDTO employeurDTO = employeurService.getEmployeurByCourriel("mihoubi@gmail.com");
-
-        // Assert
-        Assertions.assertNotNull(employeurDTO);
-        Assertions.assertEquals(employeurDTO.getCourriel(), "mihoubi@gmail.com");
-    }
-
-    @Test
-    public void testGetEtudiantByCourriel_EtudiantInexistant() {
-        // Arrange
-        EmployeurRepository employeurRepositoryMock = Mockito.mock(EmployeurRepository.class);
-        PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);
-        EmployeurService employeurService = new EmployeurService(employeurRepositoryMock, passwordEncoder);
-
-        when(employeurRepositoryMock.findEmployeurByCourriel("inexistant@gmail.com")).thenReturn(Optional.empty());
-
-        // Act
-        EmployeurDTO employeurDTO = employeurService.getEmployeurByCourriel("inexistant@gmail.com");
-
-        // Assert
-        Assertions.assertNull(employeurDTO);
-    }
-
-
-    @Test
-    public void testGetEtudiantByTelephone_EtudiantExiste() {
-        // Arrange
-        EmployeurRepository employeurRepositoryMock = Mockito.mock(EmployeurRepository.class);
-        PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);
-        EmployeurService employeurService = new EmployeurService(employeurRepositoryMock, passwordEncoder);
-
-        Employeur employeur = new Employeur(1L, "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$", "Couche-Tard");
-        when(employeurRepositoryMock.findEmployeurByNumeroDeTelephone("438-532-2729")).thenReturn(Optional.of(employeur));
-
-        // Act
-        EmployeurDTO employeurDTO = employeurService.getEmployeurByTelephone("438-532-2729");
-
-        // Assert
-        Assertions.assertNotNull(employeurDTO);
-        Assertions.assertEquals(employeurDTO.getNumeroDeTelephone(), "438-532-2729");
-    }
-
-    @Test
-    public void testGetEtudiantByTelephone_EtudiantInexistant() {
-        // Arrange
-        EmployeurRepository employeurRepositoryMock = Mockito.mock(EmployeurRepository.class);
-        PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);
-        EmployeurService employeurService = new EmployeurService(employeurRepositoryMock, passwordEncoder);
-
-        when(employeurRepositoryMock.findEmployeurByNumeroDeTelephone("438-532-2729")).thenReturn(Optional.empty());
-
-        // Act
-        EmployeurDTO employeurDTO = employeurService.getEmployeurByTelephone("438-532-2729");
-
-        // Assert
-        Assertions.assertNull(employeurDTO);
-    }
-
-    @Test
     public void testCredentialsDejaPris_CourrielPris() {
         // Arrange
-        EmployeurRepository employeurRepositoryMock = Mockito.mock(EmployeurRepository.class);
-        PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);
-        EmployeurService employeurService = new EmployeurService(employeurRepositoryMock, passwordEncoder);
-
-        Employeur employeur = new Employeur(1L, "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$", "Couche-Tard");
-        when(employeurRepositoryMock.findEmployeurByCourriel("mihoubi@gmail.com")).thenReturn(Optional.of(employeur));
-        when(employeurRepositoryMock.findEmployeurByNumeroDeTelephone(any())).thenReturn(Optional.empty());
+        when(utilisateurService.credentialsDejaPris("mihoubi@gmail.com", "450-691-0000")).thenReturn(true);
 
         // Act
-        boolean result = employeurService.credentialsDejaPris("mihoubi@gmail.com", "000-000-0000");
+        EmployeurDTO result = employeurService.creationDeCompte("Karim", "Mihoubi", "450-691-0000", "mihoubi@gmail.com", "Mimi123$", "Couche-Tard");
 
         // Assert
-        Assertions.assertTrue(result);
+        assertNull(result);
     }
 
     @Test
-    public void testCredentialsDejaPris_TelephonePris() {
+    public void testGetStages_Success() {
         // Arrange
-        EmployeurRepository employeurRepositoryMock = Mockito.mock(EmployeurRepository.class);
-        PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);
-        EmployeurService employeurService = new EmployeurService(employeurRepositoryMock, passwordEncoder);
+        String token = "unTokenValide";
+        Long createurId = 1L;
+        int page = 0;
+        PageRequest pageRequest = PageRequest.of(page, 10);
+        Employeur createur = new Employeur(2L, "unPrenom", "unNom", "514-222-0385", "courriel@courriel.com", "123123123", "uneEntreprise");
 
-        Employeur employeur = new Employeur(1L, "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$", "Couche-Tard");
-        when(employeurRepositoryMock.findEmployeurByCourriel(any())).thenReturn(Optional.empty());
-        when(employeurRepositoryMock.findEmployeurByNumeroDeTelephone("438-532-2729")).thenReturn(Optional.of(employeur));
+        FormulaireOffreStage mockFormulaireOffreStage = new FormulaireOffreStage("unTitreForm", "uneEntreprise", "unEmployeur", "unEmail@mail.com", "unsite.com", "uneLocalisation", "1000", "uneDescription", createur);
+        FichierOffreStage mockFichierOffreStage = new FichierOffreStage("unTitreFichier", "uneEntreprise", "nom.pdf", "data".getBytes(), createur);
+        List<OffreStage> mockOffresListe = new ArrayList<>();
+        mockOffresListe.add(mockFormulaireOffreStage);
+        mockOffresListe.add(mockFichierOffreStage);
+
+        Page<OffreStage> offresPage = new PageImpl<>(mockOffresListe, pageRequest, 2);
+
+        when(utilisateurService.getUserIdByToken(token)).thenReturn(createurId);
+        when(offreStageRepositoryMock.findOffreStageByCreateurId(createurId, pageRequest)).thenReturn(offresPage);
 
         // Act
-        boolean result = employeurService.credentialsDejaPris("email@inexistant.com", "438-532-2729");
+        List<OffreStageDTO> result = employeurService.getStages(token, page);
 
         // Assert
-        Assertions.assertTrue(result);
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals("unTitreForm", result.get(0).getTitle());
+        assertEquals("unTitreFichier", result.get(1).getTitle());
+
+        verify(utilisateurService, times(1)).getUserIdByToken(token);
+        verify(offreStageRepositoryMock, times(1)).findOffreStageByCreateurId(createurId, pageRequest);
     }
 
     @Test
-    public void testCredentialsDejaPris_AucunPris() {
+    public void testGetStages_Null() {
         // Arrange
-        EmployeurRepository employeurRepositoryMock = Mockito.mock(EmployeurRepository.class);
-        PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);
-        EmployeurService employeurService = new EmployeurService(employeurRepositoryMock, passwordEncoder);
+        String token = "unTokenValide";
+        Long createurId = 1L;
+        int page = 0;
+        PageRequest pageRequest = PageRequest.of(page, 10);
+        Page<OffreStage> offresPage = new PageImpl<>(List.of(), pageRequest, 0);
 
-        when(employeurRepositoryMock.findEmployeurByCourriel(any())).thenReturn(Optional.empty());
-        when(employeurRepositoryMock.findEmployeurByNumeroDeTelephone(any())).thenReturn(Optional.empty());
+        when(utilisateurService.getUserIdByToken(token)).thenReturn(createurId);
+        when(offreStageRepositoryMock.findOffreStageByCreateurId(createurId, pageRequest)).thenReturn(offresPage);
 
         // Act
-        boolean result = employeurService.credentialsDejaPris("email@inexistant.com", "000-000-0000");
+        List<OffreStageDTO> result = employeurService.getStages(token, page);
 
         // Assert
-        Assertions.assertFalse(result);
+        assertNull(result);
+
+        verify(utilisateurService, times(1)).getUserIdByToken(token);
+        verify(offreStageRepositoryMock, times(1)).findOffreStageByCreateurId(createurId, pageRequest);
     }
+
+    @Test
+    public void testGetAmountOfPage_NumberEndWithZero() {
+        //Arrange
+        when(utilisateurService.getUserIdByToken("tokenValide")).thenReturn(1L);
+        when(offreStageRepositoryMock.countByCreateurId(1L)).thenReturn(30);
+
+        //Act
+        int nombrePage = employeurService.getAmountOfPages("tokenValide");
+
+        //Assert
+        assertEquals(nombrePage, 3);
+        verify(offreStageRepositoryMock, times(1)).countByCreateurId(1L);
+    }
+
+    @Test
+    public void testGetAmountOfPage_NumberNotEndWithZero() {
+        //Arrange
+        when(utilisateurService.getUserIdByToken("tokenValide")).thenReturn(1L);
+        when(offreStageRepositoryMock.countByCreateurId(1L)).thenReturn(43);
+
+        //Act
+        int nombrePage = employeurService.getAmountOfPages("tokenValide");
+
+        //Assert
+        assertEquals(nombrePage, 5);
+        verify(offreStageRepositoryMock, times(1)).countByCreateurId(1L);
+    }
+
 }

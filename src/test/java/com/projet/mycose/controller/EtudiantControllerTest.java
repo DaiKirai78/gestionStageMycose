@@ -1,12 +1,13 @@
 package com.projet.mycose.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.projet.mycose.dto.EtudiantDTO;
+import com.projet.mycose.dto.FormulaireOffreStageDTO;
+import com.projet.mycose.dto.OffreStageDTO;
+import com.projet.mycose.dto.RegisterEtudiantDTO;
+import com.projet.mycose.modele.Programme;
 import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.service.EtudiantService;
-import com.projet.mycose.service.dto.CourrielTelephoneDTO;
-import com.projet.mycose.service.dto.EtudiantDTO;
-import com.projet.mycose.service.dto.RegisterEnseignantDTO;
-import com.projet.mycose.service.dto.RegisterEtudiantDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,13 +18,17 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
 public class EtudiantControllerTest {
@@ -45,11 +50,11 @@ public class EtudiantControllerTest {
     @Test
     public void testCreationDeCompte_Succes() throws Exception {
         RegisterEtudiantDTO newEtudiant = new RegisterEtudiantDTO(
-                "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$", "Technique de l'informatique"
+                "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$", Programme.TECHNIQUE_INFORMATIQUE
         );
 
         when(etudiantService.creationDeCompte(any(), any(), any(), any(), any(), any()))
-                .thenReturn(new EtudiantDTO(1L, "Karim", "Mihoubi", "mihoubi@gmail.com", "438-532-2729", Role.ETUDIANT, "Technique de l'informatique"));
+                .thenReturn(new EtudiantDTO(1L, "Karim", "Mihoubi", "mihoubi@gmail.com", "438-532-2729", Role.ETUDIANT, Programme.TECHNIQUE_INFORMATIQUE));
 
         ObjectMapper objectMapper = new ObjectMapper();
         String etudiantJson = objectMapper.writeValueAsString(newEtudiant);
@@ -66,13 +71,13 @@ public class EtudiantControllerTest {
                 .andExpect(jsonPath("$.courriel").value("mihoubi@gmail.com"))
                 .andExpect(jsonPath("$.numeroDeTelephone").value("438-532-2729"))
                 .andExpect(jsonPath("$.role").value("ETUDIANT"))
-                .andExpect(jsonPath("$.programme").value("Technique de l'informatique"));
+                .andExpect(jsonPath("$.programme").value(Programme.TECHNIQUE_INFORMATIQUE.name()));
     }
 
     @Test
     public void testCreationDeCompte_EchecAvecConflit() throws Exception {
         RegisterEtudiantDTO newEtudiant = new RegisterEtudiantDTO(
-                "Michel", "Genereux", "437-930-2483", "mihoubi@gmail.com", "Mimi123$", "Technique de l'informatique"
+                "Michel", "Genereux", "437-930-2483", "mihoubi@gmail.com", "Mimi123$", Programme.TECHNIQUE_INFORMATIQUE
         );
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -87,34 +92,125 @@ public class EtudiantControllerTest {
     }
 
     @Test
-    public void testCheckForConflict_Echec() throws Exception {
-        CourrielTelephoneDTO courrielTelephoneDTO = new CourrielTelephoneDTO("mihoubi@gmail.com", "438-639-2638");
+    public void testGetStages_Success() throws Exception{
+        // Arrange
+        String authHeader = "Bearer unTokenValide";
 
-        when(etudiantService.credentialsDejaPris("mihoubi@gmail.com", "438-639-2638")).thenReturn(true);
+        FormulaireOffreStageDTO mockFormulaire = new FormulaireOffreStageDTO(
+                1L,
+                "unNomEntreprise",
+                "unNomEmployeur",
+                "unEmail@mail.com",
+                "unSite.com",
+                "unTitreStage",
+                "uneLcalisation",
+                "1000",
+                "uneDescription",
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                1L
+                );
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        String courrielTelephoneString = objectMapper.writeValueAsString(courrielTelephoneDTO);
+        List<OffreStageDTO> mockListeOffres = new ArrayList<>();
+        mockListeOffres.add(mockFormulaire);
+        when(etudiantService.getStages(authHeader, 0)).thenReturn(mockListeOffres);
 
-        this.mockMvc.perform(post("/etudiant/register/check-for-conflict")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(courrielTelephoneString)
-                        .with(csrf())
-                        .with(user("karim").password("Mimi123$").roles("ETUDIANT")))
-                .andExpect(status().isConflict());
+        // Act & Assert
+        mockMvc.perform(post("/etudiant/getStages")
+                .header("Authorization", authHeader).param("pageNumber", String.valueOf(0))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isAccepted())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].id").value(1L));
+
     }
 
     @Test
-    public void testCheckForConflict_Succes() throws Exception {
-        CourrielTelephoneDTO courrielTelephoneDTO = new CourrielTelephoneDTO("mihoubi@gmail.com", "438-639-2638");
+    public void testGetStages_Error() throws Exception {
+        //Arrange
+        when(etudiantService.getStages("token", 0)).thenThrow(new RuntimeException());
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        String courrielTelephoneString = objectMapper.writeValueAsString(courrielTelephoneDTO);
 
-        this.mockMvc.perform(post("/etudiant/register/check-for-conflict")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(courrielTelephoneString)
-                        .with(csrf())
-                        .with(user("karim").password("Mimi123$").roles("ETUDIANT")))
-                .andExpect(status().isOk());
+        //Act & Assert
+        mockMvc.perform(post("/etudiant/getStages")
+                .header("Authorization", "unToken")
+                .param("pageNumber", String.valueOf(0))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
     }
+
+    @Test
+    public void testGetAmountOfPages_Success() throws Exception {
+        //Arrange
+        when(etudiantService.getAmountOfPages("tokenValide")).thenReturn(2);
+
+        //Act & Assert
+        mockMvc.perform(get("/etudiant/pages")
+                        .header("Authorization", "tokenValide"))
+                .andExpect(status().isAccepted())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().string("2"));
+    }
+
+    @Test
+    public void testGetAmountOfPages_Error() throws Exception {
+        //Arrange
+        when(etudiantService.getAmountOfPages("token")).thenThrow(new RuntimeException());
+
+        //Act & Assert
+        mockMvc.perform(get("/etudiant/pages")
+                .header("Authorization", "tokenValide"))
+                .andExpect(status().isNoContent());
+
+    }
+
+    @Test
+    public void testRechercheOffre_Success() throws Exception{
+        //Arrange
+
+        FormulaireOffreStageDTO mockFormulaire = new FormulaireOffreStageDTO(
+                1L,
+                "unNomEntreprise",
+                "unNomEmployeur",
+                "unEmail@mail.com",
+                "unSite.com",
+                "unTitreStage",
+                "uneLcalisation",
+                "1000",
+                "uneDescription",
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                1L
+        );
+
+        List<OffreStageDTO> mockListeOffres = new ArrayList<>();
+        mockListeOffres.add(mockFormulaire);
+        when(etudiantService.getStagesByRecherche("tokenValide", 0, "uneRecherche")).thenReturn(mockListeOffres);
+
+        //Act & Assert
+        mockMvc.perform(post("/etudiant/recherche-offre")
+                        .header("Authorization", "tokenValide")
+                        .param("pageNumber", String.valueOf(0))
+                        .param("recherche", "uneRecherche")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isAccepted())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].id").value(1L));
+    }
+
+    @Test
+    public void testRechercheOffre_Error() throws Exception {
+        //Arrange
+        when(etudiantService.getStagesByRecherche("token", 0, "uneRecherche")).thenThrow(new RuntimeException());
+
+
+        //Act & Assert
+        mockMvc.perform(post("/etudiant/recherche-offre")
+                        .header("Authorization", "unToken")
+                        .param("pageNumber", String.valueOf(0))
+                        .param("recherche", "uneRecherche")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+    }
+
 }
