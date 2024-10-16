@@ -8,7 +8,6 @@ import com.projet.mycose.dto.RegisterEmployeurDTO;
 import com.projet.mycose.modele.OffreStage;
 import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.service.EmployeurService;
-import com.projet.mycose.service.dto.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

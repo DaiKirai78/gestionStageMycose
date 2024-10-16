@@ -4,7 +4,6 @@ import com.projet.mycose.dto.OffreStageDTO;
 import com.projet.mycose.service.EtudiantService;
 import com.projet.mycose.dto.EtudiantDTO;
 import com.projet.mycose.dto.RegisterEtudiantDTO;
-import com.projet.mycose.service.dto.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

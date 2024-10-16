@@ -2,7 +2,6 @@ package com.projet.mycose.controller;
 
 import com.projet.mycose.dto.*;
 import com.projet.mycose.service.OffreStageService;
-import com.projet.mycose.service.dto.*;
 import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.projet.mycose.dto.*;
 import com.projet.mycose.modele.OffreStage;
 import com.projet.mycose.service.OffreStageService;
-import com.projet.mycose.service.dto.*;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import org.springframework.data.crossstore.ChangeSetPersister;

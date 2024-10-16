@@ -4,7 +4,6 @@ import com.projet.mycose.dto.*;
 import com.projet.mycose.modele.*;
 import com.projet.mycose.repository.*;
 import com.projet.mycose.security.JwtTokenProvider;
-import com.projet.mycose.service.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

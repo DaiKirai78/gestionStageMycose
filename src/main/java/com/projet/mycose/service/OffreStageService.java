@@ -10,7 +10,6 @@ import com.projet.mycose.modele.FormulaireOffreStage;
 import com.projet.mycose.modele.OffreStage;
 import com.projet.mycose.repository.OffreStageRepository;
 import com.projet.mycose.repository.UtilisateurRepository;
-import com.projet.mycose.service.dto.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
