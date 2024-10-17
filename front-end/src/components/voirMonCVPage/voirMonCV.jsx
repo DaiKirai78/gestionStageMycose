@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 const VoirMonCV = () => {
     const [isFullscreen, setIsFullscreen] = useState(false);
@@ -11,6 +12,7 @@ const VoirMonCV = () => {
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
     const { t } = useTranslation();
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchCV();
@@ -91,7 +93,7 @@ const VoirMonCV = () => {
                         <iframe
                             src={pdfUrl}
                             title="Mon CV"
-                            className={`w-full border ${isFullscreen ? "h-[100vh]" : "h-[66vh]"}`}
+                            className={`w-full border ${isFullscreen ? "h-[100vh]" : "h-[70vh]"}`}
                             allowFullScreen
                         ></iframe>
                         <div className="fixed bottom-4 left-0 right-0 flex justify-center">
@@ -138,11 +140,20 @@ const VoirMonCV = () => {
                     )}
 
                     <button
+                        onClick={() => navigate('/televerserCV')}
+                        className="mb-8 px-4 py-2 bg-gray-300 font-bold text-black p-2 rounded-lg hover:bg-[#7d7ded] cursor-pointer"
+                    >
+                        {t("uploadNewCV")}
+                    </button>
+
+                    <button
                         onClick={enterFullscreen}
                         className="mt-4 px-4 py-2 bg-[#afafea] font-bold text-black p-2 rounded-lg hover:bg-[#7d7ded] cursor-pointer"
                     >
                         {t("fullScreen")}
                     </button>
+
+
                 </div>
             </div>
         </div>

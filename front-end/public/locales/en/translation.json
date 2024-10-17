@@ -156,5 +156,6 @@
     "AfficherPDF": "Show PDF",
     "RetourAccueil": "Back to home page",
     "errorRetrievingTotalCVs": "Error retrieving the total number of CVs",
-    "errorRetrievingTotalOffres": "Error retrieving the total number of internship offers"
+    "errorRetrievingTotalOffres": "Error retrieving the total number of internship offers",
+    "uploadNewCV": "Upload a new CV"
 }
