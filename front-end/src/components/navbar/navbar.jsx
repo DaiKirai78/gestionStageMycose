@@ -1,16 +1,11 @@
 import { useState, useEffect, useRef } from 'react'
 import { BsBellFill, BsList, BsXLg } from "react-icons/bs";
 import { IoMdArrowDown } from "react-icons/io";
-import logo from '../assets/LogoMycose.png'
-import { useNavigate } from 'react-router-dom';
+import logo from '../../assets/LogoMycose.png'
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const navLinks = {
-    "ETUDIANT": [
-        {
-            "titre": "testEtudiant",
-            "lien": "/etud"
-        }
-    ],
+    "ETUDIANT": [],
     "EMPLOYEUR": [
         {
             "titre": "testEmployeur",
@@ -28,6 +23,7 @@ const navLinks = {
 
 const Navbar = ({roleUser}) => {
     const navigate = useNavigate();
+    const location = useLocation();
 
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
     const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
@@ -42,40 +38,32 @@ const Navbar = ({roleUser}) => {
     const toggleNotificationMenu = () => setIsNotificationMenuOpen(!isNotificationMenuOpen)
 
     const handleProfileItemClick = (e) => {
-    e.preventDefault()
-    setIsProfileMenuOpen(false)
+        e.preventDefault()
+        setIsProfileMenuOpen(false)
     }
 
     useEffect(() => {
-    function handleClickOutside(event) {
-        if (screen.width < 720) return
-        
-        if (profileMenuRef.current && !profileMenuRef.current.contains(event.target)) {
-        setIsProfileMenuOpen(false)
+        function handleClickOutside(event) {
+            if (profileMenuRef.current && !profileMenuRef.current.contains(event.target)) {
+                setIsProfileMenuOpen(false)
+            }
+            if (notificationMenuRef.current && !notificationMenuRef.current.contains(event.target)) {
+                setIsNotificationMenuOpen(false)
+            }
         }
-        if (notificationMenuRef.current && !notificationMenuRef.current.contains(event.target)) {
-        setIsNotificationMenuOpen(false)
-        }
-        if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target) && isMobileMenuOpen) {
-        setIsMobileMenuOpen(false)
-        }
-    }
 
-    function handleScroll() {
-        if (isMobileMenuOpen) {
-        setIsMobileMenuOpen(false)
+        function handleScroll() {
+            setIsProfileMenuOpen(false)
+            setIsNotificationMenuOpen(false)
         }
-        setIsProfileMenuOpen(false)
-        setIsNotificationMenuOpen(false)
-    }
 
-    document.addEventListener('mousedown', handleClickOutside)
-    window.addEventListener('scroll', handleScroll)
+        document.addEventListener('mousedown', handleClickOutside)
+        window.addEventListener('scroll', handleScroll)
 
-    return () => {
-        document.removeEventListener('mousedown', handleClickOutside)
-        window.removeEventListener('scroll', handleScroll)
-    }
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside)
+            window.removeEventListener('scroll', handleScroll)
+        }
     }, [isMobileMenuOpen])
 
     function signOut(e) {
@@ -98,23 +86,22 @@ const Navbar = ({roleUser}) => {
                         onClick={() => {
                             navigate("/accueil")
                         }}
-                        className="hover:bg-orange hover:bg-opacity-20 px-3 py-2 rounded-md font-medium">
+                        className={`hover:bg-orange hover:bg-opacity-20 px-3 py-2 rounded-md font-medium ${location.pathname === "/accueil" ? "cursor-default ring-1 ring-orange text-orange hover:bg-opacity-0" : ""}`}>
                             Acceuil
-                            </button>
-                        {                            
+                    </button>
+                        {
                             roleUser ? navLinks[roleUser].map((infoBtn, index) => {
                                 return (
                                     <button
                                     key={"nav"+index}
                                         onClick={() => {
-                                            navigate("/" + infoBtn["lien"])
+                                            navigate(infoBtn["lien"])
                                         }}
-                                        className="hover:bg-orange hover:bg-opacity-20 px-3 py-2 rounded-md font-medium">
+                                        className={`hover:bg-orange hover:bg-opacity-20 px-3 py-2 rounded-md font-medium ${location.pathname === infoBtn["lien"] ? "cursor-default ring-1 ring-orange text-orange hover:bg-opacity-0" : ""}`}>
                                         {infoBtn["titre"]}
                                     </button>
                                 );
                             }) : ""
-                            
                         }
                 </div>
             </div>
@@ -140,17 +127,20 @@ const Navbar = ({roleUser}) => {
                     onClick={toggleProfileMenu}
                     className="rounded flex items-center"
                     >
-                    <div className="h-8 bg-orange rounded flex items-center gap-4 p-2 text-white">
-                        <p className='overflow-hidden truncate max-w-24'>Jason</p>
-                        <IoMdArrowDown className=''/>
-                    </div>
+                        <div className="h-8 bg-orange rounded flex items-center gap-4 p-2 text-white hover:bg-opacity-90">
+                            <p className='overflow-hidden truncate max-w-24'>Jason</p>
+                            <IoMdArrowDown />
+                        </div>
                     </button>
                 </div>
                 {isProfileMenuOpen && (
                     <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg p-1 bg-orange-light ring-1 ring-orange ring-opacity-40">
                     <button
-                        onClick={handleProfileItemClick} 
-                        className="w-full text-left px-4 py-2 rounded text-black hover:bg-orange hover:bg-opacity-20">
+                        onClick={e => {
+                            (location.pathname != "/profil" && handleProfileItemClick(e))
+                            navigate("/profil")
+                        }} 
+                        className={`mb-1 w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-orange hover:bg-opacity-20 ${location.pathname === "/profil" ? "cursor-default ring-1 ring-orange text-orange hover:bg-opacity-0" : ""}`}>
                         Profile
                     </button>
                     <button
@@ -177,10 +167,27 @@ const Navbar = ({roleUser}) => {
         {isMobileMenuOpen && (
         <div className="md:hidden" ref={mobileMenuRef}>
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            <a href="#" className="hover:bg-deep-orange-50 block px-3 py-2 rounded-md text-base font-medium">Dashboard</a>
-            <a href="#" className="hover:bg-deep-orange-50 block px-3 py-2 rounded-md text-base font-medium">Team</a>
-            <a href="#" className="hover:bg-deep-orange-50 block px-3 py-2 rounded-md text-base font-medium">Projects</a>
-            <a href="#" className="hover:bg-deep-orange-50 block px-3 py-2 rounded-md text-base font-medium">Calendar</a>
+            <button 
+                onClick={() => {
+                    navigate("/accueil")
+                }}
+                className={`w-full text-left hover:bg-orange hover:bg-opacity-20 px-3 py-2 rounded-md font-medium ${location.pathname === "/accueil" ? "cursor-default ring-1 ring-orange text-orange hover:bg-opacity-0" : ""}`}>
+                    Accueil
+                </button>
+                {
+                    roleUser ? navLinks[roleUser].map((infoBtn, index) => {
+                        return (
+                            <button
+                            key={"nav"+index}
+                                onClick={() => {
+                                    navigate(infoBtn["lien"])
+                                }}
+                                className={`w-full text-left hover:bg-orange hover:bg-opacity-20 px-3 py-2 rounded-md font-medium ${location.pathname === infoBtn["lien"] ? "cursor-default ring-1 ring-orange text-orange hover:bg-opacity-0" : ""}`}>
+                                {infoBtn["titre"]}
+                            </button>
+                        );
+                    }) : ""
+                }
             </div>
             <div className="pt-4 pb-3 border-t border-gray-700">
             <div className="flex items-center pl-2 pr-5">
@@ -200,8 +207,19 @@ const Navbar = ({roleUser}) => {
                 </button>
             </div>
             <div className="mt-3 px-2 space-y-1">
-                <a href="#" onClick={handleProfileItemClick} className="block px-3 py-2 rounded-md text-base font-medium hover:bg-orange hover:bg-opacity-20">Your Profile</a>
-                <a href="#" onClick={handleProfileItemClick} className="block px-3 py-2 rounded-md text-base font-medium hover:bg-orange hover:bg-opacity-20">Sign out</a>
+                <button
+                    onClick={e => {
+                        handleProfileItemClick(e)
+                        navigate("/profil")
+                    }} 
+                    className={`w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-orange hover:bg-opacity-20 ${location.pathname === "/profil" ? "cursor-default ring-1 ring-orange text-orange hover:bg-opacity-0" : ""}`}>
+                    Your Profile
+                </button>
+                <button
+                    onClick={handleProfileItemClick} 
+                    className="w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-orange hover:bg-opacity-20">
+                    Sign out
+                </button>
             </div>
             </div>
         </div>
