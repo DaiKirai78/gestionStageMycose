@@ -73,8 +73,8 @@ public class OffreStageController {
     }
 
     @PatchMapping("/accept")
-    public ResponseEntity<?> acceptOffreStage(@Valid @RequestBody AcceptCVDTO acceptCVDTO) {
-            offreStageService.acceptCV(acceptCVDTO);
+    public ResponseEntity<?> acceptOffreStage(@Valid @RequestBody AcceptOffreDeStageDTO acceptOffreDeStageDTO) {
+            offreStageService.acceptOffreDeStage(acceptOffreDeStageDTO);
             return ResponseEntity.ok().build();
     }
     @PatchMapping("/refuse")

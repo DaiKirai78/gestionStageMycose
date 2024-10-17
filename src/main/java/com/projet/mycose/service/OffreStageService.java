@@ -251,21 +251,21 @@ public class OffreStageService {
         return offreStageRepository.countByStatus(OffreStage.Status.WAITING);
     }
 
-    public void acceptCV(AcceptCVDTO acceptCVDTO) {
-        Optional<OffreStage> offreStageOptional = offreStageRepository.findById(acceptCVDTO.getId());
+    public void acceptOffreDeStage(AcceptOffreDeStageDTO acceptOffreDeStageDTO) {
+        Optional<OffreStage> offreStageOptional = offreStageRepository.findById(acceptOffreDeStageDTO.getId());
 
         if (offreStageOptional.isEmpty()) {
-            throw new EntityNotFoundException("OffreStage not found with ID: " + acceptCVDTO.getId());
+            throw new EntityNotFoundException("OffreStage not found with ID: " + acceptOffreDeStageDTO.getId());
         }
 
         OffreStage offreStage = offreStageOptional.get();
         offreStage.setStatus(OffreStage.Status.ACCEPTED);
-        offreStage.setStatusDescription(acceptCVDTO.getStatusDescription());
-        offreStage.setProgramme(acceptCVDTO.getProgramme());
+        offreStage.setStatusDescription(acceptOffreDeStageDTO.getStatusDescription());
+        offreStage.setProgramme(acceptOffreDeStageDTO.getProgramme());
 
         if (offreStage.getProgramme() == Programme.NOT_SPECIFIED) {
             offreStage.setVisibility(OffreStage.Visibility.PRIVATE);
-            associateEtudiantsPrivees(offreStage, acceptCVDTO.getEtudiantsPrives());
+            associateEtudiantsPrivees(offreStage, acceptOffreDeStageDTO.getEtudiantsPrives());
         } else {
             offreStage.setVisibility(OffreStage.Visibility.PUBLIC);
         }
