@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TokenPageContainer from './tokenPageContainer';
-import VoirMonCV from "../components/voirMonCV.jsx";
 import { useOutletContext } from 'react-router-dom';
 import VoirMonCV from "../components/voirMonCVPage/voirMonCV.jsx";
 
