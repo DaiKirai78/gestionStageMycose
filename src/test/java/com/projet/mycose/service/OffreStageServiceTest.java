@@ -423,11 +423,15 @@ public class OffreStageServiceTest {
 
 
     @Test
-    public void shouldReturnAvailableOffreStages_ForEtudiant() {
+    public void shouldReturnAvailableOffreStages_ForEtudiant() throws AccessDeniedException {
         // Arrange
         String token = VALID_TOKEN;
         Long etudiantId = 1L;
-        when(utilisateurService.getUserIdByToken(token)).thenReturn(etudiantId);
+        Programme programme = Programme.NOT_SPECIFIED;
+        EtudiantDTO etudiantDTO = EtudiantDTO.empty();
+        etudiantDTO.setId(etudiantId);
+        etudiantDTO.setProgramme(programme);
+        when(utilisateurService.getMe(token)).thenReturn(etudiantDTO); // Changed to getMe(token)
 
         // Initialize DTOs
         FichierOffreStageDTO fichierOffreStageDTO = new FichierOffreStageDTO();
@@ -438,7 +442,6 @@ public class OffreStageServiceTest {
         FormulaireOffreStageDTO formulaireOffreStageDTO = new FormulaireOffreStageDTO();
         formulaireOffreStageDTO.setCreateur_id(2L);
         formulaireOffreStageDTO.setEntrepriseName("Sample Entreprise");
-        // Initialize other fields as necessary
 
         // Initialize Entities
         FichierOffreStage fichierOffreStage = new FichierOffreStage();
@@ -450,17 +453,14 @@ public class OffreStageServiceTest {
         formulaireOffreStage.setId(2L);
         formulaireOffreStage.setCreateur(new GestionnaireStage());
         formulaireOffreStage.setEntrepriseName("Sample Entreprise");
-        // Initialize other fields as necessary
 
         // Set OffreStages
-        OffreStage offreStage1 = fichierOffreStage;
-        OffreStage offreStage2 = formulaireOffreStage;
-        List<OffreStage> availableOffres = Arrays.asList(offreStage1, offreStage2);
-        when(offreStageRepository.findAllByEtudiantNotApplied(etudiantId)).thenReturn(availableOffres);
+        List<OffreStage> availableOffres = Arrays.asList(fichierOffreStage, formulaireOffreStage);
+        when(offreStageRepository.findAllByEtudiantNotApplied(etudiantId, programme)).thenReturn(availableOffres);
 
         // Correct stubbing: map to specific DTO classes
-        when(modelMapper.map(offreStage1, FichierOffreStageDTO.class)).thenReturn(fichierOffreStageDTO);
-        when(modelMapper.map(offreStage2, FormulaireOffreStageDTO.class)).thenReturn(formulaireOffreStageDTO);
+        when(modelMapper.map(fichierOffreStage, FichierOffreStageDTO.class)).thenReturn(fichierOffreStageDTO);
+        when(modelMapper.map(formulaireOffreStage, FormulaireOffreStageDTO.class)).thenReturn(formulaireOffreStageDTO);
 
         // Act
         List<OffreStageDTO> result = offreStageService.getAvailableOffreStagesForEtudiant(token);
@@ -468,11 +468,12 @@ public class OffreStageServiceTest {
         // Assert
         assertNotNull(result);
         assertEquals(2, result.size());
-        verify(utilisateurService, times(1)).getUserIdByToken(token);
-        verify(offreStageRepository, times(1)).findAllByEtudiantNotApplied(etudiantId);
-        verify(modelMapper, times(1)).map(offreStage1, FichierOffreStageDTO.class);
-        verify(modelMapper, times(1)).map(offreStage2, FormulaireOffreStageDTO.class);
+        verify(utilisateurService, times(1)).getMe(token); // Changed to getMe(token)
+        verify(offreStageRepository, times(1)).findAllByEtudiantNotApplied(etudiantId, programme);
+        verify(modelMapper, times(1)).map(fichierOffreStage, FichierOffreStageDTO.class);
+        verify(modelMapper, times(1)).map(formulaireOffreStage, FormulaireOffreStageDTO.class);
     }
+
 
 
 

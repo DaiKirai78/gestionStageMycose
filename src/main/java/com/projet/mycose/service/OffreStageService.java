@@ -243,9 +243,9 @@ public class OffreStageService {
         return OffreStageAvecUtilisateurInfoDTO.toDto(offreStage);
     }
 
-    public List<OffreStageDTO> getAvailableOffreStagesForEtudiant(String token) {
-        Long etudiantId = utilisateurService.getUserIdByToken(token);
-        return offreStageRepository.findAllByEtudiantNotApplied(etudiantId).stream().map(this::convertToDTO).toList();
+    public List<OffreStageDTO> getAvailableOffreStagesForEtudiant(String token) throws AccessDeniedException {
+        EtudiantDTO etudiantDTO = (EtudiantDTO) utilisateurService.getMe(token);
+        return offreStageRepository.findAllByEtudiantNotApplied(etudiantDTO.getId(), etudiantDTO.getProgramme()).stream().map(this::convertToDTO).toList();
     }
 
     public long getTotalWaitingOffreStages() {

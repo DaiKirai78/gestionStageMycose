@@ -101,7 +101,7 @@ public class OffreStageController {
     }
 
     @GetMapping("/my-offres")
-    public ResponseEntity<List<OffreStageDTO>> getMyOffres(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<List<OffreStageDTO>> getMyOffres(@RequestHeader("Authorization") String token) throws AccessDeniedException {
         List<OffreStageDTO> offreStageDTOList = offreStageService.getAvailableOffreStagesForEtudiant(token);
         return ResponseEntity.status(HttpStatus.OK).body(offreStageDTOList);
     }

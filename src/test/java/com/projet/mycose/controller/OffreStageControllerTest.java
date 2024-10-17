@@ -208,7 +208,7 @@ public class OffreStageControllerTest {
     }
 
     @Test
-    void getMyOffres_Success() {
+    void getMyOffres_Success() throws AccessDeniedException {
         when(offreStageService.getAvailableOffreStagesForEtudiant(token)).thenReturn(offreStageDTOList);
 
         ResponseEntity<List<OffreStageDTO>> response = offreStageController.getMyOffres(token);
