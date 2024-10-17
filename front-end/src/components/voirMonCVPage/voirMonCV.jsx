@@ -141,7 +141,7 @@ const VoirMonCV = () => {
 
                     <button
                         onClick={() => navigate('/televerserCV')}
-                        className="mb-8 px-4 py-2 bg-gray-300 font-bold text-black p-2 rounded-lg hover:bg-[#7d7ded] cursor-pointer"
+                        className="mb-8 px-4 py-2 bg-gray-300 font-bold text-black p-2 rounded-lg hover:bg-gray-400 cursor-pointer"
                     >
                         {t("uploadNewCV")}
                     </button>
