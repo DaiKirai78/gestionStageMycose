@@ -6,7 +6,7 @@ import VoirMonCV from "../components/voirMonCVPage/voirMonCV.jsx";
 
 const VoirMonCVPage = () => {
 
-    const [roleUser, setRoleUser] = useOutletContext();
+    const [userInfo, setUserInfo] = useOutletContext();
     const [hasCv, setHasCv] = useState(null);
     const navigate = useNavigate();
 
@@ -47,7 +47,7 @@ const VoirMonCVPage = () => {
         return <div>{t("loading")}...</div>;
     }
     return (
-        <TokenPageContainer role={["ETUDIANT"]} setRoleUser={setRoleUser}>
+        <TokenPageContainer role={["ETUDIANT"]} setUserInfo={setUserInfo}>
             <div className="flex items-start justify-center min-h-screen">
                 <VoirMonCV />
             </div>

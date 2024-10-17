@@ -4,9 +4,9 @@ import UploadCV from "../components/uploadCVPage/uploadCV.jsx";
 import { useOutletContext } from 'react-router-dom';
 
 const UploadCvPage = () => {
-    const [roleUser, setRoleUser] = useOutletContext();
+    const [userInfo, setUserInfo] = useOutletContext();
     return (
-        <TokenPageContainer role={["ETUDIANT"]} setRoleUser={setRoleUser}>
+        <TokenPageContainer role={["ETUDIANT"]} setUserInfo={setUserInfo}>
             <UploadCV />
         </TokenPageContainer>
     );
