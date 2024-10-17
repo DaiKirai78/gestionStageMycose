@@ -56,6 +56,7 @@ const listeStage = () => {
                     'Content-Type': 'application/json'
                 }
             });
+            console.log("nombre de page" + response.data);
             setNombreDePage(response.data);
             return response.data;
         } catch (error) {
@@ -304,19 +305,33 @@ const listeStage = () => {
                 {loading ? (
                     <div></div>
                 ) : (
-                    <div className="text-center mb-28">
+                    <div className="flex justify-center mb-28">
                         <button
-                            className="decoration-0 bg-orange pt-0 pb-1 pl-4 pr-4 mr-2 hover:bg-amber-900 justify-center items-center w-10 text-xl shadow-md disabled:bg-orange disabled:opacity-70"
-                            disabled={previousPageDisabled} onClick={() => previousPage()}>&#8249;</button>
-                        {
+                            className="px-4 py-2 rounded-l bg-gray-400 text-gray-900"
+                            disabled={previousPageDisabled}
+                            onClick={() => previousPage()}
+                        >
+                            {t("previous")}
+                        </button>
+                        <span className="px-4 py-2">
+                            {t("page ")}
+                            {
                             isSearching ?
                                 recherchePageActuelle + 1 :
                                 pageActuelle + 1
-                        }
+                            }
+                            {t(" / ")}
+                            {nombreDePage}
+                    </span>
                         <button
-                            className="decoration-0 bg-orange pt-0 pb-1 pl-4 pr-4 ml-2 hover:bg-amber-900 justify-center items-center w-10 text-xl shadow-md disabled:bg-orange disabled:opacity-70"
-                            disabled={nextPageDisabled} onClick={() => nextPage()}>&#8250;</button>
-                    </div>)
+                            className="px-4 py-2 rounded-r bg-gray-400 text-gray-900"
+                            disabled={nextPageDisabled}
+                            onClick={() => nextPage()}
+                        >
+                            {t("next")}
+                        </button>
+                    </div>
+                )
                 }
             </div>
             {

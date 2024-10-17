@@ -48,7 +48,7 @@ const router = createBrowserRouter([
     path: "/validerCV",
     element: <ValiderCVPage />
   },
-  { path: "/validerCV/:id",
+  { path: "/validerCV/:name",
     element: <ValiderCV />
   },
   {
@@ -63,7 +63,6 @@ const router = createBrowserRouter([
     path: "/validerOffreStage",
     element: <ValiderOffreStagePage />
   }
-
 ]);
 
 createRoot(document.getElementById("root")).render(
