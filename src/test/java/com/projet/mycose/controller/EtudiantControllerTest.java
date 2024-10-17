@@ -5,6 +5,7 @@ import com.projet.mycose.dto.EtudiantDTO;
 import com.projet.mycose.dto.FormulaireOffreStageDTO;
 import com.projet.mycose.dto.OffreStageDTO;
 import com.projet.mycose.dto.RegisterEtudiantDTO;
+import com.projet.mycose.modele.OffreStage;
 import com.projet.mycose.modele.Programme;
 import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.service.EtudiantService;
@@ -108,7 +109,11 @@ public class EtudiantControllerTest {
                 "uneDescription",
                 LocalDateTime.now(),
                 LocalDateTime.now(),
-                1L
+                1L,
+                OffreStage.Status.WAITING,
+                Programme.TECHNIQUE_INFORMATIQUE,
+                OffreStage.Visibility.PUBLIC,
+                null
                 );
 
         List<OffreStageDTO> mockListeOffres = new ArrayList<>();
@@ -180,7 +185,11 @@ public class EtudiantControllerTest {
                 "uneDescription",
                 LocalDateTime.now(),
                 LocalDateTime.now(),
-                1L
+                1L,
+                OffreStage.Status.WAITING,
+                Programme.TECHNIQUE_INFORMATIQUE,
+                OffreStage.Visibility.PUBLIC,
+                null
         );
 
         List<OffreStageDTO> mockListeOffres = new ArrayList<>();

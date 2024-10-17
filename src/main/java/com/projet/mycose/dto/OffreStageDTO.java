@@ -3,6 +3,7 @@ package com.projet.mycose.dto;
 import com.projet.mycose.modele.FichierOffreStage;
 import com.projet.mycose.modele.FormulaireOffreStage;
 import com.projet.mycose.modele.OffreStage;
+import com.projet.mycose.modele.Programme;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,6 +28,8 @@ public class OffreStageDTO {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private OffreStage.Status status;
+    private OffreStage.Visibility visibility;
+    private Programme programme;
 
     public OffreStageDTO(long id) {
         this.id = id;
@@ -43,19 +46,22 @@ public class OffreStageDTO {
         return offreStageDTO;
     }
 
-    public OffreStageDTO(Long id, String title, String entrepriseName, Long createurId, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public OffreStageDTO(Long id, String title, String entrepriseName, Long createurId, LocalDateTime createdAt, LocalDateTime updatedAt, OffreStage.Status status, OffreStage.Visibility visibility, Programme programme) {
         this.id = id;
         this.title = title;
         this.entrepriseName = entrepriseName;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.createur_id = createurId;
+        this.status = status;
+        this.visibility = visibility;
+        this.programme = programme;
     }
 
     public static OffreStageDTO toOffreStageInstaceDTOAll(OffreStage offreStage) {
         OffreStageDTO offreStageDTO = null;
         if(offreStage instanceof FormulaireOffreStage) {
-            offreStageDTO = FormulaireOffreStageDTO.toDTOAll((FormulaireOffreStage) offreStage);
+            offreStageDTO = FormulaireOffreStageDTO.toDTO((FormulaireOffreStage) offreStage);
         }
         else if(offreStage instanceof FichierOffreStage) {
             offreStageDTO = FichierOffreStageDTO.toDTOAll((FichierOffreStage) offreStage);

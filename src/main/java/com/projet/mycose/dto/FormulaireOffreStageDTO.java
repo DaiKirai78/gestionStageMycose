@@ -4,6 +4,7 @@ package com.projet.mycose.dto;
 
 import com.projet.mycose.modele.FormulaireOffreStage;
 import com.projet.mycose.modele.OffreStage;
+import com.projet.mycose.modele.Programme;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,6 +12,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 
 
 @NoArgsConstructor
@@ -41,27 +44,53 @@ public class FormulaireOffreStageDTO extends OffreStageDTO {
     @Size(max = 500, message = "Description cannot exceed 500 characters.")
     private String description;
 
+    private Programme programme;
+
+    private OffreStage.Visibility visibility;
+
+    private List<Long> etudiantsPrives;
+
+
+    //Avec étudiants privées
     @Builder
-    public FormulaireOffreStageDTO(Long id, String entrepriseName, String employerName, String email, String website, String title, String location, String salary, String description, LocalDateTime createdAt, LocalDateTime updatedAt, Long createur_id) {
-        super(id, title, entrepriseName, createur_id, createdAt, updatedAt);
+    public FormulaireOffreStageDTO(Long id, String entrepriseName, String employerName, String email, String website, String title, String location, String salary, String description, LocalDateTime createdAt, LocalDateTime updatedAt, Long createur_id, OffreStage.Status status, Programme programme, OffreStage.Visibility visibility, List<Long> etudiantsPrives) {
+        super(id);
         this.employerName = employerName;
         this.email = email;
         this.website = website;
         this.location = location;
         this.salary = salary;
         this.description = description;
+        this.programme = programme;
+        this.visibility = visibility;
+        this.etudiantsPrives = etudiantsPrives;
+        this.setCreatedAt(createdAt);
+        this.setUpdatedAt(updatedAt);
+        this.setCreateur_id(createur_id);
+        this.setStatus(status);
+        this.setEntrepriseName(entrepriseName);
+        this.setTitle(title);
     }
 
     @Builder
-    public FormulaireOffreStageDTO(Long id, String entrepriseName, String employerName, String email, String website, String title, String location, String salary, String description, LocalDateTime createdAt, LocalDateTime updatedAt, Long createur_id, OffreStage.Status status) {
-        super(id, title, entrepriseName, createur_id, createdAt, updatedAt, status);
+    public FormulaireOffreStageDTO(Long id, String entrepriseName, String employerName, String email, String website, String title, String location, String salary, String description, LocalDateTime createdAt, LocalDateTime updatedAt, Long createur_id, OffreStage.Status status, Programme programme, OffreStage.Visibility visibility) {
+        super(id);
         this.employerName = employerName;
         this.email = email;
         this.website = website;
         this.location = location;
         this.salary = salary;
         this.description = description;
+        this.programme = programme;
+        this.visibility = visibility;
+        this.setCreatedAt(createdAt);
+        this.setUpdatedAt(updatedAt);
+        this.setCreateur_id(createur_id);
+        this.setStatus(status);
+        this.setEntrepriseName(entrepriseName);
+        this.setTitle(title);
     }
+
     public static FormulaireOffreStageDTO toDTO(FormulaireOffreStage formulaireOffreStage) {
         return new FormulaireOffreStageDTO(
                 formulaireOffreStage.getId(),
@@ -75,24 +104,12 @@ public class FormulaireOffreStageDTO extends OffreStageDTO {
                 formulaireOffreStage.getDescription(),
                 formulaireOffreStage.getCreatedAt(),
                 formulaireOffreStage.getUpdatedAt(),
-                formulaireOffreStage.getCreateur().getId());
-    }
-
-    public static FormulaireOffreStageDTO toDTOAll(FormulaireOffreStage formulaireOffreStage) {
-        return new FormulaireOffreStageDTO(
-                formulaireOffreStage.getId(),
-                formulaireOffreStage.getEntrepriseName(),
-                formulaireOffreStage.getEmployerName(),
-                formulaireOffreStage.getEmail(),
-                formulaireOffreStage.getWebsite(),
-                formulaireOffreStage.getTitle(),
-                formulaireOffreStage.getLocation(),
-                formulaireOffreStage.getSalary(),
-                formulaireOffreStage.getDescription(),
-                formulaireOffreStage.getCreatedAt(),
-                formulaireOffreStage.getUpdatedAt(),
                 formulaireOffreStage.getCreateur().getId(),
-                formulaireOffreStage.getStatus()
+                formulaireOffreStage.getStatus(),
+                formulaireOffreStage.getProgramme(),
+                formulaireOffreStage.getVisibility(),
+                Collections.emptyList()
         );
+
     }
 }

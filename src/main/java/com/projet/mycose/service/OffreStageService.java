@@ -3,28 +3,28 @@ package com.projet.mycose.service;
 import com.projet.mycose.dto.*;
 import com.projet.mycose.modele.*;
 import com.projet.mycose.modele.auth.Role;
-import com.projet.mycose.repository.FichierOffreStageRepository;
-import com.projet.mycose.repository.FormulaireOffreStageRepository;
+import com.projet.mycose.repository.*;
 import com.projet.mycose.modele.FichierOffreStage;
 import com.projet.mycose.modele.FormulaireOffreStage;
 import com.projet.mycose.modele.OffreStage;
-import com.projet.mycose.repository.OffreStageRepository;
-import com.projet.mycose.repository.UtilisateurRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import jakarta.validation.Validator;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import java.util.*;
 
 @Service
+@RequiredArgsConstructor
 public class OffreStageService {
     private final OffreStageRepository offreStageRepository;
     private final ModelMapper modelMapper;
@@ -34,16 +34,8 @@ public class OffreStageService {
     private final FormulaireOffreStageRepository formulaireOffreStageRepository;
     private final FichierOffreStageRepository ficherOffreStageRepository;
     private static final int LIMIT_PER_PAGE = 10;
-
-    public OffreStageService(OffreStageRepository offreStageRepository, ModelMapper modelMapper, Validator validator, UtilisateurRepository utilisateurRepository, UtilisateurService utilisateurService, FormulaireOffreStageRepository formulaireOffreStageRepository, FichierOffreStageRepository ficherOffreStageRepository) {
-        this.offreStageRepository = offreStageRepository;
-        this.modelMapper = modelMapper;
-        this.validator = validator;
-        this.utilisateurService = utilisateurService;
-        this.utilisateurRepository = utilisateurRepository;
-        this.formulaireOffreStageRepository = formulaireOffreStageRepository;
-        this.ficherOffreStageRepository = ficherOffreStageRepository;
-    }
+    private final EtudiantRepository etudiantRepository;
+    private final EtudiantOffreStagePriveeRepository etudiantOffreStagePriveeRepository;
 
     public OffreStageDTO convertToDTO(OffreStage offreStage){
         if (offreStage instanceof FormulaireOffreStage) {
@@ -110,6 +102,7 @@ public class OffreStageService {
         return formulaireOffreStage;
     }
 
+    @Transactional
     public FichierOffreStageDTO saveFile(@Valid UploadFicherOffreStageDTO uploadFicherOffreStageDTO, String token) throws ConstraintViolationException, IOException {
 
         UtilisateurDTO utilisateurDTO = utilisateurService.getMe(token);
@@ -122,12 +115,21 @@ public class OffreStageService {
         // Sinon, on renvoit une erreur
         if (utilisateurDTO.getRole() == Role.EMPLOYEUR) {
             fichierOffreStageDTO.setEntrepriseName(((EmployeurDTO) utilisateurDTO).getEntrepriseName());
+            fichierOffreStageDTO.setVisibility(OffreStage.Visibility.UNDEFINED);
         } else if (utilisateurDTO.getRole() == Role.GESTIONNAIRE_STAGE) {
             if (uploadFicherOffreStageDTO.getEntrepriseName() == null) {
                 throw new IllegalArgumentException("entrepriseName cannot be null");
             }
             fichierOffreStageDTO.setEntrepriseName(uploadFicherOffreStageDTO.getEntrepriseName());
             fichierOffreStageDTO.setStatus(OffreStage.Status.ACCEPTED);
+            if (uploadFicherOffreStageDTO.getProgramme() != Programme.NOT_SPECIFIED) {
+                fichierOffreStageDTO.setProgramme(uploadFicherOffreStageDTO.getProgramme());
+                fichierOffreStageDTO.setVisibility(OffreStage.Visibility.PUBLIC);
+            } else if (uploadFicherOffreStageDTO.getEtudiantsPrives() != null) {
+                fichierOffreStageDTO.setVisibility(OffreStage.Visibility.PRIVATE);
+            } else {
+                throw new IllegalArgumentException("Programme or etudiantsPrives must be provided when uploaded by a gestionnaire de stage");
+            }
         } else {
             throw new IllegalArgumentException("Utilisateur n'est pas un employeur ou un gestionnaire de stage");
         }
@@ -138,9 +140,17 @@ public class OffreStageService {
         }
 
         FichierOffreStage fichierOffreStage = convertToEntity(fichierOffreStageDTO);
-        return convertToDTO(ficherOffreStageRepository.save(fichierOffreStage));
+
+        ficherOffreStageRepository.save(fichierOffreStage);
+
+        if (fichierOffreStage.getVisibility() == OffreStage.Visibility.PRIVATE) {
+            associateEtudiantsPrivees(fichierOffreStage, uploadFicherOffreStageDTO.getEtudiantsPrives());
+        }
+
+        return convertToDTO(fichierOffreStage);
     }
 
+    @Transactional
     public FormulaireOffreStageDTO saveForm(FormulaireOffreStageDTO formulaireOffreStageDTO, String token) throws AccessDeniedException {
         UtilisateurDTO utilisateurDTO = utilisateurService.getMe(token);
         Long createur_id = utilisateurDTO.getId();
@@ -151,6 +161,14 @@ public class OffreStageService {
 
         if(utilisateurDTO.getRole() == Role.GESTIONNAIRE_STAGE) {
             formulaireOffreStageDTO.setStatus(OffreStage.Status.ACCEPTED);
+            formulaireOffreStageDTO.setVisibility(OffreStage.Visibility.UNDEFINED);
+            if (formulaireOffreStageDTO.getProgramme() != Programme.NOT_SPECIFIED) {
+                formulaireOffreStageDTO.setVisibility(OffreStage.Visibility.PUBLIC);
+            } else if (formulaireOffreStageDTO.getEtudiantsPrives() != null) {
+                formulaireOffreStageDTO.setVisibility(OffreStage.Visibility.PRIVATE);
+            } else {
+                throw new IllegalArgumentException("Programme or etudiantsPrives must be provided when uploaded by a gestionnaire de stage");
+            }
         }
 
         formulaireOffreStageDTO.setCreateur_id(createur_id);
@@ -159,7 +177,24 @@ public class OffreStageService {
 
         FormulaireOffreStage savedForm = formulaireOffreStageRepository.save(formulaireOffreStage);
 
+        if (formulaireOffreStage.getVisibility() == OffreStage.Visibility.PRIVATE) {
+            associateEtudiantsPrivees(formulaireOffreStage, formulaireOffreStageDTO.getEtudiantsPrives());
+        }
+
         return convertToDTO(savedForm);
+    }
+
+    private OffreStage associateEtudiantsPrivees(OffreStage offreStage, List<Long> etudiantsPrives) {
+        List<Etudiant> etudiants = etudiantRepository.findAllById(etudiantsPrives);
+
+        for (Etudiant etudiant : etudiants) {
+            EtudiantOffreStagePrivee association = new EtudiantOffreStagePrivee();
+            association.setEtudiant(etudiant);
+            association.setOffreStage(offreStage);
+            etudiantOffreStagePriveeRepository.save(association);
+        }
+
+        return offreStage;
     }
 
     public List<OffreStageAvecUtilisateurInfoDTO> getWaitingOffreStage(int page) {
@@ -207,12 +242,34 @@ public class OffreStageService {
         return OffreStageAvecUtilisateurInfoDTO.toDto(offreStage);
     }
 
-    public List<OffreStageDTO> getAvailableOffreStagesForEtudiant(String token) {
-        Long etudiantId = utilisateurService.getUserIdByToken(token);
-        return offreStageRepository.findAllByEtudiantNotApplied(etudiantId).stream().map(this::convertToDTO).toList();
+    public List<OffreStageDTO> getAvailableOffreStagesForEtudiant(String token) throws AccessDeniedException {
+        EtudiantDTO etudiantDTO = (EtudiantDTO) utilisateurService.getMe(token);
+        return offreStageRepository.findAllByEtudiantNotApplied(etudiantDTO.getId(), etudiantDTO.getProgramme()).stream().map(this::convertToDTO).toList();
     }
 
     public long getTotalWaitingOffreStages() {
         return offreStageRepository.countByStatus(OffreStage.Status.WAITING);
+    }
+
+    public void acceptCV(AcceptCVDTO acceptCVDTO) {
+        Optional<OffreStage> offreStageOptional = offreStageRepository.findById(acceptCVDTO.getId());
+
+        if (offreStageOptional.isEmpty()) {
+            throw new EntityNotFoundException("OffreStage not found with ID: " + acceptCVDTO.getId());
+        }
+
+        OffreStage offreStage = offreStageOptional.get();
+        offreStage.setStatus(OffreStage.Status.ACCEPTED);
+        offreStage.setStatusDescription(acceptCVDTO.getStatusDescription());
+        offreStage.setProgramme(acceptCVDTO.getProgramme());
+
+        if (offreStage.getProgramme() == Programme.NOT_SPECIFIED) {
+            offreStage.setVisibility(OffreStage.Visibility.PRIVATE);
+            associateEtudiantsPrivees(offreStage, acceptCVDTO.getEtudiantsPrives());
+        } else {
+            offreStage.setVisibility(OffreStage.Visibility.PUBLIC);
+        }
+
+        offreStageRepository.save(offreStage);
     }
 }

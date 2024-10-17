@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.nio.file.AccessDeniedException;
 import java.util.List;
@@ -74,9 +75,9 @@ public class ApplicationStageControllerTest {
 
     @Test
     void applyForStage_NotFoundException() throws Exception {
-        when(applicationStageService.applyToOffreStage(token, id)).thenThrow(new ChangeSetPersister.NotFoundException());
+        when(applicationStageService.applyToOffreStage(token, id)).thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "OffreStage not found"));
 
-        assertThrows(ChangeSetPersister.NotFoundException.class, () -> {
+        assertThrows(ResponseStatusException.class, () -> {
             applicationStageController.applyForStage(id, token);
         });
 

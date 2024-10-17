@@ -73,20 +73,9 @@ public class OffreStageController {
     }
 
     @PatchMapping("/accept")
-    public ResponseEntity<?> acceptOffreStage(@RequestParam Long id, @RequestBody JsonNode jsonNode) {
-        try {
-            JsonNode descriptionNode = jsonNode.get("commentaire");
-
-            if (descriptionNode == null || descriptionNode.isNull()) {
-                return ResponseEntity.badRequest().body("Description field is missing");
-            }
-
-            String description = descriptionNode.asText();
-            offreStageService.changeStatus(id, OffreStage.Status.ACCEPTED, description);
+    public ResponseEntity<?> acceptOffreStage(@Valid @RequestBody AcceptCVDTO acceptCVDTO) {
+            offreStageService.acceptCV(acceptCVDTO);
             return ResponseEntity.ok().build();
-        } catch (ChangeSetPersister.NotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
     }
     @PatchMapping("/refuse")
     public ResponseEntity<?> refuseOffreStage(@RequestParam Long id, @RequestBody JsonNode jsonNode) {
@@ -112,7 +101,7 @@ public class OffreStageController {
     }
 
     @GetMapping("/my-offres")
-    public ResponseEntity<List<OffreStageDTO>> getMyOffres(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<List<OffreStageDTO>> getMyOffres(@RequestHeader("Authorization") String token) throws AccessDeniedException {
         List<OffreStageDTO> offreStageDTOList = offreStageService.getAvailableOffreStagesForEtudiant(token);
         return ResponseEntity.status(HttpStatus.OK).body(offreStageDTOList);
     }

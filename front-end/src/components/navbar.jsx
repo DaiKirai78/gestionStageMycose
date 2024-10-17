@@ -1,0 +1,213 @@
+import { useState, useEffect, useRef } from 'react'
+import { BsBellFill, BsList, BsXLg } from "react-icons/bs";
+import { IoMdArrowDown } from "react-icons/io";
+import logo from '../assets/LogoMycose.png'
+import { useNavigate } from 'react-router-dom';
+
+const navLinks = {
+    "ETUDIANT": [
+        {
+            "titre": "testEtudiant",
+            "lien": "/etud"
+        }
+    ],
+    "EMPLOYEUR": [
+        {
+            "titre": "testEmployeur",
+            "lien": "/emp"
+        }
+    ],
+    "GESTIONNAIRE_STAGE": [
+        {
+            "titre": "testGestionnaireStage",
+            "lien": "/gest"
+        }
+    ],
+    "ENSEIGNANT": []
+}
+
+const Navbar = ({roleUser}) => {
+    const navigate = useNavigate();
+
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+    const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
+    const [isNotificationMenuOpen, setIsNotificationMenuOpen] = useState(false)
+
+    const profileMenuRef = useRef(null)
+    const mobileMenuRef = useRef(null)
+    const notificationMenuRef = useRef(null)
+
+    const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen)    
+    const toggleProfileMenu = () => setIsProfileMenuOpen(!isProfileMenuOpen)
+    const toggleNotificationMenu = () => setIsNotificationMenuOpen(!isNotificationMenuOpen)
+
+    const handleProfileItemClick = (e) => {
+    e.preventDefault()
+    setIsProfileMenuOpen(false)
+    }
+
+    useEffect(() => {
+    function handleClickOutside(event) {
+        if (screen.width < 720) return
+        
+        if (profileMenuRef.current && !profileMenuRef.current.contains(event.target)) {
+        setIsProfileMenuOpen(false)
+        }
+        if (notificationMenuRef.current && !notificationMenuRef.current.contains(event.target)) {
+        setIsNotificationMenuOpen(false)
+        }
+        if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target) && isMobileMenuOpen) {
+        setIsMobileMenuOpen(false)
+        }
+    }
+
+    function handleScroll() {
+        if (isMobileMenuOpen) {
+        setIsMobileMenuOpen(false)
+        }
+        setIsProfileMenuOpen(false)
+        setIsNotificationMenuOpen(false)
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    window.addEventListener('scroll', handleScroll)
+
+    return () => {
+        document.removeEventListener('mousedown', handleClickOutside)
+        window.removeEventListener('scroll', handleScroll)
+    }
+    }, [isMobileMenuOpen])
+
+    function signOut(e) {
+        handleProfileItemClick(e);
+        navigate("/");
+        localStorage.removeItem("token");
+    }
+
+    return (
+    <nav className="bg-orange-light border-b border-orange border-opacity-40 text-black">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+            <div className="flex items-center">
+            <div className="flex-shrink-0">
+                <img src={logo} alt="(Logo)" className='w-10' />
+            </div>
+            <div className="hidden md:block">
+                <div className="ml-10 flex items-baseline space-x-4">
+                    <button
+                        onClick={() => {
+                            navigate("/accueil")
+                        }}
+                        className="hover:bg-orange hover:bg-opacity-20 px-3 py-2 rounded-md font-medium">
+                            Acceuil
+                            </button>
+                        {                            
+                            roleUser ? navLinks[roleUser].map((infoBtn, index) => {
+                                return (
+                                    <button
+                                    key={"nav"+index}
+                                        onClick={() => {
+                                            navigate("/" + infoBtn["lien"])
+                                        }}
+                                        className="hover:bg-orange hover:bg-opacity-20 px-3 py-2 rounded-md font-medium">
+                                        {infoBtn["titre"]}
+                                    </button>
+                                );
+                            }) : ""
+                            
+                        }
+                </div>
+            </div>
+            </div>
+            <div className="hidden md:block">
+            <div className="ml-4 flex items-center md:ml-6">
+                <div className="relative" ref={notificationMenuRef}>
+                <button 
+                    onClick={toggleNotificationMenu}
+                    className="p-2 rounded-full text-orange hover:text-orange-light hover:bg-orange"
+                >
+                    <BsBellFill className="h-6 w-6" />
+                </button>
+                {isNotificationMenuOpen && (
+                    <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg p-1 bg-orange-light ring-1 ring-orange ring-opacity-40">
+                    <p className="px-4 py-2 text-black">Aucune notification pour le moment</p>
+                    </div>
+                )}
+                </div>
+                <div className="ml-3 relative" ref={profileMenuRef}>
+                <div>
+                    <button 
+                    onClick={toggleProfileMenu}
+                    className="rounded flex items-center"
+                    >
+                    <div className="h-8 bg-orange rounded flex items-center gap-4 p-2 text-white">
+                        <p className='overflow-hidden truncate max-w-24'>Jason</p>
+                        <IoMdArrowDown className=''/>
+                    </div>
+                    </button>
+                </div>
+                {isProfileMenuOpen && (
+                    <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg p-1 bg-orange-light ring-1 ring-orange ring-opacity-40">
+                    <button
+                        onClick={handleProfileItemClick} 
+                        className="w-full text-left px-4 py-2 rounded text-black hover:bg-orange hover:bg-opacity-20">
+                        Profile
+                    </button>
+                    <button
+                        onClick={signOut} 
+                        className="w-full text-left px-4 py-2 rounded text-black hover:bg-orange hover:bg-opacity-20">
+                        Sign out
+                    </button>
+                    </div>
+                )}
+                </div>
+            </div>
+            </div>
+            <div className="-mr-2 flex md:hidden">
+            <button
+                onClick={toggleMobileMenu}
+                className="inline-flex items-center justify-center p-2 rounded-md text-orange hover:text-white hover:bg-orange"
+            >
+                {isMobileMenuOpen ? <BsXLg className="block h-6 w-6" /> : <BsList className="block h-6 w-6" />}
+            </button>
+            </div>
+        </div>
+        </div>
+
+        {isMobileMenuOpen && (
+        <div className="md:hidden" ref={mobileMenuRef}>
+            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+            <a href="#" className="hover:bg-deep-orange-50 block px-3 py-2 rounded-md text-base font-medium">Dashboard</a>
+            <a href="#" className="hover:bg-deep-orange-50 block px-3 py-2 rounded-md text-base font-medium">Team</a>
+            <a href="#" className="hover:bg-deep-orange-50 block px-3 py-2 rounded-md text-base font-medium">Projects</a>
+            <a href="#" className="hover:bg-deep-orange-50 block px-3 py-2 rounded-md text-base font-medium">Calendar</a>
+            </div>
+            <div className="pt-4 pb-3 border-t border-gray-700">
+            <div className="flex items-center pl-2 pr-5">
+                <div className="ml-3">
+                <div className="text-base font-medium leading-none text-black">Tom Cook</div>
+                <div className="font-medium leading-none text-gray-600">tom@example.com</div>
+                </div>
+                <button
+                onClick={toggleNotificationMenu}
+                className="ml-auto flex-shrink-0 p-2 rounded-full text-orange hover:text-orange-light hover:bg-orange">
+                <BsBellFill className="h-6 w-6" />
+                {isNotificationMenuOpen && (
+                    <div className="origin-top-right absolute right-5 mt-4 w-48 rounded-md shadow-lg p-1 bg-orange-light ring-1 ring-orange ring-opacity-40">
+                    <p className="px-4 py-2 text-black">Aucune notification pour le moment</p>
+                    </div>
+                )}
+                </button>
+            </div>
+            <div className="mt-3 px-2 space-y-1">
+                <a href="#" onClick={handleProfileItemClick} className="block px-3 py-2 rounded-md text-base font-medium hover:bg-orange hover:bg-opacity-20">Your Profile</a>
+                <a href="#" onClick={handleProfileItemClick} className="block px-3 py-2 rounded-md text-base font-medium hover:bg-orange hover:bg-opacity-20">Sign out</a>
+            </div>
+            </div>
+        </div>
+        )}
+    </nav>
+    )
+}
+
+export default Navbar;
