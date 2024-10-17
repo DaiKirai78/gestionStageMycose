@@ -168,11 +168,11 @@ public class EtudiantServiceTest {
 
         Page<OffreStage> offresPage = new PageImpl<>(mockOffresListe, pageRequest, 2);
 
-        when(utilisateurService.getUserIdByToken(token)).thenReturn(etudiantId);
+        when(utilisateurService.getMyUserId()).thenReturn(etudiantId);
         when(offreStageRepositoryMock.findOffresByEtudiantId(etudiantId, pageRequest)).thenReturn(offresPage);
 
         // Act
-        List<OffreStageDTO> result = etudiantService.getStages(token, page);
+        List<OffreStageDTO> result = etudiantService.getStages(page);
 
         // Assert
         assertNotNull(result);
@@ -180,7 +180,7 @@ public class EtudiantServiceTest {
         assertEquals("unTitreForm", result.get(0).getTitle());
         assertEquals("unTitreFichier", result.get(1).getTitle());
 
-        verify(utilisateurService, times(1)).getUserIdByToken(token);
+        verify(utilisateurService, times(1)).getMyUserId();
         verify(offreStageRepositoryMock, times(1)).findOffresByEtudiantId(etudiantId, pageRequest);
     }
 
@@ -193,27 +193,27 @@ public class EtudiantServiceTest {
         PageRequest pageRequest = PageRequest.of(page, 10);
         Page<OffreStage> offresPage = new PageImpl<>(List.of(), pageRequest, 0);
 
-        when(utilisateurService.getUserIdByToken(token)).thenReturn(etudiantId);
+        when(utilisateurService.getMyUserId()).thenReturn(etudiantId);
         when(offreStageRepositoryMock.findOffresByEtudiantId(etudiantId, pageRequest)).thenReturn(offresPage);
 
         // Act
-        List<OffreStageDTO> result = etudiantService.getStages(token, page);
+        List<OffreStageDTO> result = etudiantService.getStages(page);
 
         // Assert
         assertNull(result);
 
-        verify(utilisateurService, times(1)).getUserIdByToken(token);
+        verify(utilisateurService, times(1)).getMyUserId();
         verify(offreStageRepositoryMock, times(1)).findOffresByEtudiantId(etudiantId, pageRequest);
     }
 
     @Test
     public void testGetAmountOfPage_NumberEndWithZero() {
         //Arrange
-        when(utilisateurService.getUserIdByToken("tokenValide")).thenReturn(1L);
+        when(utilisateurService.getMyUserId()).thenReturn(1L);
         when(offreStageRepositoryMock.countByEtudiantsId(1L)).thenReturn(30);
 
         //Act
-        int nombrePage = etudiantService.getAmountOfPages("tokenValide");
+        int nombrePage = etudiantService.getAmountOfPages();
 
         //Assert
         assertEquals(nombrePage, 3);
@@ -223,11 +223,11 @@ public class EtudiantServiceTest {
     @Test
     public void testGetAmountOfPage_NumberNotEndWithZero() {
         //Arrange
-        when(utilisateurService.getUserIdByToken("tokenValide")).thenReturn(1L);
+        when(utilisateurService.getMyUserId()).thenReturn(1L);
         when(offreStageRepositoryMock.countByEtudiantsId(1L)).thenReturn(43);
 
         //Act
-        int nombrePage = etudiantService.getAmountOfPages("tokenValide");
+        int nombrePage = etudiantService.getAmountOfPages();
 
         //Assert
         assertEquals(nombrePage, 5);
@@ -253,11 +253,11 @@ public class EtudiantServiceTest {
 
         Page<OffreStage> offresPage = new PageImpl<>(mockOffresListe, pageRequest, mockOffresListe.size());
 
-        when(utilisateurService.getUserIdByToken(token)).thenReturn(etudiantId);
+        when(utilisateurService.getMyUserId()).thenReturn(etudiantId);
         when(offreStageRepositoryMock.findOffresByEtudiantIdWithSearch(etudiantId, recherche, pageRequest)).thenReturn(offresPage);
 
         // Act
-        List<OffreStageDTO> result = etudiantService.getStagesByRecherche(token, page, recherche);
+        List<OffreStageDTO> result = etudiantService.getStagesByRecherche(page, recherche);
 
         // Assert
         assertNotNull(result);
@@ -265,7 +265,7 @@ public class EtudiantServiceTest {
         assertEquals("Titre Form", result.get(0).getTitle());
         assertEquals("Titre Fichier", result.get(1).getTitle());
 
-        verify(utilisateurService, times(1)).getUserIdByToken(token);
+        verify(utilisateurService, times(1)).getMyUserId();
         verify(offreStageRepositoryMock, times(1)).findOffresByEtudiantIdWithSearch(etudiantId, recherche, pageRequest);
     }
 
@@ -280,17 +280,17 @@ public class EtudiantServiceTest {
         PageRequest pageRequest = PageRequest.of(page, 10);
         Page<OffreStage> offresPage = new PageImpl<>(List.of(), pageRequest, 0);  // Page vide
 
-        when(utilisateurService.getUserIdByToken(token)).thenReturn(etudiantId);
+        when(utilisateurService.getMyUserId()).thenReturn(etudiantId);
         when(offreStageRepositoryMock.findOffresByEtudiantIdWithSearch(etudiantId, recherche, pageRequest)).thenReturn(offresPage);
 
         // Act
-        List<OffreStageDTO> result = etudiantService.getStagesByRecherche(token, page, recherche);
+        List<OffreStageDTO> result = etudiantService.getStagesByRecherche(page, recherche);
 
         // Assert
         assertNotNull(result);
         assertTrue(result.isEmpty());
 
-        verify(utilisateurService, times(1)).getUserIdByToken(token);
+        verify(utilisateurService, times(1)).getMyUserId();
         verify(offreStageRepositoryMock, times(1)).findOffresByEtudiantIdWithSearch(etudiantId, recherche, pageRequest);
     }
 

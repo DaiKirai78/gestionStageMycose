@@ -3,11 +3,13 @@ package com.projet.mycose.service;
 import com.projet.mycose.dto.*;
 import com.projet.mycose.modele.*;
 import com.projet.mycose.repository.*;
+import com.projet.mycose.security.CustomUserDetails;
 import com.projet.mycose.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import com.projet.mycose.security.exception.UserNotFoundException;
 
@@ -33,28 +35,33 @@ public class UtilisateurService {
         return jwtTokenProvider.generateToken(authentication);
     }
 
-    public UtilisateurDTO getMe(String token) throws AccessDeniedException {
-        if (token != null && token.startsWith("Bearer")) {
-            token = token.substring(7);
-            String courriel = jwtTokenProvider.getEmailFromJWT(token);
-            Utilisateur utilisateur = utilisateurRepository.findUtilisateurByCourriel(courriel).orElseThrow(UserNotFoundException::new);
+    public UtilisateurDTO getMe() throws AccessDeniedException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+
+            Utilisateur utilisateur = utilisateurRepository.findUtilisateurById(userDetails.getId()).orElseThrow(UserNotFoundException::new);
             return switch (utilisateur.getRole()) {
                 case GESTIONNAIRE_STAGE -> getGestionnaireDTO(utilisateur.getId());
                 case ETUDIANT -> getEtudiantDTO(utilisateur.getId());
                 case EMPLOYEUR -> getEmployeurDTO(utilisateur.getId());
                 case ENSEIGNANT -> getEnseignantDTO(utilisateur.getId());
             };
+        } else {
+            throw new AccessDeniedException("Accès refusé : Utilisateur non identifié");
         }
-        throw new AccessDeniedException("Accès refusé : Token manquant");
     }
 
-    public Utilisateur getMeUtilisateur(String token) throws AccessDeniedException {
-        if (token != null && token.startsWith("Bearer")) {
-            token = token.substring(7);
-            String courriel = jwtTokenProvider.getEmailFromJWT(token);
-            return utilisateurRepository.findUtilisateurByCourriel(courriel).orElseThrow(UserNotFoundException::new);
+    public Utilisateur getMeUtilisateur() throws AccessDeniedException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+
+            Utilisateur utilisateur = utilisateurRepository.findUtilisateurById(userDetails.getId()).orElseThrow(UserNotFoundException::new);
+            return utilisateur;
+        } else {
+            throw new AccessDeniedException("Accès refusé : Utilisateur non identifié");
         }
-        throw new AccessDeniedException("Accès refusé : Token manquant");
     }
 
     public EtudiantDTO getEtudiantDTO(Long id) {
@@ -97,9 +104,9 @@ public class UtilisateurService {
         return getUtilisateurByCourriel(courriel) != null || getUtilisateurByTelephone(numero) != null;
     }
 
-    public Long getUserIdByToken(String token) {
+    public Long getMyUserId() {
         try{
-            UtilisateurDTO userRecu = getMe(token);
+            UtilisateurDTO userRecu = getMe();
             return userRecu.getId();
         } catch (Exception e) {
             return null;

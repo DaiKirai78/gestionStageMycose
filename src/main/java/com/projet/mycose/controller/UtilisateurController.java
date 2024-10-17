@@ -35,10 +35,10 @@ public class UtilisateurController {
     }
 
     @PostMapping("/me")
-    public ResponseEntity<UtilisateurDTO> getMe(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<UtilisateurDTO> getMe() {
         try {
             return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
-                    utilisateurService.getMe(token)
+                    utilisateurService.getMe()
             );
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();

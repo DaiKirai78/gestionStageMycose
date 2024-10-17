@@ -133,7 +133,7 @@ public class UtilisateurControllerTest {
         String token = "Bearer valid_token";
         EtudiantDTO utilisateurDTO = new EtudiantDTO(1L, "Karim", "Mihoubi", "mihoubi@gmail.com", "438-508-2345", Role.ETUDIANT, Programme.TECHNIQUE_INFORMATIQUE);
 
-        when(utilisateurService.getMe(anyString())).thenReturn(utilisateurDTO);
+        when(utilisateurService.getMe()).thenReturn(utilisateurDTO);
 
         mockMvc.perform(post("/utilisateur/me")
                         .header("Authorization", token)
@@ -150,14 +150,14 @@ public class UtilisateurControllerTest {
                 .andExpect(jsonPath("$.role").value("ETUDIANT"))
                 .andExpect(jsonPath("$.programme").value(Programme.TECHNIQUE_INFORMATIQUE.name()));
 
-        verify(utilisateurService).getMe("Bearer valid_token");
+        verify(utilisateurService).getMe();
     }
 
     @Test
     public void testGetMe_Failure() throws Exception {
         String token = "Bearer invalid_token";
 
-        when(utilisateurService.getMe(anyString())).thenThrow(new RuntimeException("Erreur d'authentification"));
+        when(utilisateurService.getMe()).thenThrow(new RuntimeException("Erreur d'authentification"));
 
         mockMvc.perform(post("/utilisateur/me")
                         .header("Authorization", token)
@@ -166,7 +166,7 @@ public class UtilisateurControllerTest {
                         .with(user("karim").roles("ETUDIANT")))
                 .andExpect(status().isBadRequest());
 
-        verify(utilisateurService).getMe("Bearer invalid_token");
+        verify(utilisateurService).getMe();
     }
 
 

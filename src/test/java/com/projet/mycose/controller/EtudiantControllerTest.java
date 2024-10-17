@@ -95,7 +95,6 @@ public class EtudiantControllerTest {
     @Test
     public void testGetStages_Success() throws Exception{
         // Arrange
-        String authHeader = "Bearer unTokenValide";
 
         FormulaireOffreStageDTO mockFormulaire = new FormulaireOffreStageDTO(
                 1L,
@@ -118,11 +117,11 @@ public class EtudiantControllerTest {
 
         List<OffreStageDTO> mockListeOffres = new ArrayList<>();
         mockListeOffres.add(mockFormulaire);
-        when(etudiantService.getStages(authHeader, 0)).thenReturn(mockListeOffres);
+        when(etudiantService.getStages(0)).thenReturn(mockListeOffres);
 
         // Act & Assert
         mockMvc.perform(post("/etudiant/getStages")
-                .header("Authorization", authHeader).param("pageNumber", String.valueOf(0))
+                        .param("pageNumber", String.valueOf(0))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isAccepted())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -133,12 +132,11 @@ public class EtudiantControllerTest {
     @Test
     public void testGetStages_Error() throws Exception {
         //Arrange
-        when(etudiantService.getStages("token", 0)).thenThrow(new RuntimeException());
+        when(etudiantService.getStages(0)).thenThrow(new RuntimeException());
 
 
         //Act & Assert
         mockMvc.perform(post("/etudiant/getStages")
-                .header("Authorization", "unToken")
                 .param("pageNumber", String.valueOf(0))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
@@ -147,7 +145,7 @@ public class EtudiantControllerTest {
     @Test
     public void testGetAmountOfPages_Success() throws Exception {
         //Arrange
-        when(etudiantService.getAmountOfPages("tokenValide")).thenReturn(2);
+        when(etudiantService.getAmountOfPages()).thenReturn(2);
 
         //Act & Assert
         mockMvc.perform(get("/etudiant/pages")
@@ -160,7 +158,7 @@ public class EtudiantControllerTest {
     @Test
     public void testGetAmountOfPages_Error() throws Exception {
         //Arrange
-        when(etudiantService.getAmountOfPages("token")).thenThrow(new RuntimeException());
+        when(etudiantService.getAmountOfPages()).thenThrow(new RuntimeException());
 
         //Act & Assert
         mockMvc.perform(get("/etudiant/pages")
@@ -194,11 +192,10 @@ public class EtudiantControllerTest {
 
         List<OffreStageDTO> mockListeOffres = new ArrayList<>();
         mockListeOffres.add(mockFormulaire);
-        when(etudiantService.getStagesByRecherche("tokenValide", 0, "uneRecherche")).thenReturn(mockListeOffres);
+        when(etudiantService.getStagesByRecherche(0, "uneRecherche")).thenReturn(mockListeOffres);
 
         //Act & Assert
         mockMvc.perform(post("/etudiant/recherche-offre")
-                        .header("Authorization", "tokenValide")
                         .param("pageNumber", String.valueOf(0))
                         .param("recherche", "uneRecherche")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -210,12 +207,11 @@ public class EtudiantControllerTest {
     @Test
     public void testRechercheOffre_Error() throws Exception {
         //Arrange
-        when(etudiantService.getStagesByRecherche("token", 0, "uneRecherche")).thenThrow(new RuntimeException());
+        when(etudiantService.getStagesByRecherche(0, "uneRecherche")).thenThrow(new RuntimeException());
 
 
         //Act & Assert
         mockMvc.perform(post("/etudiant/recherche-offre")
-                        .header("Authorization", "unToken")
                         .param("pageNumber", String.valueOf(0))
                         .param("recherche", "uneRecherche")
                         .contentType(MediaType.APPLICATION_JSON))
