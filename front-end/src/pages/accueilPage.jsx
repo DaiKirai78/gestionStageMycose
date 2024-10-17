@@ -3,6 +3,7 @@ import TokenPageContainer from './tokenPageContainer';
 import { useNavigate } from 'react-router-dom';
 import AcceuilEtudiant from '../components/acceuil/acceuilEtudiant';
 import AcceuilEmployeur from '../components/acceuil/acceuilEmployeur';
+import { useOutletContext } from "react-router-dom";
 import UploadCvPage from '../pages/UploadCvPage';
 import VoirMonCVPage from "./voirMonCVPage.jsx";
 
@@ -10,6 +11,7 @@ const AccueilPage = () => {
     const [role, setRole] = useState(null);
     const [cvStatus, setCvStatus] = useState(null);
     const navigate = useNavigate();
+    const [roleUser, setRoleUser] = useOutletContext();
 
     useEffect(() => {
         getRole();
@@ -83,7 +85,7 @@ const AccueilPage = () => {
     }
 
     return (
-        <TokenPageContainer role={["ETUDIANT", "EMPLOYEUR", "GESTIONNAIRE_STAGE", "ENSEIGNANT"]}>
+        <TokenPageContainer role={["ETUDIANT", "EMPLOYEUR", "GESTIONNAIRE_STAGE", "ENSEIGNANT"]} setRoleUser={setRoleUser}>
             {getAccueil()}
         </TokenPageContainer>
     );

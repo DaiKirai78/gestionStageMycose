@@ -1,4 +1,4 @@
-export default async function verifToken(token, role) {
+export default async function verifToken(token, role, setRoleUser) {
     if (!token) {
         return false;
     }
@@ -15,11 +15,13 @@ export default async function verifToken(token, role) {
                 return false
               }
               const data = await res.json();
+              setRoleUser(data.role);              
+              
               returnValue = role.includes(data.role);
             }
           )
 
-      } catch (err) {
+      } catch (err) {        
         returnValue = false;
       }
 

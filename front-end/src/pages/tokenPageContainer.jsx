@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import verifToken from "../utils/verifTokenValid"
 
-const TokenPageContainer = ({children, role}) => {
+const TokenPageContainer = ({children, role, setRoleUser}) => {
     
     const navigate = useNavigate();
     const [isFetching, setIsFetching] = useState(true)
@@ -17,7 +17,9 @@ const TokenPageContainer = ({children, role}) => {
     }, []);
 
     async function fetchToken() {
-        const is_tokenValid = await verifToken(token, role);
+        const is_tokenValid = await verifToken(token, role, setRoleUser);
+        console.log(is_tokenValid);
+        
 
         setIsFetching(false)
     
