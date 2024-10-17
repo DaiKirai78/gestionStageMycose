@@ -84,4 +84,8 @@ public class ApplicationStageService {
         Long etudiantId = utilisateurService.getUserIdByToken(token);
         return applicationStageRepository.findByEtudiantIdAndOffreStageId(etudiantId, applicationId).map(this::convertToDTOAvecInfos).orElseThrow(ChangeSetPersister.NotFoundException::new);
     }
+
+    public List<ApplicationStageDTO> getAllApplicationsPourUneOffreById(Long offreId) {
+        return applicationStageRepository.findAllByOffreStageId(offreId).stream().map(this::convertToDTO).toList();
+    }
 }
