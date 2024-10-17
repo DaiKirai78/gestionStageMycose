@@ -77,11 +77,14 @@ const AcceuilEmployeur = () => {
             );
 
             if (response.status == STATUS_CODE_ACCEPTED) {                
-                const fetchedData = await response.json();                
-                setPages({
-                    ...pages,
-                    maxPages: fetchedData
-                });
+                const fetchedData = await response.json();
+                if(fetchedData !== pages.maxPages) {
+                    setPages({
+                        ...pages,
+                        maxPages: fetchedData
+                    });
+                }           
+
                 
             } else if (response.status == STATUS_CODE_NO_CONTENT) {
                 setData("Nothing found")
@@ -111,7 +114,7 @@ const AcceuilEmployeur = () => {
                     {   
                         isFetching && !data ? 
                             <PageIsLoading /> : 
-                            data.length > 0 ?
+                            data !=  undefined ?
                                 <ListOffreStageEmployeur data={data} voirPdf={voirPdf} setVoirPdf={setVoirPdf} activeOffer={activeOffer} setActiveOffer={setActiveOffer} /> :
                                 <h1>{t("noOffer")}</h1>
                     }

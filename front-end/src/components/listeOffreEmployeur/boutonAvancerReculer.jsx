@@ -1,55 +1,57 @@
 import React from "react";
-import { BsArrowLeft, BsArrowRight } from "react-icons/bs";
+import { useTranslation } from "react-i18next";
 
-const BoutonAvancerReculer = ({pages, setPages}) => {
+const BoutonAvancerReculer = ({ pages, setPages }) => {
+    const { t } = useTranslation();
 
-    function pagesUp(amount = 1) {        
-        if (pages.currentPage + amount > pages.maxPages)
-            return;
+    function pagesUp(amount = 1) {
+        if (pages.currentPage + amount > pages.maxPages) return;
 
         setPages({
             ...pages,
-            currentPage: pages.currentPage + 1
+            currentPage: pages.currentPage + amount,
         });
-
     }
 
-    function pagesDown(amount = 1) {        
-        if (pages.currentPage - amount < pages.minPages)
-            return;
-    
+    function pagesDown(amount = 1) {
+        if (pages.currentPage - amount < pages.minPages) return;
+
         setPages({
             ...pages,
-            currentPage: pages.currentPage - 1
+            currentPage: pages.currentPage - amount,
         });
     }
 
-    function goTo(destinationPage) {
-        setPages({
-            ...pages,
-            currentPage: destinationPage
-        });
-    }
+    // Classes pour les boutons basées sur l'état
+    const previousButtonClass = pages.currentPage <= pages.minPages ? "bg-gray-200 text-gray-700" : "bg-gray-400 text-gray-900";
+    const nextButtonClass = pages.currentPage >= pages.maxPages ? "bg-gray-200 text-gray-700" : "bg-gray-400 text-gray-900";
 
     return (
-        <div className='w-full h-10 mb-12 flex justify-center'>
-            <div className='w-10/12 sm:w-1/2 md:w-1/3 flex gap-1'>
-                <button className='w-2/6 h-full bg-orange rounded cursor-pointer flex justify-center items-center'
-                    onClick={() => { pagesDown(1); } }
-                ><BsArrowLeft /></button>
-                <button className='w-1/6 h-full border rounded'
-                    onClick={() => (goTo(pages.minPages))}
-                >{pages.minPages}</button>
-                <div className='w-1/6 h-full border border-deep-orange-100 rounded flex justify-center items-center'>{pages.currentPage}</div>
-                <button className='w-1/6 h-full border rounded'
-                    onClick={() => (goTo(pages.maxPages))}
-                >{pages.maxPages}</button>
-                <button className='w-2/6 h-full bg-orange rounded cursor-pointer flex justify-center items-center'
-                    onClick={() => { pagesUp(1); } }
-                ><BsArrowRight /></button>
-            </div>
+        <div className="flex justify-center mb-28">
+            {/* Previous Page Button */}
+            <button
+                className={`px-4 py-2 rounded-l ${previousButtonClass}`}
+                onClick={() => { pagesDown(1); }}
+                disabled={pages.currentPage <= pages.minPages}
+            >
+                {t("previous")}
+            </button>
+
+            {/* Current Page and Total Pages */}
+            <span className="px-4 py-2">
+                {t("page")} {pages.currentPage} / {pages.maxPages}
+            </span>
+
+            {/* Next Page Button */}
+            <button
+                className={`px-4 py-2 rounded-r ${nextButtonClass}`}
+                onClick={() => { pagesUp(1); }}
+                disabled={pages.currentPage >= pages.maxPages}
+            >
+                {t("next")}
+            </button>
         </div>
     );
-}
+};
 
 export default BoutonAvancerReculer;

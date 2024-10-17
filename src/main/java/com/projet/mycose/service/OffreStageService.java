@@ -127,6 +127,7 @@ public class OffreStageService {
                 throw new IllegalArgumentException("entrepriseName cannot be null");
             }
             fichierOffreStageDTO.setEntrepriseName(uploadFicherOffreStageDTO.getEntrepriseName());
+            fichierOffreStageDTO.setStatus(OffreStage.Status.ACCEPTED);
         } else {
             throw new IllegalArgumentException("Utilisateur n'est pas un employeur ou un gestionnaire de stage");
         }
@@ -146,6 +147,10 @@ public class OffreStageService {
 
         if (utilisateurDTO.getRole() != Role.EMPLOYEUR && utilisateurDTO.getRole() != Role.GESTIONNAIRE_STAGE) {
             throw new AccessDeniedException("Utilisateur n'est pas un employeur");
+        }
+
+        if(utilisateurDTO.getRole() == Role.GESTIONNAIRE_STAGE) {
+            formulaireOffreStageDTO.setStatus(OffreStage.Status.ACCEPTED);
         }
 
         formulaireOffreStageDTO.setCreateur_id(createur_id);
@@ -205,5 +210,9 @@ public class OffreStageService {
     public List<OffreStageDTO> getAvailableOffreStagesForEtudiant(String token) {
         Long etudiantId = utilisateurService.getUserIdByToken(token);
         return offreStageRepository.findAllByEtudiantNotApplied(etudiantId).stream().map(this::convertToDTO).toList();
+    }
+
+    public long getTotalWaitingOffreStages() {
+        return offreStageRepository.countByStatus(OffreStage.Status.WAITING);
     }
 }

@@ -155,6 +155,12 @@
     "CetteOffreNestPlusDisponible": "The internship offer is no longer available.",
     "AfficherPDF": "Show PDF",
     "RetourAccueil": "Back to home page",
+    "errorRetrievingTotalCVs": "Error retrieving the total number of CVs",
+    "errorRetrievingTotalOffres": "Error retrieving the total number of internship offers",
+    "uploadNewCV": "Upload a new CV",
+    "existingCVWarning": "You already have a CV uploaded. If you upload a new one, the old one will be replaced.",
+    "viewCV": "View my CV"
+    "RetourAccueil": "Back to home page",
     "EmailEmployeur": "Employer's email :",
     "Employeur": "Employer : "
 }

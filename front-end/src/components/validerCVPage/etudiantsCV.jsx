@@ -115,15 +115,14 @@ function EtudiantsCV() {
                     <span className="px-4 py-2">{t("page")} {currentPage} / {Math.max(totalPages, 1)}</span>
                     <button
                         className={`px-4 py-2 ${
-                            currentPage === totalPages ? "bg-gray-200 text-gray-700" : "bg-gray-400 text-gray-900"
+                            currentPage === totalPages || students.length === 0 ? "bg-gray-200 text-gray-700" : "bg-gray-400 text-gray-900"
                         } rounded-r`}
                         onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                        disabled={currentPage === totalPages}
+                        disabled={currentPage === totalPages || students.length === 0}
                     >
                         {t("next")}
                     </button>
                 </div>
-
             </div>
         </div>
     );
