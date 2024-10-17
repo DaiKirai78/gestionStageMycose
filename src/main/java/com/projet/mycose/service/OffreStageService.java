@@ -206,4 +206,8 @@ public class OffreStageService {
         Long etudiantId = utilisateurService.getUserIdByToken(token);
         return offreStageRepository.findAllByEtudiantNotApplied(etudiantId).stream().map(this::convertToDTO).toList();
     }
+
+    public long getTotalWaitingOffreStages() {
+        return offreStageRepository.countByStatus(OffreStage.Status.WAITING);
+    }
 }

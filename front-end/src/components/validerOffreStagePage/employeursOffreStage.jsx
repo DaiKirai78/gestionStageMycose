@@ -9,6 +9,7 @@ function EmployeursOffreStage() {
     const [error, setError] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
+    const [totalOffres, setTotalOffres] = useState(0);
     const navigate = useNavigate();
 
     const token = localStorage.getItem("token");
@@ -51,8 +52,24 @@ function EmployeursOffreStage() {
             }
         };
 
+        const fetchTotalOffres = async () => {
+            try {
+                const response = await fetch('http://localhost:8080/api/offres-stages/totalwaitingoffres', {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                if (!response.ok) {
+                    throw new Error(t("errorRetrievingTotalOffres"));
+                }
+                const total = await response.json();
+                setTotalOffres(total);
+            } catch (error) {
+                console.error(t("errorRetrievingTotalOffres"), error);
+            }
+        };
+
         fetchEmployeurs();
         fetchTotalPages();
+        fetchTotalOffres()
     }, [currentPage]);
 
     if (loading) return <p className={"justify-center text-center"}>{t("loading")}</p>;
@@ -64,7 +81,7 @@ function EmployeursOffreStage() {
                 <h1 className="text-4xl font-bold mb-6 mt-6 text-center">{t("internshipOfferList")}</h1>
                 <h2 className="mb-8 text-xl text-center">{t("clickEmployeurOffreStage")}</h2>
                 {employeurs.length > 0 ? (
-                    <p className="text-center text-gray-700 mb-4">{employeurs.length} {t("waitingInternship")}</p>
+                    <p className="text-center text-gray-700 mb-4">{totalOffres} {t("waitingInternship")}</p>
                 ) : (
                     <p className="text-center text-gray-700 mb-4">{t("noInternshipWaiting")}</p>
                 )}
@@ -85,17 +102,21 @@ function EmployeursOffreStage() {
                 {/* Pagination */}
                 <div className="flex justify-center mt-8">
                     <button
-                        className="px-4 py-2 bg-gray-200 text-gray-700 rounded-l"
+                        className={`px-4 py-2 ${
+                            currentPage === 1 ? "bg-gray-200 text-gray-700" : "bg-gray-400 text-gray-900"
+                        } rounded-l`}
                         onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                         disabled={currentPage === 1}
                     >
                         {t("previous")}
                     </button>
-                    <span className="px-4 py-2">{t("page")} {currentPage} / {totalPages}</span>
+                    <span className="px-4 py-2">{t("page")} {currentPage} / {Math.max(totalPages, 1)}</span>
                     <button
-                        className="px-4 py-2 bg-gray-200 text-gray-700 rounded-r"
+                        className={`px-4 py-2 ${
+                            currentPage === totalPages || employeurs.length === 0 ? "bg-gray-200 text-gray-700" : "bg-gray-400 text-gray-900"
+                        } rounded-r`}
                         onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                        disabled={currentPage === totalPages}
+                        disabled={currentPage === totalPages || employeurs.length === 0}
                     >
                         {t("next")}
                     </button>

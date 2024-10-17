@@ -67,6 +67,11 @@ public class OffreStageController {
         return ResponseEntity.status((HttpStatus.OK)).body(offreStageService.getAmountOfPages());
     }
 
+    @GetMapping("/totalwaitingoffres")
+    public ResponseEntity<Long> getTotalWaitingOffres() {
+        return ResponseEntity.status(HttpStatus.OK).body(offreStageService.getTotalWaitingOffreStages());
+    }
+
     @PatchMapping("/accept")
     public ResponseEntity<?> acceptOffreStage(@RequestParam Long id, @RequestBody JsonNode jsonNode) {
         try {

@@ -154,5 +154,7 @@
     "VousAvezDejaPostule": "You have already applied for this internship.",
     "CetteOffreNestPlusDisponible": "The internship offer is no longer available.",
     "AfficherPDF": "Show PDF",
-    "RetourAccueil": "Back to home page"
+    "RetourAccueil": "Back to home page",
+    "errorRetrievingTotalCVs": "Error retrieving the total number of CVs",
+    "errorRetrievingTotalOffres": "Error retrieving the total number of internship offers"
 }
