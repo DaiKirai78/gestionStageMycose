@@ -155,5 +155,7 @@
     "VousAvezDejaPostule": "Vous avez déjà postulé à cette offre de stage.",
     "CetteOffreNestPlusDisponible": "L'offre de stage n'est plus disponible.",
     "AfficherPDF": "Afficher PDF",
-    "RetourAccueil": "Retour à l'accueil"
+    "RetourAccueil": "Retour à l'accueil",
+    "EmailEmployeur": "Courriel de l'employeur : ",
+    "Employeur": "Employeur : "
 }

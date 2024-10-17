@@ -56,6 +56,7 @@ const listeStage = () => {
                     'Content-Type': 'application/json'
                 }
             });
+            console.log("AAAAAH" + response.data);
             setNombreDePage(response.data);
             return response.data;
         } catch (error) {
@@ -164,6 +165,8 @@ const listeStage = () => {
         } else {
             if (!doesItComeFromNextPage)
                 await fetchStages(recherchePageActuelle);
+            console.log("page actuelle : " + pageActuelle);
+            console.log("nombre de pages : " + nombreDePage);
             return pageActuelle < nombreDePage - 1;
         }
     }
