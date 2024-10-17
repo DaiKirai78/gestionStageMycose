@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.nio.file.AccessDeniedException;
 import java.util.Arrays;
@@ -105,9 +106,9 @@ public class ApplicationStageServiceTest {
         when(utilisateurService.getMeUtilisateur(token)).thenReturn(etudiant);
         when(offreStageRepository.findById(offreStageId)).thenReturn(Optional.empty());
 
-        ChangeSetPersister.NotFoundException exception = assertThrows(ChangeSetPersister.NotFoundException.class, () -> {
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
             applicationStageService.applyToOffreStage(token, offreStageId);
-        }, "Expected NotFoundException to be thrown.");
+        }, "Expected ResponseStatusException to be thrown.");
 
         assertNotNull(exception, "Exception should not be null.");
 
@@ -124,11 +125,11 @@ public class ApplicationStageServiceTest {
         when(offreStageRepository.findById(offreStageId)).thenReturn(Optional.of(fichierOffreStage));
         when(applicationStageRepository.findByEtudiantAndOffreStage(etudiant, fichierOffreStage)).thenReturn(Optional.of(applicationStage));
 
-        DuplicateRequestException exception = assertThrows(DuplicateRequestException.class, () -> {
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
             applicationStageService.applyToOffreStage(token, offreStageId);
-        }, "Expected DuplicateRequestException to be thrown.");
+        }, "Etudiant has already applied to this OffreStage.");
 
-        assertEquals("Etudiant has already applied to this OffreStage.", exception.getMessage(), "Exception message should match.");
+        assertEquals("409 CONFLICT \"Etudiant has already applied to this OffreStage.\"", exception.getMessage(), "Exception message should match.");
 
         verify(utilisateurService, times(1)).getMeUtilisateur(token);
         verify(offreStageRepository, times(1)).findById(offreStageId);

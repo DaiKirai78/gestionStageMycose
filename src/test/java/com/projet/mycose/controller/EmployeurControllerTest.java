@@ -6,6 +6,7 @@ import com.projet.mycose.dto.FormulaireOffreStageDTO;
 import com.projet.mycose.dto.OffreStageDTO;
 import com.projet.mycose.dto.RegisterEmployeurDTO;
 import com.projet.mycose.modele.OffreStage;
+import com.projet.mycose.modele.Programme;
 import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.service.EmployeurService;
 import org.junit.jupiter.api.BeforeEach;
@@ -110,7 +111,10 @@ public class EmployeurControllerTest {
                 LocalDateTime.now(),
                 LocalDateTime.now(),
                 1L,
-                OffreStage.Status.WAITING
+                OffreStage.Status.WAITING,
+                Programme.TECHNIQUE_INFORMATIQUE,
+                OffreStage.Visibility.PUBLIC,
+                null
         );
 
         List<OffreStageDTO> mockListeOffres = new ArrayList<>();

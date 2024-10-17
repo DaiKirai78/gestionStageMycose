@@ -20,13 +20,16 @@ public class FichierOffreStage extends OffreStage{
     @OneToMany(mappedBy = "offreStage", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ApplicationStage> applications;
 
-    public FichierOffreStage(String title, String entrepriseName, String filename, byte[] data, Utilisateur createur) {
+    public FichierOffreStage(String title, String entrepriseName, String filename, byte[] data, Utilisateur createur, OffreStage.Visibility visibility, Programme programme, OffreStage.Status status) {
         super();
         this.setTitle(title);
         this.setEntrepriseName(entrepriseName);
         this.setCreateur(createur);
         this.filename = filename;
         this.data = data;
+        this.setVisibility(visibility);
+        this.setProgramme(programme);
+        this.setStatus(status);
     }
 
 }

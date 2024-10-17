@@ -2,6 +2,7 @@ package com.projet.mycose.dto;
 
 import com.projet.mycose.modele.FichierOffreStage;
 import com.projet.mycose.modele.OffreStage;
+import com.projet.mycose.modele.Programme;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -32,18 +33,7 @@ public class FichierOffreStageDTO extends OffreStageDTO{
     private String fileData;
 
     @Builder
-    public FichierOffreStageDTO(long id, String filename, String fileData, String title, String entrepriseName, Long createur_id, LocalDateTime createdAt) {
-        super(id);
-        this.filename = filename;
-        this.fileData = fileData;
-        this.setTitle(title);
-        this.setEntrepriseName(entrepriseName);
-        this.setCreateur_id(createur_id);
-        this.setCreatedAt(createdAt);
-    }
-
-    @Builder
-    public FichierOffreStageDTO(long id, String filename, String fileData, String title, String entrepriseName, LocalDateTime createdAt, LocalDateTime updateAt, Long createur_id, OffreStage.Status status) {
+    public FichierOffreStageDTO(long id, String filename, String fileData, String title, String entrepriseName, LocalDateTime createdAt, LocalDateTime updateAt, Long createur_id, OffreStage.Status status, OffreStage.Visibility visibility, Programme programme) {
         super(id);
         this.filename = filename;
         this.fileData = fileData;
@@ -53,6 +43,8 @@ public class FichierOffreStageDTO extends OffreStageDTO{
         this.setUpdatedAt(updateAt);
         this.setCreateur_id(createur_id);
         this.setStatus(status);
+        this.setVisibility(visibility);
+        this.setProgramme(programme);
     }
 
 
@@ -78,7 +70,9 @@ public class FichierOffreStageDTO extends OffreStageDTO{
                 fichierOffreStage.getCreatedAt(),
                 fichierOffreStage.getUpdatedAt(),
                 fichierOffreStage.getCreateur().getId(),
-                fichierOffreStage.getStatus()
+                fichierOffreStage.getStatus(),
+                fichierOffreStage.getVisibility(),
+                fichierOffreStage.getProgramme()
         );
     }
 

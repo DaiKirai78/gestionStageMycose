@@ -3,13 +3,10 @@ package com.projet.mycose.service;
 import com.projet.mycose.dto.*;
 import com.projet.mycose.modele.*;
 import com.projet.mycose.modele.auth.Role;
-import com.projet.mycose.repository.FichierOffreStageRepository;
-import com.projet.mycose.repository.FormulaireOffreStageRepository;
+import com.projet.mycose.repository.*;
 import com.projet.mycose.modele.FichierOffreStage;
 import com.projet.mycose.modele.FormulaireOffreStage;
 import com.projet.mycose.modele.OffreStage;
-import com.projet.mycose.repository.OffreStageRepository;
-import com.projet.mycose.repository.UtilisateurRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -34,8 +31,10 @@ public class OffreStageService {
     private final FormulaireOffreStageRepository formulaireOffreStageRepository;
     private final FichierOffreStageRepository ficherOffreStageRepository;
     private static final int LIMIT_PER_PAGE = 10;
+    private final EtudiantRepository etudiantRepository;
+    private final EtudiantOffreStagePriveeRepository etudiantOffreStagePriveeRepository;
 
-    public OffreStageService(OffreStageRepository offreStageRepository, ModelMapper modelMapper, Validator validator, UtilisateurRepository utilisateurRepository, UtilisateurService utilisateurService, FormulaireOffreStageRepository formulaireOffreStageRepository, FichierOffreStageRepository ficherOffreStageRepository) {
+    public OffreStageService(OffreStageRepository offreStageRepository, ModelMapper modelMapper, Validator validator, UtilisateurRepository utilisateurRepository, UtilisateurService utilisateurService, FormulaireOffreStageRepository formulaireOffreStageRepository, FichierOffreStageRepository ficherOffreStageRepository, EtudiantRepository etudiantRepository, EtudiantOffreStagePriveeRepository etudiantOffreStagePriveeRepository) {
         this.offreStageRepository = offreStageRepository;
         this.modelMapper = modelMapper;
         this.validator = validator;
@@ -43,6 +42,8 @@ public class OffreStageService {
         this.utilisateurRepository = utilisateurRepository;
         this.formulaireOffreStageRepository = formulaireOffreStageRepository;
         this.ficherOffreStageRepository = ficherOffreStageRepository;
+        this.etudiantRepository = etudiantRepository;
+        this.etudiantOffreStagePriveeRepository = etudiantOffreStagePriveeRepository;
     }
 
     public OffreStageDTO convertToDTO(OffreStage offreStage){
@@ -128,6 +129,12 @@ public class OffreStageService {
             }
             fichierOffreStageDTO.setEntrepriseName(uploadFicherOffreStageDTO.getEntrepriseName());
             fichierOffreStageDTO.setStatus(OffreStage.Status.ACCEPTED);
+            if (uploadFicherOffreStageDTO.getProgramme() != null) {
+                fichierOffreStageDTO.setProgramme(uploadFicherOffreStageDTO.getProgramme());
+                fichierOffreStageDTO.setVisibility(OffreStage.Visibility.PUBLIC);
+            } else {
+                fichierOffreStageDTO.setVisibility(OffreStage.Visibility.PRIVATE);
+            }
         } else {
             throw new IllegalArgumentException("Utilisateur n'est pas un employeur ou un gestionnaire de stage");
         }
@@ -138,7 +145,14 @@ public class OffreStageService {
         }
 
         FichierOffreStage fichierOffreStage = convertToEntity(fichierOffreStageDTO);
-        return convertToDTO(ficherOffreStageRepository.save(fichierOffreStage));
+
+        ficherOffreStageRepository.save(fichierOffreStage);
+
+        if (fichierOffreStage.getVisibility() == OffreStage.Visibility.PRIVATE) {
+            associateEtudiantsPrivees(fichierOffreStage, uploadFicherOffreStageDTO.getEtudiantsPrives());
+        }
+
+        return convertToDTO(fichierOffreStage);
     }
 
     public FormulaireOffreStageDTO saveForm(FormulaireOffreStageDTO formulaireOffreStageDTO, String token) throws AccessDeniedException {
@@ -151,6 +165,11 @@ public class OffreStageService {
 
         if(utilisateurDTO.getRole() == Role.GESTIONNAIRE_STAGE) {
             formulaireOffreStageDTO.setStatus(OffreStage.Status.ACCEPTED);
+            if (formulaireOffreStageDTO.getProgramme() != null) {
+                formulaireOffreStageDTO.setVisibility(OffreStage.Visibility.PUBLIC);
+            } else {
+                formulaireOffreStageDTO.setVisibility(OffreStage.Visibility.PRIVATE);
+            }
         }
 
         formulaireOffreStageDTO.setCreateur_id(createur_id);
@@ -159,7 +178,24 @@ public class OffreStageService {
 
         FormulaireOffreStage savedForm = formulaireOffreStageRepository.save(formulaireOffreStage);
 
+        if (formulaireOffreStage.getVisibility() == OffreStage.Visibility.PRIVATE) {
+            associateEtudiantsPrivees(formulaireOffreStage, formulaireOffreStageDTO.getEtudiantsPrives());
+        }
+
         return convertToDTO(savedForm);
+    }
+
+    private OffreStage associateEtudiantsPrivees(OffreStage offreStage, List<Long> etudiantsPrives) {
+        List<Etudiant> etudiants = etudiantRepository.findAllById(etudiantsPrives);
+
+        for (Etudiant etudiant : etudiants) {
+            EtudiantOffreStagePrivee association = new EtudiantOffreStagePrivee();
+            association.setEtudiant(etudiant);
+            association.setOffreStage(offreStage);
+            etudiantOffreStagePriveeRepository.save(association);
+        }
+
+        return offreStage;
     }
 
     public List<OffreStageAvecUtilisateurInfoDTO> getWaitingOffreStage(int page) {

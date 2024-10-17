@@ -6,5 +6,6 @@ import lombok.Getter;
 public enum Programme {
     TECHNIQUE_INFORMATIQUE,
     GENIE_LOGICIEL,
-    RESEAU_TELECOMMUNICATION
+    RESEAU_TELECOMMUNICATION,
+    NOT_SPECIFIED
 }
