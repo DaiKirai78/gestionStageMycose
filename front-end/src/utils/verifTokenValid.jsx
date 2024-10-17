@@ -1,9 +1,9 @@
-export default async function verifToken(token, role, setUserInfo) {
-    if (!token) {
-        return false;
-    }
-    
-    let returnValue = false;
+export default async function verifToken(token, role, setUserInfo) {    
+    let returnValue = {
+      userValid: false,
+      userWrongPage: false,
+      error: false
+    };
 
     try {
         await fetch('http://localhost:8080/utilisateur/me', {
@@ -17,12 +17,20 @@ export default async function verifToken(token, role, setUserInfo) {
               const data = await res.json();
               setUserInfo(data);              
               
-              returnValue = role.includes(data.role);
+              returnValue = {
+                userValid: true,
+                userWrongPage: role.includes(data.role),
+                error: false
+              };
             }
           )
 
       } catch (err) {        
-        returnValue = false;
+        returnValue = {
+          userValid: false,
+          userWrongPage: false,
+          error: true
+        }
       }
 
       return returnValue;
