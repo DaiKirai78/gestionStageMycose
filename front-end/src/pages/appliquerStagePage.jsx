@@ -1,11 +1,56 @@
 import TokenPageContainer from "./tokenPageContainer.jsx";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import AppliquerStage from "../components/acceuil/appliquerStage.jsx";
-import {useLocation} from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
-const appliquerStagePage = () => {
+const AppliquerStagePage = () => {
+    const [hasAcceptedCv, setHasAcceptedCv] = useState(null);
+    const navigate = useNavigate();
     const location = useLocation();
     const { idStage } = location.state || {};
+
+    useEffect(() => {
+        checkAcceptedCv();
+    }, []);
+
+    async function checkAcceptedCv() {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            navigate("/acceuil");
+            return;
+        }
+
+        try {
+            const res = await fetch('http://localhost:8080/api/cv/current', {
+                method: "POST",
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            if (res.ok) {
+                const cvData = await res.json();
+                if (cvData.status === "ACCEPTED") {
+                    setHasAcceptedCv(true);
+                } else {
+                    setHasAcceptedCv(false);
+                }
+            } else {
+                setHasAcceptedCv(false);
+            }
+        } catch (err) {
+            console.error("Erreur lors de la récupération du CV", err);
+            setHasAcceptedCv(false);
+        }
+    }
+
+    useEffect(() => {
+        if (hasAcceptedCv === false) {
+            navigate("/accueil");
+        }
+    }, [hasAcceptedCv, navigate]);
+
+    if (hasAcceptedCv === null) {
+        return <div>{t("loading")}...</div>;
+    }
 
     return (
         <TokenPageContainer role={["ETUDIANT"]}>
@@ -14,11 +59,11 @@ const appliquerStagePage = () => {
                     (Logo) Mycose
                 </div>
                 <div className="flex h-3/5 justify-center">
-                    <AppliquerStage idStage={ idStage }/>
+                    <AppliquerStage idStage={idStage} />
                 </div>
             </div>
         </TokenPageContainer>
     );
-}
+};
 
-export default appliquerStagePage;
+export default AppliquerStagePage;

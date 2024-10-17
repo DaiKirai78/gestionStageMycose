@@ -53,7 +53,7 @@ const AccueilPage = () => {
                 const cvData = await res.json();
                 setCvStatus(cvData.status);
             } else {
-                setCvStatus("NONE"); // Si aucun CV trouvé, on suppose qu'il n'a pas encore été uploadé.
+                setCvStatus("NONE");
             }
         } catch (err) {
             console.error("Erreur lors de la récupération du CV", err);
