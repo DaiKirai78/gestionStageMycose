@@ -4,12 +4,12 @@ import { Outlet } from 'react-router-dom';
 
 const Layout = () => {
 
-    const [roleUser, setRoleUser] = useState();
+    const [userInfo, setUserInfo] = useState();
 
     return (
         <>
-            <Navbar roleUser={roleUser} />
-            <Outlet context={[roleUser, setRoleUser]}/>
+            <Navbar userInfo={userInfo} />
+            <Outlet context={[userInfo, setUserInfo]}/>
         </>
     );
 };

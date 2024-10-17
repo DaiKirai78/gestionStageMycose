@@ -11,7 +11,7 @@ const AccueilPage = () => {
     const [role, setRole] = useState(null);
     const [cvStatus, setCvStatus] = useState(null);
     const navigate = useNavigate();
-    const [roleUser, setRoleUser] = useOutletContext();
+    const [userInfo, setUserInfo] = useOutletContext();
 
     useEffect(() => {
         getRole();
@@ -85,7 +85,7 @@ const AccueilPage = () => {
     }
 
     return (
-        <TokenPageContainer role={["ETUDIANT", "EMPLOYEUR", "GESTIONNAIRE_STAGE", "ENSEIGNANT"]} setRoleUser={setRoleUser}>
+        <TokenPageContainer role={["ETUDIANT", "EMPLOYEUR", "GESTIONNAIRE_STAGE", "ENSEIGNANT"]} setUserInfo={setUserInfo}>
             {getAccueil()}
         </TokenPageContainer>
     );

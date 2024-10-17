@@ -21,7 +21,7 @@ const navLinks = {
     "ENSEIGNANT": []
 }
 
-const Navbar = ({roleUser}) => {
+const Navbar = ({ userInfo }) => {
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -74,6 +74,7 @@ const Navbar = ({roleUser}) => {
 
     return (
     <nav className="bg-orange-light border-b border-orange border-opacity-40 text-black">
+        {console.log(userInfo)}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
@@ -90,7 +91,7 @@ const Navbar = ({roleUser}) => {
                             Acceuil
                     </button>
                         {
-                            roleUser ? navLinks[roleUser].map((infoBtn, index) => {
+                            userInfo ? navLinks[userInfo.role].map((infoBtn, index) => {
                                 return (
                                     <button
                                     key={"nav"+index}
@@ -128,7 +129,7 @@ const Navbar = ({roleUser}) => {
                     className="rounded flex items-center"
                     >
                         <div className="h-8 bg-orange rounded flex items-center gap-4 p-2 text-white hover:bg-opacity-90">
-                            <p className='overflow-hidden truncate max-w-24'>Jason</p>
+                            <p className='overflow-hidden truncate max-w-24'>{userInfo.prenom}</p>
                             <IoMdArrowDown />
                         </div>
                     </button>
@@ -175,7 +176,7 @@ const Navbar = ({roleUser}) => {
                     Accueil
                 </button>
                 {
-                    roleUser ? navLinks[roleUser].map((infoBtn, index) => {
+                    userInfo ? navLinks[userInfo.role].map((infoBtn, index) => {
                         return (
                             <button
                             key={"nav"+index}
@@ -192,12 +193,12 @@ const Navbar = ({roleUser}) => {
             <div className="pt-4 pb-3 border-t border-gray-700">
             <div className="flex items-center pl-2 pr-5">
                 <div className="ml-3">
-                <div className="text-base font-medium leading-none text-black">Tom Cook</div>
-                <div className="font-medium leading-none text-gray-600">tom@example.com</div>
+                <div className="text-base font-medium leading-none text-black">{userInfo.prenom} {userInfo.nom}</div>
+                <div className="font-medium leading-none text-gray-600">{userInfo.courriel}</div>
                 </div>
                 <button
-                onClick={toggleNotificationMenu}
-                className="ml-auto flex-shrink-0 p-2 rounded-full text-orange hover:text-orange-light hover:bg-orange">
+                    onClick={toggleNotificationMenu}
+                    className="ml-auto flex-shrink-0 p-2 rounded-full text-orange hover:text-orange-light hover:bg-orange">
                 <BsBellFill className="h-6 w-6" />
                 {isNotificationMenuOpen && (
                     <div className="origin-top-right absolute right-5 mt-4 w-48 rounded-md shadow-lg p-1 bg-orange-light ring-1 ring-orange ring-opacity-40">
