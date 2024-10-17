@@ -15,8 +15,6 @@ import org.springframework.web.server.ResponseStatusException;
 import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,8 +24,8 @@ public class ApplicationStageService {
     private final OffreStageRepository offreStageRepository;
     private final EtudiantOffreStagePriveeRepository etudiantOffreStagePriveeRepository;
 
-    public ApplicationStageDTO applyToOffreStage(String token, Long offreStageId) throws AccessDeniedException {
-        Utilisateur utilisateur = utilisateurService.getMeUtilisateur(token);
+    public ApplicationStageDTO applyToOffreStage(Long offreStageId) throws AccessDeniedException {
+        Utilisateur utilisateur = utilisateurService.getMeUtilisateur();
         if (!(utilisateur instanceof Etudiant etudiant)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not an Etudiant.");
         }
@@ -70,18 +68,18 @@ public class ApplicationStageService {
         return ApplicationStageAvecInfosDTO.toDTO(applicationStage);
     }
 
-    public List<ApplicationStageAvecInfosDTO> getApplicationsByEtudiant(String token) {
-        Long etudiantId = utilisateurService.getUserIdByToken(token);
+    public List<ApplicationStageAvecInfosDTO> getApplicationsByEtudiant() {
+        Long etudiantId = utilisateurService.getMyUserId();
         return applicationStageRepository.findByEtudiantId(etudiantId).stream().map(this::convertToDTOAvecInfos).toList();
     }
 
-    public List<ApplicationStageAvecInfosDTO> getApplicationsByEtudiantWithStatus(String token, ApplicationStage.ApplicationStatus status) {
-        Long etudiantId = utilisateurService.getUserIdByToken(token);
+    public List<ApplicationStageAvecInfosDTO> getApplicationsByEtudiantWithStatus(ApplicationStage.ApplicationStatus status) {
+        Long etudiantId = utilisateurService.getMyUserId();
         return applicationStageRepository.findByEtudiantIdAndStatusEquals(etudiantId, status).stream().map(this::convertToDTOAvecInfos).toList();
     }
 
-    public ApplicationStageAvecInfosDTO getApplicationById(String token, Long applicationId) throws ChangeSetPersister.NotFoundException {
-        Long etudiantId = utilisateurService.getUserIdByToken(token);
+    public ApplicationStageAvecInfosDTO getApplicationById(Long applicationId) throws ChangeSetPersister.NotFoundException {
+        Long etudiantId = utilisateurService.getMyUserId();
         return applicationStageRepository.findByEtudiantIdAndOffreStageId(etudiantId, applicationId).map(this::convertToDTOAvecInfos).orElseThrow(ChangeSetPersister.NotFoundException::new);
     }
 }

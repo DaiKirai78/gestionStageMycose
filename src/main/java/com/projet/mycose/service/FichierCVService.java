@@ -62,8 +62,8 @@ public class FichierCVService {
     }
 
 
-    public FichierCVDTO saveFile(MultipartFile file, String token) throws ConstraintViolationException, IOException {
-        Long etudiant_id = utilisateurService.getUserIdByToken(token);
+    public FichierCVDTO saveFile(MultipartFile file) throws ConstraintViolationException, IOException {
+        Long etudiant_id = utilisateurService.getMyUserId();
 
         FichierCVDTO fichierCVDTO = new FichierCVDTO();
 
@@ -136,8 +136,8 @@ public class FichierCVService {
          return convertToDTO(fichierCV);
     }
 
-    public FichierCVDTO getCurrentCV(String token) {
-        Long etudiant_id = utilisateurService.getUserIdByToken(token);
+    public FichierCVDTO getCurrentCV() {
+        Long etudiant_id = utilisateurService.getMyUserId();
         FichierCV fichierCV = fileRepository.getFirstByEtudiant_IdAndStatusEqualsOrStatusEqualsOrStatusEquals(etudiant_id, FichierCV.Status.ACCEPTED, FichierCV.Status.WAITING, FichierCV.Status.REFUSED).orElseThrow(() -> new RuntimeException("Fichier non trouvé"));
         return convertToDTO(fichierCV);
     }
@@ -147,8 +147,8 @@ public class FichierCVService {
                 getCurrentCvByEtudiant_id(etudiant_id);
         return fichierCV.map(this::convertToDTO).orElse(null);
     }
-    public FichierCVDTO deleteCurrentCV(String token) {
-        Long etudiant_id = utilisateurService.getUserIdByToken(token);
+    public FichierCVDTO deleteCurrentCV() {
+        Long etudiant_id = utilisateurService.getMyUserId();
         FichierCV fichierCV = fileRepository.getFirstByEtudiant_IdAndStatusEqualsOrStatusEqualsOrStatusEquals(etudiant_id, FichierCV.Status.ACCEPTED, FichierCV.Status.WAITING, FichierCV.Status.REFUSED).orElseThrow(() -> new RuntimeException("Fichier non trouvé"));
         fichierCV.setStatus(FichierCV.Status.DELETED);
         return convertToDTO(fileRepository.save(fichierCV));

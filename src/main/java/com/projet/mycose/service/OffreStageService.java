@@ -103,9 +103,9 @@ public class OffreStageService {
     }
 
     @Transactional
-    public FichierOffreStageDTO saveFile(@Valid UploadFicherOffreStageDTO uploadFicherOffreStageDTO, String token) throws ConstraintViolationException, IOException {
+    public FichierOffreStageDTO saveFile(@Valid UploadFicherOffreStageDTO uploadFicherOffreStageDTO) throws ConstraintViolationException, IOException {
 
-        UtilisateurDTO utilisateurDTO = utilisateurService.getMe(token);
+        UtilisateurDTO utilisateurDTO = utilisateurService.getMe();
         Long createur_id = utilisateurDTO.getId();
 
         FichierOffreStageDTO fichierOffreStageDTO = new FichierOffreStageDTO(uploadFicherOffreStageDTO, createur_id);
@@ -151,8 +151,8 @@ public class OffreStageService {
     }
 
     @Transactional
-    public FormulaireOffreStageDTO saveForm(FormulaireOffreStageDTO formulaireOffreStageDTO, String token) throws AccessDeniedException {
-        UtilisateurDTO utilisateurDTO = utilisateurService.getMe(token);
+    public FormulaireOffreStageDTO saveForm(FormulaireOffreStageDTO formulaireOffreStageDTO) throws AccessDeniedException {
+        UtilisateurDTO utilisateurDTO = utilisateurService.getMe();
         Long createur_id = utilisateurDTO.getId();
 
         if (utilisateurDTO.getRole() != Role.EMPLOYEUR && utilisateurDTO.getRole() != Role.GESTIONNAIRE_STAGE) {
@@ -242,8 +242,8 @@ public class OffreStageService {
         return OffreStageAvecUtilisateurInfoDTO.toDto(offreStage);
     }
 
-    public List<OffreStageDTO> getAvailableOffreStagesForEtudiant(String token) throws AccessDeniedException {
-        EtudiantDTO etudiantDTO = (EtudiantDTO) utilisateurService.getMe(token);
+    public List<OffreStageDTO> getAvailableOffreStagesForEtudiant() throws AccessDeniedException {
+        EtudiantDTO etudiantDTO = (EtudiantDTO) utilisateurService.getMe();
         return offreStageRepository.findAllByEtudiantNotApplied(etudiantDTO.getId(), etudiantDTO.getProgramme()).stream().map(this::convertToDTO).toList();
     }
 

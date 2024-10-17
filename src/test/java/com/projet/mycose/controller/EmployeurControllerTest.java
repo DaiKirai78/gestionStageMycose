@@ -93,9 +93,6 @@ public class EmployeurControllerTest {
 
     @Test
     public void testGetStages_Success() throws Exception{
-        // Arrange
-        String authHeader = "Bearer unTokenValide";
-
         //nouveau contructeur
 
         FormulaireOffreStageDTO mockFormulaire = new FormulaireOffreStageDTO(
@@ -119,11 +116,11 @@ public class EmployeurControllerTest {
 
         List<OffreStageDTO> mockListeOffres = new ArrayList<>();
         mockListeOffres.add(mockFormulaire);
-        when(employeurService.getStages(authHeader, 0)).thenReturn(mockListeOffres);
+        when(employeurService.getStages(0)).thenReturn(mockListeOffres);
 
         // Act & Assert
         mockMvc.perform(post("/entreprise/getOffresPosted")
-                        .header("Authorization", authHeader).param("pageNumber", String.valueOf(0))
+                        .param("pageNumber", String.valueOf(0))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isAccepted())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -135,12 +132,11 @@ public class EmployeurControllerTest {
     @Test
     public void testGetStages_Error() throws Exception {
         //Arrange
-        when(employeurService.getStages("token", 0)).thenThrow(new RuntimeException());
+        when(employeurService.getStages(0)).thenThrow(new RuntimeException());
 
 
         //Act & Assert
         mockMvc.perform(post("/entreprise/getOffresPosted")
-                        .header("Authorization", "unToken")
                         .param("pageNumber", String.valueOf(0))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
@@ -149,22 +145,20 @@ public class EmployeurControllerTest {
     @Test
     public void testGetAmountOfPages_Error() throws Exception {
         //Arrange
-        when(employeurService.getAmountOfPages("token")).thenThrow(new RuntimeException());
+        when(employeurService.getAmountOfPages()).thenThrow(new RuntimeException());
 
         //Act & Assert
-        mockMvc.perform(get("/entreprise/pages")
-                        .header("Authorization", "tokenValide"))
+        mockMvc.perform(get("/entreprise/pages"))
                 .andExpect(status().isNoContent());
     }
 
     @Test
     public void testGetAmountOfPages_Success() throws Exception {
         //Arrange
-        when(employeurService.getAmountOfPages("tokenValide")).thenReturn(2);
+        when(employeurService.getAmountOfPages()).thenReturn(2);
 
         //Act & Assert
-        mockMvc.perform(get("/entreprise/pages")
-                        .header("Authorization", "tokenValide"))
+        mockMvc.perform(get("/entreprise/pages"))
                 .andExpect(status().isAccepted())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().string("2"));

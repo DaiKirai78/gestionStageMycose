@@ -12,9 +12,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -29,7 +30,6 @@ public class ApplicationStageControllerTest {
     @InjectMocks
     private ApplicationStageController applicationStageController;
 
-    private String token;
     private Long id;
     private ApplicationStageDTO applicationStageDTO;
     private ApplicationStageAvecInfosDTO applicationStageAvecInfosDTO;
@@ -37,7 +37,6 @@ public class ApplicationStageControllerTest {
 
     @BeforeEach
     void setup() {
-        token = "Bearer sampleToken";
         id = 1L;
 
         applicationStageDTO = new ApplicationStageDTO();
@@ -50,85 +49,92 @@ public class ApplicationStageControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "USER")
     void applyForStage_Success() throws Exception {
-        when(applicationStageService.applyToOffreStage(token, id)).thenReturn(applicationStageDTO);
+        when(applicationStageService.applyToOffreStage(id)).thenReturn(applicationStageDTO);
 
-        ResponseEntity<ApplicationStageDTO> response = applicationStageController.applyForStage(id, token);
+        ResponseEntity<ApplicationStageDTO> response = applicationStageController.applyForStage(id);
 
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(applicationStageDTO, response.getBody());
-        verify(applicationStageService, times(1)).applyToOffreStage(token, id);
+        verify(applicationStageService, times(1)).applyToOffreStage(id);
     }
 
     @Test
+    @WithMockUser(roles = "USER")
     void applyForStage_AccessDeniedException() throws Exception {
-        when(applicationStageService.applyToOffreStage(token, id)).thenThrow(new AccessDeniedException("Access Denied"));
+        when(applicationStageService.applyToOffreStage(id)).thenThrow(new AccessDeniedException("Access Denied"));
 
         AccessDeniedException exception = assertThrows(AccessDeniedException.class, () -> {
-            applicationStageController.applyForStage(id, token);
+            applicationStageController.applyForStage(id);
         });
 
         assertEquals("Access Denied", exception.getMessage());
-        verify(applicationStageService, times(1)).applyToOffreStage(token, id);
+        verify(applicationStageService, times(1)).applyToOffreStage(id);
     }
 
     @Test
+    @WithMockUser(roles = "USER")
     void applyForStage_NotFoundException() throws Exception {
-        when(applicationStageService.applyToOffreStage(token, id)).thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "OffreStage not found"));
+        when(applicationStageService.applyToOffreStage(id)).thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "OffreStage not found"));
 
         assertThrows(ResponseStatusException.class, () -> {
-            applicationStageController.applyForStage(id, token);
+            applicationStageController.applyForStage(id);
         });
 
-        verify(applicationStageService, times(1)).applyToOffreStage(token, id);
+        verify(applicationStageService, times(1)).applyToOffreStage(id);
     }
 
     @Test
+    @WithMockUser(roles = "USER")
     void getMyApplications_Success() {
-        when(applicationStageService.getApplicationsByEtudiant(token)).thenReturn(applicationStageAvecInfosDTOList);
+        when(applicationStageService.getApplicationsByEtudiant()).thenReturn(applicationStageAvecInfosDTOList);
 
-        ResponseEntity<List<ApplicationStageAvecInfosDTO>> response = applicationStageController.getMyApplications(token);
+        ResponseEntity<List<ApplicationStageAvecInfosDTO>> response = applicationStageController.getMyApplications();
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(applicationStageAvecInfosDTOList, response.getBody());
-        verify(applicationStageService, times(1)).getApplicationsByEtudiant(token);
+        verify(applicationStageService, times(1)).getApplicationsByEtudiant();
     }
 
     @Test
+    @WithMockUser(roles = "USER")
     void getMyApplicationsWithStatus_Success() {
         ApplicationStage.ApplicationStatus status = ApplicationStage.ApplicationStatus.PENDING;
-        when(applicationStageService.getApplicationsByEtudiantWithStatus(token, status)).thenReturn(applicationStageAvecInfosDTOList);
+        when(applicationStageService.getApplicationsByEtudiantWithStatus(status)).thenReturn(applicationStageAvecInfosDTOList);
 
-        ResponseEntity<List<ApplicationStageAvecInfosDTO>> response = applicationStageController.getMyApplicationsWithStatus(token, status);
+        ResponseEntity<List<ApplicationStageAvecInfosDTO>> response = applicationStageController.getMyApplicationsWithStatus(status);
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(applicationStageAvecInfosDTOList, response.getBody());
-        verify(applicationStageService, times(1)).getApplicationsByEtudiantWithStatus(token, status);
+        verify(applicationStageService, times(1)).getApplicationsByEtudiantWithStatus(status);
     }
 
     @Test
+    @WithMockUser(roles = "USER")
     void getMyApplication_Success() throws Exception {
-        when(applicationStageService.getApplicationById(token, id)).thenReturn(applicationStageAvecInfosDTO);
+        when(applicationStageService.getApplicationById(id)).thenReturn(applicationStageAvecInfosDTO);
 
-        ResponseEntity<ApplicationStageAvecInfosDTO> response = applicationStageController.getMyApplication(token, id);
+        ResponseEntity<ApplicationStageAvecInfosDTO> response = applicationStageController.getMyApplication(id);
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(applicationStageAvecInfosDTO, response.getBody());
-        verify(applicationStageService, times(1)).getApplicationById(token, id);
+        verify(applicationStageService, times(1)).getApplicationById(id);
     }
 
     @Test
+    @WithMockUser(roles = "USER")
     void getMyApplication_NotFoundException() throws Exception {
-        when(applicationStageService.getApplicationById(token, id)).thenThrow(new ChangeSetPersister.NotFoundException());
+        when(applicationStageService.getApplicationById(id)).thenThrow(new ChangeSetPersister.NotFoundException());
 
         assertThrows(ChangeSetPersister.NotFoundException.class, () -> {
-            applicationStageController.getMyApplication(token, id);
+            applicationStageController.getMyApplication(id);
         });
 
-        verify(applicationStageService, times(1)).getApplicationById(token, id);
+        verify(applicationStageService, times(1)).getApplicationById(id);
     }
 }

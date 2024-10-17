@@ -46,8 +46,8 @@ public class EtudiantService {
     }
 
 
-    public List<OffreStageDTO> getStages(String token, int page) {
-        Long idEtudiant = utilisateurService.getUserIdByToken(token);
+    public List<OffreStageDTO> getStages(int page) {
+        Long idEtudiant = utilisateurService.getMyUserId();
         PageRequest pageRequest = PageRequest.of(page, LIMIT_PER_PAGE);
 
         Page<OffreStage> offresRetourneeEnPages = offreStageRepository.findOffresByEtudiantId(idEtudiant, pageRequest);
@@ -57,8 +57,8 @@ public class EtudiantService {
         return listeOffreStageToDTO(offresRetourneeEnPages.getContent());
     }
 
-    public Integer getAmountOfPages(String token) {
-        Long etudiantId = utilisateurService.getUserIdByToken(token);
+    public Integer getAmountOfPages() {
+        Long etudiantId = utilisateurService.getMyUserId();
         long amountOfRows = offreStageRepository.countByEtudiantsId(etudiantId);
 
         if (amountOfRows == 0)
@@ -75,8 +75,8 @@ public class EtudiantService {
         return nombrePages;
     }
 
-    public List<OffreStageDTO> getStagesByRecherche(String token, int page, String recherche) {
-        Long idEtudiant = utilisateurService.getUserIdByToken(token);
+    public List<OffreStageDTO> getStagesByRecherche(int page, String recherche) {
+        Long idEtudiant = utilisateurService.getMyUserId();
         PageRequest pageRequest = PageRequest.of(page, LIMIT_PER_PAGE);
 
         Page<OffreStage> offreStagesEnPages = offreStageRepository.findOffresByEtudiantIdWithSearch(idEtudiant, recherche, pageRequest);

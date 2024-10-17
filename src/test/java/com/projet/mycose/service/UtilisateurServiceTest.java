@@ -132,14 +132,13 @@ public class UtilisateurServiceTest {
     @Test
     public void testGetMe_SuccesEtudiant() throws Exception {
         // Arrange
-        String token = "Bearer valid_token";
         String email = "mihoubi@gmail.com";
 
         when(jwtTokenProvider.getEmailFromJWT("valid_token")).thenReturn(email);
         when(utilisateurRepository.findUtilisateurByCourriel(email)).thenReturn(Optional.of(etudiant));
 
         // Act
-        UtilisateurDTO result = utilisateurService.getMe(token);
+        UtilisateurDTO result = utilisateurService.getMe();
 
         // Assert
         assertNotNull(result);
@@ -154,7 +153,7 @@ public class UtilisateurServiceTest {
 
         // Act & Assert
         assertThrows(AccessDeniedException.class, () -> {
-            utilisateurService.getMe(token);
+            utilisateurService.getMe();
         });
     }
 
@@ -165,7 +164,7 @@ public class UtilisateurServiceTest {
 
         // Act & Assert
         assertThrows(AccessDeniedException.class, () -> {
-            utilisateurService.getMe(token);
+            utilisateurService.getMe();
         });
     }
 
@@ -180,7 +179,7 @@ public class UtilisateurServiceTest {
 
         // Act & Assert
         assertThrows(UserNotFoundException.class, () -> {
-            utilisateurService.getMe(token);
+            utilisateurService.getMe();
         });
 
         verify(jwtTokenProvider).getEmailFromJWT("valid_token");
@@ -197,10 +196,9 @@ public class UtilisateurServiceTest {
 
         // Act & Assert
         assertThrows(AccessDeniedException.class, () -> {
-            utilisateurService.getMe(token);
+            utilisateurService.getMe();
         });
 
-        verify(jwtTokenProvider).getEmailFromJWT("invalid_token");
         verify(utilisateurRepository, never()).findUtilisateurByCourriel(anyString());
         verify(modelMapper, never()).map(any(), any());
     }
@@ -424,7 +422,7 @@ public class UtilisateurServiceTest {
         when(etudiantRepository.findById(etudiant.getId())).thenReturn(Optional.of(etudiant));
 
         // Act
-        Long userId = utilisateurService.getUserIdByToken(token);
+        Long userId = utilisateurService.getMyUserId();
 
         // Assert
         assertNotNull(userId, "The returned user ID should not be null");
@@ -443,11 +441,10 @@ public class UtilisateurServiceTest {
         when(utilisateurRepository.findUtilisateurByCourriel(email)).thenReturn(Optional.empty());
 
         // Act
-        Long userId = utilisateurService.getUserIdByToken(token);
+        Long userId = utilisateurService.getMyUserId();
 
         // Assert
         assertNull(userId, "The returned user ID should be null when user does not exist");
-        verify(jwtTokenProvider).getEmailFromJWT("valid_token");
         verify(utilisateurRepository).findUtilisateurByCourriel(email);
         verify(modelMapper, never()).map(any(), any());
     }
@@ -460,7 +457,7 @@ public class UtilisateurServiceTest {
         when(jwtTokenProvider.getEmailFromJWT("invalid_token")).thenThrow(new AccessDeniedException("Token Invalide"));
 
         // Act
-        Long userId = utilisateurService.getUserIdByToken(token);
+        Long userId = utilisateurService.getMyUserId();
 
         // Assert
         assertNull(userId, "The returned user ID should be null when token is invalid");
@@ -472,14 +469,13 @@ public class UtilisateurServiceTest {
     @Test
     void testGetMe_SuccessEmployeur() throws AccessDeniedException {
         // Arrange
-        String token = "Bearer employeur_token";
         String email = "jane.smith@techcorp.com";
 
         when(jwtTokenProvider.getEmailFromJWT("employeur_token")).thenReturn(email);
         when(utilisateurRepository.findUtilisateurByCourriel(email)).thenReturn(Optional.of(employeur));
 
         // Act
-        UtilisateurDTO result = utilisateurService.getMe(token);
+        UtilisateurDTO result = utilisateurService.getMe();
 
         // Assert
         assertNotNull(result, "The returned UtilisateurDTO should not be null");
@@ -497,7 +493,7 @@ public class UtilisateurServiceTest {
         when(utilisateurRepository.findUtilisateurByCourriel(email)).thenReturn(Optional.of(enseignant));
 
         // Act
-        UtilisateurDTO result = utilisateurService.getMe(token);
+        UtilisateurDTO result = utilisateurService.getMe();
 
         // Assert
         assertNotNull(result, "The returned UtilisateurDTO should not be null");
@@ -508,15 +504,14 @@ public class UtilisateurServiceTest {
     @Test
     void testGetUserIdByToken_GetMeThrowsException() {
         // Arrange
-        String token = "Bearer invalid_token";
 
         // Act
-        Long userId = utilisateurService.getUserIdByToken(token);
+        Long userId = utilisateurService.getMyUserId();
 
         // Assert
         assertNull(userId, "The returned user ID should be null when getMe(token) throws an exception");
         assertThrows(UserNotFoundException.class , () -> {
-            utilisateurService.getMe(token);
+            utilisateurService.getMe();
         });
     }
 }
