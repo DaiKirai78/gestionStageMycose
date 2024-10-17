@@ -144,6 +144,7 @@ public class OffreStageServiceTest {
     public void shouldSaveFileSuccessfully_WhenUserIsGestionnaireStage() throws IOException {
         // Arrange
         String token = VALID_TOKEN;
+        uploadFicherOffreStageDTO.setProgramme(Programme.GENIE_LOGICIEL);
         when(utilisateurService.getMe(token)).thenReturn(gestionnaireDTO);
 
         // Specific stubbing for this test

@@ -81,6 +81,7 @@ public abstract class OffreStage {
 
     public enum Visibility {
         PUBLIC,
-        PRIVATE
+        PRIVATE,
+        UNDEFINED
     }
 }
