@@ -251,4 +251,26 @@ public class OffreStageService {
     public long getTotalWaitingOffreStages() {
         return offreStageRepository.countByStatus(OffreStage.Status.WAITING);
     }
+
+    public void acceptCV(AcceptCVDTO acceptCVDTO) {
+        Optional<OffreStage> offreStageOptional = offreStageRepository.findById(acceptCVDTO.getId());
+
+        if (offreStageOptional.isEmpty()) {
+            throw new EntityNotFoundException("OffreStage not found with ID: " + acceptCVDTO.getId());
+        }
+
+        OffreStage offreStage = offreStageOptional.get();
+        offreStage.setStatus(OffreStage.Status.ACCEPTED);
+        offreStage.setStatusDescription(acceptCVDTO.getStatusDescription());
+        offreStage.setProgramme(acceptCVDTO.getProgramme());
+
+        if (offreStage.getProgramme() == Programme.NOT_SPECIFIED) {
+            offreStage.setVisibility(OffreStage.Visibility.PRIVATE);
+            associateEtudiantsPrivees(offreStage, acceptCVDTO.getEtudiantsPrives());
+        } else {
+            offreStage.setVisibility(OffreStage.Visibility.PUBLIC);
+        }
+
+        offreStageRepository.save(offreStage);
+    }
 }
