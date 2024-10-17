@@ -100,4 +100,8 @@ public class ApplicationStageService {
                 .map(this::convertToDTOAvecInfos)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Application not found"));
     }
+
+    public List<ApplicationStageDTO> getAllApplicationsPourUneOffreById(Long offreId) {
+        return applicationStageRepository.findAllByOffreStageId(offreId).stream().map(this::convertToDTO).toList();
+    }
 }

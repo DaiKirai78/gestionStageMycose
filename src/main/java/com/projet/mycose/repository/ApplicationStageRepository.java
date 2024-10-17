@@ -21,4 +21,5 @@ public interface ApplicationStageRepository extends JpaRepository<ApplicationSta
     Optional<ApplicationStage> findByEtudiantIdAndOffreStageId(Long etudiantId, Long offreStageId);
 
     List<ApplicationStage> findByEtudiantIdAndStatusEquals(Long etudiantId, ApplicationStage.ApplicationStatus status);
+    List<ApplicationStage> findAllByOffreStageId(Long offreStageId);
 }

@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -19,4 +20,7 @@ public interface EtudiantRepository extends JpaRepository<Etudiant, Long> {
         select e from Etudiant e where trim(e.numeroDeTelephone) = :numero
     """)
     Optional<Etudiant> findEtudiantByNumeroDeTelephone(@Param("numero") String numero);
+
+
+    Etudiant findEtudiantById(Long id);
 }

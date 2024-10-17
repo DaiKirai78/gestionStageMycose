@@ -272,4 +272,12 @@ public class OffreStageService {
 
         offreStageRepository.save(offreStage);
     }
+
+    public List<EtudiantDTO> getEtudiantsQuiOntAppliquesAUneOffre(List<ApplicationStageDTO> applicationStageDTOList) {
+        List<EtudiantDTO> etudiantDTOList = new ArrayList<>();
+        for (ApplicationStageDTO applicationStageDTO : applicationStageDTOList) {
+            etudiantDTOList.add(EtudiantDTO.toDTO(etudiantRepository.findEtudiantById(applicationStageDTO.getEtudiant_id())));
+        }
+        return etudiantDTOList;
+    }
 }
