@@ -61,10 +61,10 @@ public abstract class OffreStage {
     @PrePersist
     public void prePersist() {
         if (status == null) {
-            status = OffreStage.Status.WAITING;
+            status = Status.WAITING;
         }
         if (visibility == null) {
-            visibility = OffreStage.Visibility.PUBLIC;
+            visibility = Visibility.UNDEFINED;
         }
         //Important car un employeur ne peut pas déterminer ce que le programme est, c'est le gestionnaire qui va le faire.
         if (programme == null) {

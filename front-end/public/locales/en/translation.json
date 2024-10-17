@@ -161,5 +161,6 @@
     "existingCVWarning": "You already have a CV uploaded. If you upload a new one, the old one will be replaced.",
     "viewCV": "View my CV",
     "EmailEmployeur": "Employer's email :",
-    "Employeur": "Employer : "
+    "Employeur": "Employer : ",
+    "programRequired": "The program is required."
 }

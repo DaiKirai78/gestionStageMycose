@@ -16,4 +16,6 @@ public interface UtilisateurRepository extends JpaRepository<Utilisateur, Long> 
     Optional<Utilisateur> findUtilisateurByCourriel(@Param("courriel") String courriel);
 
     Optional<Utilisateur> findUtilisateurByNumeroDeTelephone(String numero);
+
+    Optional<Utilisateur> findUtilisateurById(Long id);
 }

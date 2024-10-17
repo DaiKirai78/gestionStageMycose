@@ -11,7 +11,7 @@ const STATUS_CODE_ACCEPTED = 202;
 const STATUS_CODE_NO_CONTENT = 204;
 
 const AcceuilEmployeur = () => {
-    const [roleUser, setRoleUser] = useOutletContext();
+    const [userInfo, setUserInfo] = useOutletContext();
     const [isFetching, setIsFetching] = useState(true);
     const [data, setData] = useState(null)
     const [voirPdf, setVoirPdf] = useState(false);
@@ -107,7 +107,7 @@ const AcceuilEmployeur = () => {
     }
 
     return (
-        <TokenPageContainer role={["EMPLOYEUR"]} setRoleUser={setRoleUser}>
+        <TokenPageContainer role={["EMPLOYEUR"]} setUserInfo={setUserInfo}>
             <div className={`bg-orange-light w-full min-h-screen flex flex-col items-center gap-10`}>
                 <div className='w-4/5'>
                     {   

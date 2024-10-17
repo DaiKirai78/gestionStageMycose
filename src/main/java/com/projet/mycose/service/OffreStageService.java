@@ -103,9 +103,9 @@ public class OffreStageService {
     }
 
     @Transactional
-    public FichierOffreStageDTO saveFile(@Valid UploadFicherOffreStageDTO uploadFicherOffreStageDTO, String token) throws ConstraintViolationException, IOException {
+    public FichierOffreStageDTO saveFile(@Valid UploadFicherOffreStageDTO uploadFicherOffreStageDTO) throws ConstraintViolationException, IOException {
 
-        UtilisateurDTO utilisateurDTO = utilisateurService.getMe(token);
+        UtilisateurDTO utilisateurDTO = utilisateurService.getMe();
         Long createur_id = utilisateurDTO.getId();
 
         FichierOffreStageDTO fichierOffreStageDTO = new FichierOffreStageDTO(uploadFicherOffreStageDTO, createur_id);
@@ -151,8 +151,8 @@ public class OffreStageService {
     }
 
     @Transactional
-    public FormulaireOffreStageDTO saveForm(FormulaireOffreStageDTO formulaireOffreStageDTO, String token) throws AccessDeniedException {
-        UtilisateurDTO utilisateurDTO = utilisateurService.getMe(token);
+    public FormulaireOffreStageDTO saveForm(FormulaireOffreStageDTO formulaireOffreStageDTO) throws AccessDeniedException {
+        UtilisateurDTO utilisateurDTO = utilisateurService.getMe();
         Long createur_id = utilisateurDTO.getId();
 
         if (utilisateurDTO.getRole() != Role.EMPLOYEUR && utilisateurDTO.getRole() != Role.GESTIONNAIRE_STAGE) {
@@ -242,8 +242,8 @@ public class OffreStageService {
         return OffreStageAvecUtilisateurInfoDTO.toDto(offreStage);
     }
 
-    public List<OffreStageDTO> getAvailableOffreStagesForEtudiant(String token) throws AccessDeniedException {
-        EtudiantDTO etudiantDTO = (EtudiantDTO) utilisateurService.getMe(token);
+    public List<OffreStageDTO> getAvailableOffreStagesForEtudiant() throws AccessDeniedException {
+        EtudiantDTO etudiantDTO = (EtudiantDTO) utilisateurService.getMe();
         return offreStageRepository.findAllByEtudiantNotApplied(etudiantDTO.getId(), etudiantDTO.getProgramme()).stream().map(this::convertToDTO).toList();
     }
 
@@ -251,21 +251,21 @@ public class OffreStageService {
         return offreStageRepository.countByStatus(OffreStage.Status.WAITING);
     }
 
-    public void acceptCV(AcceptCVDTO acceptCVDTO) {
-        Optional<OffreStage> offreStageOptional = offreStageRepository.findById(acceptCVDTO.getId());
+    public void acceptOffreDeStage(AcceptOffreDeStageDTO acceptOffreDeStageDTO) {
+        Optional<OffreStage> offreStageOptional = offreStageRepository.findById(acceptOffreDeStageDTO.getId());
 
         if (offreStageOptional.isEmpty()) {
-            throw new EntityNotFoundException("OffreStage not found with ID: " + acceptCVDTO.getId());
+            throw new EntityNotFoundException("OffreStage not found with ID: " + acceptOffreDeStageDTO.getId());
         }
 
         OffreStage offreStage = offreStageOptional.get();
         offreStage.setStatus(OffreStage.Status.ACCEPTED);
-        offreStage.setStatusDescription(acceptCVDTO.getStatusDescription());
-        offreStage.setProgramme(acceptCVDTO.getProgramme());
+        offreStage.setStatusDescription(acceptOffreDeStageDTO.getStatusDescription());
+        offreStage.setProgramme(acceptOffreDeStageDTO.getProgramme());
 
         if (offreStage.getProgramme() == Programme.NOT_SPECIFIED) {
             offreStage.setVisibility(OffreStage.Visibility.PRIVATE);
-            associateEtudiantsPrivees(offreStage, acceptCVDTO.getEtudiantsPrives());
+            associateEtudiantsPrivees(offreStage, acceptOffreDeStageDTO.getEtudiantsPrives());
         } else {
             offreStage.setVisibility(OffreStage.Visibility.PUBLIC);
         }

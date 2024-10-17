@@ -11,7 +11,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class AcceptCVDTO {
+public class AcceptOffreDeStageDTO {
 
     @NotNull(message = "ID cannot be null.")
     private Long id;

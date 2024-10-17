@@ -9,6 +9,7 @@ const AppliquerStagePage = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { idStage } = location.state || {};
+    const [userInfo, setUserInfo] = useOutletContext();
     const [roleUser, setRoleUser] = useOutletContext();
     const {t} = useTranslation();
 
@@ -56,7 +57,7 @@ const AppliquerStagePage = () => {
     }
 
     return (
-        <TokenPageContainer role={["ETUDIANT"]} setRoleUser={setRoleUser}>
+        <TokenPageContainer role={["ETUDIANT"]} setUserInfo={setUserInfo}>
             <div className="bg-orange-light w-full min-h-screen">
                 <div className="h-20 border-b-2 border-deep-orange-100 pl-8 items-center flex w-full mb-10">
                     (Logo) Mycose

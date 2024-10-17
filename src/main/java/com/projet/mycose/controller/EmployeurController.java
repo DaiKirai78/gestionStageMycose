@@ -32,20 +32,20 @@ public class EmployeurController {
     }
 
     @PostMapping("/getOffresPosted")
-    public ResponseEntity<List<OffreStageDTO>> getOffresStagesPubliees(@RequestHeader("Authorization") String token, @RequestParam int pageNumber) {
+    public ResponseEntity<List<OffreStageDTO>> getOffresStagesPubliees(@RequestParam int pageNumber) {
         try {
             return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
-                    employeurService.getStages(token, pageNumber));
+                    employeurService.getStages(pageNumber));
         } catch (Exception e) {
             return ResponseEntity.noContent().build();
         }
     }
 
     @GetMapping("/pages")
-    public ResponseEntity<Integer> getAmountOfPages(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<Integer> getAmountOfPages() {
         try{
             return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
-                    employeurService.getAmountOfPages(token));
+                    employeurService.getAmountOfPages());
         } catch(Exception e) {
             return ResponseEntity.noContent().build();
         }
