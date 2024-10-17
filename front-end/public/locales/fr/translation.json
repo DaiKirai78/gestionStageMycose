@@ -160,5 +160,6 @@
     "errorRetrievingTotalOffres": "Erreur lors de la récupération du nombre total d'offres de stage",
     "uploadNewCV": "Téléverser un nouveau CV",
     "existingCVWarning": "Vous avez déjà un CV téléversé. Si vous téléversez un nouveau CV, l'ancien sera écrasé.",
-    "viewCV": "Voir mon CV"
+    "viewCV": "Voir mon CV",
+    "programRequired": "Le programme est requis."
 }
