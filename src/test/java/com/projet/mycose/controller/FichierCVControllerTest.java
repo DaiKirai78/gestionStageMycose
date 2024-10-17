@@ -14,7 +14,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.crossstore.ChangeSetPersister;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
@@ -182,7 +181,7 @@ public class FichierCVControllerTest {
         mockFichierCVDTO.setFilename("test.pdf");
         mockFichierCVDTO.setFileData("Base64EncodedData");
         mockFichierCVDTO.setEtudiant_id(1L);
-        when(fichierCVService.getCurrentCV()).thenReturn(mockFichierCVDTO);
+        when(fichierCVService.getCurrentCVDTO()).thenReturn(mockFichierCVDTO);
 
         // Act & Assert
         mockMvc.perform(post("/api/cv/current")
