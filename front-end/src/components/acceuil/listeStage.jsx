@@ -56,7 +56,6 @@ const listeStage = () => {
                     'Content-Type': 'application/json'
                 }
             });
-            console.log("nombre de page" + response.data);
             setNombreDePage(response.data);
             return response.data;
         } catch (error) {

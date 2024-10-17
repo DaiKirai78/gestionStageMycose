@@ -161,4 +161,7 @@
     "uploadNewCV": "Téléverser un nouveau CV",
     "existingCVWarning": "Vous avez déjà un CV téléversé. Si vous téléversez un nouveau CV, l'ancien sera écrasé.",
     "viewCV": "Voir mon CV"
+    "RetourAccueil": "Retour à l'accueil",
+    "EmailEmployeur": "Courriel de l'employeur : ",
+    "Employeur": "Employeur : "
 }
