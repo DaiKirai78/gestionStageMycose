@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import TokenPageContainer from './tokenPageContainer';
 import { useOutletContext } from 'react-router-dom';
 import VoirMonCV from "../components/voirMonCVPage/voirMonCV.jsx";
+import {useTranslation} from "react-i18next";
 
 const VoirMonCVPage = () => {
 
     const [roleUser, setRoleUser] = useOutletContext();
     const [hasCv, setHasCv] = useState(null);
     const navigate = useNavigate();
+    const {t} = useTranslation();
 
     useEffect(() => {
         checkCv();
