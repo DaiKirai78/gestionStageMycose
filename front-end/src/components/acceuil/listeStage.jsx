@@ -307,26 +307,21 @@ const listeStage = () => {
                 ) : (
                     <div className="flex justify-center mb-28">
                         <button
-                            className="px-4 py-2 rounded-l bg-gray-400 text-gray-900"
+                            className={`px-4 py-2 rounded-l ${previousPageDisabled ? "bg-gray-200 text-gray-700" : "bg-gray-400 text-gray-900"}`}
                             disabled={previousPageDisabled}
-                            onClick={() => previousPage()}
+                            onClick={previousPage}
                         >
                             {t("previous")}
                         </button>
                         <span className="px-4 py-2">
                             {t("page ")}
-                            {
-                            isSearching ?
-                                recherchePageActuelle + 1 :
-                                pageActuelle + 1
-                            }
-                            {t(" / ")}
-                            {nombreDePage}
-                    </span>
+                            {isSearching ? recherchePageActuelle + 1 : pageActuelle + 1}
+                            {t(" / ")}{nombreDePage}
+                        </span>
                         <button
-                            className="px-4 py-2 rounded-r bg-gray-400 text-gray-900"
+                            className={`px-4 py-2 rounded-r ${nextPageDisabled ? "bg-gray-200 text-gray-700" : "bg-gray-400 text-gray-900"}`}
                             disabled={nextPageDisabled}
-                            onClick={() => nextPage()}
+                            onClick={nextPage}
                         >
                             {t("next")}
                         </button>
