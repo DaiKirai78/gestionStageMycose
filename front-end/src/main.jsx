@@ -18,52 +18,26 @@ import UploadOffreStagePage from "./pages/uploadOffreStagePage.jsx";
 import AppliquerStagePage from "./pages/appliquerStagePage.jsx";
 import ValiderOffreStage from "./components/validerOffreStagePage/validerOffreStage.jsx";
 import ValiderOffreStagePage from "./pages/validerOffreStagePage.jsx";
+import Layout from './components/layout.jsx';
 
 const router = createBrowserRouter([
+  { path: "/", element: <ConnectionPage /> },
+  { path: "/inscription", element: <InscriptionPage /> },
   {
     path: "/",
-    element: <ConnectionPage />,
-  },
-  {
-    path: "/accueil",
-    element: <AccueilPage />
-  },
-  {
-    path: "/televerserOffreStage",
-    element: <UploadOffreStagePage />
-  },
-  {
-    path: "/televerserCV",
-    element: <UploadCvPage />
-  },
-  {
-    path: "/inscription",
-    element: <InscriptionPage />
-  },
-  {
-    path: "/voirMonCV",
-    element: <VoirMonCVPage />
-  },
-  {
-    path: "/validerCV",
-    element: <ValiderCVPage />
-  },
-  { path: "/validerCV/:id",
-    element: <ValiderCV />
-  },
-  {
-    path: "/appliquer",
-    element: <AppliquerStagePage />
-  },
-  {
-    path: "/validerOffreStage/:name",
-    element: <ValiderOffreStage />
-  },
-  {
-    path: "/validerOffreStage",
-    element: <ValiderOffreStagePage />
+    element: <Layout />,
+    children: [
+      { path: "/accueil", element: <AccueilPage /> },
+      { path: "/televerserOffreStage", element: <UploadOffreStagePage /> },
+      { path: "/televerserCV", element: <UploadCvPage /> },
+      { path: "/voirMonCV", element: <VoirMonCVPage /> },
+      { path: "/validerCV", element: <ValiderCVPage /> },
+      { path: "/validerCV/:id", element: <ValiderCV /> },
+      { path: "/appliquer", element: <AppliquerStagePage /> },
+      { path: "/validerOffreStage/:name", element: <ValiderOffreStage /> },
+      { path: "/validerOffreStage", element: <ValiderOffreStagePage /> }
+    ]
   }
-
 ]);
 
 createRoot(document.getElementById("root")).render(

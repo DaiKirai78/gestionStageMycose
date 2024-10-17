@@ -3,9 +3,11 @@ import TokenPageContainer from './tokenPageContainer';
 import { useNavigate } from 'react-router-dom';
 import AcceuilEtudiant from '../components/acceuil/acceuilEtudiant';
 import AcceuilEmployeur from '../components/acceuil/acceuilEmployeur';
+import { useOutletContext } from "react-router-dom";
 
 const AccueilPage = () => {
 
+    const [roleUser, setRoleUser] = useOutletContext();
     const [role, setRole] = useState();
     const navigate = useNavigate()
 
@@ -54,7 +56,7 @@ const AccueilPage = () => {
     }
 
     return (
-        <TokenPageContainer role={["ETUDIANT", "EMPLOYEUR", "GESTIONNAIRE_STAGE", "ENSEIGNANT"]}>
+        <TokenPageContainer role={["ETUDIANT", "EMPLOYEUR", "GESTIONNAIRE_STAGE", "ENSEIGNANT"]} setRoleUser={setRoleUser}>
             {getAccueil()}
         </TokenPageContainer>
     );
