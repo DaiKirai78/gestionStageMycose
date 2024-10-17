@@ -129,7 +129,7 @@ const Navbar = ({ userInfo }) => {
                     className="rounded flex items-center"
                     >
                         <div className="h-8 bg-orange rounded flex items-center gap-4 p-2 text-white hover:bg-opacity-90">
-                            <p className='overflow-hidden truncate max-w-24'>{userInfo.prenom}</p>
+                            <p className='overflow-hidden truncate max-w-24'>{userInfo ? userInfo.prenom : "Attente"}</p>
                             <IoMdArrowDown />
                         </div>
                     </button>
@@ -193,8 +193,8 @@ const Navbar = ({ userInfo }) => {
             <div className="pt-4 pb-3 border-t border-gray-700">
             <div className="flex items-center pl-2 pr-5">
                 <div className="ml-3">
-                <div className="text-base font-medium leading-none text-black">{userInfo.prenom} {userInfo.nom}</div>
-                <div className="font-medium leading-none text-gray-600">{userInfo.courriel}</div>
+                <div className="text-base font-medium leading-none text-black">{userInfo ? `${userInfo.prenom} ${userInfo.nom}` : "Attente"}</div>
+                <div className="font-medium leading-none text-gray-600">{userInfo ? userInfo.courriel : "Attente"}</div>
                 </div>
                 <button
                     onClick={toggleNotificationMenu}
@@ -202,7 +202,7 @@ const Navbar = ({ userInfo }) => {
                 <BsBellFill className="h-6 w-6" />
                 {isNotificationMenuOpen && (
                     <div className="origin-top-right absolute right-5 mt-4 w-48 rounded-md shadow-lg p-1 bg-orange-light ring-1 ring-orange ring-opacity-40">
-                    <p className="px-4 py-2 text-black">Aucune notification pour le moment</p>
+                        <p className="px-4 py-2 text-black">Aucune notification pour le moment</p>
                     </div>
                 )}
                 </button>
