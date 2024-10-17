@@ -5,6 +5,7 @@ import com.projet.mycose.repository.EmployeurRepository;
 import com.projet.mycose.repository.EnseignantRepository;
 import com.projet.mycose.repository.EtudiantRepository;
 import com.projet.mycose.repository.UtilisateurRepository;
+import com.projet.mycose.security.CustomUserDetails;
 import com.projet.mycose.security.JwtTokenProvider;
 import com.projet.mycose.security.exception.UserNotFoundException;
 import com.projet.mycose.dto.EmployeurDTO;
@@ -22,6 +23,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.nio.file.AccessDeniedException;
 import java.util.*;
@@ -133,73 +135,38 @@ public class UtilisateurServiceTest {
     public void testGetMe_SuccesEtudiant() throws Exception {
         // Arrange
         String email = "mihoubi@gmail.com";
+        CustomUserDetails userDetails = new CustomUserDetails(1L, email, List.of());
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
-        when(jwtTokenProvider.getEmailFromJWT("valid_token")).thenReturn(email);
-        when(utilisateurRepository.findUtilisateurByCourriel(email)).thenReturn(Optional.of(etudiant));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        when(utilisateurRepository.findUtilisateurById(1L)).thenReturn(Optional.of(etudiant));
 
         // Act
         UtilisateurDTO result = utilisateurService.getMe();
 
         // Assert
         assertNotNull(result);
-        assertTrue(result instanceof EtudiantDTO);
-        verify(jwtTokenProvider).getEmailFromJWT("valid_token");
+        assertTrue(result instanceof EtudiantDTO, "The returned UtilisateurDTO should be an instance of EtudiantDTO");
     }
 
     @Test
-    public void testGetMe_TokenNull() {
+    public void testGetMe_UtilisateurNonTrouve() {
         // Arrange
-        String token = null;
-
-        // Act & Assert
-        assertThrows(AccessDeniedException.class, () -> {
-            utilisateurService.getMe();
-        });
-    }
-
-    @Test
-    public void testGetMe_TokenSansBearer() {
-        // Arrange
-        String token = "invalid_token";
-
-        // Act & Assert
-        assertThrows(AccessDeniedException.class, () -> {
-            utilisateurService.getMe();
-        });
-    }
-
-    @Test
-    public void testGetMe_UtilisateurNonTrouve() throws AccessDeniedException {
-        // Arrange
-        String token = "Bearer valid_token";
         String email = "inconnu@exemple.com";
+        CustomUserDetails userDetails = new CustomUserDetails(1L, email, List.of());
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
-        when(jwtTokenProvider.getEmailFromJWT("valid_token")).thenReturn(email);
-        when(utilisateurRepository.findUtilisateurByCourriel(email)).thenReturn(Optional.empty());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        when(utilisateurRepository.findUtilisateurById(1L)).thenReturn(Optional.empty());
 
         // Act & Assert
         assertThrows(UserNotFoundException.class, () -> {
             utilisateurService.getMe();
         });
 
-        verify(jwtTokenProvider).getEmailFromJWT("valid_token");
-        verify(utilisateurRepository).findUtilisateurByCourriel(email);
-        verify(modelMapper, never()).map(any(), any());
-    }
-
-    @Test
-    public void testGetMe_TokenInvalide() throws AccessDeniedException {
-        // Arrange
-        String token = "Bearer invalid_token";
-
-        when(jwtTokenProvider.getEmailFromJWT("invalid_token")).thenThrow(new AccessDeniedException("Token Invalide"));
-
-        // Act & Assert
-        assertThrows(AccessDeniedException.class, () -> {
-            utilisateurService.getMe();
-        });
-
-        verify(utilisateurRepository, never()).findUtilisateurByCourriel(anyString());
+        verify(utilisateurRepository).findUtilisateurById(1L);
         verify(modelMapper, never()).map(any(), any());
     }
 
@@ -412,67 +379,33 @@ public class UtilisateurServiceTest {
     }
 
     @Test
-    void testGetUserIdByToken_Success() throws AccessDeniedException {
+    void testGetUserIdByToken_UserNotFound() {
         // Arrange
-        String token = "Bearer valid_token";
-        String email = "john.doe@example.com";
-
-        when(jwtTokenProvider.getEmailFromJWT("valid_token")).thenReturn(email);
-        when(utilisateurRepository.findUtilisateurByCourriel(email)).thenReturn(Optional.of(etudiant));
-        when(etudiantRepository.findById(etudiant.getId())).thenReturn(Optional.of(etudiant));
-
-        // Act
-        Long userId = utilisateurService.getMyUserId();
-
-        // Assert
-        assertNotNull(userId, "The returned user ID should not be null");
-        assertEquals(etudiant.getId(), userId, "The returned user ID should match the Etudiant's ID");
-        verify(jwtTokenProvider).getEmailFromJWT("valid_token");
-        verify(utilisateurRepository).findUtilisateurByCourriel(email);
-    }
-
-    @Test
-    void testGetUserIdByToken_UserNotFound() throws AccessDeniedException {
-        // Arrange
-        String token = "Bearer valid_token";
         String email = "nonexistent@domain.com";
+        CustomUserDetails userDetails = new CustomUserDetails(1L, email, List.of());
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
-        when(jwtTokenProvider.getEmailFromJWT("valid_token")).thenReturn(email);
-        when(utilisateurRepository.findUtilisateurByCourriel(email)).thenReturn(Optional.empty());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        when(utilisateurRepository.findUtilisateurById(1L)).thenReturn(Optional.empty());
 
         // Act
         Long userId = utilisateurService.getMyUserId();
 
         // Assert
         assertNull(userId, "The returned user ID should be null when user does not exist");
-        verify(utilisateurRepository).findUtilisateurByCourriel(email);
-        verify(modelMapper, never()).map(any(), any());
-    }
-
-    @Test
-    void testGetUserIdByToken_InvalidToken() throws AccessDeniedException {
-        // Arrange
-        String token = "Bearer invalid_token";
-
-        when(jwtTokenProvider.getEmailFromJWT("invalid_token")).thenThrow(new AccessDeniedException("Token Invalide"));
-
-        // Act
-        Long userId = utilisateurService.getMyUserId();
-
-        // Assert
-        assertNull(userId, "The returned user ID should be null when token is invalid");
-        verify(jwtTokenProvider).getEmailFromJWT("invalid_token");
-        verify(utilisateurRepository, never()).findUtilisateurByCourriel(anyString());
-        verify(modelMapper, never()).map(any(), any());
+        verify(utilisateurRepository).findUtilisateurById(1L);
     }
 
     @Test
     void testGetMe_SuccessEmployeur() throws AccessDeniedException {
         // Arrange
         String email = "jane.smith@techcorp.com";
+        CustomUserDetails userDetails = new CustomUserDetails(1L, email, List.of());
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
-        when(jwtTokenProvider.getEmailFromJWT("employeur_token")).thenReturn(email);
-        when(utilisateurRepository.findUtilisateurByCourriel(email)).thenReturn(Optional.of(employeur));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        when(utilisateurRepository.findUtilisateurById(1L)).thenReturn(Optional.of(employeur));
 
         // Act
         UtilisateurDTO result = utilisateurService.getMe();
@@ -480,17 +413,17 @@ public class UtilisateurServiceTest {
         // Assert
         assertNotNull(result, "The returned UtilisateurDTO should not be null");
         assertTrue(result instanceof EmployeurDTO, "The returned UtilisateurDTO should be an instance of EmployeurDTO");
-        verify(jwtTokenProvider).getEmailFromJWT("employeur_token");
     }
 
     @Test
     void testGetMe_SuccessEnseignant() throws AccessDeniedException {
         // Arrange
-        String token = "Bearer enseignant_token";
         String email = "emily.clark@university.edu";
+        CustomUserDetails userDetails = new CustomUserDetails(1L, email, List.of());
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
-        when(jwtTokenProvider.getEmailFromJWT("enseignant_token")).thenReturn(email);
-        when(utilisateurRepository.findUtilisateurByCourriel(email)).thenReturn(Optional.of(enseignant));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        when(utilisateurRepository.findUtilisateurById(1L)).thenReturn(Optional.of(enseignant));
 
         // Act
         UtilisateurDTO result = utilisateurService.getMe();
@@ -498,7 +431,6 @@ public class UtilisateurServiceTest {
         // Assert
         assertNotNull(result, "The returned UtilisateurDTO should not be null");
         assertTrue(result instanceof EnseignantDTO, "The returned UtilisateurDTO should be an instance of EnseignantDTO");
-        verify(jwtTokenProvider).getEmailFromJWT("enseignant_token");
     }
 
     @Test

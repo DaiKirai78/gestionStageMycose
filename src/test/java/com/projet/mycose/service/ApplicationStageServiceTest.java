@@ -228,7 +228,7 @@ public class ApplicationStageServiceTest {
         when(utilisateurService.getMyUserId()).thenReturn(etudiantId);
         when(applicationStageRepository.findByEtudiantIdAndOffreStageId(etudiantId, applicationId)).thenReturn(Optional.empty());
 
-        ChangeSetPersister.NotFoundException exception = assertThrows(ChangeSetPersister.NotFoundException.class, () -> {
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
             applicationStageService.getApplicationById(applicationId);
         }, "Expected NotFoundException to be thrown.");
 

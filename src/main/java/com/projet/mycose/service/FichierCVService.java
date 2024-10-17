@@ -11,8 +11,11 @@ import jakarta.validation.Validator;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.util.*;
@@ -61,15 +64,16 @@ public class FichierCVService {
         return fichierCV;
     }
 
+    private FichierCVDTO createDTOFromFile(MultipartFile file, Long etudiantId) throws IOException {
+        return new FichierCVDTO(file.getOriginalFilename(), Base64.getEncoder().encodeToString(file.getBytes()), etudiantId);
+    }
 
+
+    @Transactional
     public FichierCVDTO saveFile(MultipartFile file) throws ConstraintViolationException, IOException {
         Long etudiant_id = utilisateurService.getMyUserId();
 
-        FichierCVDTO fichierCVDTO = new FichierCVDTO();
-
-        fichierCVDTO.setFilename(file.getOriginalFilename());
-        fichierCVDTO.setFileData(Base64.getEncoder().encodeToString(file.getBytes()));
-        fichierCVDTO.setEtudiant_id(etudiant_id);
+        FichierCVDTO fichierCVDTO = createDTOFromFile(file, etudiant_id);
 
         Set<ConstraintViolation<FichierCVDTO>> violations = validator.validate(fichierCVDTO);
         if (!violations.isEmpty()) {
@@ -90,14 +94,8 @@ public class FichierCVService {
             throw new IllegalArgumentException("Page commence à 1");
         }
 
-        Optional<List<FichierCV>> fichierCVSOptional = fileRepository.getFichierCVSByStatusEquals(FichierCV.Status.WAITING,
-                PageRequest.of(page, LIMIT_PER_PAGE));
-
-        if (fichierCVSOptional.isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        List<FichierCV> fichierCVS = fichierCVSOptional.get();
+        List<FichierCV> fichierCVS = fileRepository.getFichierCVSByStatusEquals(FichierCV.Status.WAITING,
+                PageRequest.of(page, LIMIT_PER_PAGE)).orElse(new ArrayList<>());
 
         return fichierCVS.stream().map(FichierCVStudInfoDTO::toDto).toList();
     }
@@ -119,27 +117,26 @@ public class FichierCVService {
         return nombrePages;
     }
 
+    @Transactional
     public void changeStatus(Long id, FichierCV.Status status, String description) throws ChangeSetPersister.NotFoundException {
-        Optional<FichierCV> fichierCVOptional = fileRepository.findById(id);
-
-        if (fichierCVOptional.isEmpty())
-            throw new ChangeSetPersister.NotFoundException();
-
-        FichierCV fichierCV = fichierCVOptional.get();
+        FichierCV fichierCV = fileRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Fichier non trouvé"));
         fichierCV.setStatus(status);
         fichierCV.setStatusDescription(description);
         fileRepository.save(fichierCV);
     }
 
     public FichierCVDTO getFile(Long id) {
-         FichierCV fichierCV = fileRepository.findById(id).orElseThrow(() -> new RuntimeException("Fichier non trouvé"));
+         FichierCV fichierCV = fileRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Fichier non trouvé"));
          return convertToDTO(fichierCV);
     }
 
-    public FichierCVDTO getCurrentCV() {
+    public FichierCVDTO getCurrentCVDTO() {
+        return convertToDTO(getCurrentCV());
+    }
+
+    public FichierCV getCurrentCV() {
         Long etudiant_id = utilisateurService.getMyUserId();
-        FichierCV fichierCV = fileRepository.getFirstByEtudiant_IdAndStatusEqualsOrStatusEqualsOrStatusEquals(etudiant_id, FichierCV.Status.ACCEPTED, FichierCV.Status.WAITING, FichierCV.Status.REFUSED).orElseThrow(() -> new RuntimeException("Fichier non trouvé"));
-        return convertToDTO(fichierCV);
+        return fileRepository.getFirstByEtudiant_IdAndStatusEqualsOrStatusEqualsOrStatusEquals(etudiant_id, FichierCV.Status.ACCEPTED, FichierCV.Status.WAITING, FichierCV.Status.REFUSED).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Fichier non trouvé"));
     }
 
     public FichierCVDTO getCurrentCV_returnNullIfEmpty(Long etudiant_id) {
@@ -147,9 +144,10 @@ public class FichierCVService {
                 getCurrentCvByEtudiant_id(etudiant_id);
         return fichierCV.map(this::convertToDTO).orElse(null);
     }
+
+    @Transactional
     public FichierCVDTO deleteCurrentCV() {
-        Long etudiant_id = utilisateurService.getMyUserId();
-        FichierCV fichierCV = fileRepository.getFirstByEtudiant_IdAndStatusEqualsOrStatusEqualsOrStatusEquals(etudiant_id, FichierCV.Status.ACCEPTED, FichierCV.Status.WAITING, FichierCV.Status.REFUSED).orElseThrow(() -> new RuntimeException("Fichier non trouvé"));
+        FichierCV fichierCV = getCurrentCV();
         fichierCV.setStatus(FichierCV.Status.DELETED);
         return convertToDTO(fileRepository.save(fichierCV));
     }

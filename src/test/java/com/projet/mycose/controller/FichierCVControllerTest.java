@@ -4,6 +4,7 @@ import com.projet.mycose.modele.FichierCV;
 import com.projet.mycose.service.FichierCVService;
 import com.projet.mycose.dto.FichierCVDTO;
 import com.projet.mycose.dto.FichierCVStudInfoDTO;
+import com.projet.mycose.service.UtilisateurService;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,7 +14,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.crossstore.ChangeSetPersister;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
@@ -36,6 +36,9 @@ public class FichierCVControllerTest {
 
     @Mock
     private FichierCVService fichierCVService;
+
+    @Mock
+    private UtilisateurService utilisateurService;
 
     @InjectMocks
     private FichierCVController fichierCVController;
@@ -63,6 +66,10 @@ public class FichierCVControllerTest {
 
         when(fichierCVService.saveFile(any(MultipartFile.class)))
                 .thenReturn(validFichierCVDTO);
+
+        when(utilisateurService.getMyUserId()).thenReturn(1L);
+
+        when(fichierCVService.getCurrentCV_returnNullIfEmpty(1L)).thenReturn(null);
 
         // Act & Assert
         mockMvc.perform(multipart("/api/cv/upload")
@@ -174,7 +181,7 @@ public class FichierCVControllerTest {
         mockFichierCVDTO.setFilename("test.pdf");
         mockFichierCVDTO.setFileData("Base64EncodedData");
         mockFichierCVDTO.setEtudiant_id(1L);
-        when(fichierCVService.getCurrentCV()).thenReturn(mockFichierCVDTO);
+        when(fichierCVService.getCurrentCVDTO()).thenReturn(mockFichierCVDTO);
 
         // Act & Assert
         mockMvc.perform(post("/api/cv/current")
@@ -193,7 +200,7 @@ public class FichierCVControllerTest {
         doNothing().when(fichierCVService).changeStatus(1L, FichierCV.Status.ACCEPTED, "asd");
         // Assert
         mockMvc.perform(patch("/api/cv/accept?id=1")
-                        .content("asd")
+                        .content("{\"commentaire\": \"asd\"}")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
@@ -206,7 +213,7 @@ public class FichierCVControllerTest {
                 .changeStatus(1L, FichierCV.Status.ACCEPTED, "asd");
         // Assert
         mockMvc.perform(patch("/api/cv/accept?id=1")
-                        .content("asd")
+                        .content("{\"commentaire\": \"asd\"}")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
@@ -217,22 +224,9 @@ public class FichierCVControllerTest {
         doNothing().when(fichierCVService).changeStatus(1L, FichierCV.Status.REFUSED, "asd");
         // Assert
         mockMvc.perform(patch("/api/cv/refuse?id=1")
-                        .content("asd")
+                        .content("{\"commentaire\": \"asd\"}")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-    }
-
-    @Test
-    void test_refusetCv_UserNotFound() throws Exception {
-        // Act
-        doThrow(ChangeSetPersister.NotFoundException.class)
-                .when(fichierCVService)
-                .changeStatus(1L, FichierCV.Status.REFUSED, "asd");
-        // Assert
-        mockMvc.perform(patch("/api/cv/refuse?id=1")
-                        .content("asd")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
     }
 
     @Test

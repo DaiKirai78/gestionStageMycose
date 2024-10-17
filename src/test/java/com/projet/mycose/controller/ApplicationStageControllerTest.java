@@ -129,9 +129,9 @@ public class ApplicationStageControllerTest {
     @Test
     @WithMockUser(roles = "USER")
     void getMyApplication_NotFoundException() throws Exception {
-        when(applicationStageService.getApplicationById(id)).thenThrow(new ChangeSetPersister.NotFoundException());
+        when(applicationStageService.getApplicationById(id)).thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Application not found"));
 
-        assertThrows(ChangeSetPersister.NotFoundException.class, () -> {
+        assertThrows(ResponseStatusException.class, () -> {
             applicationStageController.getMyApplication(id);
         });
 

@@ -7,9 +7,9 @@ import com.projet.mycose.repository.OffreStageRepository;
 import com.projet.mycose.dto.ApplicationStageAvecInfosDTO;
 import com.projet.mycose.dto.ApplicationStageDTO;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.nio.file.AccessDeniedException;
@@ -24,24 +24,40 @@ public class ApplicationStageService {
     private final OffreStageRepository offreStageRepository;
     private final EtudiantOffreStagePriveeRepository etudiantOffreStagePriveeRepository;
 
+    @Transactional
     public ApplicationStageDTO applyToOffreStage(Long offreStageId) throws AccessDeniedException {
         Utilisateur utilisateur = utilisateurService.getMeUtilisateur();
-        if (!(utilisateur instanceof Etudiant etudiant)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not an Etudiant.");
-        }
-        OffreStage offreStage = offreStageRepository.findById(offreStageId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "OffreStage not found"));
-        Optional<ApplicationStage> existingApplication = applicationStageRepository.findByEtudiantAndOffreStage(etudiant, offreStage);
-        //Check if the student has already applied to this OffreStage
-        if (existingApplication.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Etudiant has already applied to this OffreStage.");
-        }
+        Etudiant etudiant = getValidatedEtudiant(utilisateur);
+
+        OffreStage offreStage = getValidatedOffreStage(offreStageId);
+        ensureNotAlreadyApplied(etudiant, offreStage);
+
         checkAccessToOffreStage(etudiant, offreStage);
+
         ApplicationStage applicationStage = ApplicationStage.builder()
                 .offreStage(offreStage)
                 .etudiant(etudiant)
                 .build();
         return convertToDTO(applicationStageRepository.save(applicationStage));
+    }
+
+    private Etudiant getValidatedEtudiant(Utilisateur utilisateur) {
+        if (!(utilisateur instanceof Etudiant etudiant)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not an Etudiant.");
+        }
+        return etudiant;
+    }
+
+    private OffreStage getValidatedOffreStage(Long offreStageId) {
+        return offreStageRepository.findById(offreStageId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "OffreStage not found"));
+    }
+
+    private void ensureNotAlreadyApplied(Etudiant etudiant, OffreStage offreStage) {
+        Optional<ApplicationStage> existingApplication = applicationStageRepository.findByEtudiantAndOffreStage(etudiant, offreStage);
+        if (existingApplication.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Etudiant has already applied to this OffreStage.");
+        }
     }
 
     private void checkAccessToOffreStage(Etudiant etudiant, OffreStage offreStage) throws AccessDeniedException {
@@ -78,8 +94,10 @@ public class ApplicationStageService {
         return applicationStageRepository.findByEtudiantIdAndStatusEquals(etudiantId, status).stream().map(this::convertToDTOAvecInfos).toList();
     }
 
-    public ApplicationStageAvecInfosDTO getApplicationById(Long applicationId) throws ChangeSetPersister.NotFoundException {
+    public ApplicationStageAvecInfosDTO getApplicationById(Long applicationId) {
         Long etudiantId = utilisateurService.getMyUserId();
-        return applicationStageRepository.findByEtudiantIdAndOffreStageId(etudiantId, applicationId).map(this::convertToDTOAvecInfos).orElseThrow(ChangeSetPersister.NotFoundException::new);
+        return applicationStageRepository.findByEtudiantIdAndOffreStageId(etudiantId, applicationId)
+                .map(this::convertToDTOAvecInfos)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Application not found"));
     }
 }

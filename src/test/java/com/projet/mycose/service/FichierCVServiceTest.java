@@ -21,6 +21,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.util.*;
@@ -180,11 +181,11 @@ public class FichierCVServiceTest {
         when(fileRepository.findById(1L)).thenReturn(Optional.empty());
 
         // Act & Assert
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+        RuntimeException exception = assertThrows(ResponseStatusException.class, () -> {
             fichierCVService.getFile(1L);
         }, "Expected getFile() to throw, but it didn't");
 
-        assertEquals("Fichier non trouvé", exception.getMessage(), "Exception message should match");
+        assertEquals("404 NOT_FOUND \"Fichier non trouvé\"", exception.getMessage(), "Exception message should match");
         verify(fileRepository, times(1)).findById(1L);
         verify(modelMapper, never()).map(any(FichierCV.class), eq(FichierCVDTO.class));
     }
@@ -204,7 +205,7 @@ public class FichierCVServiceTest {
         when(modelMapper.map(fichierCV, FichierCVDTO.class)).thenReturn(fichierCVDTO);
 
         // Act
-        FichierCVDTO result = fichierCVService.getCurrentCV();
+        FichierCVDTO result = fichierCVService.getCurrentCVDTO();
 
         // Assert
         assertNotNull(result, "The returned FichierCVDTO should not be null");
@@ -227,11 +228,11 @@ public class FichierCVServiceTest {
 
 
         // Act & Assert
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            fichierCVService.getCurrentCV();
+        RuntimeException exception = assertThrows(ResponseStatusException.class, () -> {
+            fichierCVService.getCurrentCVDTO();
         }, "Expected getCurrentCV() to throw, but it didn't");
 
-        assertEquals("Fichier non trouvé", exception.getMessage(), "Exception message should match");
+        assertEquals("404 NOT_FOUND \"Fichier non trouvé\"", exception.getMessage(), "Exception message should match");
         verify(fileRepository, times(1)).getFirstByEtudiant_IdAndStatusEqualsOrStatusEqualsOrStatusEquals(etudiant.getId(), FichierCV.Status.ACCEPTED, FichierCV.Status.WAITING, FichierCV.Status.REFUSED);
         verify(modelMapper, never()).map(any(FichierCV.class), eq(FichierCVDTO.class));
     }
@@ -282,11 +283,11 @@ public class FichierCVServiceTest {
 
 
         // Act & Assert
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+        RuntimeException exception = assertThrows(ResponseStatusException.class, () -> {
             fichierCVService.deleteCurrentCV();
         }, "Expected deleteCurrentCV() to throw, but it didn't");
 
-        assertEquals("Fichier non trouvé", exception.getMessage(), "Exception message should match");
+        assertEquals("404 NOT_FOUND \"Fichier non trouvé\"", exception.getMessage(), "Exception message should match");
         verify(fileRepository, times(1)).getFirstByEtudiant_IdAndStatusEqualsOrStatusEqualsOrStatusEquals(etudiant.getId(), FichierCV.Status.ACCEPTED, FichierCV.Status.WAITING, FichierCV.Status.REFUSED);
         verify(fileRepository, never()).save(any());
         verify(modelMapper, never()).map(any(FichierCV.class), eq(FichierCVDTO.class));
@@ -326,7 +327,7 @@ public class FichierCVServiceTest {
         when(fileRepository.findById(1L)).thenReturn(Optional.empty());
 
         // Assert
-        assertThrows(ChangeSetPersister.NotFoundException.class, () -> {
+        assertThrows(ResponseStatusException.class, () -> {
             fichierCVService.changeStatus(1L, FichierCV.Status.ACCEPTED, "asd");
         });
     }
