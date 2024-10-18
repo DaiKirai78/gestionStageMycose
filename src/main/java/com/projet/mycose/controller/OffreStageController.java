@@ -3,6 +3,7 @@ package com.projet.mycose.controller;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.projet.mycose.dto.*;
 import com.projet.mycose.modele.OffreStage;
+import com.projet.mycose.service.ApplicationStageService;
 import com.projet.mycose.service.OffreStageService;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
@@ -23,9 +24,11 @@ import java.util.Map;
 public class OffreStageController {
 
     private final OffreStageService offreStageService;
+    private final ApplicationStageService applicationStageService;
 
-    public OffreStageController(OffreStageService offreStageService) {
+    public OffreStageController(OffreStageService offreStageService, ApplicationStageService applicationStageService) {
         this.offreStageService = offreStageService;
+        this.applicationStageService = applicationStageService;
     }
 
 
@@ -106,4 +109,9 @@ public class OffreStageController {
         return ResponseEntity.status(HttpStatus.OK).body(offreStageDTOList);
     }
 
+    @GetMapping("/offre-applications/{id}")
+    public ResponseEntity<List<EtudiantDTO>> getAllEtudiantQuiOntAppliquesAUneOffre(@PathVariable Long id) {
+        List<ApplicationStageAvecInfosDTO> applicationStageDTOList = applicationStageService.getAllApplicationsPourUneOffreById(id);
+        return new ResponseEntity<>(offreStageService.getEtudiantsQuiOntAppliquesAUneOffre(applicationStageDTOList), HttpStatus.OK);
+    }
 }

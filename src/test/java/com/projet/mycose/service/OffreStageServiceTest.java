@@ -558,7 +558,7 @@ public class OffreStageServiceTest {
         when(etudiantRepository.findEtudiantById(anyLong())).thenReturn(etudiant);
 
         //Act
-        EtudiantDTO etudiantDTO = offreStageService.getEtudiantsQuiOntAppliquesAUneOffre(applicationStageDTOList).get(0);
+        EtudiantDTO etudiantDTO = offreStageService.getEtudiantsQuiOntAppliquesAUneOffre(applicationStageDTOList).getFirst();
 
         //Assert
         assertEquals(etudiant.getId(), etudiantDTO.getId());

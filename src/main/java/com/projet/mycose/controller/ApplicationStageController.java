@@ -1,11 +1,9 @@
 package com.projet.mycose.controller;
 
-import com.projet.mycose.dto.EtudiantDTO;
 import com.projet.mycose.modele.ApplicationStage;
 import com.projet.mycose.service.ApplicationStageService;
 import com.projet.mycose.dto.ApplicationStageAvecInfosDTO;
 import com.projet.mycose.dto.ApplicationStageDTO;
-import com.projet.mycose.service.OffreStageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
@@ -20,7 +18,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ApplicationStageController {
     private final ApplicationStageService applicationStageService;
-    private final OffreStageService offreStageService;
 
     @PostMapping("/apply")
     public ResponseEntity<ApplicationStageDTO> applyForStage(@RequestParam Long id) throws AccessDeniedException {
@@ -41,11 +38,5 @@ public class ApplicationStageController {
     @GetMapping("/my-applications/{id}")
     public ResponseEntity<ApplicationStageAvecInfosDTO> getMyApplication(@PathVariable Long id) throws ChangeSetPersister.NotFoundException {
         return new ResponseEntity<>(applicationStageService.getApplicationById(id), HttpStatus.OK);
-    }
-
-    @GetMapping("/offre-applications/{id}")
-    public ResponseEntity<List<EtudiantDTO>> getAllEtudiantQuiOntAppliquesAUneOffre(@PathVariable Long id) {
-        List<ApplicationStageAvecInfosDTO> applicationStageDTOList = applicationStageService.getAllApplicationsPourUneOffreById(id);
-        return new ResponseEntity<>(offreStageService.getEtudiantsQuiOntAppliquesAUneOffre(applicationStageDTOList), HttpStatus.OK);
     }
 }

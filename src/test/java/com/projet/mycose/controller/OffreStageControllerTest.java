@@ -1,6 +1,10 @@
 package com.projet.mycose.controller;
 
 import com.projet.mycose.dto.*;
+import com.projet.mycose.modele.ApplicationStage;
+import com.projet.mycose.modele.Etudiant;
+import com.projet.mycose.modele.Programme;
+import com.projet.mycose.service.ApplicationStageService;
 import com.projet.mycose.service.OffreStageService;
 import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,6 +14,7 @@ import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
@@ -23,6 +28,8 @@ public class OffreStageControllerTest {
 
     @Mock
     private OffreStageService offreStageService;
+    @Mock
+    private ApplicationStageService applicationStageService;
 
     @InjectMocks
     private OffreStageController offreStageController;
@@ -35,6 +42,7 @@ public class OffreStageControllerTest {
     private OffreStageDTO offreStageDTO;
     private List<OffreStageAvecUtilisateurInfoDTO> offreStageAvecUtilisateurInfoDTOList;
     private List<OffreStageDTO> offreStageDTOList;
+    private Etudiant etudiant;
 
     @BeforeEach
     void setup() {
@@ -52,6 +60,16 @@ public class OffreStageControllerTest {
 
         offreStageAvecUtilisateurInfoDTOList = Collections.singletonList(offreStageAvecUtilisateurInfoDTO);
         offreStageDTOList = List.of(offreStageDTO);
+
+        etudiant = Etudiant.builder()
+                .id(1L)
+                .prenom("Roberto")
+                .nom("Berrios")
+                .numeroDeTelephone("438-508-3245")
+                .courriel("roby@gmail.com")
+                .motDePasse("Roby123$")
+                .programme(Programme.TECHNIQUE_INFORMATIQUE)
+                .build();
     }
 
     @Test
@@ -215,5 +233,27 @@ public class OffreStageControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(offreStageDTOList, response.getBody());
         verify(offreStageService, times(1)).getAvailableOffreStagesForEtudiant();
+    }
+
+    @Test
+    void getAllEtudiantQuiOntAppliquesAUneOffreTest() {
+        ApplicationStageAvecInfosDTO applicationStageDTO = new ApplicationStageAvecInfosDTO();
+        applicationStageDTO.setEtudiant_id(1L);
+        applicationStageDTO.setId(1L);
+        applicationStageDTO.setOffreStage_id(1L);
+        applicationStageDTO.setStatus(ApplicationStage.ApplicationStatus.ACCEPTED);
+        List<ApplicationStageAvecInfosDTO> applicationStageDTOList = new ArrayList<>();
+        applicationStageDTOList.add(applicationStageDTO);
+        List<EtudiantDTO> etudiantsList = new ArrayList<>();
+        etudiantsList.add(EtudiantDTO.toDTO(etudiant));
+        when(applicationStageService.getAllApplicationsPourUneOffreById(1L)).thenReturn(applicationStageDTOList);
+        when(offreStageService.getEtudiantsQuiOntAppliquesAUneOffre(any())).thenReturn(etudiantsList);
+
+        ResponseEntity<List<EtudiantDTO>> response = offreStageController.getAllEtudiantQuiOntAppliquesAUneOffre(1L);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(etudiantsList, response.getBody());
+        verify(offreStageService, times(1)).getEtudiantsQuiOntAppliquesAUneOffre(applicationStageDTOList);
     }
 }

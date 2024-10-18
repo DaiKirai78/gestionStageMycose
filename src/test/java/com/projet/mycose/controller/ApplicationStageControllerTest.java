@@ -137,9 +137,4 @@ public class ApplicationStageControllerTest {
 
         verify(applicationStageService, times(1)).getApplicationById(id);
     }
-
-    @Test
-    void getAllEtudiantQuiOntAppliquesAUneOffreTest() {
-
-    }
 }
