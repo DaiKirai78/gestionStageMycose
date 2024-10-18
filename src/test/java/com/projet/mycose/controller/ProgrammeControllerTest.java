@@ -15,6 +15,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -37,9 +38,10 @@ public class ProgrammeControllerTest {
     @Test
     void testGetProgrammes_Success() throws Exception {
         // Arrange
-        List<String> expectedProgrammes = Arrays.stream(Programme.values())
+        List<String> expectedProgrammes = new ArrayList<>(Arrays.stream(Programme.values())
                 .map(Programme::toString)
-                .toList();
+                .toList());
+        expectedProgrammes.remove("NOT_SPECIFIED");
 
         // Act & Assert
         mockMvc.perform(get("/api/programme")

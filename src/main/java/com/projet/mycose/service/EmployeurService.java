@@ -40,8 +40,8 @@ public class EmployeurService {
         return listeMappee;
     }
 
-    public List<OffreStageDTO> getStages(String token, int page) {
-        Long idEmployeur = utilisateurService.getUserIdByToken(token);
+    public List<OffreStageDTO> getStages(int page) {
+        Long idEmployeur = utilisateurService.getMyUserId();
         PageRequest pageRequest = PageRequest.of(page, LIMIT_PER_PAGE);
 
         Page<OffreStage> offresRetourneesEnPages = offreStageRepository.findOffreStageByCreateurId(idEmployeur, pageRequest);
@@ -52,8 +52,8 @@ public class EmployeurService {
         return listeOffreStageToDTO(offresRetourneesEnPages.getContent());
     }
 
-    public Integer getAmountOfPages(String token) {
-        Long employeurId = utilisateurService.getUserIdByToken(token);
+    public Integer getAmountOfPages() {
+        Long employeurId = utilisateurService.getMyUserId();
         long amountOfRows = offreStageRepository.countByCreateurId(employeurId);
 
         if (amountOfRows == 0)

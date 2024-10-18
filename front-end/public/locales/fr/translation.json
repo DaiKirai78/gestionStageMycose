@@ -160,8 +160,8 @@
     "errorRetrievingTotalOffres": "Erreur lors de la récupération du nombre total d'offres de stage",
     "uploadNewCV": "Téléverser un nouveau CV",
     "existingCVWarning": "Vous avez déjà un CV téléversé. Si vous téléversez un nouveau CV, l'ancien sera écrasé.",
-    "viewCV": "Voir mon CV"
-    "RetourAccueil": "Retour à l'accueil",
+    "viewCV": "Voir mon CV",
     "EmailEmployeur": "Courriel de l'employeur : ",
-    "Employeur": "Employeur : "
+    "Employeur": "Employeur : ",
+    "programRequired": "Le programme est requis."
 }

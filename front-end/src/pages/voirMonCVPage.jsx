@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import TokenPageContainer from './tokenPageContainer';
 import { useOutletContext } from 'react-router-dom';
 import VoirMonCV from "../components/voirMonCVPage/voirMonCV.jsx";
+import {useTranslation} from "react-i18next";
 
 const VoirMonCVPage = () => {
 
-    const [roleUser, setRoleUser] = useOutletContext();
+    const [userInfo, setUserInfo] = useOutletContext();
     const [hasCv, setHasCv] = useState(null);
     const navigate = useNavigate();
+    const {t} = useTranslation();
 
     useEffect(() => {
         checkCv();
@@ -47,7 +49,7 @@ const VoirMonCVPage = () => {
         return <div>{t("loading")}...</div>;
     }
     return (
-        <TokenPageContainer role={["ETUDIANT"]} setRoleUser={setRoleUser}>
+        <TokenPageContainer role={["ETUDIANT"]} setUserInfo={setUserInfo}>
             <div className="flex items-start justify-center min-h-screen">
                 <VoirMonCV />
             </div>

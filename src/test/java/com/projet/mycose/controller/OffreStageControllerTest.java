@@ -27,7 +27,6 @@ public class OffreStageControllerTest {
     @InjectMocks
     private OffreStageController offreStageController;
 
-    private String token;
     private Long id;
     private UploadFicherOffreStageDTO uploadFicherOffreStageDTO;
     private FichierOffreStageDTO fichierOffreStageDTO;
@@ -39,7 +38,6 @@ public class OffreStageControllerTest {
 
     @BeforeEach
     void setup() {
-        token = "Bearer sampleToken";
         id = 1L;
 
         uploadFicherOffreStageDTO = new UploadFicherOffreStageDTO();
@@ -52,69 +50,69 @@ public class OffreStageControllerTest {
 
         offreStageDTO = new OffreStageDTO();
 
-        offreStageAvecUtilisateurInfoDTOList = Arrays.asList(offreStageAvecUtilisateurInfoDTO);
-        offreStageDTOList = Arrays.asList(offreStageDTO);
+        offreStageAvecUtilisateurInfoDTOList = Collections.singletonList(offreStageAvecUtilisateurInfoDTO);
+        offreStageDTOList = List.of(offreStageDTO);
     }
 
     @Test
     void uploadFile_Success() throws Exception {
-        when(offreStageService.saveFile(uploadFicherOffreStageDTO, token)).thenReturn(fichierOffreStageDTO);
+        when(offreStageService.saveFile(uploadFicherOffreStageDTO)).thenReturn(fichierOffreStageDTO);
 
-        ResponseEntity<?> response = offreStageController.uploadFile(uploadFicherOffreStageDTO, token);
+        ResponseEntity<?> response = offreStageController.uploadFile(uploadFicherOffreStageDTO);
 
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(fichierOffreStageDTO, response.getBody());
-        verify(offreStageService, times(1)).saveFile(uploadFicherOffreStageDTO, token);
+        verify(offreStageService, times(1)).saveFile(uploadFicherOffreStageDTO);
     }
 
     @Test
     void uploadFile_ConstraintViolationException() throws Exception {
         ConstraintViolationException exception = mock(ConstraintViolationException.class);
         when(exception.getConstraintViolations()).thenReturn(new HashSet<>());
-        when(offreStageService.saveFile(uploadFicherOffreStageDTO, token)).thenThrow(exception);
+        when(offreStageService.saveFile(uploadFicherOffreStageDTO)).thenThrow(exception);
 
-        ResponseEntity<?> response = offreStageController.uploadFile(uploadFicherOffreStageDTO, token);
+        ResponseEntity<?> response = offreStageController.uploadFile(uploadFicherOffreStageDTO);
 
         assertNotNull(response);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        verify(offreStageService, times(1)).saveFile(uploadFicherOffreStageDTO, token);
+        verify(offreStageService, times(1)).saveFile(uploadFicherOffreStageDTO);
     }
 
     @Test
     void uploadFile_IOException() throws Exception {
-        when(offreStageService.saveFile(uploadFicherOffreStageDTO, token)).thenThrow(new IOException("File error"));
+        when(offreStageService.saveFile(uploadFicherOffreStageDTO)).thenThrow(new IOException("File error"));
 
-        ResponseEntity<?> response = offreStageController.uploadFile(uploadFicherOffreStageDTO, token);
+        ResponseEntity<?> response = offreStageController.uploadFile(uploadFicherOffreStageDTO);
 
         assertNotNull(response);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         assertNull(response.getBody());
-        verify(offreStageService, times(1)).saveFile(uploadFicherOffreStageDTO, token);
+        verify(offreStageService, times(1)).saveFile(uploadFicherOffreStageDTO);
     }
 
     @Test
     void uploadForm_Success() throws Exception {
-        when(offreStageService.saveForm(formulaireOffreStageDTO, token)).thenReturn(formulaireOffreStageDTO);
+        when(offreStageService.saveForm(formulaireOffreStageDTO)).thenReturn(formulaireOffreStageDTO);
 
-        ResponseEntity<FormulaireOffreStageDTO> response = offreStageController.uploadForm(formulaireOffreStageDTO, token);
+        ResponseEntity<FormulaireOffreStageDTO> response = offreStageController.uploadForm(formulaireOffreStageDTO);
 
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(formulaireOffreStageDTO, response.getBody());
-        verify(offreStageService, times(1)).saveForm(formulaireOffreStageDTO, token);
+        verify(offreStageService, times(1)).saveForm(formulaireOffreStageDTO);
     }
 
     @Test
     void uploadForm_AccessDeniedException() throws Exception {
-        when(offreStageService.saveForm(formulaireOffreStageDTO, token)).thenThrow(new AccessDeniedException("Access Denied"));
+        when(offreStageService.saveForm(formulaireOffreStageDTO)).thenThrow(new AccessDeniedException("Access Denied"));
 
         AccessDeniedException exception = assertThrows(AccessDeniedException.class, () -> {
-            offreStageController.uploadForm(formulaireOffreStageDTO, token);
+            offreStageController.uploadForm(formulaireOffreStageDTO);
         });
 
         assertEquals("Access Denied", exception.getMessage());
-        verify(offreStageService, times(1)).saveForm(formulaireOffreStageDTO, token);
+        verify(offreStageService, times(1)).saveForm(formulaireOffreStageDTO);
     }
 
     @Test
@@ -209,13 +207,13 @@ public class OffreStageControllerTest {
 
     @Test
     void getMyOffres_Success() throws AccessDeniedException {
-        when(offreStageService.getAvailableOffreStagesForEtudiant(token)).thenReturn(offreStageDTOList);
+        when(offreStageService.getAvailableOffreStagesForEtudiant()).thenReturn(offreStageDTOList);
 
-        ResponseEntity<List<OffreStageDTO>> response = offreStageController.getMyOffres(token);
+        ResponseEntity<List<OffreStageDTO>> response = offreStageController.getMyOffres();
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(offreStageDTOList, response.getBody());
-        verify(offreStageService, times(1)).getAvailableOffreStagesForEtudiant(token);
+        verify(offreStageService, times(1)).getAvailableOffreStagesForEtudiant();
     }
 }

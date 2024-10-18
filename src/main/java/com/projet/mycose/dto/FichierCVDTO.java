@@ -37,4 +37,9 @@ public class FichierCVDTO {
 
     private Long etudiant_id;
 
+    public FichierCVDTO(String filename, String fileData, Long etudiantId) {
+        this.filename = filename;
+        this.fileData = fileData;
+        this.etudiant_id = etudiantId;
+    }
 }

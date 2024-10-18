@@ -23,24 +23,24 @@ public class ApplicationStageController {
     private final OffreStageService offreStageService;
 
     @PostMapping("/apply")
-    public ResponseEntity<ApplicationStageDTO> applyForStage(@RequestParam Long id, @RequestHeader("Authorization") String token) throws AccessDeniedException, ChangeSetPersister.NotFoundException {
-        ApplicationStageDTO applicationStageDTO = applicationStageService.applyToOffreStage(token, id);
+    public ResponseEntity<ApplicationStageDTO> applyForStage(@RequestParam Long id) throws AccessDeniedException {
+        ApplicationStageDTO applicationStageDTO = applicationStageService.applyToOffreStage(id);
         return new ResponseEntity<>(applicationStageDTO, HttpStatus.CREATED);
     }
 
     @GetMapping("/my-applications")
-    public ResponseEntity<List<ApplicationStageAvecInfosDTO>> getMyApplications(@RequestHeader("Authorization") String token) {
-        return new ResponseEntity<>(applicationStageService.getApplicationsByEtudiant(token), HttpStatus.OK);
+    public ResponseEntity<List<ApplicationStageAvecInfosDTO>> getMyApplications() {
+        return new ResponseEntity<>(applicationStageService.getApplicationsByEtudiant(), HttpStatus.OK);
     }
 
     @GetMapping("/my-applications/status/{status}")
-    public ResponseEntity<List<ApplicationStageAvecInfosDTO>> getMyApplicationsWithStatus(@RequestHeader("Authorization") String token, @PathVariable("status") ApplicationStage.ApplicationStatus status) {
-        return new ResponseEntity<>(applicationStageService.getApplicationsByEtudiantWithStatus(token, status), HttpStatus.OK);
+    public ResponseEntity<List<ApplicationStageAvecInfosDTO>> getMyApplicationsWithStatus(@PathVariable("status") ApplicationStage.ApplicationStatus status) {
+        return new ResponseEntity<>(applicationStageService.getApplicationsByEtudiantWithStatus(status), HttpStatus.OK);
     }
 
     @GetMapping("/my-applications/{id}")
-    public ResponseEntity<ApplicationStageAvecInfosDTO> getMyApplication(@RequestHeader("Authorization") String token, @PathVariable Long id) throws ChangeSetPersister.NotFoundException {
-        return new ResponseEntity<>(applicationStageService.getApplicationById(token, id), HttpStatus.OK);
+    public ResponseEntity<ApplicationStageAvecInfosDTO> getMyApplication(@PathVariable Long id) throws ChangeSetPersister.NotFoundException {
+        return new ResponseEntity<>(applicationStageService.getApplicationById(id), HttpStatus.OK);
     }
 
     @GetMapping("/offre-applications/{id}")

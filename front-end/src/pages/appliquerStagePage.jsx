@@ -1,14 +1,17 @@
 import TokenPageContainer from "./tokenPageContainer.jsx";
 import React, { useEffect, useState } from "react";
 import AppliquerStage from "../components/acceuil/appliquerStage.jsx";
-import {useLocation, useOutletContext} from "react-router-dom";
+import {useLocation, useNavigate, useOutletContext} from "react-router-dom";
+import {useTranslation} from "react-i18next";
 
 const AppliquerStagePage = () => {
     const [hasAcceptedCv, setHasAcceptedCv] = useState(null);
     const navigate = useNavigate();
     const location = useLocation();
     const { idStage } = location.state || {};
+    const [userInfo, setUserInfo] = useOutletContext();
     const [roleUser, setRoleUser] = useOutletContext();
+    const {t} = useTranslation();
 
     useEffect(() => {
         checkAcceptedCv();
@@ -17,7 +20,7 @@ const AppliquerStagePage = () => {
     async function checkAcceptedCv() {
         const token = localStorage.getItem("token");
         if (!token) {
-            navigate("/acceuil");
+            navigate("/accueil");
             return;
         }
 
@@ -54,7 +57,7 @@ const AppliquerStagePage = () => {
     }
 
     return (
-        <TokenPageContainer role={["ETUDIANT"]} setRoleUser={setRoleUser}>
+        <TokenPageContainer role={["ETUDIANT"]} setUserInfo={setUserInfo}>
             <div className="bg-orange-light w-full min-h-screen">
                 <div className="h-20 border-b-2 border-deep-orange-100 pl-8 items-center flex w-full mb-10">
                     (Logo) Mycose
