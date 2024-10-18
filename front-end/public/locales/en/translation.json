@@ -162,5 +162,16 @@
     "viewCV": "View my CV",
     "EmailEmployeur": "Employer's email :",
     "Employeur": "Employer : ",
-    "programRequired": "The program is required."
+    "programRequired": "The program is required.",
+    "profil": "Profile",
+    "noCv": "No CV sent",
+    "cvAccepted": "Your CV is accepted",
+    "cvRefused": "Your CV is refused",
+    "cvWaiting": "Your CV is pending",
+    "cvStatusTitle": "CV Status",
+    "managerNotes": "Manager's Notes:",
+    "noNotes": "No notes",
+    "accueil": "Home",
+    "noNotification": "No notification for now",
+    "signOut": "Sign out"
 }

@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import CardStatusDuCv from './cardStatusDuCv'
-import CardStatusStage from './cardStatusStage'
+import { useTranslation } from 'react-i18next';
 
 const Profil = () => {
     const [isFetching, setIsFetching] = useState(true);
-    const [cvInfo, setCvInfo] = useState()
+    const [cvInfo, setCvInfo] = useState();
+    const { t } = useTranslation();
 
     useEffect(() => {
         fetchInfoCv();
@@ -40,13 +41,13 @@ const Profil = () => {
     return (
         !isFetching 
         &&
-        <div className="min-h-screen bg-orange-light p-4 md:p-8 lg:p-12">
-            <h1 className="text-3xl md:text-4xl font-bold text-center mb-8">Profile</h1>
+        <div className="h-screen bg-orange-light p-4 md:p-8 lg:p-12">
+            <h1 className="text-3xl md:text-4xl font-bold text-center mb-8">{t("profil")}</h1>
             
             <div className="max-w-3xl mx-auto space-y-8">
             <CardStatusDuCv cvInfo={cvInfo}/>
 
-            <CardStatusStage />
+            {/* <CardStatusStage /> */}
             </div>
         </div>
     )
