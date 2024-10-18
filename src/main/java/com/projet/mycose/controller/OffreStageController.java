@@ -109,6 +109,8 @@ public class OffreStageController {
         return ResponseEntity.status(HttpStatus.OK).body(offreStageDTOList);
     }
 
+
+    // On passe le id de l'offre de stage
     @GetMapping("/offre-applications/{id}")
     public ResponseEntity<List<EtudiantDTO>> getAllEtudiantQuiOntAppliquesAUneOffre(@PathVariable Long id) {
         List<ApplicationStageAvecInfosDTO> applicationStageDTOList = applicationStageService.getAllApplicationsPourUneOffreById(id);
