@@ -85,7 +85,9 @@ public class ApplicationStageService {
         return applicationStageRepository.findByEtudiantIdAndOffreStageId(etudiantId, applicationId).map(this::convertToDTOAvecInfos).orElseThrow(ChangeSetPersister.NotFoundException::new);
     }
 
-    public List<ApplicationStageDTO> getAllApplicationsPourUneOffreById(Long offreId) {
-        return applicationStageRepository.findAllByOffreStageId(offreId).stream().map(this::convertToDTO).toList();
+    public List<ApplicationStageAvecInfosDTO> getAllApplicationsPourUneOffreById(Long offreId) {
+        return applicationStageRepository
+                .findAllByOffreStageIdAndStatusEquals(offreId, ApplicationStage.ApplicationStatus.ACCEPTED)
+                .stream().map(this::convertToDTOAvecInfos).toList();
     }
 }

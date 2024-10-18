@@ -273,11 +273,13 @@ public class OffreStageService {
         offreStageRepository.save(offreStage);
     }
 
-    public List<EtudiantDTO> getEtudiantsQuiOntAppliquesAUneOffre(List<ApplicationStageDTO> applicationStageDTOList) {
+    public List<EtudiantDTO> getEtudiantsQuiOntAppliquesAUneOffre(List<ApplicationStageAvecInfosDTO> applicationStageDTOList) {
         List<EtudiantDTO> etudiantDTOList = new ArrayList<>();
-        for (ApplicationStageDTO applicationStageDTO : applicationStageDTOList) {
-            etudiantDTOList.add(EtudiantDTO.toDTO(etudiantRepository.findEtudiantById(applicationStageDTO.getEtudiant_id())));
-        }
+        if (!applicationStageDTOList.isEmpty()) {
+            for (ApplicationStageAvecInfosDTO applicationStageDTO : applicationStageDTOList)
+                etudiantDTOList.add(EtudiantDTO.toDTO(etudiantRepository.findEtudiantById(applicationStageDTO.getEtudiant_id())));
+        } else
+            return null;
         return etudiantDTOList;
     }
 }

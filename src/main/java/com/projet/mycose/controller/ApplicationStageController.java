@@ -45,7 +45,7 @@ public class ApplicationStageController {
 
     @GetMapping("/offre-applications/{id}")
     public ResponseEntity<List<EtudiantDTO>> getAllEtudiantQuiOntAppliquesAUneOffre(@PathVariable Long id) {
-        List<ApplicationStageDTO> applicationStageDTOList = applicationStageService.getAllApplicationsPourUneOffreById(id);
+        List<ApplicationStageAvecInfosDTO> applicationStageDTOList = applicationStageService.getAllApplicationsPourUneOffreById(id);
         return new ResponseEntity<>(offreStageService.getEtudiantsQuiOntAppliquesAUneOffre(applicationStageDTOList), HttpStatus.OK);
     }
 }
