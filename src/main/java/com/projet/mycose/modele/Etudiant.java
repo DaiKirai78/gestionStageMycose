@@ -28,6 +28,9 @@ public class Etudiant extends Utilisateur {
     @OneToMany(mappedBy = "etudiant", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ApplicationStage> applications;
 
+    @ManyToOne
+    private Enseignant enseignantAssignee;
+
     @Builder
     public Etudiant(Long id, String prenom, String nom, String numeroDeTelephone, String courriel, String motDePasse, Programme programme) {
         super(id,
