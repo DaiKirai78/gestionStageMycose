@@ -6,6 +6,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import NavbarMobile from './navbarMobile';
 import ProfilMenu from './profilMenu';
 import { useTranslation } from 'react-i18next';
+import langues from '../../utils/langues'
 
 const navLinks = {
     "ETUDIANT": [],
@@ -27,11 +28,12 @@ const navLinks = {
 const Navbar = ({ userInfo }) => {
     const navigate = useNavigate();
     const location = useLocation();
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
 
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
     const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
     const [isNotificationMenuOpen, setIsNotificationMenuOpen] = useState(false)
+    const [langueIndex, setLangueIndex] = useState(0)
 
     const profileMenuRef = useRef(null)
     const mobileMenuRef = useRef(null)
@@ -41,11 +43,18 @@ const Navbar = ({ userInfo }) => {
     const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen)    
     const toggleProfileMenu = () => setIsProfileMenuOpen(!isProfileMenuOpen)
     const toggleNotificationMenu = () => setIsNotificationMenuOpen(!isNotificationMenuOpen)
+    const toggleLangue = () => {
+        setLangueIndex((langueIndex + 1) % langues.length)
+    }
 
     const handleProfileItemClick = (e) => {
         e.preventDefault()
         setIsProfileMenuOpen(false)
     }
+
+    useEffect(() => {
+        i18n.changeLanguage(langues[langueIndex].suffix)
+    }, [langueIndex])
 
     useEffect(() => {
         function handleClickOutside(event) {            
@@ -142,7 +151,7 @@ const Navbar = ({ userInfo }) => {
                                     </div>
                                 </button>
                             </div>
-                            {isProfileMenuOpen && <ProfilMenu handleProfileItemClick={handleProfileItemClick} signOut={signOut} />}
+                            {isProfileMenuOpen && <ProfilMenu handleProfileItemClick={handleProfileItemClick} signOut={signOut} langue={langues[langueIndex].langue} toggleLangue={toggleLangue} />}
                         </div>
                     </div>
                 </div>
@@ -157,7 +166,7 @@ const Navbar = ({ userInfo }) => {
             </div>
         </div>
 
-        {isMobileMenuOpen && <NavbarMobile 
+        {isMobileMenuOpen && <NavbarMobile
                                     handleProfileItemClick={handleProfileItemClick} 
                                     toggleNotificationMenu={toggleNotificationMenu}
                                     mobileMenuRef={mobileMenuRef}

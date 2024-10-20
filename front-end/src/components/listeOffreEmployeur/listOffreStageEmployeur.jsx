@@ -41,7 +41,7 @@ const ListOffreStageEmployeur = ({data, voirPdf, setVoirPdf, activeOffer, setAct
                         return <OffreStageCard key={index} setActiveOffer={setActiveOffer} activeOffer={activeOffer} offre={offre} index={index} getColorOffreStatus={getColorOffreStatus} />;
                     })
                 }
-                <BoutonAvancerReculer pages={pages} setPages={setPages} className="mt-5"/>
+                <BoutonAvancerReculer pages={pages} setPages={setPages}/>
             </div>
             <InfoDetailleeOffreStage getColorOffreStatus={getColorOffreStatus} setActiveOffer={setActiveOffer} activeOffer={activeOffer} setVoirPdf={setVoirPdf} voirPdf={voirPdf} />
         </div>
