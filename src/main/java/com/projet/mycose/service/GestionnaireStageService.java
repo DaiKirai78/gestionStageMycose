@@ -45,6 +45,10 @@ public class GestionnaireStageService {
 
     public List<EnseignantDTO> getEnseignantsParRecherche(String recherche) {
         List<Enseignant>  listeRecu = utilisateurRepository.findAllEnseignantsBySearch(recherche);
+
+        if(listeRecu.isEmpty())
+            return null;
+
         return listeRecu.stream().map(EnseignantDTO::toDTO).toList();
     }
 }

@@ -200,4 +200,17 @@ class GestionnaireStageServiceTest {
 
         verify(utilisateurRepository, times(1)).findAllEnseignantsBySearch("uneRecherche");
     }
+
+    @Test
+    public void testGetEnseignantsParRecherche_Null() {
+        when(utilisateurRepository.findAllEnseignantsBySearch("uneRecherche")).thenReturn(new ArrayList<>());
+
+        // Act
+        List<EnseignantDTO> result = gestionnaireStageService.getEnseignantsParRecherche("uneRecherche");
+
+        // Assert
+        assertNull(result);
+        verify(utilisateurRepository, times(1)).findAllEnseignantsBySearch("uneRecherche");
+    }
+
 }
