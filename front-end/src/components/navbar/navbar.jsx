@@ -174,6 +174,8 @@ const Navbar = ({ userInfo }) => {
                                     userInfo={userInfo}
                                     isNotificationMenuOpen={isNotificationMenuOpen}
                                     notificationMenuRefMobile={notificationMenuRefMobile}
+                                    langue={langues[langueIndex].langue} 
+                                    toggleLangue={toggleLangue}
                                     />}
     </nav>
     )

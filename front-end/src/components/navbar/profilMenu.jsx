@@ -22,7 +22,7 @@ const ProfilMenu = ({ handleProfileItemClick, signOut, langue, toggleLangue }) =
                 onClick={() => {
                     toggleLangue()
                 }} 
-                className={`flex justify-between items-center mb-1 w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-orange hover:bg-opacity-20 ${location.pathname === "/profil" ? "cursor-default ring-1 ring-orange text-orange hover:bg-transparent" : ""}`}>
+                className="flex justify-between items-center mb-1 w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-orange hover:bg-opacity-20">
                 {langue} <TfiReload />
             </button>
             <button

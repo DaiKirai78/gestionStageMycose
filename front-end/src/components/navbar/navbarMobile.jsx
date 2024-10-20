@@ -1,9 +1,10 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { BsBellFill } from "react-icons/bs";
+import { TfiReload } from "react-icons/tfi";
 import { useLocation, useNavigate } from "react-router-dom";
 
-const NavbarMobile = ({ mobileMenuRef, userInfo, navLinks, toggleNotificationMenu, handleProfileItemClick, isNotificationMenuOpen, notificationMenuRefMobile }) => {
+const NavbarMobile = ({ mobileMenuRef, userInfo, navLinks, toggleNotificationMenu, handleProfileItemClick, isNotificationMenuOpen, notificationMenuRefMobile, langue, toggleLangue }) => {
     const navigate = useNavigate();
     const location = useLocation();
     const { t } = useTranslation();
@@ -58,6 +59,13 @@ const NavbarMobile = ({ mobileMenuRef, userInfo, navLinks, toggleNotificationMen
                         } }
                         className={`w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-orange hover:bg-opacity-20 ${location.pathname === "/profil" ? "cursor-default ring-1 ring-orange text-orange hover:bg-transparent" : ""}`}>
                         {t("profil")}
+                    </button>
+                    <button
+                        onClick={() => {
+                            toggleLangue()
+                        }} 
+                        className="flex justify-between items-center mb-1 w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-orange hover:bg-opacity-20">
+                        {langue} <TfiReload />
                     </button>
                     <button
                         onClick={handleProfileItemClick}
