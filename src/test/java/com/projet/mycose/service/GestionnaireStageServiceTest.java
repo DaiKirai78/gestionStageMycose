@@ -163,7 +163,7 @@ class GestionnaireStageServiceTest {
     }
 
     @Test
-    public void testGetEnseignantsParRecherche() {
+    public void testGetEnseignantsParRecherche_Success() {
         // Arrange
         Enseignant enseignant1 = new Enseignant(
                 1L,
