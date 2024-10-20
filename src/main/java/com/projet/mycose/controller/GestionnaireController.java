@@ -30,6 +30,16 @@ public class GestionnaireController {
         }
     }
 
+    @GetMapping("/getEtudiantsPages")
+    public ResponseEntity<Integer> getAmountOfPages() {
+        try {
+            return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
+                    gestionnaireStageService.getAmountOfPages());
+        } catch (Exception e) {
+            return ResponseEntity.noContent().build();
+        }
+    }
+
     @PostMapping("/rechercheEnseignants")
     public ResponseEntity<List<EnseignantDTO>> rechercherEnseignants(@RequestParam String search) {
         try{
