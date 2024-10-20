@@ -1,5 +1,6 @@
 package com.projet.mycose.controller;
 
+import com.projet.mycose.dto.EnseignantDTO;
 import com.projet.mycose.dto.EtudiantDTO;
 import com.projet.mycose.service.GestionnaireStageService;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,16 @@ public class GestionnaireController {
         try {
             return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
                     gestionnaireStageService.getEtudiantsSansEnseignants(pageNumber));
+        } catch (Exception e) {
+            return ResponseEntity.noContent().build();
+        }
+    }
+
+    @PostMapping("/rechercheEnseignants")
+    public ResponseEntity<List<EnseignantDTO>> rechercherEnseignants(@RequestParam String search) {
+        try{
+            return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
+                    gestionnaireStageService.getEnseignantsParRecherche(search));
         } catch (Exception e) {
             return ResponseEntity.noContent().build();
         }

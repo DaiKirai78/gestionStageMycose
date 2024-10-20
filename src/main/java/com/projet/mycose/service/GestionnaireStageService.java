@@ -1,6 +1,8 @@
 package com.projet.mycose.service;
 
+import com.projet.mycose.dto.EnseignantDTO;
 import com.projet.mycose.dto.EtudiantDTO;
+import com.projet.mycose.modele.Enseignant;
 import com.projet.mycose.modele.Etudiant;
 import com.projet.mycose.modele.GestionnaireStage;
 import com.projet.mycose.repository.GestionnaireStageRepository;
@@ -39,5 +41,10 @@ public class GestionnaireStageService {
         }
 
         return pageEtudiantsRetournee.getContent().stream().map(EtudiantDTO::toDTO).toList();
+    }
+
+    public List<EnseignantDTO> getEnseignantsParRecherche(String recherche) {
+        List<Enseignant>  listeRecu = utilisateurRepository.findAllEnseignantsBySearch(recherche);
+        return listeRecu.stream().map(EnseignantDTO::toDTO).toList();
     }
 }
