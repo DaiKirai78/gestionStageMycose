@@ -1,6 +1,8 @@
 package com.projet.mycose.repository;
 
+import com.projet.mycose.dto.EnseignantDTO;
 import com.projet.mycose.dto.EtudiantDTO;
+import com.projet.mycose.modele.Enseignant;
 import com.projet.mycose.modele.Etudiant;
 import com.projet.mycose.modele.Utilisateur;
 import org.springframework.data.domain.Page;
@@ -10,6 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -27,4 +30,10 @@ public interface UtilisateurRepository extends JpaRepository<Utilisateur, Long> 
             "WHERE e.enseignantAssignee IS NULL " +
             "AND e.credentials.role = 'ETUDIANT'")
     Page<Etudiant> findAllEtudiantsSansEnseignants(Pageable pageable);
+
+    @Query("SELECT e FROM Enseignant e " +
+            "WHERE LOWER(e.nom) LIKE LOWER('%' + :searchValue + '%') " +
+            "OR LOWER(e.prenom)LIKE LOWER('%' + :searchValue + '%') " +
+            "OR LOWER(e.credentials.email)LIKE LOWER('%' + :searchValue + '%') ")
+    List<Enseignant> findAllEnseignantsBySearch(String searchValue);
 }

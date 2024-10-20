@@ -1,6 +1,8 @@
 package com.projet.mycose.service;
 
+import com.projet.mycose.dto.EnseignantDTO;
 import com.projet.mycose.dto.EtudiantDTO;
+import com.projet.mycose.modele.Enseignant;
 import com.projet.mycose.modele.Etudiant;
 import com.projet.mycose.modele.GestionnaireStage;
 import com.projet.mycose.modele.Programme;
@@ -125,7 +127,7 @@ class GestionnaireStageServiceTest {
 
         int page = 0;
         PageRequest pageRequest = PageRequest.of(page, 10);
-        List<Etudiant> listeEtudiantMock =new ArrayList<>();
+        List<Etudiant> listeEtudiantMock = new ArrayList<>();
         listeEtudiantMock.add(etudiant1);
         listeEtudiantMock.add(etudiant2);
 
@@ -159,4 +161,56 @@ class GestionnaireStageServiceTest {
         assertNull(result);
         verify(utilisateurRepository, times(1)).findAllEtudiantsSansEnseignants(pageRequest);
     }
+
+    @Test
+    public void testGetEnseignantsParRecherche_Success() {
+        // Arrange
+        Enseignant enseignant1 = new Enseignant(
+                1L,
+                "unPrenom",
+                "unNom",
+                "555-444-3333",
+                "unCourriel@mail.com",
+                "unMotDePasse"
+        );
+
+        Enseignant enseignant2 = new Enseignant(
+                2L,
+                "unPrenom2",
+                "unNom2",
+                "444-555-2222",
+                "unCourriel2@mail.com",
+                "unMotDePasse2"
+        );
+
+        List<Enseignant> listeEnseignantMock = new ArrayList<>();
+        listeEnseignantMock.add(enseignant1);
+        listeEnseignantMock.add(enseignant2);
+
+        when(utilisateurRepository.findAllEnseignantsBySearch("uneRecherche")).thenReturn(listeEnseignantMock);
+
+        // Act
+        List<EnseignantDTO> result = gestionnaireStageService.getEnseignantsParRecherche("uneRecherche");
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals("unCourriel@mail.com", result.get(0).getCourriel());
+        assertEquals("unCourriel2@mail.com", result.get(1).getCourriel());
+
+        verify(utilisateurRepository, times(1)).findAllEnseignantsBySearch("uneRecherche");
+    }
+
+    @Test
+    public void testGetEnseignantsParRecherche_Null() {
+        when(utilisateurRepository.findAllEnseignantsBySearch("uneRecherche")).thenReturn(new ArrayList<>());
+
+        // Act
+        List<EnseignantDTO> result = gestionnaireStageService.getEnseignantsParRecherche("uneRecherche");
+
+        // Assert
+        assertNull(result);
+        verify(utilisateurRepository, times(1)).findAllEnseignantsBySearch("uneRecherche");
+    }
+
 }
