@@ -203,6 +203,7 @@ class GestionnaireStageServiceTest {
 
     @Test
     public void testGetEnseignantsParRecherche_Null() {
+        // Arrange
         when(utilisateurRepository.findAllEnseignantsBySearch("uneRecherche")).thenReturn(new ArrayList<>());
 
         // Act
