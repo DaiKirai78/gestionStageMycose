@@ -31,6 +31,12 @@ public interface UtilisateurRepository extends JpaRepository<Utilisateur, Long> 
             "AND e.credentials.role = 'ETUDIANT'")
     Page<Etudiant> findAllEtudiantsSansEnseignants(Pageable pageable);
 
+
+    @Query("SELECT count(e) FROM Etudiant e " +
+            "WHERE e.enseignantAssignee IS NULL " +
+            "AND e.credentials.role = 'ETUDIANT'")
+    int countAllEtudiantsSansEnseignants();
+
     @Query("""
         SELECT e FROM Enseignant e 
         WHERE LOWER(e.nom) LIKE CONCAT('%', LOWER(:searchValue), '%') 

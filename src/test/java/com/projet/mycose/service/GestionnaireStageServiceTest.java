@@ -214,4 +214,30 @@ class GestionnaireStageServiceTest {
         verify(utilisateurRepository, times(1)).findAllEnseignantsBySearch("uneRecherche");
     }
 
+    @Test
+    public void testGetAmountOfPage_NumberEndWithZero() {
+        //Arrange
+        when(utilisateurRepository.countAllEtudiantsSansEnseignants()).thenReturn(30);
+
+        //Act
+        int nombrePage = gestionnaireStageService.getAmountOfPages();
+
+        //Assert
+        assertEquals(nombrePage, 3);
+        verify(utilisateurRepository, times(1)).countAllEtudiantsSansEnseignants();
+    }
+
+    @Test
+    public void testGetAmountOfPage_NumberNotEndWithZero() {
+        //Arrange
+        when(utilisateurRepository.countAllEtudiantsSansEnseignants()).thenReturn(43);
+
+        //Act
+        int nombrePage = gestionnaireStageService.getAmountOfPages();
+
+        //Assert
+        assertEquals(nombrePage, 5);
+        verify(utilisateurRepository, times(1)).countAllEtudiantsSansEnseignants();
+    }
+
 }
