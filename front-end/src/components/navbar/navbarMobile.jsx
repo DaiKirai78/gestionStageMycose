@@ -32,7 +32,8 @@ const NavbarMobile = ({ mobileMenuRef, userInfo, navLinks, toggleNotificationMen
                     );
                 }) : ""}
             </div>
-            <div className="pt-4 pb-3 border-t border-gray-700">
+            <hr className="w-[98%] mx-auto" />
+            <div className="pt-4 pb-3">
                 <div className="flex items-center pl-2 pr-5">
                     <div className="ml-3">
                         <div className="text-base font-medium leading-none text-black">{userInfo ? `${userInfo.prenom} ${userInfo.nom}` : "Attente"}</div>
