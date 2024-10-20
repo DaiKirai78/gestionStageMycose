@@ -70,4 +70,16 @@ public class GestionnaireStageControllerTest {
                 .andExpect(jsonPath("$[0].courriel").value("unCourriel@mail.com"))
                 .andExpect(jsonPath("$[0].numeroDeTelephone").value("555-666-4756"));
     }
+
+    @Test
+    public void testGetEtudiantsSansEnseignants_Error() throws Exception {
+        //Arrange
+        when(gestionnaireStageService.getEtudiantsSansEnseignants(0)).thenThrow(new RuntimeException());
+
+        //Act & Assert
+        mockMvc.perform(post("/gestionnaire/getEtudiants")
+                        .param("pageNumber", String.valueOf(0))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+    }
 }
