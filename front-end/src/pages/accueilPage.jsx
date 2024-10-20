@@ -12,6 +12,7 @@ const AccueilPage = () => {
     const [cvStatus, setCvStatus] = useState(null);
     const navigate = useNavigate();
     const [userInfo, setUserInfo] = useOutletContext();
+    const [isFetching, setIsFetching] = useState(true);
 
     useEffect(() => {
         if (userInfo && userInfo.role === "ETUDIANT") {
@@ -34,29 +35,39 @@ const AccueilPage = () => {
 
             if (res.ok) {
                 const cvData = await res.json();
+                console.log(cvData);
+                console.log("data");
+                
                 setCvStatus(cvData.status);
             } else {
-                setCvStatus("NONE");
+                setCvStatus(undefined);
             }
         } catch (err) {
             console.error("Erreur lors de la récupération du CV", err);
+        } finally {
+            setIsFetching(false);
+        }
+    }
+
+    function getEtudiantPage() {
+        
+        if (cvStatus === "ACCEPTED") {
+            return <AcceuilEtudiant />;
+        }
+        else if (cvStatus === "WAITING") {
+            return <VoirMonCVPage />;
+        }
+        else {
+            return <UploadCvPage />;
         }
     }
 
     function getAccueil() {
-        if (!userInfo) return <PageIsLoading/>;
+        if (!userInfo || (userInfo.role === "ETUDIANT" && isFetching)) return <PageIsLoading/>;
         
         switch (userInfo.role) {
             case "ETUDIANT":
-                if (cvStatus === "ACCEPTED") {
-                    return <AcceuilEtudiant />;
-                }
-                else if (cvStatus === "WAITING") {
-                    return <VoirMonCVPage />;
-                }
-                else {
-                    return <UploadCvPage />;
-                }
+                return getEtudiantPage()
             case "EMPLOYEUR":
                 return <AcceuilEmployeur />;
             case "GESTIONNAIRE_STAGE":

@@ -136,7 +136,7 @@ public class FichierCVService {
 
     public FichierCV getCurrentCV() {
         Long etudiant_id = utilisateurService.getMyUserId();
-        return fileRepository.getFirstByEtudiant_IdAndStatusEqualsOrStatusEqualsOrStatusEquals(etudiant_id, FichierCV.Status.ACCEPTED, FichierCV.Status.WAITING, FichierCV.Status.REFUSED).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Fichier non trouvé"));
+        return fileRepository.getCurrentCvByEtudiant_id(etudiant_id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Fichier non trouvé"));
     }
 
     public FichierCVDTO getCurrentCV_returnNullIfEmpty(Long etudiant_id) {
