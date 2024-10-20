@@ -23,10 +23,7 @@ const TokenPageContainer = ({children, role, setUserInfo}) => {
         
         const is_tokenValid = await verifToken(token, role, setUserInfo);        
 
-        setIsFetching(false)
-    
-        console.log(is_tokenValid);
-        
+        setIsFetching(false)        
         
         if (is_tokenValid.error || !is_tokenValid.userValid) {
             navigate("/");

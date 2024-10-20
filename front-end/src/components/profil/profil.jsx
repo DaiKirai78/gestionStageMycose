@@ -1,13 +1,28 @@
 import React, { useEffect, useState } from 'react'
 import CardStatusDuCv from './cardStatusDuCv'
-import CardStatusStage from './cardStatusStage'
+import { useTranslation } from 'react-i18next';
+import { useOutletContext } from 'react-router-dom';
+import CardInfoUser from './cardInfoUser';
 
 const Profil = () => {
     const [isFetching, setIsFetching] = useState(true);
-    const [cvInfo, setCvInfo] = useState()
+    const [cvInfo, setCvInfo] = useState();
+    const { t } = useTranslation();
+    const [userInfo, setUserInfo] = useOutletContext();
+
+    const cards = [
+        {
+            "role": [],
+            "card": <CardInfoUser userInfo={userInfo} />
+        },
+        {
+            "role": ["ETUDIANT"],
+            "card": <CardStatusDuCv cvInfo={cvInfo}/>
+        }
+    ]
 
     useEffect(() => {
-        fetchInfoCv();
+        fetchInfoCv();        
     }, []);
 
     async function fetchInfoCv() {
@@ -40,13 +55,17 @@ const Profil = () => {
     return (
         !isFetching 
         &&
-        <div className="min-h-screen bg-orange-light p-4 md:p-8 lg:p-12">
-            <h1 className="text-3xl md:text-4xl font-bold text-center mb-8">Profile</h1>
+        <div className="h-screen bg-orange-light p-4 md:p-8 lg:p-12">
+            <h1 className="text-3xl md:text-4xl font-bold text-center mb-8">{t("profil")}</h1>
             
             <div className="max-w-3xl mx-auto space-y-8">
-            <CardStatusDuCv cvInfo={cvInfo}/>
-
-            <CardStatusStage />
+            {
+                cards.map(card => {
+                    if (card.role.length === 0 || card.role.includes(userInfo.role)) {
+                        return card.card
+                    }
+                })
+            }
             </div>
         </div>
     )
