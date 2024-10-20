@@ -51,7 +51,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/enseignant/**").hasAuthority("ENSEIGNANT")
                         .requestMatchers("/entreprise/**").hasAuthority("EMPLOYEUR")
                         .requestMatchers("/enseignant/**").hasAuthority("ENSEIGNANT")
-                        .requestMatchers("/gestionnaire-stage/**").hasAuthority("GESTIONNAIRE_STAGE")
+                        .requestMatchers("/gestionnaire/**").hasAuthority("GESTIONNAIRE_STAGE")
                         .requestMatchers("/api/cv/waitingcv").hasAuthority("GESTIONNAIRE_STAGE")
                         .requestMatchers("/api/cv/pages").hasAuthority("GESTIONNAIRE_STAGE")
                         .requestMatchers("/api/cv/accept").hasAuthority("GESTIONNAIRE_STAGE")

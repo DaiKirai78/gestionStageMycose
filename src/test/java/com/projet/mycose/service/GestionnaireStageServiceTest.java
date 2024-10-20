@@ -1,7 +1,11 @@
 package com.projet.mycose.service;
 
+import com.projet.mycose.dto.EtudiantDTO;
+import com.projet.mycose.modele.Etudiant;
 import com.projet.mycose.modele.GestionnaireStage;
+import com.projet.mycose.modele.Programme;
 import com.projet.mycose.repository.GestionnaireStageRepository;
+import com.projet.mycose.repository.UtilisateurRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,7 +14,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -26,6 +36,9 @@ class GestionnaireStageServiceTest {
 
     @Mock
     private GestionnaireStageRepository gestionnaireStageRepository;
+
+    @Mock
+    private UtilisateurRepository utilisateurRepository;
 
     @InjectMocks
     private GestionnaireStageService gestionnaireStageService;
@@ -85,5 +98,65 @@ class GestionnaireStageServiceTest {
         // Assert
         // Verify that the save method was never called
         verify(gestionnaireStageRepository, never()).save(any(GestionnaireStage.class));
+    }
+
+    @Test
+    public void testGetEtudiantsSansEnseignants_Sucess() {
+        // Arrange
+        Etudiant etudiant1 = new Etudiant(
+                1L,
+                "unPrenom",
+                "unNom",
+                "555-656-0965",
+                "unCourriel@mail.com",
+                "unMotDePasse",
+                Programme.TECHNIQUE_INFORMATIQUE
+        );
+
+        Etudiant etudiant2 = new Etudiant(
+                2L,
+                "unPrenom2",
+                "unNom2",
+                "444-454-0965",
+                "unCourriel2@mail.com",
+                "unMotDePasse2",
+                Programme.GENIE_LOGICIEL
+        );
+
+        int page = 0;
+        PageRequest pageRequest = PageRequest.of(page, 10);
+        List<Etudiant> listeEtudiantMock =new ArrayList<>();
+        listeEtudiantMock.add(etudiant1);
+        listeEtudiantMock.add(etudiant2);
+
+        Page<Etudiant> etudiantsPage = new PageImpl<>(listeEtudiantMock, pageRequest, 2);
+
+        when(utilisateurRepository.findAllEtudiantsSansEnseignants(pageRequest)).thenReturn(etudiantsPage);
+        // Act
+        List<EtudiantDTO> result = gestionnaireStageService.getEtudiantsSansEnseignants(page);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals("unCourriel@mail.com", result.get(0).getCourriel());
+        assertEquals("unCourriel2@mail.com", result.get(1).getCourriel());
+
+        verify(utilisateurRepository, times(1)).findAllEtudiantsSansEnseignants(pageRequest);
+    }
+
+    @Test
+    public void testGetEtudiantsSansEnseignants_Null() {
+        int page = 0;
+        PageRequest pageRequest = PageRequest.of(page, 10);
+        Page<Etudiant> etudiantsPage = new PageImpl<>(List.of(), pageRequest, 0);
+
+        when(utilisateurRepository.findAllEtudiantsSansEnseignants(pageRequest)).thenReturn(etudiantsPage);
+
+        // Act
+        List<EtudiantDTO> result = gestionnaireStageService.getEtudiantsSansEnseignants(page);
+
+        // Assert
+        assertNull(result);
+        verify(utilisateurRepository, times(1)).findAllEtudiantsSansEnseignants(pageRequest);
     }
 }
