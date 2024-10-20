@@ -11,8 +11,8 @@ const navLinks = {
     "ETUDIANT": [],
     "EMPLOYEUR": [
         {
-            "titre": "testEmployeur",
-            "lien": "/emp"
+            "titre": "televerserOffre",
+            "lien": "/televerserOffreStage"
         }
     ],
     "GESTIONNAIRE_STAGE": [
@@ -106,7 +106,7 @@ const Navbar = ({ userInfo }) => {
                                                 navigate(infoBtn["lien"])
                                             }}
                                             className={`hover:bg-orange hover:bg-opacity-20 px-3 py-2 rounded-md font-medium ${location.pathname === infoBtn["lien"] ? "cursor-default ring-1 ring-orange text-orange hover:bg-transparent" : ""}`}>
-                                            {infoBtn["titre"]}
+                                            {t(infoBtn["titre"])}
                                         </button>
                                     );
                                 }) : ""

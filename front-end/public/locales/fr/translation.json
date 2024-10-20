@@ -179,5 +179,6 @@
     "ENSEIGNANT": "Enseignant",
     "EMPLOYEUR": "Employeur",
     "ETUDIANT": "Étudiant",
-    "NOT_SPECIFIED": "Non Spécifié"
+    "NOT_SPECIFIED": "Non Spécifié",
+    "televerserOffre": "Téléverser offre"
 }

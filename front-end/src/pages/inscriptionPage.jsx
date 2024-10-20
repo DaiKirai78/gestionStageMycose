@@ -28,7 +28,7 @@ const InscriptionPage = () => {
 
     return (
         <>
-        {step === "" ? <ChoixUserInscription setRole={setRole} setStep={setStep}/> :
+        {step === "" ? <ChoixUserInscription role={role} setRole={setRole} setStep={setStep}/> :
             <FormContainer>
                 {switchComponent(step)}
             </FormContainer>}

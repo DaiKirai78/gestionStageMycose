@@ -251,7 +251,7 @@ function FileOffreStage() {
             {uploadError && <p className="text-red-500 mt-4">{uploadError}</p>}
 
             <div className="flex justify-center">
-                <button className="bg-[#FE872B] text-white p-2 rounded-lg">{t("submit")}</button>
+                <button type="submit" className="bg-[#FE872B] text-white p-2 rounded-lg">{t("submit")}</button>
             </div>
         </form>
     );

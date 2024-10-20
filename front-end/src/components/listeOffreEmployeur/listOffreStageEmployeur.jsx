@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import OffreStageCard from './offreStageCard';
 import InfoDetailleeOffreStage from './infoDetailleeOffreStage';
+import BoutonAvancerReculer from '../listeOffreEmployeur/boutonAvancerReculer.jsx';
 
 
-const ListOffreStageEmployeur = ({data, voirPdf, setVoirPdf, activeOffer, setActiveOffer}) => {
+
+const ListOffreStageEmployeur = ({data, voirPdf, setVoirPdf, activeOffer, setActiveOffer, pages, setPages}) => {
 
     useEffect(() => {
         if (!isMediumScreen()) {
@@ -39,6 +41,7 @@ const ListOffreStageEmployeur = ({data, voirPdf, setVoirPdf, activeOffer, setAct
                         return <OffreStageCard key={index} setActiveOffer={setActiveOffer} activeOffer={activeOffer} offre={offre} index={index} getColorOffreStatus={getColorOffreStatus} />;
                     })
                 }
+                <BoutonAvancerReculer pages={pages} setPages={setPages} className="mt-5"/>
             </div>
             <InfoDetailleeOffreStage getColorOffreStatus={getColorOffreStatus} setActiveOffer={setActiveOffer} activeOffer={activeOffer} setVoirPdf={setVoirPdf} voirPdf={voirPdf} />
         </div>

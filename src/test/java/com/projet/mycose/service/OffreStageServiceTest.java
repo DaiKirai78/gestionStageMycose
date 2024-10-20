@@ -42,6 +42,8 @@ public class OffreStageServiceTest {
 
     @Mock
     private UtilisateurRepository utilisateurRepository;
+    @Mock
+    private EtudiantRepository etudiantRepository;
 
     @Mock
     private FormulaireOffreStageRepository formulaireOffreStageRepository;
@@ -64,6 +66,7 @@ public class OffreStageServiceTest {
     private FormulaireOffreStageDTO formulaireOffreStageDTO;
     private FormulaireOffreStage formulaireOffreStage;
     private Employeur employeur;
+    private Etudiant etudiant;
 
     private static final String SAMPLE_DATA = "sampleData";
     private static final String BASE64_SAMPLE_DATA = "c2FtcGxlRGF0YQ==";
@@ -101,6 +104,16 @@ public class OffreStageServiceTest {
         formulaireOffreStage = new FormulaireOffreStage();
         formulaireOffreStage.setId(2L);
         formulaireOffreStage.setCreateur(new Employeur());
+
+        etudiant = Etudiant.builder()
+                .id(1L)
+                .prenom("Roberto")
+                .nom("Berrios")
+                .numeroDeTelephone("438-508-3245")
+                .courriel("roby@gmail.com")
+                .motDePasse("Roby123$")
+                .programme(Programme.TECHNIQUE_INFORMATIQUE)
+                .build();
 
         employeur = Employeur.builder()
                 .id(1L)
@@ -530,5 +543,42 @@ public class OffreStageServiceTest {
 
         assertEquals("createur_id cannot be null", exception.getMessage());
         verify(utilisateurRepository, never()).findById(anyLong());
+    }
+
+    @Test
+    public void getEtudiantsQuiOntAppliquesAUneOffreSuccesTest() {
+        //Arrange
+        ApplicationStageAvecInfosDTO applicationStageDTO = new ApplicationStageAvecInfosDTO();
+        applicationStageDTO.setEtudiant_id(1L);
+        applicationStageDTO.setId(1L);
+        applicationStageDTO.setOffreStage_id(1L);
+        applicationStageDTO.setStatus(ApplicationStage.ApplicationStatus.ACCEPTED);
+        List<ApplicationStageAvecInfosDTO> applicationStageDTOList = new ArrayList<>();
+        applicationStageDTOList.add(applicationStageDTO);
+        when(etudiantRepository.findEtudiantById(anyLong())).thenReturn(etudiant);
+
+        //Act
+        EtudiantDTO etudiantDTO = offreStageService.getEtudiantsQuiOntAppliquesAUneOffre(applicationStageDTOList).getFirst();
+
+        //Assert
+        assertEquals(etudiant.getId(), etudiantDTO.getId());
+        assertEquals(etudiant.getPrenom(), etudiantDTO.getPrenom());
+        assertEquals(etudiant.getNom(), etudiantDTO.getNom());
+        assertEquals(etudiant.getCourriel(), etudiantDTO.getCourriel());
+        assertEquals(etudiant.getNumeroDeTelephone(), etudiantDTO.getNumeroDeTelephone());
+        assertEquals(etudiant.getProgramme(), etudiantDTO.getProgramme());
+        assertEquals(etudiant.getRole(), etudiantDTO.getRole());
+    }
+
+    @Test
+    public void getEtudiantsQuiOntAppliquesAUneOffreListeVideTest() {
+        // Arrange
+        List<ApplicationStageAvecInfosDTO> applicationStageDTOList = new ArrayList<>();
+
+        // Act
+        List<EtudiantDTO> etudiantDTOList = offreStageService.getEtudiantsQuiOntAppliquesAUneOffre(applicationStageDTOList);
+
+        // Assert
+        assertNull(etudiantDTOList);
     }
 }

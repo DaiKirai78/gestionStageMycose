@@ -14,6 +14,7 @@ import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.nio.file.AccessDeniedException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -39,6 +40,7 @@ public class ApplicationStageServiceTest {
 
     private Long offreStageId;
     private Etudiant etudiant;
+    private Etudiant etudiant2;
     private FichierOffreStage fichierOffreStage;
     private ApplicationStage applicationStage;
     private ApplicationStageDTO applicationStageDTO;
@@ -50,6 +52,9 @@ public class ApplicationStageServiceTest {
 
         etudiant = new Etudiant();
         etudiant.setId(1L);
+
+        etudiant2 = new Etudiant();
+        etudiant2.setId(2L);
 
         fichierOffreStage = new FichierOffreStage();
         fichierOffreStage.setId(offreStageId);
@@ -236,5 +241,27 @@ public class ApplicationStageServiceTest {
 
         verify(utilisateurService, times(1)).getMyUserId();
         verify(applicationStageRepository, times(1)).findByEtudiantIdAndOffreStageId(etudiantId, applicationId);
+    }
+
+    @Test
+    void getAllApplicationsPourUneOffreByIdTest() {
+        // Arrange
+        ApplicationStage applicationStage1 = new ApplicationStage(etudiant, fichierOffreStage);
+        applicationStage1.setStatus(ApplicationStage.ApplicationStatus.ACCEPTED);
+        ApplicationStage applicationStage2 = new ApplicationStage(etudiant2, fichierOffreStage);
+        applicationStage2.setStatus(ApplicationStage.ApplicationStatus.ACCEPTED);
+
+        List<ApplicationStage> applicationStageList = new ArrayList<>();
+        applicationStageList.add(applicationStage1);
+        applicationStageList.add(applicationStage2);
+
+        when(applicationStageRepository
+                .findAllByOffreStageIdAndStatusEquals(1L, ApplicationStage.ApplicationStatus.ACCEPTED)).thenReturn(applicationStageList);
+
+        // Act
+        List<ApplicationStageAvecInfosDTO> applicationStageAvecInfosDTOList = applicationStageService.getAllApplicationsPourUneOffreById(1L);
+
+        // Assert
+        assertEquals(2, applicationStageAvecInfosDTOList.size());
     }
 }

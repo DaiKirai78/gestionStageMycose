@@ -9,19 +9,26 @@ import detectElementOverflow from 'detect-element-overflow';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-function ChoixUserInscription({setRole, setStep}) {
+
+function ChoixUserInscription({role, setRole, setStep}) {
     
   const ripple = new Ripple();
 
-  const [entrepriseCheck, setEntrepriseCheck] = useState(false)
-  const [eleveCheck, setEleveCheck] = useState(true)
-  const [professeurCheck, setProfesseurCheck] = useState(false)
+  const initialChecks = {
+    etudiant: role === 'etudiant',
+    entreprise: role === 'entreprise',
+    professeur: role === 'professeur'
+  }
+
+  const [entrepriseCheck, setEntrepriseCheck] = useState(initialChecks.entreprise)
+  const [eleveCheck, setEleveCheck] = useState(initialChecks.etudiant)
+  const [professeurCheck, setProfesseurCheck] = useState(initialChecks.professeur)
 
   const navigate = useNavigate("");
   const {t} = useTranslation();
 
   useEffect(() => {
-        
+    initCurrentSelection()
     function handleOnResize() {      
     
     const parentContentContainerRef = document.querySelector("#contentParent")
@@ -49,6 +56,13 @@ function ChoixUserInscription({setRole, setStep}) {
 
   function goToLogin() {
     navigate("/");
+  }
+
+  function initCurrentSelection() {    
+    if(role === undefined) {
+      setRole('etudiant');
+      setEleveCheck(true);
+    }
   }
 
   function checkEleveChange() {
