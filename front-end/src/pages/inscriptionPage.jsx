@@ -4,6 +4,7 @@ import { useState } from "react";
 import FormInscription2 from '../components/inscriptionPage/formInscription2.jsx';
 import FormInscription3 from '../components/inscriptionPage/formInscription3.jsx';
 import ChoixUserInscription from '../components/inscriptionPage/choixUserInscription.jsx';
+import ButtonChangeLangConnIncr from '../components/buttonChangeLangConnIncr.jsx';
 
 const InscriptionPage = () => {
     const [prenom, setPrenom] = useState('');
@@ -32,6 +33,7 @@ const InscriptionPage = () => {
             <FormContainer>
                 {switchComponent(step)}
             </FormContainer>}
+            <ButtonChangeLangConnIncr />
         </>
     );
 };

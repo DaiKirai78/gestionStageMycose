@@ -1,6 +1,7 @@
 import React from 'react';
 import FormConnection from '../components/connectionPage/formConnection.jsx'
 import FormContainer from '../components/formContainer'
+import ButtonChangeLangConnIncr from '../components/buttonChangeLangConnIncr.jsx';
 
 const ConnectionPage = () => {
     return (
@@ -8,6 +9,7 @@ const ConnectionPage = () => {
             <FormContainer>
                 <FormConnection/>
             </FormContainer>
+            <ButtonChangeLangConnIncr />
         </>
     );
 };
