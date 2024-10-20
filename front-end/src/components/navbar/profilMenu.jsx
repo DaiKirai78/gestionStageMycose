@@ -8,7 +8,7 @@ const ProfilMenu = ({ handleProfileItemClick, signOut }) => {
     const { t } = useTranslation();
 
     return (
-        <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg p-1 bg-orange-light ring-1 ring-orange ring-opacity-40">
+        <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg p-1 bg-orange-light ring-1 ring-orange ring-opacity-40 z-30">
             <button
                 onClick={e => {
                     (location.pathname != "/profil" && handleProfileItemClick(e))

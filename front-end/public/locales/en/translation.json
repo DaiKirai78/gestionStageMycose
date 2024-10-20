@@ -178,5 +178,6 @@
     "ENSEIGNANT": "Teacher",
     "EMPLOYEUR": "Employer",
     "ETUDIANT": "Student",
-    "NOT_SPECIFIED": "Not Specified"
+    "NOT_SPECIFIED": "Not Specified",
+    "televerserOffre": "Upload offer"
 }

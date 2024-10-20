@@ -22,7 +22,7 @@ const InfoDetailleeOffreStage = ({setActiveOffer, activeOffer, getColorOffreStat
     }
 
     return (
-        <div className={`pb-8 sm:pt-0 bg-orange-light z-20 rounded border border-deep-orange-200 w-full md:h-[calc(100vh-1rem)] h-[90vh] fixed left-0 md:sticky md:top-2 flex flex-col md:transition-none transition-all ease-in-out overflow-y-auto ${activeOffer === null ? "bottom-[-90vh]" : "bottom-0"}`}>
+        <div className={`pb-8 sm:pt-0 bg-orange-light z-20 rounded border border-deep-orange-200 w-full md:h-full h-[90vh] fixed left-0 md:sticky md:top-2 flex flex-col md:transition-none transition-all ease-in-out overflow-y-auto ${activeOffer === null ? "bottom-[-90vh]" : "bottom-0"}`}>
             <button className='absolute right-2 top-2 md:hidden'
                 onClick={() => {setActiveOffer(null)}}>
                 <BsX size={25}/>

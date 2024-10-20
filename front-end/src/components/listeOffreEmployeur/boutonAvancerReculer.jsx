@@ -27,7 +27,7 @@ const BoutonAvancerReculer = ({ pages, setPages }) => {
     const nextButtonClass = pages.currentPage >= pages.maxPages ? "bg-gray-200 text-gray-700" : "bg-gray-400 text-gray-900";
 
     return (
-        <div className="flex justify-center mb-28">
+        <div className="flex justify-center mb-28 mt-4">
             {/* Previous Page Button */}
             <button
                 className={`px-4 py-2 rounded-l ${previousButtonClass}`}

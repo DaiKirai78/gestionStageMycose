@@ -372,6 +372,7 @@ function FormOffreStage() {
 
             <div className="flex justify-center mt-4">
                 <button
+                    type="submit"
                     className="max-w-xs w-full bg-[#FE872B] p-2 rounded-lg hover:bg-orange text-white"
                 >
                     {t("submit")}

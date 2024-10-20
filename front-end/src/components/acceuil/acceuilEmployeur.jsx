@@ -4,7 +4,6 @@ import ListOffreStageEmployeur from '../listeOffreEmployeur/listOffreStageEmploy
 import PageIsLoading from "../pageIsLoading.jsx"
 import { useTranslation } from "react-i18next"
 import AfficherPdf from '../listeOffreEmployeur/afficherPdf.jsx';
-import BoutonAvancerReculer from '../listeOffreEmployeur/boutonAvancerReculer.jsx';
 import { useOutletContext } from 'react-router-dom';
 
 const STATUS_CODE_ACCEPTED = 202;
@@ -113,12 +112,11 @@ const AcceuilEmployeur = () => {
                     {   
                         isFetching && !data ?
                             <PageIsLoading /> : 
-                            data !=  undefined ?
-                                <ListOffreStageEmployeur data={data} voirPdf={voirPdf} setVoirPdf={setVoirPdf} activeOffer={activeOffer} setActiveOffer={setActiveOffer} /> :
+                            data ?
+                                <ListOffreStageEmployeur pages={pages} setPages={setPages} data={data} voirPdf={voirPdf} setVoirPdf={setVoirPdf} activeOffer={activeOffer} setActiveOffer={setActiveOffer} /> :
                                 <h1>{t("noOffer")}</h1>
                     }
                 </div>
-                <BoutonAvancerReculer pages={pages} setPages={setPages}/>
             </div>
             { voirPdf && <AfficherPdf setVoirPdf={setVoirPdf} activePdf={activeOffer.fileData} /> }
         </TokenPageContainer>
