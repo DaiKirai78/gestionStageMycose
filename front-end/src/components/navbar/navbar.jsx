@@ -5,6 +5,7 @@ import logo from '../../assets/LogoMycose.png'
 import { useNavigate, useLocation } from 'react-router-dom';
 import NavbarMobile from './navbarMobile';
 import ProfilMenu from './profilMenu';
+import { useTranslation } from 'react-i18next';
 
 const navLinks = {
     "ETUDIANT": [],
@@ -26,6 +27,7 @@ const navLinks = {
 const Navbar = ({ userInfo }) => {
     const navigate = useNavigate();
     const location = useLocation();
+    const { t } = useTranslation();
 
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
     const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
@@ -34,6 +36,7 @@ const Navbar = ({ userInfo }) => {
     const profileMenuRef = useRef(null)
     const mobileMenuRef = useRef(null)
     const notificationMenuRef = useRef(null)
+    const notificationMenuRefMobile = useRef(null)
 
     const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen)    
     const toggleProfileMenu = () => setIsProfileMenuOpen(!isProfileMenuOpen)
@@ -45,18 +48,21 @@ const Navbar = ({ userInfo }) => {
     }
 
     useEffect(() => {
-        function handleClickOutside(event) {
+        function handleClickOutside(event) {            
             if (profileMenuRef.current && !profileMenuRef.current.contains(event.target)) {
-                setIsProfileMenuOpen(false)
+                setIsProfileMenuOpen(false);
             }
-            if (notificationMenuRef.current && !notificationMenuRef.current.contains(event.target)) {
-                setIsNotificationMenuOpen(false)
+            if (screen.width < 720 && notificationMenuRefMobile.current && !notificationMenuRefMobile.current.contains(event.target)) {
+                setIsNotificationMenuOpen(false);
+            }
+            if (screen.width > 720 && notificationMenuRef.current && !notificationMenuRef.current.contains(event.target)) {
+                setIsNotificationMenuOpen(false);
             }
         }
 
         function handleScroll() {
-            setIsProfileMenuOpen(false)
-            setIsNotificationMenuOpen(false)
+            setIsProfileMenuOpen(false);
+            setIsNotificationMenuOpen(false);
         }
 
         document.addEventListener('mousedown', handleClickOutside)
@@ -88,8 +94,8 @@ const Navbar = ({ userInfo }) => {
                                 onClick={() => {
                                     navigate("/accueil")
                                 }}
-                                className={`hover:bg-orange hover:bg-opacity-20 px-3 py-2 rounded-md font-medium ${location.pathname === "/accueil" ? "cursor-default ring-1 ring-orange text-orange hover:bg-opacity-0" : ""}`}>
-                                    Acceuil
+                                className={`hover:bg-orange hover:bg-opacity-20 px-3 py-2 rounded-md font-medium ${location.pathname === "/accueil" ? "cursor-default ring-1 ring-orange text-orange hover:bg-transparent" : ""}`}>
+                                    {t("accueil")}
                             </button>
                             {
                                 userInfo ? navLinks[userInfo.role].map((infoBtn, index) => {
@@ -99,7 +105,7 @@ const Navbar = ({ userInfo }) => {
                                             onClick={() => {
                                                 navigate(infoBtn["lien"])
                                             }}
-                                            className={`hover:bg-orange hover:bg-opacity-20 px-3 py-2 rounded-md font-medium ${location.pathname === infoBtn["lien"] ? "cursor-default ring-1 ring-orange text-orange hover:bg-opacity-0" : ""}`}>
+                                            className={`hover:bg-orange hover:bg-opacity-20 px-3 py-2 rounded-md font-medium ${location.pathname === infoBtn["lien"] ? "cursor-default ring-1 ring-orange text-orange hover:bg-transparent" : ""}`}>
                                             {infoBtn["titre"]}
                                         </button>
                                     );
@@ -119,7 +125,7 @@ const Navbar = ({ userInfo }) => {
                             </button>
                             {isNotificationMenuOpen && (
                                 <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg p-1 bg-orange-light ring-1 ring-orange ring-opacity-40">
-                                    <p className="px-4 py-2 text-black">Aucune notification pour le moment</p>
+                                    <p className="px-4 py-2 text-black">{t("noNotification")}</p>
                                 </div>
                             )}
                         </div>
@@ -157,6 +163,8 @@ const Navbar = ({ userInfo }) => {
                                     mobileMenuRef={mobileMenuRef}
                                     navLinks={navLinks}
                                     userInfo={userInfo}
+                                    isNotificationMenuOpen={isNotificationMenuOpen}
+                                    notificationMenuRefMobile={notificationMenuRefMobile}
                                     />}
     </nav>
     )
