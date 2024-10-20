@@ -174,5 +174,10 @@
     "noNotes": "Aucunes notes",
     "accueil": "Accueil",
     "noNotification": "Aucune notification pour le moment",
-    "signOut": "Déconnexion"
+    "signOut": "Déconnexion",
+    "GESTIONNAIRE_STAGE": "Gestionnaire de stage",
+    "ENSEIGNANT": "Enseignant",
+    "EMPLOYEUR": "Employeur",
+    "ETUDIANT": "Étudiant",
+    "NOT_SPECIFIED": "Non Spécifié"
 }

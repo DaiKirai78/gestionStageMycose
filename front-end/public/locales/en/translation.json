@@ -173,5 +173,10 @@
     "noNotes": "No notes",
     "accueil": "Home",
     "noNotification": "No notification for now",
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "GESTIONNAIRE_STAGE": "Internship manager",
+    "ENSEIGNANT": "Teacher",
+    "EMPLOYEUR": "Employer",
+    "ETUDIANT": "Student",
+    "NOT_SPECIFIED": "Not Specified"
 }
