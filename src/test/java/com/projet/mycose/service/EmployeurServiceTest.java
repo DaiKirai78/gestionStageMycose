@@ -162,19 +162,19 @@ public class EmployeurServiceTest {
         PageRequest pageRequest = PageRequest.of(page, 10);
         Employeur createur = new Employeur(2L, "unPrenom", "unNom", "514-222-0385", "courriel@courriel.com", "123123123", "uneEntreprise");
 
-        FormulaireOffreStage mockFormulaireOffreStage = new FormulaireOffreStage("unTitreForm", "uneEntreprise", "unEmployeur", "unEmail@mail.com", "unsite.com", "uneLocalisation", "1000", "uneDescription", createur);
-        FichierOffreStage mockFichierOffreStage = new FichierOffreStage("unTitreFichier", "uneEntreprise", "nom.pdf", "data".getBytes(), createur);
+        FormulaireOffreStage mockFormulaireOffreStage = new FormulaireOffreStage("unTitreForm", "uneEntreprise", "unEmployeur", "unEmail@mail.com", "unsite.com", "uneLocalisation", "1000", "uneDescription", createur, OffreStage.Visibility.PUBLIC, null, OffreStage.Status.ACCEPTED);
+        FichierOffreStage mockFichierOffreStage = new FichierOffreStage("unTitreFichier", "uneEntreprise", "nom.pdf", "data".getBytes(), createur, OffreStage.Visibility.PUBLIC, null, OffreStage.Status.ACCEPTED);
         List<OffreStage> mockOffresListe = new ArrayList<>();
         mockOffresListe.add(mockFormulaireOffreStage);
         mockOffresListe.add(mockFichierOffreStage);
 
         Page<OffreStage> offresPage = new PageImpl<>(mockOffresListe, pageRequest, 2);
 
-        when(utilisateurService.getUserIdByToken(token)).thenReturn(createurId);
+        when(utilisateurService.getMyUserId()).thenReturn(createurId);
         when(offreStageRepositoryMock.findOffreStageByCreateurId(createurId, pageRequest)).thenReturn(offresPage);
 
         // Act
-        List<OffreStageDTO> result = employeurService.getStages(token, page);
+        List<OffreStageDTO> result = employeurService.getStages(page);
 
         // Assert
         assertNotNull(result);
@@ -182,7 +182,7 @@ public class EmployeurServiceTest {
         assertEquals("unTitreForm", result.get(0).getTitle());
         assertEquals("unTitreFichier", result.get(1).getTitle());
 
-        verify(utilisateurService, times(1)).getUserIdByToken(token);
+        verify(utilisateurService, times(1)).getMyUserId();
         verify(offreStageRepositoryMock, times(1)).findOffreStageByCreateurId(createurId, pageRequest);
     }
 
@@ -195,27 +195,27 @@ public class EmployeurServiceTest {
         PageRequest pageRequest = PageRequest.of(page, 10);
         Page<OffreStage> offresPage = new PageImpl<>(List.of(), pageRequest, 0);
 
-        when(utilisateurService.getUserIdByToken(token)).thenReturn(createurId);
+        when(utilisateurService.getMyUserId()).thenReturn(createurId);
         when(offreStageRepositoryMock.findOffreStageByCreateurId(createurId, pageRequest)).thenReturn(offresPage);
 
         // Act
-        List<OffreStageDTO> result = employeurService.getStages(token, page);
+        List<OffreStageDTO> result = employeurService.getStages(page);
 
         // Assert
         assertNull(result);
 
-        verify(utilisateurService, times(1)).getUserIdByToken(token);
+        verify(utilisateurService, times(1)).getMyUserId();
         verify(offreStageRepositoryMock, times(1)).findOffreStageByCreateurId(createurId, pageRequest);
     }
 
     @Test
     public void testGetAmountOfPage_NumberEndWithZero() {
         //Arrange
-        when(utilisateurService.getUserIdByToken("tokenValide")).thenReturn(1L);
+        when(utilisateurService.getMyUserId()).thenReturn(1L);
         when(offreStageRepositoryMock.countByCreateurId(1L)).thenReturn(30);
 
         //Act
-        int nombrePage = employeurService.getAmountOfPages("tokenValide");
+        int nombrePage = employeurService.getAmountOfPages();
 
         //Assert
         assertEquals(nombrePage, 3);
@@ -225,11 +225,11 @@ public class EmployeurServiceTest {
     @Test
     public void testGetAmountOfPage_NumberNotEndWithZero() {
         //Arrange
-        when(utilisateurService.getUserIdByToken("tokenValide")).thenReturn(1L);
+        when(utilisateurService.getMyUserId()).thenReturn(1L);
         when(offreStageRepositoryMock.countByCreateurId(1L)).thenReturn(43);
 
         //Act
-        int nombrePage = employeurService.getAmountOfPages("tokenValide");
+        int nombrePage = employeurService.getAmountOfPages();
 
         //Assert
         assertEquals(nombrePage, 5);

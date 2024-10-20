@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import verifToken from "../utils/verifTokenValid"
 
-const TokenPageContainer = ({children, role}) => {
+const TokenPageContainer = ({children, role, setUserInfo}) => {
     
     const navigate = useNavigate();
     const [isFetching, setIsFetching] = useState(true)
@@ -17,13 +17,20 @@ const TokenPageContainer = ({children, role}) => {
     }, []);
 
     async function fetchToken() {
-        const is_tokenValid = await verifToken(token, role);
-
-        setIsFetching(false)
-    
-        if (!is_tokenValid) {
+        if (!token) {
             navigate("/");
+        }
+        
+        const is_tokenValid = await verifToken(token, role, setUserInfo);        
+
+        setIsFetching(false)        
+        
+        if (is_tokenValid.error || !is_tokenValid.userValid) {
+            navigate("/");
+
             return;
+        } else if (!is_tokenValid.userWrongPage) {
+            navigate("/accueil")
         }
     }
 

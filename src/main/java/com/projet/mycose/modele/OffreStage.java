@@ -32,11 +32,17 @@ public abstract class OffreStage {
     @Column(nullable = false)
     private OffreStage.Status status;
 
-    //TODO : À ENLEVER AU PLUS SACRANT
     private String statusDescription;
 
-    @OneToMany(mappedBy = "offreStage", cascade = CascadeType.ALL)
-    private List<EtudiantOffreStagePrivee> offresStagePrivees;
+    //Doit contenir un programme si public et null si privé
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Programme programme;
+
+    //Doit être à private si une liste d'étudiants est associée (EtudiantOffreStagePrivee)
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private OffreStage.Visibility visibility;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "createur_id")
@@ -55,7 +61,14 @@ public abstract class OffreStage {
     @PrePersist
     public void prePersist() {
         if (status == null) {
-            status = OffreStage.Status.WAITING;
+            status = Status.WAITING;
+        }
+        if (visibility == null) {
+            visibility = Visibility.UNDEFINED;
+        }
+        //Important car un employeur ne peut pas déterminer ce que le programme est, c'est le gestionnaire qui va le faire.
+        if (programme == null) {
+            programme = Programme.NOT_SPECIFIED;
         }
     }
 
@@ -64,5 +77,11 @@ public abstract class OffreStage {
         ACCEPTED,
         REFUSED,
         DELETED
+    }
+
+    public enum Visibility {
+        PUBLIC,
+        PRIVATE,
+        UNDEFINED
     }
 }

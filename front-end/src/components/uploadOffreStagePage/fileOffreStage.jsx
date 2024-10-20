@@ -10,11 +10,14 @@ function FileOffreStage() {
     const [file, setFile] = useState(null);
     const [title, setTitle] = useState("");
     const [companyName, setCompanyName] = useState("");
+    const [programmes, setProgrammes] = useState([]);
+    const [programme, setProgramme] = useState("");
     const [fileExtensionError, setFileExtensionError] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
     const [uploadError, setUploadError] = useState("");
     const [titleError, setTitleError] = useState("");
     const [companyNameError, setCompanyNameError] = useState("");
+    const [programmeError, setProgrammeError] = useState("");
     const [role, setRole] = useState("");
 
     useEffect(() => {
@@ -34,6 +37,19 @@ function FileOffreStage() {
         fetchUserData();
     }, []);
 
+    useEffect(() => {
+        const fetchProgrammes = async () => {
+            try {
+                const response = await axios.get("http://localhost:8080/api/programme");
+                setProgrammes(response.data);
+            } catch (error) {
+                console.error("Erreur lors de la récupération des programmes :", error);
+            }
+        };
+
+        fetchProgrammes();
+    }, []);
+
     const handleFileUpload = async () => {
         let token = localStorage.getItem("token");
         const formData = new FormData();
@@ -43,6 +59,7 @@ function FileOffreStage() {
         if (role === "GESTIONNAIRE_STAGE") {
             console.log("Entreprise :", companyName);
             formData.append("entrepriseName", companyName);
+            formData.append("programme", programme);
         }
 
         try {
@@ -60,6 +77,7 @@ function FileOffreStage() {
             setFile(null);
             setTitle("");
             setCompanyName("");
+            setProgramme("");
             document.getElementById("file").value = "";
 
         } catch (error) {
@@ -94,6 +112,13 @@ function FileOffreStage() {
             setCompanyNameError("");
         }
 
+        if (role === "GESTIONNAIRE_STAGE" && !programme) {
+            setProgrammeError("programmeRequired");
+            hasError = true;
+        } else {
+            setProgrammeError("");
+        }
+
         if (hasError) return;
 
         await handleFileUpload();
@@ -126,28 +151,36 @@ function FileOffreStage() {
         document.getElementById("file").value = "";
     };
 
+    function ChangeProgrammeValue(e) {
+        setProgramme(e.target.value);
+    }
+
     return (
         <form onSubmit={handleSubmitFile} className="space-y-4 w-full">
             <div className="relative w-full">
                 <label
                     htmlFor="file"
                     onDrop={dropHandler}
-                    onDragOver={(e) => { e.preventDefault() }}
+                    onDragOver={(e) => {
+                        e.preventDefault()
+                    }}
                     className="flex justify-center w-full h-32 px-4 transition border-2 border-gray-300 border-dashed rounded-md cursor-pointer hover:border-gray-400 focus:outline-none">
                     <span className="flex items-center space-x-2">
-                        <BsCloudArrowUpFill />
+                        <BsCloudArrowUpFill/>
                         <span className="font-medium text-gray-600">
                             {t("dropFile")} &nbsp;
                             <span className="text-blue-600 underline">{t("browse")}</span>
                         </span>
                     </span>
-                    <input type="file" id="file" className="hidden" onChange={handleFileChange} accept="application/pdf" />
+                    <input type="file" id="file" className="hidden" onChange={handleFileChange}
+                           accept="application/pdf"/>
                 </label>
-                <InputErrorMessage messageKey={fileExtensionError} />
+                <InputErrorMessage messageKey={fileExtensionError}/>
                 {file && (
-                    <div className="mt-4 flex items-center justify-between py-2 px-4 bg-[#FFF8F2] border-2 border-gray-400 rounded-md">
+                    <div
+                        className="mt-4 flex items-center justify-between py-2 px-4 bg-[#FFF8F2] border-2 border-gray-400 rounded-md">
                         <div className="flex gap-2 items-center">
-                            <img src={logoPdf} alt="icone pdf" className="w-10" />
+                            <img src={logoPdf} alt="icone pdf" className="w-10"/>
                             <p>{file.name}</p>
                         </div>
                         <button type="button" onClick={handleRemoveFile} className="text-gray-400">✖</button>
@@ -158,7 +191,8 @@ function FileOffreStage() {
             {/* Champ pour le nom de l'entreprise */}
             {role === "GESTIONNAIRE_STAGE" && (
                 <div className="relative w-full">
-                    <label htmlFor="companyName" className="block text-sm font-medium text-black mt-4">{t("companyName")}</label>
+                    <label htmlFor="companyName"
+                           className="block text-sm font-medium text-black mt-4">{t("companyName")}</label>
                     <input
                         type="text"
                         id="companyName"
@@ -174,6 +208,28 @@ function FileOffreStage() {
                 </div>
             )}
 
+            {role === "GESTIONNAIRE_STAGE" && (
+                <div>
+                    <label className="block mb-2 text-sm font-medium text-black">{t("choisirProgramme")}</label>
+                    <select
+                        className={`block w-full p-2 border border-black rounded-md ${programmeError ? 'border-red-500' : 'border-black'} bg-transparent`}
+                        value={programme}
+                        onChange={(e) => {
+                            ChangeProgrammeValue(e);
+                            setProgrammeError("");
+                        }}
+                    >
+                        <option value="" className={"text-center"}>-- {t("choisirProgramme")} --</option>
+                        {programmes.map((programme, index) => (
+                            <option key={index} value={programme}>
+                                {t(programme)}
+                            </option>
+                        ))}
+                    </select>
+                    {programmeError && <p className="text-red-500 text-sm">{t("programRequired")}</p>}
+                </div>
+            )}
+
             {/* Champ pour le titre */}
             <div className="relative w-full">
                 <label htmlFor="title" className="block text-sm font-medium text-black mt-4">{t("title")}</label>
@@ -185,7 +241,7 @@ function FileOffreStage() {
                     onChange={(e) => {
                         setTitle(e.target.value);
                         setTitleError("")
-                }}
+                    }}
                     className={`mt-1 p-2 w-full border ${titleError ? 'border-red-500' : 'border-black'} rounded-md bg-transparent`}
                 />
                 {titleError && <p className="text-red-500 text-sm">{t("titleRequired")}</p>}
@@ -195,7 +251,7 @@ function FileOffreStage() {
             {uploadError && <p className="text-red-500 mt-4">{uploadError}</p>}
 
             <div className="flex justify-center">
-                <button type="submit" className="bg-[#FE872B] text-white p-2 rounded-lg">{t("submit")}</button>
+                <button className="bg-[#FE872B] text-white p-2 rounded-lg">{t("submit")}</button>
             </div>
         </form>
     );

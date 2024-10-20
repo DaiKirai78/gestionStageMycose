@@ -1,5 +1,6 @@
 package com.projet.mycose.repository;
 
+import com.projet.mycose.dto.ApplicationStageAvecInfosDTO;
 import com.projet.mycose.modele.ApplicationStage;
 import com.projet.mycose.modele.Etudiant;
 import com.projet.mycose.modele.OffreStage;
@@ -21,4 +22,5 @@ public interface ApplicationStageRepository extends JpaRepository<ApplicationSta
     Optional<ApplicationStage> findByEtudiantIdAndOffreStageId(Long etudiantId, Long offreStageId);
 
     List<ApplicationStage> findByEtudiantIdAndStatusEquals(Long etudiantId, ApplicationStage.ApplicationStatus status);
+    List<ApplicationStage> findAllByOffreStageIdAndStatusEquals(Long offreStageId, ApplicationStage.ApplicationStatus status);
 }

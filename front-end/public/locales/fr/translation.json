@@ -160,8 +160,24 @@
     "errorRetrievingTotalOffres": "Erreur lors de la récupération du nombre total d'offres de stage",
     "uploadNewCV": "Téléverser un nouveau CV",
     "existingCVWarning": "Vous avez déjà un CV téléversé. Si vous téléversez un nouveau CV, l'ancien sera écrasé.",
-    "viewCV": "Voir mon CV"
-    "RetourAccueil": "Retour à l'accueil",
+    "viewCV": "Voir mon CV",
     "EmailEmployeur": "Courriel de l'employeur : ",
-    "Employeur": "Employeur : "
+    "Employeur": "Employeur : ",
+    "programRequired": "Le programme est requis.",
+    "profil": "Profil",
+    "noCv": "Aucun cv envoyé",
+    "cvAccepted": "Votre cv est Accepté",
+    "cvRefused": "Votre cv est refusé",
+    "cvWaiting": "Votre cv est en attente",
+    "cvStatusTitle": "Status du CV",
+    "managerNotes": "Notes du gestionnaire:",
+    "noNotes": "Aucunes notes",
+    "accueil": "Accueil",
+    "noNotification": "Aucune notification pour le moment",
+    "signOut": "Déconnexion",
+    "GESTIONNAIRE_STAGE": "Gestionnaire de stage",
+    "ENSEIGNANT": "Enseignant",
+    "EMPLOYEUR": "Employeur",
+    "ETUDIANT": "Étudiant",
+    "NOT_SPECIFIED": "Non Spécifié"
 }

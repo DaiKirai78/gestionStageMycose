@@ -1,16 +1,16 @@
 package com.projet.mycose.service;
 
-import com.projet.mycose.modele.ApplicationStage;
-import com.projet.mycose.modele.Etudiant;
-import com.projet.mycose.modele.OffreStage;
+import com.projet.mycose.modele.*;
 import com.projet.mycose.repository.ApplicationStageRepository;
+import com.projet.mycose.repository.EtudiantOffreStagePriveeRepository;
 import com.projet.mycose.repository.OffreStageRepository;
 import com.projet.mycose.dto.ApplicationStageAvecInfosDTO;
 import com.projet.mycose.dto.ApplicationStageDTO;
-import com.sun.jdi.request.DuplicateRequestException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.nio.file.AccessDeniedException;
 import java.util.List;
@@ -22,24 +22,59 @@ public class ApplicationStageService {
     private final ApplicationStageRepository applicationStageRepository;
     private final UtilisateurService utilisateurService;
     private final OffreStageRepository offreStageRepository;
+    private final EtudiantOffreStagePriveeRepository etudiantOffreStagePriveeRepository;
 
-    public ApplicationStageDTO applyToOffreStage(String token, Long offreStageId) throws AccessDeniedException, ChangeSetPersister.NotFoundException {
-        Etudiant etudiant = (Etudiant) utilisateurService.getMeUtilisateur(token);
-        OffreStage offreStage = offreStageRepository.findById(offreStageId).orElseThrow(ChangeSetPersister.NotFoundException::new);
-        Optional<ApplicationStage> existingApplication = applicationStageRepository.findByEtudiantAndOffreStage(etudiant, offreStage);
-        if (existingApplication.isPresent()) {
-            throw new DuplicateRequestException("Etudiant has already applied to this OffreStage.");
-            //Should throw 409, conflict
-        }
-        if (offreStage.getStatus() != OffreStage.Status.ACCEPTED) {
-            throw new AccessDeniedException("Offre de stage non disponible");
-        }
+    @Transactional
+    public ApplicationStageDTO applyToOffreStage(Long offreStageId) throws AccessDeniedException {
+        Utilisateur utilisateur = utilisateurService.getMeUtilisateur();
+        Etudiant etudiant = getValidatedEtudiant(utilisateur);
+
+        OffreStage offreStage = getValidatedOffreStage(offreStageId);
+        ensureNotAlreadyApplied(etudiant, offreStage);
+
+        checkAccessToOffreStage(etudiant, offreStage);
+
         ApplicationStage applicationStage = ApplicationStage.builder()
                 .offreStage(offreStage)
                 .etudiant(etudiant)
                 .build();
         return convertToDTO(applicationStageRepository.save(applicationStage));
     }
+
+    private Etudiant getValidatedEtudiant(Utilisateur utilisateur) {
+        if (!(utilisateur instanceof Etudiant etudiant)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not an Etudiant.");
+        }
+        return etudiant;
+    }
+
+    private OffreStage getValidatedOffreStage(Long offreStageId) {
+        return offreStageRepository.findById(offreStageId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "OffreStage not found"));
+    }
+
+    private void ensureNotAlreadyApplied(Etudiant etudiant, OffreStage offreStage) {
+        Optional<ApplicationStage> existingApplication = applicationStageRepository.findByEtudiantAndOffreStage(etudiant, offreStage);
+        if (existingApplication.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Etudiant has already applied to this OffreStage.");
+        }
+    }
+
+    private void checkAccessToOffreStage(Etudiant etudiant, OffreStage offreStage) throws AccessDeniedException {
+        if (offreStage.getStatus() != OffreStage.Status.ACCEPTED) {
+            throw new AccessDeniedException("Offre de stage non disponible");
+        }
+        if (offreStage.getVisibility() == OffreStage.Visibility.PRIVATE) {
+            boolean isAssociated = etudiantOffreStagePriveeRepository.existsByOffreStageAndEtudiant(offreStage, etudiant);
+            if (!isAssociated) {
+                throw new AccessDeniedException("Offre de stage non disponible");
+            }
+        }
+        if (offreStage.getProgramme() != etudiant.getProgramme()) {
+            throw new AccessDeniedException("Offre de stage non disponible car vous ne faites pas partie du programme associé à l'offre de stage");
+        }
+    }
+
 
     private ApplicationStageDTO convertToDTO(ApplicationStage applicationStage) {
         return ApplicationStageDTO.toDTO(applicationStage);
@@ -49,18 +84,26 @@ public class ApplicationStageService {
         return ApplicationStageAvecInfosDTO.toDTO(applicationStage);
     }
 
-    public List<ApplicationStageAvecInfosDTO> getApplicationsByEtudiant(String token) {
-        Long etudiantId = utilisateurService.getUserIdByToken(token);
+    public List<ApplicationStageAvecInfosDTO> getApplicationsByEtudiant() {
+        Long etudiantId = utilisateurService.getMyUserId();
         return applicationStageRepository.findByEtudiantId(etudiantId).stream().map(this::convertToDTOAvecInfos).toList();
     }
 
-    public List<ApplicationStageAvecInfosDTO> getApplicationsByEtudiantWithStatus(String token, ApplicationStage.ApplicationStatus status) {
-        Long etudiantId = utilisateurService.getUserIdByToken(token);
+    public List<ApplicationStageAvecInfosDTO> getApplicationsByEtudiantWithStatus(ApplicationStage.ApplicationStatus status) {
+        Long etudiantId = utilisateurService.getMyUserId();
         return applicationStageRepository.findByEtudiantIdAndStatusEquals(etudiantId, status).stream().map(this::convertToDTOAvecInfos).toList();
     }
 
-    public ApplicationStageAvecInfosDTO getApplicationById(String token, Long applicationId) throws ChangeSetPersister.NotFoundException {
-        Long etudiantId = utilisateurService.getUserIdByToken(token);
-        return applicationStageRepository.findByEtudiantIdAndOffreStageId(etudiantId, applicationId).map(this::convertToDTOAvecInfos).orElseThrow(ChangeSetPersister.NotFoundException::new);
+    public ApplicationStageAvecInfosDTO getApplicationById(Long applicationId) {
+        Long etudiantId = utilisateurService.getMyUserId();
+        return applicationStageRepository.findByEtudiantIdAndOffreStageId(etudiantId, applicationId)
+                .map(this::convertToDTOAvecInfos)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Application not found"));
+    }
+
+    public List<ApplicationStageAvecInfosDTO> getAllApplicationsPourUneOffreById(Long offreId) {
+        return applicationStageRepository
+                .findAllByOffreStageIdAndStatusEquals(offreId, ApplicationStage.ApplicationStatus.ACCEPTED)
+                .stream().map(this::convertToDTOAvecInfos).toList();
     }
 }

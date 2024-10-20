@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useState, useEffect } from "react";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
 
@@ -14,6 +14,7 @@ function FormOffreStage() {
         location: "",
         salary: "",
         description: "",
+        programme: "NOT_SPECIFIED"
     });
 
     const [error, setError] = useState({
@@ -25,16 +26,56 @@ function FormOffreStage() {
         location: "",
         salary: "",
         description: "",
+        programme: ""
     });
 
+    const [programmes, setProgrammes] = useState([]);
     const [successMessage, setSuccessMessage] = useState("");
     const [submitError, setSubmitError] = useState("");
+    const [role, setRole] = useState("");
+
+    useEffect(() => {
+        const fetchProgrammes = async () => {
+            try {
+                const response = await axios.get("http://localhost:8080/api/programme");
+                setProgrammes(response.data);
+            } catch (error) {
+                console.error("Erreur lors de la récupération des programmes :", error);
+            }
+        };
+        fetchProgrammes();
+    }, []);
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            const token = localStorage.getItem("token");
+            try {
+                const response = await axios.post("http://localhost:8080/utilisateur/me", {}, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                const userData = response.data;
+                setRole(userData.role);
+            } catch (error) {
+                console.error("Erreur lors de la récupération des informations de l'utilisateur :", error);
+            }
+        };
+
+        fetchUserData();
+    }, []);
 
     const handleInputChange = (e) => {
+        const { name, value } = e.target;
         setFormData({
             ...formData,
             [e.target.name]: e.target.value,
         });
+
+        if (value !== "") {
+            setError((prevError) => ({
+                ...prevError,
+                [name]: "",
+            }));
+        }
     };
 
     const handleSubmitForm = async (e) => {
@@ -53,7 +94,13 @@ function FormOffreStage() {
             location: "",
             salary: "",
             description: "",
+            programme: ""
         };
+
+        if (role === "GESTIONNAIRE_STAGE" && !formData.programme) {
+            errors.programme = t("programRequired");
+            valid = false;
+        }
 
         // Validation pour 'entrepriseName'
         if (!formData.entrepriseName) {
@@ -150,6 +197,7 @@ function FormOffreStage() {
                 location: "",
                 salary: "",
                 description: "",
+                programme: ""
             });
         } catch (error) {
             console.error("Erreur lors de l'envoi du formulaire :", error);
@@ -296,12 +344,34 @@ function FormOffreStage() {
                 {error.description && <p className="text-red-500 text-sm mt-1">{error.description}</p>}
             </div>
 
+            {role === "GESTIONNAIRE_STAGE" && (
+                <div className="space-y-2">
+                    <label htmlFor="programme" className="block text-sm font-medium text-black mt-4">
+                        {t("choisirProgramme")}
+                    </label>
+                    <select
+                        id="programme"
+                        name="programme"
+                        value={formData.programme}
+                        onChange={handleInputChange}
+                        className={`mt-1 p-2 block w-full border ${error.programme ? 'border-red-500' : 'border-black'} rounded-md bg-transparent`}
+                    >
+                        <option value="">{t("choisirProgramme")}</option>
+                        {programmes.map((programme, index) => (
+                            <option key={index} value={programme}>
+                                {t(programme)}
+                            </option>
+                        ))}
+                    </select>
+                    {error.programme && <p className="text-red-500 text-sm mt-1">{error.programme}</p>}
+                </div>
+            )}
+
             {successMessage && <p className="text-green-500 text-sm mt-4">{successMessage}</p>}
             {submitError && <p className="text-red-500 text-sm mt-4">{submitError}</p>}
 
             <div className="flex justify-center mt-4">
                 <button
-                    type="submit"
                     className="max-w-xs w-full bg-[#FE872B] p-2 rounded-lg hover:bg-orange text-white"
                 >
                     {t("submit")}

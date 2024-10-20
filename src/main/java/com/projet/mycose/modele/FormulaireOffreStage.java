@@ -24,7 +24,7 @@ public class FormulaireOffreStage extends OffreStage{
     private String salary;
     private String description;
 
-    public FormulaireOffreStage(String title, String entrepriseName, String employerName, String email, String website, String location, String salary, String description, Utilisateur createur) {
+    public FormulaireOffreStage(String title, String entrepriseName, String employerName, String email, String website, String location, String salary, String description, Utilisateur createur, OffreStage.Visibility visibility, Programme programme, OffreStage.Status status) {
         super();
         this.setTitle(title);
         this.setEntrepriseName(entrepriseName);
@@ -35,5 +35,8 @@ public class FormulaireOffreStage extends OffreStage{
         this.location = location;
         this.salary = salary;
         this.description = description;
+        this.setVisibility(visibility);
+        this.setProgramme(programme);
+        this.setStatus(status);
     }
 }

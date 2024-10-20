@@ -3,6 +3,7 @@ package com.projet.mycose.controller;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.projet.mycose.dto.*;
 import com.projet.mycose.modele.OffreStage;
+import com.projet.mycose.service.ApplicationStageService;
 import com.projet.mycose.service.OffreStageService;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
@@ -23,17 +24,19 @@ import java.util.Map;
 public class OffreStageController {
 
     private final OffreStageService offreStageService;
+    private final ApplicationStageService applicationStageService;
 
-    public OffreStageController(OffreStageService offreStageService) {
+    public OffreStageController(OffreStageService offreStageService, ApplicationStageService applicationStageService) {
         this.offreStageService = offreStageService;
+        this.applicationStageService = applicationStageService;
     }
 
 
     @PostMapping(value = "/upload-file", consumes = "multipart/form-data")
-    public ResponseEntity<?> uploadFile(@Valid @ModelAttribute UploadFicherOffreStageDTO uploadFicherOffreStageDTO, @RequestHeader("Authorization") String token) {
+    public ResponseEntity<?> uploadFile(@Valid @ModelAttribute UploadFicherOffreStageDTO uploadFicherOffreStageDTO) {
         try {
 
-            FichierOffreStageDTO savedFileDTO = offreStageService.saveFile(uploadFicherOffreStageDTO, token);
+            FichierOffreStageDTO savedFileDTO = offreStageService.saveFile(uploadFicherOffreStageDTO);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(savedFileDTO);
         } catch (ConstraintViolationException e) {
@@ -51,8 +54,8 @@ public class OffreStageController {
 
     @PostMapping("/upload-form")
     public ResponseEntity<FormulaireOffreStageDTO> uploadForm(
-            @Valid @RequestBody FormulaireOffreStageDTO formulaireOffreStageDTO, @RequestHeader("Authorization") String token) throws AccessDeniedException {
-        FormulaireOffreStageDTO savedForm = offreStageService.saveForm(formulaireOffreStageDTO, token);
+            @Valid @RequestBody FormulaireOffreStageDTO formulaireOffreStageDTO) throws AccessDeniedException {
+        FormulaireOffreStageDTO savedForm = offreStageService.saveForm(formulaireOffreStageDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedForm);
     }
 
@@ -73,20 +76,9 @@ public class OffreStageController {
     }
 
     @PatchMapping("/accept")
-    public ResponseEntity<?> acceptOffreStage(@RequestParam Long id, @RequestBody JsonNode jsonNode) {
-        try {
-            JsonNode descriptionNode = jsonNode.get("commentaire");
-
-            if (descriptionNode == null || descriptionNode.isNull()) {
-                return ResponseEntity.badRequest().body("Description field is missing");
-            }
-
-            String description = descriptionNode.asText();
-            offreStageService.changeStatus(id, OffreStage.Status.ACCEPTED, description);
+    public ResponseEntity<?> acceptOffreStage(@Valid @RequestBody AcceptOffreDeStageDTO acceptOffreDeStageDTO) {
+            offreStageService.acceptOffreDeStage(acceptOffreDeStageDTO);
             return ResponseEntity.ok().build();
-        } catch (ChangeSetPersister.NotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
     }
     @PatchMapping("/refuse")
     public ResponseEntity<?> refuseOffreStage(@RequestParam Long id, @RequestBody JsonNode jsonNode) {
@@ -112,9 +104,16 @@ public class OffreStageController {
     }
 
     @GetMapping("/my-offres")
-    public ResponseEntity<List<OffreStageDTO>> getMyOffres(@RequestHeader("Authorization") String token) {
-        List<OffreStageDTO> offreStageDTOList = offreStageService.getAvailableOffreStagesForEtudiant(token);
+    public ResponseEntity<List<OffreStageDTO>> getMyOffres() throws AccessDeniedException {
+        List<OffreStageDTO> offreStageDTOList = offreStageService.getAvailableOffreStagesForEtudiant();
         return ResponseEntity.status(HttpStatus.OK).body(offreStageDTOList);
     }
 
+
+    // On passe le id de l'offre de stage
+    @GetMapping("/offre-applications/{id}")
+    public ResponseEntity<List<EtudiantDTO>> getAllEtudiantQuiOntAppliquesAUneOffre(@PathVariable Long id) {
+        List<ApplicationStageAvecInfosDTO> applicationStageDTOList = applicationStageService.getAllApplicationsPourUneOffreById(id);
+        return new ResponseEntity<>(offreStageService.getEtudiantsQuiOntAppliquesAUneOffre(applicationStageDTOList), HttpStatus.OK);
+    }
 }

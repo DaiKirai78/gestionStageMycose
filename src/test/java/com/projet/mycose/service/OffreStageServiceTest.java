@@ -42,6 +42,8 @@ public class OffreStageServiceTest {
 
     @Mock
     private UtilisateurRepository utilisateurRepository;
+    @Mock
+    private EtudiantRepository etudiantRepository;
 
     @Mock
     private FormulaireOffreStageRepository formulaireOffreStageRepository;
@@ -64,6 +66,7 @@ public class OffreStageServiceTest {
     private FormulaireOffreStageDTO formulaireOffreStageDTO;
     private FormulaireOffreStage formulaireOffreStage;
     private Employeur employeur;
+    private Etudiant etudiant;
 
     private static final String SAMPLE_DATA = "sampleData";
     private static final String BASE64_SAMPLE_DATA = "c2FtcGxlRGF0YQ==";
@@ -102,6 +105,16 @@ public class OffreStageServiceTest {
         formulaireOffreStage.setId(2L);
         formulaireOffreStage.setCreateur(new Employeur());
 
+        etudiant = Etudiant.builder()
+                .id(1L)
+                .prenom("Roberto")
+                .nom("Berrios")
+                .numeroDeTelephone("438-508-3245")
+                .courriel("roby@gmail.com")
+                .motDePasse("Roby123$")
+                .programme(Programme.TECHNIQUE_INFORMATIQUE)
+                .build();
+
         employeur = Employeur.builder()
                 .id(1L)
                 .prenom("Jane")
@@ -119,7 +132,7 @@ public class OffreStageServiceTest {
     public void shouldSaveFileSuccessfully_WhenUserIsEmployeur() throws IOException {
         // Arrange
         String token = VALID_TOKEN;
-        when(utilisateurService.getMe(token)).thenReturn(employeurDTO);
+        when(utilisateurService.getMe()).thenReturn(employeurDTO);
 
         // Specific stubbing for this test
         when(modelMapper.map(any(FichierOffreStageDTO.class), eq(FichierOffreStage.class))).thenReturn(fichierOffreStage);
@@ -131,7 +144,7 @@ public class OffreStageServiceTest {
         when(utilisateurRepository.findById(1L)).thenReturn(Optional.of(employeur));
 
         // Act
-        FichierOffreStageDTO result = offreStageService.saveFile(uploadFicherOffreStageDTO, token);
+        FichierOffreStageDTO result = offreStageService.saveFile(uploadFicherOffreStageDTO);
 
         // Assert
         assertNotNull(result);
@@ -143,8 +156,8 @@ public class OffreStageServiceTest {
     @Test
     public void shouldSaveFileSuccessfully_WhenUserIsGestionnaireStage() throws IOException {
         // Arrange
-        String token = VALID_TOKEN;
-        when(utilisateurService.getMe(token)).thenReturn(gestionnaireDTO);
+        uploadFicherOffreStageDTO.setProgramme(Programme.GENIE_LOGICIEL);
+        when(utilisateurService.getMe()).thenReturn(gestionnaireDTO);
 
         // Specific stubbing for this test
         when(modelMapper.map(any(FichierOffreStageDTO.class), eq(FichierOffreStage.class))).thenReturn(fichierOffreStage);
@@ -156,7 +169,7 @@ public class OffreStageServiceTest {
         when(utilisateurRepository.findById(2L)).thenReturn(Optional.of(new GestionnaireStage()));
 
         // Act
-        FichierOffreStageDTO result = offreStageService.saveFile(uploadFicherOffreStageDTO, token);
+        FichierOffreStageDTO result = offreStageService.saveFile(uploadFicherOffreStageDTO);
 
         // Assert
         assertNotNull(result);
@@ -172,13 +185,13 @@ public class OffreStageServiceTest {
         UtilisateurDTO invalidUser = new EtudiantDTO();
         invalidUser.setId(3L);
         invalidUser.setRole(Role.ETUDIANT); // Assuming ETUDIANT is another role
-        when(utilisateurService.getMe(token)).thenReturn(invalidUser);
+        when(utilisateurService.getMe()).thenReturn(invalidUser);
         when(file.getBytes()).thenReturn(SAMPLE_DATA.getBytes());
         when(file.getOriginalFilename()).thenReturn("sampleFile.txt");
 
         // Act & Assert
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            offreStageService.saveFile(uploadFicherOffreStageDTO, token);
+            offreStageService.saveFile(uploadFicherOffreStageDTO);
         });
 
         assertEquals("Utilisateur n'est pas un employeur ou un gestionnaire de stage", exception.getMessage());
@@ -189,7 +202,7 @@ public class OffreStageServiceTest {
     public void shouldThrowConstraintViolationException_WhenValidationFails() throws AccessDeniedException, IOException {
         // Arrange
         String token = VALID_TOKEN;
-        when(utilisateurService.getMe(token)).thenReturn(employeurDTO);
+        when(utilisateurService.getMe()).thenReturn(employeurDTO);
 
         // Specific stubbing for this test
 
@@ -203,7 +216,7 @@ public class OffreStageServiceTest {
 
         // Act & Assert
         ConstraintViolationException exception = assertThrows(ConstraintViolationException.class, () -> {
-            offreStageService.saveFile(uploadFicherOffreStageDTO, token);
+            offreStageService.saveFile(uploadFicherOffreStageDTO);
         });
 
         assertFalse(exception.getConstraintViolations().isEmpty());
@@ -214,7 +227,7 @@ public class OffreStageServiceTest {
     public void shouldThrowEntityNotFoundException_WhenCreateurNotFound() throws AccessDeniedException, IOException {
         // Arrange
         String token = VALID_TOKEN;
-        when(utilisateurService.getMe(token)).thenReturn(employeurDTO);
+        when(utilisateurService.getMe()).thenReturn(employeurDTO);
 
         // Specific stubbing for this test
         when(modelMapper.map(any(FichierOffreStageDTO.class), eq(FichierOffreStage.class)))
@@ -224,7 +237,7 @@ public class OffreStageServiceTest {
 
         // Act & Assert
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
-            offreStageService.saveFile(uploadFicherOffreStageDTO, token);
+            offreStageService.saveFile(uploadFicherOffreStageDTO);
         });
 
         assertEquals("Utilisateur not found with ID: 1", exception.getMessage());
@@ -237,7 +250,7 @@ public class OffreStageServiceTest {
     public void shouldSaveFormSuccessfully_WhenUserIsEmployeur() throws AccessDeniedException {
         // Arrange
         String token = VALID_TOKEN;
-        when(utilisateurService.getMe(token)).thenReturn(employeurDTO);
+        when(utilisateurService.getMe()).thenReturn(employeurDTO);
 
         // Specific stubbing for this test
         // Mapping DTO to Entity
@@ -250,7 +263,7 @@ public class OffreStageServiceTest {
         when(utilisateurRepository.findById(1L)).thenReturn(Optional.of(employeur));
 
         // Act
-        FormulaireOffreStageDTO result = offreStageService.saveForm(formulaireOffreStageDTO, token);
+        FormulaireOffreStageDTO result = offreStageService.saveForm(formulaireOffreStageDTO);
 
         // Assert
         assertNotNull(result);
@@ -268,11 +281,11 @@ public class OffreStageServiceTest {
         UtilisateurDTO invalidUser = new EtudiantDTO();
         invalidUser.setId(3L);
         invalidUser.setRole(Role.ETUDIANT); // Assuming ETUDIANT is another role
-        when(utilisateurService.getMe(token)).thenReturn(invalidUser);
+        when(utilisateurService.getMe()).thenReturn(invalidUser);
 
         // Act & Assert
         AccessDeniedException exception = assertThrows(AccessDeniedException.class, () -> {
-            offreStageService.saveForm(formulaireOffreStageDTO, token);
+            offreStageService.saveForm(formulaireOffreStageDTO);
         });
 
         assertEquals("Utilisateur n'est pas un employeur", exception.getMessage());
@@ -423,11 +436,15 @@ public class OffreStageServiceTest {
 
 
     @Test
-    public void shouldReturnAvailableOffreStages_ForEtudiant() {
+    public void shouldReturnAvailableOffreStages_ForEtudiant() throws AccessDeniedException {
         // Arrange
         String token = VALID_TOKEN;
         Long etudiantId = 1L;
-        when(utilisateurService.getUserIdByToken(token)).thenReturn(etudiantId);
+        Programme programme = Programme.NOT_SPECIFIED;
+        EtudiantDTO etudiantDTO = EtudiantDTO.empty();
+        etudiantDTO.setId(etudiantId);
+        etudiantDTO.setProgramme(programme);
+        when(utilisateurService.getMe()).thenReturn(etudiantDTO); // Changed to getMe(token)
 
         // Initialize DTOs
         FichierOffreStageDTO fichierOffreStageDTO = new FichierOffreStageDTO();
@@ -438,7 +455,6 @@ public class OffreStageServiceTest {
         FormulaireOffreStageDTO formulaireOffreStageDTO = new FormulaireOffreStageDTO();
         formulaireOffreStageDTO.setCreateur_id(2L);
         formulaireOffreStageDTO.setEntrepriseName("Sample Entreprise");
-        // Initialize other fields as necessary
 
         // Initialize Entities
         FichierOffreStage fichierOffreStage = new FichierOffreStage();
@@ -450,29 +466,27 @@ public class OffreStageServiceTest {
         formulaireOffreStage.setId(2L);
         formulaireOffreStage.setCreateur(new GestionnaireStage());
         formulaireOffreStage.setEntrepriseName("Sample Entreprise");
-        // Initialize other fields as necessary
 
         // Set OffreStages
-        OffreStage offreStage1 = fichierOffreStage;
-        OffreStage offreStage2 = formulaireOffreStage;
-        List<OffreStage> availableOffres = Arrays.asList(offreStage1, offreStage2);
-        when(offreStageRepository.findAllByEtudiantNotApplied(etudiantId)).thenReturn(availableOffres);
+        List<OffreStage> availableOffres = Arrays.asList(fichierOffreStage, formulaireOffreStage);
+        when(offreStageRepository.findAllByEtudiantNotApplied(etudiantId, programme)).thenReturn(availableOffres);
 
         // Correct stubbing: map to specific DTO classes
-        when(modelMapper.map(offreStage1, FichierOffreStageDTO.class)).thenReturn(fichierOffreStageDTO);
-        when(modelMapper.map(offreStage2, FormulaireOffreStageDTO.class)).thenReturn(formulaireOffreStageDTO);
+        when(modelMapper.map(fichierOffreStage, FichierOffreStageDTO.class)).thenReturn(fichierOffreStageDTO);
+        when(modelMapper.map(formulaireOffreStage, FormulaireOffreStageDTO.class)).thenReturn(formulaireOffreStageDTO);
 
         // Act
-        List<OffreStageDTO> result = offreStageService.getAvailableOffreStagesForEtudiant(token);
+        List<OffreStageDTO> result = offreStageService.getAvailableOffreStagesForEtudiant();
 
         // Assert
         assertNotNull(result);
         assertEquals(2, result.size());
-        verify(utilisateurService, times(1)).getUserIdByToken(token);
-        verify(offreStageRepository, times(1)).findAllByEtudiantNotApplied(etudiantId);
-        verify(modelMapper, times(1)).map(offreStage1, FichierOffreStageDTO.class);
-        verify(modelMapper, times(1)).map(offreStage2, FormulaireOffreStageDTO.class);
+        verify(utilisateurService, times(1)).getMe(); // Changed to getMe(token)
+        verify(offreStageRepository, times(1)).findAllByEtudiantNotApplied(etudiantId, programme);
+        verify(modelMapper, times(1)).map(fichierOffreStage, FichierOffreStageDTO.class);
+        verify(modelMapper, times(1)).map(formulaireOffreStage, FormulaireOffreStageDTO.class);
     }
+
 
 
 
@@ -529,5 +543,42 @@ public class OffreStageServiceTest {
 
         assertEquals("createur_id cannot be null", exception.getMessage());
         verify(utilisateurRepository, never()).findById(anyLong());
+    }
+
+    @Test
+    public void getEtudiantsQuiOntAppliquesAUneOffreSuccesTest() {
+        //Arrange
+        ApplicationStageAvecInfosDTO applicationStageDTO = new ApplicationStageAvecInfosDTO();
+        applicationStageDTO.setEtudiant_id(1L);
+        applicationStageDTO.setId(1L);
+        applicationStageDTO.setOffreStage_id(1L);
+        applicationStageDTO.setStatus(ApplicationStage.ApplicationStatus.ACCEPTED);
+        List<ApplicationStageAvecInfosDTO> applicationStageDTOList = new ArrayList<>();
+        applicationStageDTOList.add(applicationStageDTO);
+        when(etudiantRepository.findEtudiantById(anyLong())).thenReturn(etudiant);
+
+        //Act
+        EtudiantDTO etudiantDTO = offreStageService.getEtudiantsQuiOntAppliquesAUneOffre(applicationStageDTOList).getFirst();
+
+        //Assert
+        assertEquals(etudiant.getId(), etudiantDTO.getId());
+        assertEquals(etudiant.getPrenom(), etudiantDTO.getPrenom());
+        assertEquals(etudiant.getNom(), etudiantDTO.getNom());
+        assertEquals(etudiant.getCourriel(), etudiantDTO.getCourriel());
+        assertEquals(etudiant.getNumeroDeTelephone(), etudiantDTO.getNumeroDeTelephone());
+        assertEquals(etudiant.getProgramme(), etudiantDTO.getProgramme());
+        assertEquals(etudiant.getRole(), etudiantDTO.getRole());
+    }
+
+    @Test
+    public void getEtudiantsQuiOntAppliquesAUneOffreListeVideTest() {
+        // Arrange
+        List<ApplicationStageAvecInfosDTO> applicationStageDTOList = new ArrayList<>();
+
+        // Act
+        List<EtudiantDTO> etudiantDTOList = offreStageService.getEtudiantsQuiOntAppliquesAUneOffre(applicationStageDTOList);
+
+        // Assert
+        assertNull(etudiantDTOList);
     }
 }

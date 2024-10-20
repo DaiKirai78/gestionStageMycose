@@ -45,7 +45,7 @@ public class MycoseApplication implements CommandLineRunner {
 		employeurService.creationDeCompte("Willy", "Wonka", "555-333-4343", "wonka@gmail.com", "Chocolatayyy$", "Wonka INC");
 		//String token = utilisateurService.authentificationUtilisateur(new LoginDTO("wonka@gmail.com", "Chocolatayyy$"));
 		//FormulaireOffreStageDTO formulaireOffreStageDTO = new FormulaireOffreStageDTO(1L, "Chco Factory", "Willy Wonka", "wonka@mail.com", "wonka.com", "Master Chocolatier", "New York", "100 000", "Make Chocolate", 4L, OffreStage.Status.WAITING);
-		FormulaireOffreStageDTO formulaireOffreStageDTO = new FormulaireOffreStageDTO(1L, "SUUPER", "Vicente", "vicen@mail.com", "www.vicen.ca", "Software Engineer Java Expert boy", "Montrèal", "95 000", "J'adore ingénieur!",LocalDateTime.now(), LocalDateTime.now(), 1L, OffreStage.Status.WAITING);
+		FormulaireOffreStageDTO formulaireOffreStageDTO = new FormulaireOffreStageDTO(1L, "SUUPER", "Vicente", "vicen@mail.com", "www.vicen.ca", "Software Engineer Java Expert boy", "Montrèal", "95 000", "J'adore ingénieur!",LocalDateTime.now(), LocalDateTime.now(), 1L, OffreStage.Status.WAITING, Programme.GENIE_LOGICIEL, OffreStage.Visibility.PUBLIC, null);
 
 		try{
 			//offreStageService.saveForm(formulaireOffreStageDTO, "Bearer " + token);

@@ -3,46 +3,29 @@ import TokenPageContainer from './tokenPageContainer';
 import { useNavigate } from 'react-router-dom';
 import AcceuilEtudiant from '../components/acceuil/acceuilEtudiant';
 import AcceuilEmployeur from '../components/acceuil/acceuilEmployeur';
+import { useOutletContext } from "react-router-dom";
 import UploadCvPage from '../pages/UploadCvPage';
 import VoirMonCVPage from "./voirMonCVPage.jsx";
+import PageIsLoading from '../components/pageIsLoading.jsx';
 
 const AccueilPage = () => {
-    const [role, setRole] = useState(null);
     const [cvStatus, setCvStatus] = useState(null);
     const navigate = useNavigate();
+    const [userInfo, setUserInfo] = useOutletContext();
 
     useEffect(() => {
-        getRole();
-    }, []);
+        if (userInfo && userInfo.role === "ETUDIANT") {
+            checkCvStatus();
+        }
+    }, [userInfo]);
 
-    async function getRole() {
+    async function checkCvStatus() {
         const token = localStorage.getItem("token");
+        
         if (!token) {
             return;
         }
 
-        try {
-            const res = await fetch('http://localhost:8080/utilisateur/me', {
-                method: "POST",
-                headers: { Authorization: `Bearer ${token}` }
-            });
-
-            if (!res.ok) {
-                return;
-            }
-
-            const data = await res.json();
-            setRole(data.role);
-
-            if (data.role === "ETUDIANT") {
-                checkCvStatus(token);
-            }
-        } catch (err) {
-            console.error("Erreur lors de la récupération du rôle", err);
-        }
-    }
-
-    async function checkCvStatus(token) {
         try {
             const res = await fetch('http://localhost:8080/api/cv/current', {
                 method: "POST",
@@ -61,7 +44,9 @@ const AccueilPage = () => {
     }
 
     function getAccueil() {
-        switch (role) {
+        if (!userInfo) return <PageIsLoading/>;
+        
+        switch (userInfo.role) {
             case "ETUDIANT":
                 if (cvStatus === "ACCEPTED") {
                     return <AcceuilEtudiant />;
@@ -83,7 +68,7 @@ const AccueilPage = () => {
     }
 
     return (
-        <TokenPageContainer role={["ETUDIANT", "EMPLOYEUR", "GESTIONNAIRE_STAGE", "ENSEIGNANT"]}>
+        <TokenPageContainer role={["ETUDIANT", "EMPLOYEUR", "GESTIONNAIRE_STAGE", "ENSEIGNANT"]} setUserInfo={setUserInfo}>
             {getAccueil()}
         </TokenPageContainer>
     );
