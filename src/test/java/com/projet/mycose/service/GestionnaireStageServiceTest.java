@@ -143,4 +143,20 @@ class GestionnaireStageServiceTest {
 
         verify(utilisateurRepository, times(1)).findAllEtudiantsSansEnseignants(pageRequest);
     }
+
+    @Test
+    public void testGetEtudiantsSansEnseignants_Null() {
+        int page = 0;
+        PageRequest pageRequest = PageRequest.of(page, 10);
+        Page<Etudiant> etudiantsPage = new PageImpl<>(List.of(), pageRequest, 0);
+
+        when(utilisateurRepository.findAllEtudiantsSansEnseignants(pageRequest)).thenReturn(etudiantsPage);
+
+        // Act
+        List<EtudiantDTO> result = gestionnaireStageService.getEtudiantsSansEnseignants(page);
+
+        // Assert
+        assertNull(result);
+        verify(utilisateurRepository, times(1)).findAllEtudiantsSansEnseignants(pageRequest);
+    }
 }
