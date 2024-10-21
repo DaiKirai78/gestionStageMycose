@@ -415,7 +415,7 @@ function FormOffreStage() {
                         onChange={handleInputChange}
                         className={`mt-1 p-2 block w-full border ${error.programme ? 'border-red-500' : 'border-black'} rounded-md bg-transparent`}
                     >
-                        <option value="">{t("choisirProgramme")}</option>
+                        <option value="" className={"text-center"}>-- {t("choisirProgramme")} --</option>
                         {programmes.map((programme, index) => (
                             <option key={index} value={programme}>
                                 {t(programme)}

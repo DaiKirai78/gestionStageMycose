@@ -114,6 +114,8 @@ function FileOffreStage() {
                     "Content-Type": "multipart/form-data",
                 },
             });
+            const formDataObject = Object.fromEntries(formData.entries());
+            console.log(formDataObject);
             console.log("Fichier envoyé avec succès :", response.data);
             console.log("étudiants sélectionnés :", selectedStudents);
             setSuccessMessage(t("fileUploadSuccess"));
