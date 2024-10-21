@@ -129,14 +129,17 @@ function ValiderOffreStage() {
 
     const handleStudentSelection = (studentId) => {
         setSelectedStudents((prevSelected) => {
-            if (prevSelected.includes(studentId)) {
-                return prevSelected.filter((id) => id !== studentId);
-            } else {
-                return [...prevSelected, studentId];
+            const newSelected = prevSelected.includes(studentId)
+                ? prevSelected.filter((id) => id !== studentId)
+                : [...prevSelected, studentId];
+
+            if (newSelected.length > 0) {
+                setStudentSelectionError("");
             }
+
+            return newSelected;
         });
     };
-
     function ChangeProgrammeValue(e) {
         setProgramme(e.target.value);
     }

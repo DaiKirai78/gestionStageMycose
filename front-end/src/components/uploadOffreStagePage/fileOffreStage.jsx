@@ -92,11 +92,15 @@ function FileOffreStage() {
 
     const handleStudentSelection = (studentId) => {
         setSelectedStudents((prevSelected) => {
-            if (prevSelected.includes(studentId)) {
-                return prevSelected.filter((id) => id !== studentId);
-            } else {
-                return [...prevSelected, studentId];
+            const newSelected = prevSelected.includes(studentId)
+                ? prevSelected.filter((id) => id !== studentId)
+                : [...prevSelected, studentId];
+
+            if (newSelected.length > 0) {
+                setStudentSelectionError("");
             }
+
+            return newSelected;
         });
     };
 
@@ -177,6 +181,9 @@ function FileOffreStage() {
 
         if (role === "GESTIONNAIRE_STAGE" && isPrivate && selectedStudents.length === 0) {
             setStudentSelectionError("studentSelectionRequired");
+            hasError = true;
+        } else if (role === "GESTIONNAIRE_STAGE" && isPrivate && students.length === 0) {
+            setStudentSelectionError("noStudentsAvailable");
             hasError = true;
         } else {
             setStudentSelectionError("");
