@@ -124,9 +124,11 @@ public class OffreStageService {
             fichierOffreStageDTO.setStatus(OffreStage.Status.ACCEPTED);
             if (uploadFicherOffreStageDTO.getProgramme() != Programme.NOT_SPECIFIED) {
                 fichierOffreStageDTO.setProgramme(uploadFicherOffreStageDTO.getProgramme());
-                fichierOffreStageDTO.setVisibility(OffreStage.Visibility.PUBLIC);
-            } else if (uploadFicherOffreStageDTO.getEtudiantsPrives() != null) {
-                fichierOffreStageDTO.setVisibility(OffreStage.Visibility.PRIVATE);
+                if (uploadFicherOffreStageDTO.getEtudiantsPrives() != null) {
+                    fichierOffreStageDTO.setVisibility(OffreStage.Visibility.PRIVATE);
+                } else {
+                    fichierOffreStageDTO.setVisibility(OffreStage.Visibility.PUBLIC);
+                }
             } else {
                 throw new IllegalArgumentException("Programme or etudiantsPrives must be provided when uploaded by a gestionnaire de stage");
             }
@@ -163,9 +165,11 @@ public class OffreStageService {
             formulaireOffreStageDTO.setStatus(OffreStage.Status.ACCEPTED);
             formulaireOffreStageDTO.setVisibility(OffreStage.Visibility.UNDEFINED);
             if (formulaireOffreStageDTO.getProgramme() != Programme.NOT_SPECIFIED) {
-                formulaireOffreStageDTO.setVisibility(OffreStage.Visibility.PUBLIC);
-            } else if (formulaireOffreStageDTO.getEtudiantsPrives() != null) {
-                formulaireOffreStageDTO.setVisibility(OffreStage.Visibility.PRIVATE);
+                if (formulaireOffreStageDTO.getEtudiantsPrives() != null) {
+                    formulaireOffreStageDTO.setVisibility(OffreStage.Visibility.PRIVATE);
+                } else {
+                    formulaireOffreStageDTO.setVisibility(OffreStage.Visibility.PUBLIC);
+                }
             } else {
                 throw new IllegalArgumentException("Programme or etudiantsPrives must be provided when uploaded by a gestionnaire de stage");
             }
@@ -263,11 +267,15 @@ public class OffreStageService {
         offreStage.setStatusDescription(acceptOffreDeStageDTO.getStatusDescription());
         offreStage.setProgramme(acceptOffreDeStageDTO.getProgramme());
 
-        if (offreStage.getProgramme() == Programme.NOT_SPECIFIED) {
-            offreStage.setVisibility(OffreStage.Visibility.PRIVATE);
-            associateEtudiantsPrivees(offreStage, acceptOffreDeStageDTO.getEtudiantsPrives());
+        if (offreStage.getProgramme() != Programme.NOT_SPECIFIED) {
+            if (acceptOffreDeStageDTO.getEtudiantsPrives() != null) {
+                offreStage.setVisibility(OffreStage.Visibility.PRIVATE);
+                associateEtudiantsPrivees(offreStage, acceptOffreDeStageDTO.getEtudiantsPrives());
+            } else {
+                offreStage.setVisibility(OffreStage.Visibility.PUBLIC);
+            }
         } else {
-            offreStage.setVisibility(OffreStage.Visibility.PUBLIC);
+            throw new IllegalArgumentException("Programme or etudiantsPrives must be provided when uploaded by a gestionnaire de stage");
         }
 
         offreStageRepository.save(offreStage);
