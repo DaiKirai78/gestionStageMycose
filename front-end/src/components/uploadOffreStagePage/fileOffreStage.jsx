@@ -20,6 +20,7 @@ function FileOffreStage() {
     const [titleError, setTitleError] = useState("");
     const [companyNameError, setCompanyNameError] = useState("");
     const [programmeError, setProgrammeError] = useState("");
+    const [studentSelectionError, setStudentSelectionError] = useState("");
     const [role, setRole] = useState("");
     const [isPrivate, setIsPrivate] = useState(false);
 
@@ -56,11 +57,11 @@ function FileOffreStage() {
     useEffect(() => {
         if (role === "GESTIONNAIRE_STAGE" && programme) {
             const fetchStudents = async () => {
-                const token = localStorage.getItem("token"); // Récupérer le token du localStorage
+                const token = localStorage.getItem("token");
                 try {
                     const response = await axios.get(
                         `http://localhost:8080/gestionnaire/getEtudiantsParProgramme?programme=${programme}`, {
-                            headers: { Authorization: `Bearer ${token}` } // Inclure le token dans les headers
+                            headers: { Authorization: `Bearer ${token}` }
                         }
                     );
                     const sortedStudents = response.data.sort((a, b) => {
@@ -69,7 +70,6 @@ function FileOffreStage() {
                         return fullNameA.localeCompare(fullNameB);
                     });
                     setStudents(sortedStudents);
-                    console.log("Étudiants récupérés avec succès :", sortedStudents);
                 } catch (error) {
                     console.error("Erreur lors de la récupération des étudiants :", error);
                 }
@@ -83,9 +83,6 @@ function FileOffreStage() {
         }
     }, [role, programme]);
 
-
-
-
     const handleStudentSelection = (studentId) => {
         setSelectedStudents((prevSelected) => {
             if (prevSelected.includes(studentId)) {
@@ -95,7 +92,6 @@ function FileOffreStage() {
             }
         });
     };
-
 
     const handleFileUpload = async () => {
         let token = localStorage.getItem("token");
@@ -168,6 +164,13 @@ function FileOffreStage() {
             hasError = true;
         } else {
             setProgrammeError("");
+        }
+
+        if (role === "GESTIONNAIRE_STAGE" && isPrivate && selectedStudents.length === 0) {
+            setStudentSelectionError("studentSelectionRequired");
+            hasError = true;
+        } else {
+            setStudentSelectionError("");
         }
 
         if (hasError) return;
@@ -336,6 +339,7 @@ function FileOffreStage() {
                             </div>
                         ))}
                     </div>
+                    {studentSelectionError && <p className="text-red-500 text-sm">{t("selectStudentError")}</p>}
                 </div>
             )}
 
