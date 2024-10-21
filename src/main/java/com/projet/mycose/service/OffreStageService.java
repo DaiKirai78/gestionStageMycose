@@ -165,6 +165,7 @@ public class OffreStageService {
             formulaireOffreStageDTO.setStatus(OffreStage.Status.ACCEPTED);
             formulaireOffreStageDTO.setVisibility(OffreStage.Visibility.UNDEFINED);
             if (formulaireOffreStageDTO.getProgramme() != Programme.NOT_SPECIFIED) {
+                formulaireOffreStageDTO.setProgramme(formulaireOffreStageDTO.getProgramme());
                 if (formulaireOffreStageDTO.getEtudiantsPrives() != null) {
                     formulaireOffreStageDTO.setVisibility(OffreStage.Visibility.PRIVATE);
                 } else {
@@ -268,6 +269,7 @@ public class OffreStageService {
         offreStage.setProgramme(acceptOffreDeStageDTO.getProgramme());
 
         if (offreStage.getProgramme() != Programme.NOT_SPECIFIED) {
+            offreStage.setProgramme(acceptOffreDeStageDTO.getProgramme());
             if (acceptOffreDeStageDTO.getEtudiantsPrives() != null) {
                 offreStage.setVisibility(OffreStage.Visibility.PRIVATE);
                 associateEtudiantsPrivees(offreStage, acceptOffreDeStageDTO.getEtudiantsPrives());
