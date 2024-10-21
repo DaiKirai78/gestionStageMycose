@@ -12,6 +12,8 @@ function FileOffreStage() {
     const [companyName, setCompanyName] = useState("");
     const [programmes, setProgrammes] = useState([]);
     const [programme, setProgramme] = useState("");
+    const [students, setStudents] = useState([]);
+    const [selectedStudents, setSelectedStudents] = useState([]);
     const [fileExtensionError, setFileExtensionError] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
     const [uploadError, setUploadError] = useState("");
@@ -19,6 +21,7 @@ function FileOffreStage() {
     const [companyNameError, setCompanyNameError] = useState("");
     const [programmeError, setProgrammeError] = useState("");
     const [role, setRole] = useState("");
+    const [isPrivate, setIsPrivate] = useState(false);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -50,6 +53,44 @@ function FileOffreStage() {
         fetchProgrammes();
     }, []);
 
+    useEffect(() => {
+        if (role === "GESTIONNAIRE_STAGE" && programme) {
+            const fetchStudents = async () => {
+                try {
+                    const response = await axios.get(`http://localhost:8080/gestionnaire/getEtudiantsParProgramme?programme=${programme}`);
+                    const sortedStudents = response.data.sort((a, b) => {
+                        const fullNameA = `${a.nom} ${a.prenom}`.toLowerCase();
+                        const fullNameB = `${b.nom} ${b.prenom}`.toLowerCase();
+                        return fullNameA.localeCompare(fullNameB);
+                    });
+                    setStudents(sortedStudents);
+                    console.log("Étudiants récupérés avec succès :", sortedStudents);
+                } catch (error) {
+                    console.error("Erreur lors de la récupération des étudiants :", error);
+                }
+            };
+
+            fetchStudents();
+        } else {
+            setStudents([]);
+            setSelectedStudents([]);
+            setIsPrivate(false);
+        }
+    }, [role, programme]);
+
+
+
+    const handleStudentSelection = (studentId) => {
+        setSelectedStudents((prevSelected) => {
+            if (prevSelected.includes(studentId)) {
+                return prevSelected.filter((id) => id !== studentId);
+            } else {
+                return [...prevSelected, studentId];
+            }
+        });
+    };
+
+
     const handleFileUpload = async () => {
         let token = localStorage.getItem("token");
         const formData = new FormData();
@@ -57,20 +98,22 @@ function FileOffreStage() {
         formData.append("title", title);
 
         if (role === "GESTIONNAIRE_STAGE") {
-            console.log("Entreprise :", companyName);
             formData.append("entrepriseName", companyName);
             formData.append("programme", programme);
+            if (isPrivate) {
+                formData.append("etudiantsPrives", selectedStudents);
+            }
         }
 
         try {
-            const response = await axios.post("http://localhost:8080/api/offres-stages/upload-file", formData,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "multipart/form-data",
-                    },
-                });
+            const response = await axios.post("http://localhost:8080/api/offres-stages/upload-file", formData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "multipart/form-data",
+                },
+            });
             console.log("Fichier envoyé avec succès :", response.data);
+            console.log("étudiants sélectionnés :", selectedStudents);
             setSuccessMessage(t("fileUploadSuccess"));
             setUploadError("");
 
@@ -78,6 +121,8 @@ function FileOffreStage() {
             setTitle("");
             setCompanyName("");
             setProgramme("");
+            setIsPrivate(false);
+            setSelectedStudents([]);
             document.getElementById("file").value = "";
 
         } catch (error) {
@@ -246,6 +291,47 @@ function FileOffreStage() {
                 />
                 {titleError && <p className="text-red-500 text-sm">{t("titleRequired")}</p>}
             </div>
+
+            {/* Section pour choisir si l'offre est privée ou publique */}
+            {role === "GESTIONNAIRE_STAGE" && (
+                <div className="mb-4">
+                    <label htmlFor="privateOffer" className="flex items-center space-x-2">
+                        <input
+                            type="checkbox"
+                            id="privateOffer"
+                            checked={isPrivate}
+                            onChange={() => setIsPrivate(!isPrivate)}
+                            disabled={!programme}
+                        />
+                        <span
+                            className={`${!programme ? "text-gray-400" : ""}`}>{t("makeOfferPrivate")}</span>
+                    </label>
+                </div>
+            )}
+
+            {isPrivate && role === "GESTIONNAIRE_STAGE" && (
+                <div className="relative w-full">
+                    <label className="block mb-2 text-sm font-medium text-black">{t("selectStudent")}</label>
+                    <div className="space-y-2">
+                        {students.map((student) => (
+                            <div key={student.id} className="flex items-center space-x-2">
+                                <input
+                                    type="checkbox"
+                                    id={`student-${student.id}`}
+                                    checked={selectedStudents.includes(student.id)}
+                                    onChange={() => handleStudentSelection(student.id)}
+                                />
+                                <label
+                                    htmlFor={`student-${student.id}`}
+                                    className="cursor-pointer"
+                                >
+                                    {student.nom}, {student.prenom}
+                                </label>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
 
             {successMessage && <p className="text-green-500 mt-4">{successMessage}</p>}
             {uploadError && <p className="text-red-500 mt-4">{uploadError}</p>}

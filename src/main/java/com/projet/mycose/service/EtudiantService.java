@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.projet.mycose.dto.EtudiantDTO.toDTO;
 
@@ -38,7 +39,7 @@ public class EtudiantService {
 
     private List<OffreStageDTO> listeOffreStageToDTO(List<OffreStage> listeAMapper) {
         List<OffreStageDTO> listeMappee = new ArrayList<>();
-        for(OffreStage offreStage : listeAMapper) {
+         for(OffreStage offreStage : listeAMapper) {
             listeMappee.add(OffreStageDTO.toOffreStageInstaceDTO(offreStage));
         }
 
@@ -84,4 +85,8 @@ public class EtudiantService {
         return listeOffreStageToDTO(offreStagesEnPages.getContent());
     }
 
+    public List<EtudiantDTO> findEtudiantsByProgramme(Programme programme) {
+        List<Etudiant> etudiants = etudiantRepository.findAllByProgramme(programme);
+       return etudiants.stream().map(EtudiantDTO::toDTO).collect(Collectors.toList());
+    }
 }
