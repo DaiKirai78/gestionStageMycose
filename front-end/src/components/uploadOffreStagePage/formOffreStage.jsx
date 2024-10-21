@@ -254,7 +254,7 @@ function FormOffreStage() {
                 location: "",
                 salary: "",
                 description: "",
-                programme: "NOT_SPECIFIED",
+                programme: "",
             });
             setSelectedStudents([]);
             setIsPrivate(false);

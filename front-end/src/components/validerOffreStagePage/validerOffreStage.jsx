@@ -12,6 +12,7 @@ function ValiderOffreStage() {
     const [error, setError] = useState(null);
     const [programmeError, setProgrammeError] = useState("");
     const [studentSelectionError, setStudentSelectionError] = useState("");
+    const [noStudentsInProgram, setNoStudentsInProgram] = useState("");
     const token = localStorage.getItem("token");
     const [programmes, setProgrammes] = useState([]);
     const [programme, setProgramme] = useState("");
@@ -46,12 +47,21 @@ function ValiderOffreStage() {
                     return fullNameA.localeCompare(fullNameB);
                 });
                 setStudents(sortedStudents);
+
+                if (sortedStudents.length === 0) {
+                    setNoStudentsInProgram(t("noStudentsInProgram"));
+                } else {
+                    setNoStudentsInProgram("");
+                }
+
             } catch (error) {
                 console.error("Erreur lors de la récupération des étudiants :", error);
             }
         };
         fetchStudents();
     }, [programme]);
+
+
 
     const handleAccept = async () => {
 
@@ -199,7 +209,7 @@ function ValiderOffreStage() {
                         {programmeError && <p className="text-red-500 text-sm">{t("programRequired")}</p>}
                     </div>
 
-                    <div className="mb-4">
+                    <div className="mt-2">
                         <label htmlFor="privateOffer" className="flex items-center space-x-2">
                             <input
                                 type="checkbox"
@@ -234,6 +244,7 @@ function ValiderOffreStage() {
                                     </div>
                                 ))}
                             </div>
+                            {noStudentsInProgram && <p className="text-black text-m">{t("noStudentInProgram")}</p>}
                             {studentSelectionError && <p className="text-red-500 text-sm">{t("selectStudentError")}</p>}
                         </div>
                     )}

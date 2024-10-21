@@ -14,6 +14,7 @@ function FileOffreStage() {
     const [programme, setProgramme] = useState("");
     const [students, setStudents] = useState([]);
     const [selectedStudents, setSelectedStudents] = useState([]);
+    const [noStudentsInProgram, setNoStudentsInProgram] = useState("");
     const [fileExtensionError, setFileExtensionError] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
     const [uploadError, setUploadError] = useState("");
@@ -70,6 +71,12 @@ function FileOffreStage() {
                         return fullNameA.localeCompare(fullNameB);
                     });
                     setStudents(sortedStudents);
+
+                    if (sortedStudents.length === 0) {
+                        setNoStudentsInProgram(t("noStudentsInProgram"));
+                    } else {
+                        setNoStudentsInProgram("");
+                    }
                 } catch (error) {
                     console.error("Erreur lors de la récupération des étudiants :", error);
                 }
@@ -341,6 +348,7 @@ function FileOffreStage() {
                             </div>
                         ))}
                     </div>
+                    {noStudentsInProgram && <p className="text-black text-m">{t("noStudentInProgram")}</p>}
                     {studentSelectionError && <p className="text-red-500 text-sm">{t("selectStudentError")}</p>}
                 </div>
             )}
