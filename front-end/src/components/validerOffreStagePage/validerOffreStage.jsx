@@ -34,34 +34,39 @@ function ValiderOffreStage() {
     }, []);
 
     useEffect(() => {
-        const fetchStudents = async () => {
-            const token = localStorage.getItem("token");
-            try {
-                const response = await axios.get(
-                    `http://localhost:8080/gestionnaire/getEtudiantsParProgramme?programme=${programme}`, {
-                        headers: { Authorization: `Bearer ${token}` }
+        if (programme) {
+            const fetchStudents = async () => {
+                const token = localStorage.getItem("token");
+                try {
+                    const response = await axios.get(
+                        `http://localhost:8080/gestionnaire/getEtudiantsParProgramme?programme=${programme}`, {
+                            headers: { Authorization: `Bearer ${token}` }
+                        }
+                    );
+                    const sortedStudents = response.data.sort((a, b) => {
+                        const fullNameA = `${a.nom} ${a.prenom}`.toLowerCase();
+                        const fullNameB = `${b.nom} ${b.prenom}`.toLowerCase();
+                        return fullNameA.localeCompare(fullNameB);
                     });
-                const sortedStudents = response.data.sort((a, b) => {
-                    const fullNameA = `${a.nom} ${a.prenom}`.toLowerCase();
-                    const fullNameB = `${b.nom} ${b.prenom}`.toLowerCase();
-                    return fullNameA.localeCompare(fullNameB);
-                });
-                setStudents(sortedStudents);
+                    setStudents(sortedStudents);
 
-                if (sortedStudents.length === 0) {
-                    setNoStudentsInProgram(t("noStudentsInProgram"));
-                } else {
-                    setNoStudentsInProgram("");
+                    if (sortedStudents.length === 0) {
+                        setNoStudentsInProgram(t("noStudentsInProgram"));
+                    } else {
+                        setNoStudentsInProgram("");
+                    }
+                } catch (error) {
+                    console.error("Erreur lors de la récupération des étudiants :", error);
                 }
+            };
 
-            } catch (error) {
-                console.error("Erreur lors de la récupération des étudiants :", error);
-            }
-        };
-        fetchStudents();
+            fetchStudents();
+        } else {
+            setStudents([]);
+            setSelectedStudents([]);
+            setIsPrivate(false);
+        }
     }, [programme]);
-
-
 
     const handleAccept = async () => {
 
@@ -82,7 +87,11 @@ function ValiderOffreStage() {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify({ commentaire }),
+                body: JSON.stringify({
+                    commentaire,
+                    programme,
+                    selectedStudents
+                }),
             });
 
             if (!response.ok) {
@@ -114,7 +123,11 @@ function ValiderOffreStage() {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify({ commentaire }),
+                body: JSON.stringify({
+                    commentaire,
+                    programme,
+                    selectedStudents
+                }),
             });
 
             if (!response.ok) {
