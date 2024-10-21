@@ -39,4 +39,16 @@ public class ApplicationStageController {
     public ResponseEntity<ApplicationStageAvecInfosDTO> getMyApplication(@PathVariable Long id) throws ChangeSetPersister.NotFoundException {
         return new ResponseEntity<>(applicationStageService.getApplicationById(id), HttpStatus.OK);
     }
+
+    @PatchMapping("/application/{id}/accepter")
+    public ResponseEntity<ApplicationStageDTO> accepterApplication(@PathVariable Long id) {
+        return new ResponseEntity<>(applicationStageService.accepterOuRefuserApplication(id,
+                ApplicationStage.ApplicationStatus.ACCEPTED), HttpStatus.OK);
+    }
+
+    @PatchMapping("/application/{id}/refuser")
+    public ResponseEntity<ApplicationStageDTO> refuserApplication(@PathVariable Long id) {
+        return new ResponseEntity<>(applicationStageService.accepterOuRefuserApplication(id,
+                ApplicationStage.ApplicationStatus.REJECTED), HttpStatus.OK);
+    }
 }

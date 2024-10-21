@@ -30,6 +30,18 @@ public class EtudiantDTO extends UtilisateurDTO {
 
     }
 
+    public static Etudiant toEntity(EtudiantDTO etudiantDTO) {
+        return Etudiant.builder()
+                .id(etudiantDTO.getId())
+                .prenom(etudiantDTO.getPrenom())
+                .nom(etudiantDTO.getNom())
+                .courriel(etudiantDTO.getCourriel())
+                .numeroDeTelephone(etudiantDTO.getNumeroDeTelephone())
+                .programme(etudiantDTO.getProgramme())
+                .build();
+
+    }
+
     public static EtudiantDTO empty() {
         return new EtudiantDTO();
     }
