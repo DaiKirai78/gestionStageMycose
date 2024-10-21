@@ -87,6 +87,6 @@ public class EtudiantService {
 
     public List<EtudiantDTO> findEtudiantsByProgramme(Programme programme) {
         List<Etudiant> etudiants = etudiantRepository.findAllByProgramme(programme);
-       return etudiants.stream().map(EtudiantDTO::toDTO).collect(Collectors.toList());
+        return etudiants.stream().map(EtudiantDTO::toDTO).collect(Collectors.toList());
     }
 }

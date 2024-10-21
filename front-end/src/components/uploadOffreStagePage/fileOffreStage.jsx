@@ -56,8 +56,13 @@ function FileOffreStage() {
     useEffect(() => {
         if (role === "GESTIONNAIRE_STAGE" && programme) {
             const fetchStudents = async () => {
+                const token = localStorage.getItem("token"); // Récupérer le token du localStorage
                 try {
-                    const response = await axios.get(`http://localhost:8080/gestionnaire/getEtudiantsParProgramme?programme=${programme}`);
+                    const response = await axios.get(
+                        `http://localhost:8080/gestionnaire/getEtudiantsParProgramme?programme=${programme}`, {
+                            headers: { Authorization: `Bearer ${token}` } // Inclure le token dans les headers
+                        }
+                    );
                     const sortedStudents = response.data.sort((a, b) => {
                         const fullNameA = `${a.nom} ${a.prenom}`.toLowerCase();
                         const fullNameB = `${b.nom} ${b.prenom}`.toLowerCase();
@@ -77,6 +82,7 @@ function FileOffreStage() {
             setIsPrivate(false);
         }
     }, [role, programme]);
+
 
 
 

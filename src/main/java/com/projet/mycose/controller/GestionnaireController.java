@@ -19,7 +19,7 @@ public class GestionnaireController {
     private final GestionnaireStageService gestionnaireStageService;
     private final EtudiantService etudiantService;
 
-    public GestionnaireController(GestionnaireStageService gestionnaireStageService) {
+    public GestionnaireController(GestionnaireStageService gestionnaireStageService, EtudiantService etudiantService) {
         this.gestionnaireStageService = gestionnaireStageService;
         this.etudiantService = etudiantService;
     }
