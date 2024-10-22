@@ -50,7 +50,7 @@ const VoirMonCVPage = () => {
     }
     return (
         <TokenPageContainer role={["ETUDIANT"]} setUserInfo={setUserInfo}>
-            <div className="flex items-start justify-center min-h-screen">
+            <div className="flex items-start justify-center min-h-full">
                 <VoirMonCV />
             </div>
         </TokenPageContainer>

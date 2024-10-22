@@ -107,7 +107,7 @@ const AcceuilEmployeur = () => {
 
     return (
         <TokenPageContainer role={["EMPLOYEUR"]} setUserInfo={setUserInfo}>
-            <div className={`bg-orange-light w-full min-h-screen flex flex-col items-center gap-10`}>
+            <div className={`bg-orange-light w-full min-h-full flex flex-col items-center gap-10`}>
                 <div className='w-4/5'>
                     {   
                         isFetching && !data ?

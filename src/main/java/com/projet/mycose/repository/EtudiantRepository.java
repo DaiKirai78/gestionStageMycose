@@ -1,6 +1,7 @@
 package com.projet.mycose.repository;
 
 import com.projet.mycose.modele.Etudiant;
+import com.projet.mycose.modele.Programme;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -23,4 +24,7 @@ public interface EtudiantRepository extends JpaRepository<Etudiant, Long> {
 
 
     Etudiant findEtudiantById(Long id);
+
+
+    List<Etudiant> findAllByProgramme(@Param("programme") Programme programme);
 }

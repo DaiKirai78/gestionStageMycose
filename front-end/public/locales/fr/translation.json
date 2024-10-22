@@ -180,5 +180,8 @@
     "EMPLOYEUR": "Employeur",
     "ETUDIANT": "Étudiant",
     "NOT_SPECIFIED": "Non Spécifié",
-    "televerserOffre": "Téléverser offre"
+    "televerserOffre": "Téléverser offre",
+    "makeOfferPrivate": "Assigner l'offre à un ou plusieurs étudiants spécifiques",
+    "selectStudent": "Sélectionner un ou plusieurs étudiant qui pourront voir l'offre",
+    "selectStudentError": "Sélectionner un ou plusieurs étudiant."
 }

@@ -2,6 +2,8 @@ package com.projet.mycose.controller;
 
 import com.projet.mycose.dto.EnseignantDTO;
 import com.projet.mycose.dto.EtudiantDTO;
+import com.projet.mycose.modele.Programme;
+import com.projet.mycose.service.EtudiantService;
 import com.projet.mycose.service.GestionnaireStageService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -15,9 +17,11 @@ import java.util.List;
 @RequestMapping("/gestionnaire")
 public class GestionnaireController {
     private final GestionnaireStageService gestionnaireStageService;
+    private final EtudiantService etudiantService;
 
-    public GestionnaireController(GestionnaireStageService gestionnaireStageService) {
+    public GestionnaireController(GestionnaireStageService gestionnaireStageService, EtudiantService etudiantService) {
         this.gestionnaireStageService = gestionnaireStageService;
+        this.etudiantService = etudiantService;
     }
 
     @PostMapping("/getEtudiants")
@@ -45,6 +49,16 @@ public class GestionnaireController {
         try{
             return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
                     gestionnaireStageService.getEnseignantsParRecherche(search));
+        } catch (Exception e) {
+            return ResponseEntity.noContent().build();
+        }
+    }
+
+    @GetMapping("/getEtudiantsParProgramme")
+    public ResponseEntity<List<EtudiantDTO>> getEtudiantsByProgramme(@RequestParam Programme programme) {
+        try {
+            return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
+                    etudiantService.findEtudiantsByProgramme(programme));
         } catch (Exception e) {
             return ResponseEntity.noContent().build();
         }

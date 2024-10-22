@@ -6,6 +6,11 @@ body {
     background-image: url("./assets/bgOrange.jpg");
     background-repeat: no-repeat;
     background-size: cover;
+    height: 100vh;
+}
+
+#root {
+    height: 100%;
 }
 
 #searchInput {

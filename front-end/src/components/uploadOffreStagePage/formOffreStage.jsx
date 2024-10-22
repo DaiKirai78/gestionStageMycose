@@ -33,6 +33,9 @@ function FormOffreStage() {
     const [successMessage, setSuccessMessage] = useState("");
     const [submitError, setSubmitError] = useState("");
     const [role, setRole] = useState("");
+    const [students, setStudents] = useState([]);
+    const [selectedStudents, setSelectedStudents] = useState([]);
+    const [isPrivate, setIsPrivate] = useState(false);
 
     useEffect(() => {
         const fetchProgrammes = async () => {
@@ -63,6 +66,51 @@ function FormOffreStage() {
         fetchUserData();
     }, []);
 
+    useEffect(() => {
+        if (role === "GESTIONNAIRE_STAGE" && formData.programme) {
+            const fetchStudents = async () => {
+                const token = localStorage.getItem("token");
+                try {
+                    const response = await axios.get(
+                        `http://localhost:8080/gestionnaire/getEtudiantsParProgramme?programme=${formData.programme}`,
+                        {
+                            headers: { Authorization: `Bearer ${token}` },
+                        }
+                    );
+                    const sortedStudents = response.data.sort((a, b) => {
+                        const fullNameA = `${a.nom} ${a.prenom}`.toLowerCase();
+                        const fullNameB = `${b.nom} ${b.prenom}`.toLowerCase();
+                        return fullNameA.localeCompare(fullNameB);
+                    });
+                    setStudents(sortedStudents);
+                } catch (error) {
+                    console.error("Erreur lors de la récupération des étudiants :", error);
+                }
+            };
+
+            fetchStudents();
+        } else {
+            setStudents([]);
+            setSelectedStudents([]);
+            setIsPrivate(false);
+        }
+    }, [role, formData.programme]);
+
+    const handleStudentSelection = (studentId) => {
+        setSelectedStudents((prevSelected) => {
+            const newSelected = prevSelected.includes(studentId)
+                ? prevSelected.filter((id) => id !== studentId)
+                : [...prevSelected, studentId];
+
+            if (isPrivate && newSelected.length > 0) {
+                setSubmitError("");
+            }
+
+            return newSelected;
+        });
+    };
+
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData({
@@ -79,9 +127,7 @@ function FormOffreStage() {
     };
 
     const handleSubmitForm = async (e) => {
-
         let token = localStorage.getItem("token");
-
         e.preventDefault();
 
         let valid = true;
@@ -170,6 +216,12 @@ function FormOffreStage() {
             valid = false;
         }
 
+        // Vérifier si l'offre est privée et s'il y a des étudiants sélectionnés
+        if (isPrivate && selectedStudents.length === 0) {
+            setSubmitError(t("selectStudentError"));
+            valid = false;
+        }
+
         setError(errors);
 
         if (!valid) {
@@ -177,7 +229,12 @@ function FormOffreStage() {
         }
 
         try {
-            const response = await axios.post("http://localhost:8080/api/offres-stages/upload-form", formData,
+            const response = await axios.post(
+                "http://localhost:8080/api/offres-stages/upload-form",
+                {
+                    ...formData,
+                    etudiantsPrives: isPrivate ? selectedStudents : null,
+                },
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -197,8 +254,10 @@ function FormOffreStage() {
                 location: "",
                 salary: "",
                 description: "",
-                programme: ""
+                programme: "NOT_SPECIFIED",
             });
+            setSelectedStudents([]);
+            setIsPrivate(false);
         } catch (error) {
             console.error("Erreur lors de l'envoi du formulaire :", error);
             setSubmitError(t("formSubmissionError"));
@@ -206,7 +265,7 @@ function FormOffreStage() {
         }
     };
 
-
+    const isPrivateEnabled = role === "GESTIONNAIRE_STAGE" && formData.programme && students.length > 0;
 
     return (
         <form onSubmit={handleSubmitForm} className="w-full">
@@ -356,7 +415,7 @@ function FormOffreStage() {
                         onChange={handleInputChange}
                         className={`mt-1 p-2 block w-full border ${error.programme ? 'border-red-500' : 'border-black'} rounded-md bg-transparent`}
                     >
-                        <option value="">{t("choisirProgramme")}</option>
+                        <option value="" className={"text-center"}>-- {t("choisirProgramme")} --</option>
                         {programmes.map((programme, index) => (
                             <option key={index} value={programme}>
                                 {t(programme)}
@@ -364,6 +423,41 @@ function FormOffreStage() {
                         ))}
                     </select>
                     {error.programme && <p className="text-red-500 text-sm mt-1">{error.programme}</p>}
+                </div>
+            )}
+
+            {role === "GESTIONNAIRE_STAGE" && (
+                <div className="mt-4">
+                    <label className="flex items-center">
+                        <input
+                            type="checkbox"
+                            className="mr-2"
+                            checked={isPrivate}
+                            onChange={() => isPrivateEnabled && setIsPrivate(!isPrivate)}
+                            disabled={!isPrivateEnabled}
+                        />
+                        <span
+                            className={`${!isPrivateEnabled ? "text-gray-400" : ""}`}>{t("makeOfferPrivate")}</span>
+                    </label>
+                </div>
+            )}
+
+            {isPrivate && (
+                <div className="mt-4">
+                    <h2 className="block mb-2 text-sm font-medium text-black">{t("selectStudent")}</h2>
+                    {students.map((student) => (
+                        <div key={student.id}>
+                            <label className="flex items-center cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    className="mr-2"
+                                    checked={selectedStudents.includes(student.id)}
+                                    onChange={() => handleStudentSelection(student.id)}
+                                />
+                                {`${student.nom}, ${student.prenom}`}
+                            </label>
+                        </div>
+                    ))}
                 </div>
             )}
 

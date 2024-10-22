@@ -84,7 +84,7 @@ const VoirMonCV = () => {
     }, []);
 
     return (
-        <div className="min-h-screen flex items-start justify-center p-8">
+        <div className="min-h-full flex items-start justify-center p-8">
             <div className="bg-[#FFF8F2] shadow-lg rounded-lg flex flex-col md:flex-row w-full max-w-6xl">
                 {/* Section PDF */}
                 <div className="w-full md:w-[70%] p-8 border-b md:border-b-0 md:border-r border-gray-300">
