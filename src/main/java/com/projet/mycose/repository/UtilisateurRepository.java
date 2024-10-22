@@ -4,6 +4,7 @@ import com.projet.mycose.dto.EnseignantDTO;
 import com.projet.mycose.dto.EtudiantDTO;
 import com.projet.mycose.modele.Enseignant;
 import com.projet.mycose.modele.Etudiant;
+import com.projet.mycose.modele.Programme;
 import com.projet.mycose.modele.Utilisateur;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,8 +29,9 @@ public interface UtilisateurRepository extends JpaRepository<Utilisateur, Long> 
 
     @Query("SELECT e FROM Etudiant e " +
             "WHERE e.enseignantAssignee IS NULL " +
-            "AND e.credentials.role = 'ETUDIANT'")
-    Page<Etudiant> findAllEtudiantsSansEnseignants(Pageable pageable);
+            "AND e.credentials.role = 'ETUDIANT' " +
+            "AND e.programme = :programme")
+    Page<Etudiant> findAllEtudiantsSansEnseignants(Programme programme, Pageable pageable);
 
 
     @Query("SELECT count(e) FROM Etudiant e " +

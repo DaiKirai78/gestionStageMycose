@@ -66,11 +66,12 @@ public class GestionnaireStageControllerTest {
 
         List<EtudiantDTO> listeEtudiantsDTOMock = new ArrayList<>();
         listeEtudiantsDTOMock.add(etudiantMock);
-        when(gestionnaireStageService.getEtudiantsSansEnseignants(0)).thenReturn(listeEtudiantsDTOMock);
+        when(gestionnaireStageService.getEtudiantsSansEnseignants(0, Programme.TECHNIQUE_INFORMATIQUE)).thenReturn(listeEtudiantsDTOMock);
 
         // Act & Assert
         mockMvc.perform(post("/gestionnaire/getEtudiants")
                 .param("pageNumber", String.valueOf(0))
+                .param("programme", Programme.TECHNIQUE_INFORMATIQUE.toString())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isAccepted())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -82,11 +83,12 @@ public class GestionnaireStageControllerTest {
     @Test
     public void testGetEtudiantsSansEnseignants_Error() throws Exception {
         //Arrange
-        when(gestionnaireStageService.getEtudiantsSansEnseignants(0)).thenThrow(new RuntimeException());
+        when(gestionnaireStageService.getEtudiantsSansEnseignants(0, null)).thenThrow(new RuntimeException());
 
         //Act & Assert
         mockMvc.perform(post("/gestionnaire/getEtudiants")
                         .param("pageNumber", String.valueOf(0))
+                        .param("programme", Programme.TECHNIQUE_INFORMATIQUE.toString())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
     }

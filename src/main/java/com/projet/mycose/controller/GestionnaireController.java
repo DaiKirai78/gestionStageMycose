@@ -25,10 +25,10 @@ public class GestionnaireController {
     }
 
     @PostMapping("/getEtudiants")
-    public ResponseEntity<List<EtudiantDTO>> getEtudiantsSansEnseignant(@RequestParam int pageNumber)  {
+    public ResponseEntity<List<EtudiantDTO>> getEtudiantsSansEnseignant(@RequestParam int pageNumber, @RequestParam Programme programme)  {
         try {
             return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
-                    gestionnaireStageService.getEtudiantsSansEnseignants(pageNumber));
+                    gestionnaireStageService.getEtudiantsSansEnseignants(pageNumber, programme));
         } catch (Exception e) {
             return ResponseEntity.noContent().build();
         }
