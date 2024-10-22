@@ -183,5 +183,6 @@
     "televerserOffre": "Téléverser offre",
     "makeOfferPrivate": "Assigner l'offre à un ou plusieurs étudiants spécifiques",
     "selectStudent": "Sélectionner un ou plusieurs étudiant qui pourront voir l'offre",
-    "selectStudentError": "Sélectionner un ou plusieurs étudiant."
+    "selectStudentError": "Sélectionner un ou plusieurs étudiant.",
+    "attribuer":  "Attribuer"
 }

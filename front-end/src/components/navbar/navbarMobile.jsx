@@ -4,7 +4,7 @@ import { BsBellFill } from "react-icons/bs";
 import { TfiReload } from "react-icons/tfi";
 import { useLocation, useNavigate } from "react-router-dom";
 
-const NavbarMobile = ({ mobileMenuRef, userInfo, navLinks, toggleNotificationMenu, handleProfileItemClick, isNotificationMenuOpen, notificationMenuRefMobile, langue, toggleLangue }) => {
+const NavbarMobile = ({ lienEqual, mobileMenuRef, userInfo, navLinks, toggleNotificationMenu, handleProfileItemClick, isNotificationMenuOpen, notificationMenuRefMobile, langue, toggleLangue }) => {
     const navigate = useNavigate();
     const location = useLocation();
     const { t } = useTranslation();
@@ -26,7 +26,7 @@ const NavbarMobile = ({ mobileMenuRef, userInfo, navLinks, toggleNotificationMen
                             onClick={() => {
                                 navigate(infoBtn["lien"]);
                             } }
-                            className={`w-full text-left hover:bg-orange hover:bg-opacity-20 px-3 py-2 rounded-md font-medium ${location.pathname === infoBtn["lien"] ? "cursor-default ring-1 ring-orange text-orange hover:bg-transparent" : ""}`}>
+                            className={`w-full text-left hover:bg-orange hover:bg-opacity-20 px-3 py-2 rounded-md font-medium ${lienEqual(infoBtn) ? "cursor-default ring-1 ring-orange text-orange hover:bg-transparent" : ""}`}>
                             {t(infoBtn["titre"])}
                         </button>
                     );
