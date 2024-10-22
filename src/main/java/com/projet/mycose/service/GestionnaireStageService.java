@@ -2,10 +2,7 @@ package com.projet.mycose.service;
 
 import com.projet.mycose.dto.EnseignantDTO;
 import com.projet.mycose.dto.EtudiantDTO;
-import com.projet.mycose.modele.Enseignant;
-import com.projet.mycose.modele.Etudiant;
-import com.projet.mycose.modele.GestionnaireStage;
-import com.projet.mycose.modele.Utilisateur;
+import com.projet.mycose.modele.*;
 import com.projet.mycose.repository.GestionnaireStageRepository;
 import com.projet.mycose.repository.UtilisateurRepository;
 import lombok.RequiredArgsConstructor;
@@ -37,10 +34,10 @@ public class GestionnaireStageService {
         }
     }
 
-    public List<EtudiantDTO> getEtudiantsSansEnseignants(int pageNumber) {
+    public List<EtudiantDTO> getEtudiantsSansEnseignants(int pageNumber, Programme programme) {
         PageRequest pageRequest = PageRequest.of(pageNumber, LIMIT_PER_PAGE);
 
-        Page<Etudiant> pageEtudiantsRetournee = utilisateurRepository.findAllEtudiantsSansEnseignants(pageRequest);
+        Page<Etudiant> pageEtudiantsRetournee = utilisateurRepository.findAllEtudiantsSansEnseignants(programme ,pageRequest);
         if(pageEtudiantsRetournee.isEmpty()) {
             return null;
         }

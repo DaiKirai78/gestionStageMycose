@@ -115,36 +115,24 @@ class GestionnaireStageServiceTest {
                 "unMotDePasse",
                 Programme.TECHNIQUE_INFORMATIQUE
         );
-
-        Etudiant etudiant2 = new Etudiant(
-                2L,
-                "unPrenom2",
-                "unNom2",
-                "444-454-0965",
-                "unCourriel2@mail.com",
-                "unMotDePasse2",
-                Programme.GENIE_LOGICIEL
-        );
-
+        
         int page = 0;
         PageRequest pageRequest = PageRequest.of(page, 10);
         List<Etudiant> listeEtudiantMock = new ArrayList<>();
         listeEtudiantMock.add(etudiant1);
-        listeEtudiantMock.add(etudiant2);
 
         Page<Etudiant> etudiantsPage = new PageImpl<>(listeEtudiantMock, pageRequest, 2);
 
-        when(utilisateurRepository.findAllEtudiantsSansEnseignants(pageRequest)).thenReturn(etudiantsPage);
+        when(utilisateurRepository.findAllEtudiantsSansEnseignants(Programme.TECHNIQUE_INFORMATIQUE,pageRequest)).thenReturn(etudiantsPage);
         // Act
-        List<EtudiantDTO> result = gestionnaireStageService.getEtudiantsSansEnseignants(page);
+        List<EtudiantDTO> result = gestionnaireStageService.getEtudiantsSansEnseignants(page, Programme.TECHNIQUE_INFORMATIQUE);
 
         // Assert
         assertNotNull(result);
-        assertEquals(2, result.size());
+        assertEquals(1, result.size());
         assertEquals("unCourriel@mail.com", result.get(0).getCourriel());
-        assertEquals("unCourriel2@mail.com", result.get(1).getCourriel());
 
-        verify(utilisateurRepository, times(1)).findAllEtudiantsSansEnseignants(pageRequest);
+        verify(utilisateurRepository, times(1)).findAllEtudiantsSansEnseignants(Programme.TECHNIQUE_INFORMATIQUE, pageRequest);
     }
 
     @Test
@@ -153,14 +141,14 @@ class GestionnaireStageServiceTest {
         PageRequest pageRequest = PageRequest.of(page, 10);
         Page<Etudiant> etudiantsPage = new PageImpl<>(List.of(), pageRequest, 0);
 
-        when(utilisateurRepository.findAllEtudiantsSansEnseignants(pageRequest)).thenReturn(etudiantsPage);
+        when(utilisateurRepository.findAllEtudiantsSansEnseignants(null, pageRequest)).thenReturn(etudiantsPage);
 
         // Act
-        List<EtudiantDTO> result = gestionnaireStageService.getEtudiantsSansEnseignants(page);
+        List<EtudiantDTO> result = gestionnaireStageService.getEtudiantsSansEnseignants(page, null);
 
         // Assert
         assertNull(result);
-        verify(utilisateurRepository, times(1)).findAllEtudiantsSansEnseignants(pageRequest);
+        verify(utilisateurRepository, times(1)).findAllEtudiantsSansEnseignants(null, pageRequest);
     }
 
     @Test
