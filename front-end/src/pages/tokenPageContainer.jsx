@@ -40,7 +40,7 @@ const TokenPageContainer = ({children, role, setUserInfo}) => {
         }
         
         return (
-            <div className='h-[calc(100%-65px)]'>
+            <div className='h-full w-full'>
                 {children}
             </div>
         );
