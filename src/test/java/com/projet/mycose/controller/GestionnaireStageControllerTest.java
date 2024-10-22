@@ -2,8 +2,10 @@ package com.projet.mycose.controller;
 
 import com.projet.mycose.dto.EnseignantDTO;
 import com.projet.mycose.dto.EtudiantDTO;
+import com.projet.mycose.modele.Etudiant;
 import com.projet.mycose.modele.Programme;
 import com.projet.mycose.modele.auth.Role;
+import com.projet.mycose.repository.UtilisateurRepository;
 import com.projet.mycose.service.GestionnaireStageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,7 +13,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -19,9 +23,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -33,6 +37,9 @@ public class GestionnaireStageControllerTest {
 
     @Mock
     private GestionnaireStageService gestionnaireStageService;
+
+    @Mock
+    private UtilisateurRepository utilisateurRepository;
 
     @InjectMocks
     private GestionnaireController gestionnaireController;
@@ -145,5 +152,41 @@ public class GestionnaireStageControllerTest {
         mockMvc.perform(get("/gestionnaire/getEtudiantsPages"))
                 .andExpect(status().isNoContent());
 
+    }
+
+    @Test
+    public void testAssignerEnseignatEtudiant_Success() throws Exception {
+        // Arrange
+        Long idEtudiant = 1L;
+        Long idEnseignant = 2L;
+
+        // Act
+        doNothing().when(gestionnaireStageService).assignerEnseigantEtudiant(idEtudiant, idEnseignant);
+
+        // Assert & Assert
+        mockMvc.perform(post("/gestionnaire/assignerEnseignantEtudiant")
+                        .param("idEtudiant", String.valueOf(idEtudiant))
+                        .param("idEnseignant", String.valueOf(idEnseignant)))
+                .andExpect(status().isOk());
+
+        verify(gestionnaireStageService, times(1)).assignerEnseigantEtudiant(idEtudiant, idEnseignant);
+    }
+
+
+    @Test
+    public void testAssignerEnseignantEtudiant_Error() throws Exception{
+        // Arrange
+        Long idEtudiant = 1L;
+        Long idEnseignant = 2L;
+
+        doThrow(new RuntimeException()).when(gestionnaireStageService).assignerEnseigantEtudiant(idEtudiant, idEnseignant);
+
+        // Act & Assert
+        mockMvc.perform(post("/gestionnaire/assignerEnseignantEtudiant")
+                        .param("idEtudiant", String.valueOf(idEtudiant))
+                        .param("idEnseignant", String.valueOf(idEnseignant)))
+                .andExpect(status().isNoContent());
+
+        verify(gestionnaireStageService, times(1)).assignerEnseigantEtudiant(idEtudiant, idEnseignant);
     }
 }

@@ -49,4 +49,14 @@ public class GestionnaireController {
             return ResponseEntity.noContent().build();
         }
     }
+
+    @PostMapping("/assignerEnseignantEtudiant")
+    public ResponseEntity<?> assignerEnseignantVersEtudiant(@RequestParam Long idEtudiant, @RequestParam Long idEnseignant) {
+        try{
+            gestionnaireStageService.assignerEnseigantEtudiant(idEtudiant, idEnseignant);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.noContent().build();
+        }
+    }
 }

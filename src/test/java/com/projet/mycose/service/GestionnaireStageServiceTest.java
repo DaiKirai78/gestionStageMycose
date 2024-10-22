@@ -23,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -238,6 +239,91 @@ class GestionnaireStageServiceTest {
         //Assert
         assertEquals(nombrePage, 5);
         verify(utilisateurRepository, times(1)).countAllEtudiantsSansEnseignants();
+    }
+
+    @Test
+    public void testAssignerEnseignantEtudiant_Success() {
+        // Arrange
+        Long idEtudiant = 1L;
+        Long idEnseignant = 2L;
+
+        Etudiant etudiant = new Etudiant(
+                1L,
+                "unPrenom",
+                "unNom",
+                "555-666-7777",
+                "unCourriel@mail.com",
+                "unMotDePasse",
+                Programme.TECHNIQUE_INFORMATIQUE
+        );
+
+        Enseignant enseignant = new Enseignant(
+                2L,
+                "unPrenom",
+                "unNom",
+                "555-666-7777",
+                "unCourriel@mail.com",
+                "unMotDePasse"
+        );
+
+        when(utilisateurRepository.findUtilisateurById(idEtudiant)).thenReturn(Optional.of(etudiant));
+        when(utilisateurRepository.findUtilisateurById(idEnseignant)).thenReturn(Optional.of(enseignant));
+
+        // Act
+        gestionnaireStageService.assignerEnseigantEtudiant(idEtudiant, idEnseignant);
+
+        // Assert
+        assertEquals(enseignant, etudiant.getEnseignantAssignee());
+        assertTrue(enseignant.getEtudiantsAssignees().contains(etudiant));
+        verify(utilisateurRepository).save(etudiant);
+        verify(utilisateurRepository).save(enseignant);
+    }
+
+    @Test
+    void testAssignerEnseignantEtudiant_nullIdEtudiant() {
+        // Arrange
+        Long idEnseignant = 2L;
+
+        // Act & Assert
+        Exception exception = assertThrows(NullPointerException.class, () ->
+                gestionnaireStageService.assignerEnseigantEtudiant(null, idEnseignant)
+        );
+        assertEquals("ID Étudiant ne peut pas être NULL", exception.getMessage());
+    }
+
+    @Test
+    void testAssignerEnseignantEtudiant_utilisateurNonTrouve() {
+        // Arrange
+        Long idEtudiant = 1L;
+        Long idEnseignant = 2L;
+
+        when(utilisateurRepository.findUtilisateurById(idEtudiant)).thenReturn(Optional.empty());
+        when(utilisateurRepository.findUtilisateurById(idEnseignant)).thenReturn(Optional.of(new Enseignant()));
+
+        when(utilisateurRepository.findUtilisateurById(idEtudiant)).thenReturn(Optional.of(new Etudiant()));
+        when(utilisateurRepository.findUtilisateurById(idEnseignant)).thenReturn(Optional.empty());
+
+        // Act
+        gestionnaireStageService.assignerEnseigantEtudiant(idEtudiant, idEnseignant);
+        gestionnaireStageService.assignerEnseigantEtudiant(idEtudiant, idEnseignant);
+
+        // Assert
+        verify(utilisateurRepository, never()).save(any(Etudiant.class));
+        verify(utilisateurRepository, never()).save(any(Enseignant.class));
+        verify(utilisateurRepository, never()).save(any(Etudiant.class));
+        verify(utilisateurRepository, never()).save(any(Enseignant.class));
+    }
+
+    @Test
+    void testAssignerEnseignantEtudiant_nullIdEnseignant() {
+        // Arrange
+        Long idEtudiant = 1L;
+
+        // Act & Assert
+        Exception exception = assertThrows(NullPointerException.class, () ->
+                gestionnaireStageService.assignerEnseigantEtudiant(idEtudiant, null)
+        );
+        assertEquals("ID Enseignant ne peut pas être NULL", exception.getMessage());
     }
 
 }
