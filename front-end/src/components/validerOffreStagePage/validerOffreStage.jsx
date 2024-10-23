@@ -11,6 +11,7 @@ function ValiderOffreStage() {
     const [commentaire, setCommentaire] = useState("");
     const [error, setError] = useState(null);
     const [programmeError, setProgrammeError] = useState("");
+    const [commentError, setCommentError] = useState("");
     const [studentSelectionError, setStudentSelectionError] = useState("");
     const [noStudentsInProgram, setNoStudentsInProgram] = useState("");
     const token = localStorage.getItem("token");
@@ -108,6 +109,11 @@ function ValiderOffreStage() {
     };
 
     const handleReject = async () => {
+        if (!commentaire) {
+            setCommentError(t("commentRequired"));
+            return;
+        }
+
         try {
             const response = await fetch(`http://localhost:8080/api/offres-stages/refuse?id=${offreStage.id}`, {
                 method: "PATCH",
@@ -273,12 +279,18 @@ function ValiderOffreStage() {
 
                     {/* Zone de texte pour les commentaires */}
                     <textarea
-                        className="border border-gray-300 p-2 rounded w-full"
+                        className={`border p-2 rounded w-full ${commentError ? 'border-red-500' : 'border-gray-300'}`}
                         placeholder={t("leaveComment")}
                         rows={5}
                         value={commentaire}
-                        onChange={(e) => setCommentaire(e.target.value)}
+                        onChange={(e) => {
+                            setCommentaire(e.target.value);
+                            if (e.target.value) {
+                                setCommentError("");
+                            }
+                        }}
                     ></textarea>
+                    {commentError && <p className="text-red-500 text-sm">{commentError}</p>}
                 </div>
             </div>
         </div>
