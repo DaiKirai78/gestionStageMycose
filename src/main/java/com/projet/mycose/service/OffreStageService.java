@@ -264,6 +264,11 @@ public class OffreStageService {
         }
 
         OffreStage offreStage = offreStageOptional.get();
+
+        if (offreStage.getStatus() != OffreStage.Status.WAITING) {
+            throw new IllegalArgumentException("OffreStage is not waiting");
+        }
+
         offreStage.setStatus(OffreStage.Status.ACCEPTED);
         offreStage.setStatusDescription(acceptOffreDeStageDTO.getStatusDescription());
         offreStage.setProgramme(acceptOffreDeStageDTO.getProgramme());
