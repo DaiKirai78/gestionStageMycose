@@ -183,5 +183,7 @@
     "makeOfferPrivate": "Assign the offer to one or more specific students",
     "selectStudent": "Select one or more students who will be able to see the offer",
     "selectStudentError":  "Select one or more students.",
-    "attribuer":  "Assign"
+    "attribuer":  "Assign",
+    "loadingStudent": "Loading students",
+    "noStudents": "No students"
 }

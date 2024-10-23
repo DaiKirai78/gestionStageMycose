@@ -22,6 +22,7 @@ import ProfilPage from './pages/profilPage.jsx';
 import AttributionPage from './pages/attributionPage.jsx';
 import AttributionEtudiant from './components/attribution/attributionEtudiant.jsx';
 import AttributionProf from './components/attribution/attributionProf.jsx';
+import AppliquerStage from './components/acceuil/appliquerStage.jsx';
 
 const router = createBrowserRouter([
   { path: "/", element: <ConnectionPage /> },
