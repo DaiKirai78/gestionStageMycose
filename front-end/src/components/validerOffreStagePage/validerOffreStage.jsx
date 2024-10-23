@@ -105,17 +105,6 @@ function ValiderOffreStage() {
     };
 
     const handleReject = async () => {
-
-        if (!programme) {
-            setProgrammeError(t("programRequired"));
-            return;
-        }
-
-        if (isPrivate && selectedStudents.length === 0) {
-            setStudentSelectionError(t("selectStudentError"));
-            return;
-        }
-
         try {
             const response = await fetch(`http://localhost:8080/api/offres-stages/refuse?id=${offreStage.id}`, {
                 method: "PATCH",
@@ -124,9 +113,7 @@ function ValiderOffreStage() {
                     Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({
-                    commentaire,
-                    programme,
-                    selectedStudents
+                    commentaire
                 }),
             });
 
