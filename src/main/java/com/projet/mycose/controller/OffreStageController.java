@@ -2,12 +2,10 @@ package com.projet.mycose.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.projet.mycose.dto.*;
-import com.projet.mycose.modele.OffreStage;
 import com.projet.mycose.service.ApplicationStageService;
 import com.projet.mycose.service.OffreStageService;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -83,7 +81,6 @@ public class OffreStageController {
 
     @PatchMapping("/refuse")
     public ResponseEntity<?> refuseOffreStage(@RequestParam Long id, @RequestBody JsonNode jsonNode) {
-        try {
             JsonNode descriptionNode = jsonNode.get("commentaire");
 
             if (descriptionNode == null || descriptionNode.isNull()) {
@@ -93,9 +90,6 @@ public class OffreStageController {
             String description = descriptionNode.asText();
             offreStageService.refuseOffreDeStage(id, description);
             return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @GetMapping("/id/{id}")

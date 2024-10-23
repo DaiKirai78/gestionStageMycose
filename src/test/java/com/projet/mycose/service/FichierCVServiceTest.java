@@ -331,4 +331,46 @@ public class FichierCVServiceTest {
             fichierCVService.changeStatus(1L, FichierCV.Status.ACCEPTED, "asd");
         });
     }
+
+    @Test
+    void getAmountOfPagesReturnsZero() {
+        // Act
+        when(fileRepository.countAllByStatusEquals(FichierCV.Status.WAITING)).thenReturn(0L);
+
+        // Assert
+        Assertions.assertThat(fichierCVService.getAmountOfPages()).isEqualTo(0);
+    }
+
+    @Test
+    void testGetTotalWaitingCVs() {
+        // Act
+        when(fileRepository.countAllByStatusEquals(FichierCV.Status.WAITING)).thenReturn(30L);
+
+        // Assert
+        Assertions.assertThat(fichierCVService.getTotalWaitingCVs()).isEqualTo(30);
+    }
+
+    @Test
+    void testGetWaitingCvThrowsIllegalArgumentException() {
+        // Assert
+        assertThrows(IllegalArgumentException.class, () -> {
+            fichierCVService.getWaitingCv(0);
+        });
+        verify(fileRepository, never()).getFichierCVSByStatusEquals(FichierCV.Status.WAITING, PageRequest.of(0, 10));
+    }
+
+    @Test
+    void testGetCurrentCvReturnsNullIfEmpty() {
+        // Arrange
+        when(fileRepository.getCurrentCvByEtudiant_id(etudiant.getId()))
+                .thenReturn(Optional.empty());
+
+        // Act
+        FichierCVDTO result = fichierCVService.getCurrentCV_returnNullIfEmpty(etudiant.getId());
+
+        // Assert
+        assertNull(result, "The returned FichierCVDTO should be null");
+        verify(fileRepository, times(1)).getCurrentCvByEtudiant_id(etudiant.getId());
+        verify(modelMapper, never()).map(any(FichierCV.class), eq(FichierCVDTO.class));
+    }
 }
