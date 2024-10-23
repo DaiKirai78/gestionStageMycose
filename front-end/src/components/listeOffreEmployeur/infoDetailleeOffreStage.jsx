@@ -8,6 +8,27 @@ const InfoDetailleeOffreStage = ({setActiveOffer, activeOffer, getColorOffreStat
 
     const format = getFormat();
 
+    useEffect(() => {
+        fetchCandidatures()
+    }, [activeOffer])
+
+    async function fetchCandidatures() {
+        const token = localStorage.getItem("token");
+
+        const response = await fetch(
+            `http://localhost:8080/api/offres-stages/offre-applications/${activeOffer.id}`,
+            {
+                method: "GET",
+                headers: {Authorization: `Bearer ${token}`}
+            }
+        );
+
+        console.log(response);
+        
+        const fetchedData = await response.text();
+        console.log(fetchedData);
+    }
+
     function getFormat() {
         if(activeOffer)
             return activeOffer.fileData ? "file" : "form";
@@ -52,13 +73,28 @@ const InfoDetailleeOffreStage = ({setActiveOffer, activeOffer, getColorOffreStat
                             <strong>{t("websiteStage")} :</strong> <a href={"https://" + activeOffer.website} target="_blank" className="text-blue-500 underline cursor-pointer">{activeOffer.website}</a>
                         </p>
                     }
-                    { format === "file" &&
-                        <button
-                            className='bg-orange px-4 py-2 rounded text-white mt-3 cursor-pointer'
-                            onClick={() => setVoirPdf(!voirPdf)}
-                        >
-                            {t("seePDF")}</button>
-                    }
+                    <div className='flex flex-col w-full gap-5 mt-5'>
+                        { format === "file" &&
+                            <button
+                                className='bg-orange px-4 py-2 rounded text-white mt-3 cursor-pointer w-1/2'
+                                onClick={() => setVoirPdf(!voirPdf)}
+                            >
+                                {t("seePDF")}</button>
+                        }
+                        <div className='flex flex-col w-full mt-7'>
+                            <label htmlFor="candidatures">Voir (10) Candidatures</label>
+                            <select
+                            className='bg-orange px-4 py-2 rounded text-white mt-3 w-1/2'
+                            name='candidatures'
+                            >
+                                <option value="Un">Un</option>
+                                <option value="Deux">Deux</option>
+                                <option value="Trois">Trois</option>
+                                <option value="Quatre">Quatre</option>
+                            </select>
+                        </div>
+                    </div>
+
                 </div>
             }
         </div>
