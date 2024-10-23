@@ -14,7 +14,7 @@ function FormOffreStage() {
         location: "",
         salary: "",
         description: "",
-        programme: "NOT_SPECIFIED"
+        programme: ""
     });
 
     const [error, setError] = useState({
@@ -254,7 +254,7 @@ function FormOffreStage() {
                 location: "",
                 salary: "",
                 description: "",
-                programme: "NOT_SPECIFIED",
+                programme: "",
             });
             setSelectedStudents([]);
             setIsPrivate(false);
@@ -265,7 +265,7 @@ function FormOffreStage() {
         }
     };
 
-    const isPrivateEnabled = role === "GESTIONNAIRE_STAGE" && formData.programme && students.length > 0;
+    const isPrivateEnabled = role === "GESTIONNAIRE_STAGE" && formData.programme;
 
     return (
         <form onSubmit={handleSubmitForm} className="w-full">
@@ -459,6 +459,12 @@ function FormOffreStage() {
                         </div>
                     ))}
                 </div>
+            )}
+
+            {isPrivate && students.length === 0 && (
+                <p className="text-black text-m mt-4">
+                    {t("noStudentInProgram")}
+                </p>
             )}
 
             {successMessage && <p className="text-green-500 text-sm mt-4">{successMessage}</p>}
