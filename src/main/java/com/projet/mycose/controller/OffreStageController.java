@@ -80,6 +80,7 @@ public class OffreStageController {
             offreStageService.acceptOffreDeStage(acceptOffreDeStageDTO);
             return ResponseEntity.ok().build();
     }
+
     @PatchMapping("/refuse")
     public ResponseEntity<?> refuseOffreStage(@RequestParam Long id, @RequestBody JsonNode jsonNode) {
         try {

@@ -69,7 +69,6 @@ function ValiderOffreStage() {
     }, [programme]);
 
     const handleAccept = async () => {
-
         if (!programme) {
             setProgrammeError(t("programRequired"));
             return;
@@ -81,17 +80,20 @@ function ValiderOffreStage() {
         }
 
         try {
-            const response = await fetch(`http://localhost:8080/api/offres-stages/accept?id=${offreStage.id}`, {
-                method: "PATCH",
+            const formData = new FormData();
+            formData.append("id", offreStage.id);
+            formData.append("programme", programme);
+            formData.append("statusDescription", commentaire);
+
+            if (isPrivate) {
+                selectedStudents.forEach((studentId) => formData.append("etudiantsPrives", studentId));
+            }
+
+            const response = await axios.patch(`http://localhost:8080/api/offres-stages/accept`, formData, {
                 headers: {
-                    "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
                 },
-                body: JSON.stringify({
-                    commentaire,
-                    programme,
-                    selectedStudents
-                }),
             });
 
             if (!response.ok) {
@@ -103,6 +105,7 @@ function ValiderOffreStage() {
             setError(t("errorAcceptingInternship"));
         }
     };
+
 
     const handleReject = async () => {
         try {
