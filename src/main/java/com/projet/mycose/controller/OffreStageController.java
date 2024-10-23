@@ -91,10 +91,10 @@ public class OffreStageController {
             }
 
             String description = descriptionNode.asText();
-            offreStageService.changeStatus(id, OffreStage.Status.REFUSED, description);
+            offreStageService.refuseOffreDeStage(id, description);
             return ResponseEntity.ok().build();
-        } catch (ChangeSetPersister.NotFoundException e) {
-            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 

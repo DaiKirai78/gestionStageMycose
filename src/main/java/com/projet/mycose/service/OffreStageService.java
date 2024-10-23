@@ -230,18 +230,6 @@ public class OffreStageService {
         return nombrePages;
     }
 
-    public void changeStatus(Long id, OffreStage.Status status, String description) throws ChangeSetPersister.NotFoundException {
-        Optional<OffreStage> offreStageOptional = offreStageRepository.findById(id);
-
-        if (offreStageOptional.isEmpty())
-            throw new ChangeSetPersister.NotFoundException();
-
-        OffreStage offreStage = offreStageOptional.get();
-        offreStage.setStatus(status);
-        offreStage.setStatusDescription(description);
-        offreStageRepository.save(offreStage);
-    }
-
     public OffreStageAvecUtilisateurInfoDTO getOffreStageWithUtilisateurInfo(Long id) {
         OffreStage offreStage = offreStageRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("OffreStage not found with ID: " + id));
         return OffreStageAvecUtilisateurInfoDTO.toDto(offreStage);
@@ -254,6 +242,25 @@ public class OffreStageService {
 
     public long getTotalWaitingOffreStages() {
         return offreStageRepository.countByStatus(OffreStage.Status.WAITING);
+    }
+
+    public void refuseOffreDeStage(Long id, String description) {
+        Optional<OffreStage> offreStageOptional = offreStageRepository.findById(id);
+
+        if (offreStageOptional.isEmpty()) {
+            throw new EntityNotFoundException("OffreStage not found with ID: " + id);
+        }
+
+        OffreStage offreStage = offreStageOptional.get();
+
+        if (offreStage.getStatus() != OffreStage.Status.WAITING) {
+            throw new IllegalArgumentException("OffreStage is not waiting");
+        }
+
+        offreStage.setStatus(OffreStage.Status.REFUSED);
+        offreStage.setStatusDescription(description);
+
+        offreStageRepository.save(offreStage);
     }
 
     public void acceptOffreDeStage(AcceptOffreDeStageDTO acceptOffreDeStageDTO) {

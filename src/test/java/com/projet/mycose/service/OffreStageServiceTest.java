@@ -57,7 +57,6 @@ public class OffreStageServiceTest {
     @InjectMocks
     private OffreStageService offreStageService;
 
-    // Sample data for tests
     private UtilisateurDTO employeurDTO;
     private UtilisateurDTO gestionnaireDTO;
     private UploadFicherOffreStageDTO uploadFicherOffreStageDTO;
@@ -75,7 +74,6 @@ public class OffreStageServiceTest {
 
     @BeforeEach
     public void setUp() {
-        // Initialize sample data
         employeurDTO = EmployeurDTO.empty();
         employeurDTO.setId(1L);
         employeurDTO.setRole(Role.EMPLOYEUR);
@@ -126,7 +124,6 @@ public class OffreStageServiceTest {
                 .build();
     }
 
-    // --------------------- Test Cases for saveFile ---------------------
 
     @Test
     public void shouldSaveFileSuccessfully_WhenUserIsEmployeur() throws IOException {
@@ -244,7 +241,6 @@ public class OffreStageServiceTest {
         verify(ficherOffreStageRepository, never()).save(any(FichierOffreStage.class));
     }
 
-    // --------------------- Test Cases for saveForm ---------------------
 
     @Test
     public void shouldSaveFormSuccessfully_WhenUserIsEmployeur() throws AccessDeniedException {
@@ -252,7 +248,6 @@ public class OffreStageServiceTest {
         String token = VALID_TOKEN;
         when(utilisateurService.getMe()).thenReturn(employeurDTO);
 
-        // Specific stubbing for this test
         // Mapping DTO to Entity
         when(modelMapper.map(formulaireOffreStageDTO, FormulaireOffreStage.class)).thenReturn(formulaireOffreStage);
         // Mapping Entity back to DTO
@@ -292,45 +287,6 @@ public class OffreStageServiceTest {
         verify(formulaireOffreStageRepository, never()).save(any(FormulaireOffreStage.class));
     }
 
-    // --------------------- Test Cases for changeStatus ---------------------
-
-    @Test
-    public void shouldChangeStatusSuccessfully_WhenOffreStageExists() throws ChangeSetPersister.NotFoundException {
-        // Arrange
-        Long offreStageId = 1L;
-        OffreStage.Status newStatus = OffreStage.Status.ACCEPTED;
-        String description = "Approved by admin";
-        when(offreStageRepository.findById(offreStageId)).thenReturn(Optional.of(fichierOffreStage));
-        when(offreStageRepository.save(any(OffreStage.class))).thenReturn(fichierOffreStage);
-
-        // Act
-        offreStageService.changeStatus(offreStageId, newStatus, description);
-
-        // Assert
-        assertEquals(newStatus, fichierOffreStage.getStatus());
-        assertEquals(description, fichierOffreStage.getStatusDescription());
-        verify(offreStageRepository, times(1)).findById(offreStageId);
-        verify(offreStageRepository, times(1)).save(fichierOffreStage);
-    }
-
-    @Test
-    public void shouldThrowNotFoundException_WhenOffreStageDoesNotExist() {
-        // Arrange
-        Long offreStageId = 999L;
-        OffreStage.Status newStatus = OffreStage.Status.ACCEPTED;
-        String description = "Approved by admin";
-        when(offreStageRepository.findById(offreStageId)).thenReturn(Optional.empty());
-
-        // Act & Assert
-        assertThrows(ChangeSetPersister.NotFoundException.class, () -> {
-            offreStageService.changeStatus(offreStageId, newStatus, description);
-        });
-
-        verify(offreStageRepository, times(1)).findById(offreStageId);
-        verify(offreStageRepository, never()).save(any(OffreStage.class));
-    }
-
-    // --------------------- Test Cases for getWaitingOffreStage ---------------------
 
     @Test
     public void shouldReturnWaitingOffreStages_WhenThereAreResults() {
@@ -354,7 +310,6 @@ public class OffreStageServiceTest {
                         dto.setId(offreStage.getId());
                         dto.setEntrepriseName(offreStage.getEntrepriseName());
                         dto.setCreateur_id(offreStage.getCreateur().getId());
-                        // Set other fields as necessary
                         return dto;
                     });
 
@@ -391,7 +346,6 @@ public class OffreStageServiceTest {
         verify(offreStageRepository, times(1)).getOffreStageByStatusEquals(OffreStage.Status.WAITING, PageRequest.of(page - 1, 10));
     }
 
-    // --------------------- Test Cases for getAmountOfPages ---------------------
 
     @Test
     public void shouldReturnZeroPages_WhenNoRowsExist() {
@@ -432,7 +386,6 @@ public class OffreStageServiceTest {
         verify(offreStageRepository, times(1)).countByStatus(OffreStage.Status.WAITING);
     }
 
-    // --------------------- Test Cases for getAvailableOffreStagesForEtudiant ---------------------
 
 
     @Test
@@ -491,7 +444,6 @@ public class OffreStageServiceTest {
 
 
 
-    // --------------------- Test Cases for convertToDTO and convertToEntity ---------------------
 
     @Test
     public void shouldConvertFichierOffreStageToDTO() {
