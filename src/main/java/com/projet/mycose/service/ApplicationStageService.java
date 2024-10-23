@@ -60,18 +60,18 @@ public class ApplicationStageService {
         }
     }
 
-    private void checkAccessToOffreStage(Etudiant etudiant, OffreStage offreStage) throws AccessDeniedException {
+    private void checkAccessToOffreStage(Etudiant etudiant, OffreStage offreStage) {
         if (offreStage.getStatus() != OffreStage.Status.ACCEPTED) {
-            throw new AccessDeniedException("Offre de stage non disponible");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Offre de stage non disponible");
         }
         if (offreStage.getVisibility() == OffreStage.Visibility.PRIVATE) {
             boolean isAssociated = etudiantOffreStagePriveeRepository.existsByOffreStageAndEtudiant(offreStage, etudiant);
             if (!isAssociated) {
-                throw new AccessDeniedException("Offre de stage non disponible");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Offre de stage non disponible");
             }
         }
         if (offreStage.getProgramme() != etudiant.getProgramme()) {
-            throw new AccessDeniedException("Offre de stage non disponible car vous ne faites pas partie du programme associé à l'offre de stage");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Offre de stage non disponible car vous ne faites pas partie du programme associé à l'offre de stage");
         }
     }
 
