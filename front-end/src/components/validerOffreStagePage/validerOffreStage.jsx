@@ -84,16 +84,14 @@ function ValiderOffreStage() {
                 id: offreStage.id,
                 programme: programme,
                 statusDescription: commentaire,
-                // Only include etudiantsPrives if isPrivate is true
                 ...(isPrivate && { etudiantsPrives: selectedStudents }),
             };
 
-            // Log the payload for debugging
             console.log("Payload to send:", payload);
 
             const response = await axios.patch(
                 `http://localhost:8080/api/offres-stages/accept`,
-                payload, // Send the payload directly
+                payload,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -101,13 +99,13 @@ function ValiderOffreStage() {
                     },
                 }
             );
-            navigate("/validerOffreStage");
+            offreStage.status = "ACCEPTED";
+            navigate("/validerOffreStage", { replace: true });
         } catch (error) {
             console.error(error);
             setError(t("errorAcceptingInternship"));
         }
     };
-
 
     const handleReject = async () => {
         try {
@@ -125,7 +123,7 @@ function ValiderOffreStage() {
             if (!response.ok) {
                 throw new Error(t("errorRefusingInternship"));
             }
-            navigate("/validerOffreStage");
+            navigate("/validerOffreStage", { replace: true });
         } catch (error) {
             console.error(error);
             setError(t("errorRefusingInternship"));
