@@ -45,7 +45,6 @@ public class SecurityConfiguration {
                         .requestMatchers(POST, "/entreprise/register/check-for-conflict").permitAll()
                         .requestMatchers(POST, "/enseignant/register").permitAll()
                         .requestMatchers(POST, "/enseignant/register/check-for-conflict").permitAll()
-
                         .requestMatchers(GET, "/utilisateur/*").hasAnyAuthority("GESTIONNAIRE_STAGE", "ETUDIANT", "EMPLOYEUR", "ENSEIGNANT")
                         .requestMatchers("/etudiant/**").hasAuthority("ETUDIANT")
                         .requestMatchers("/enseignant/**").hasAuthority("ENSEIGNANT")
@@ -56,6 +55,10 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/cv/pages").hasAuthority("GESTIONNAIRE_STAGE")
                         .requestMatchers("/api/cv/accept").hasAuthority("GESTIONNAIRE_STAGE")
                         .requestMatchers("/api/cv/refuse").hasAuthority("GESTIONNAIRE_STAGE")
+                        .requestMatchers("/api/application-stage/apply").hasAuthority("ETUDIANT")
+                        .requestMatchers("/api/application-stage/my-applications").hasAuthority("ETUDIANT")
+                        .requestMatchers("/api/application-stage/my-applications/status/*").hasAnyAuthority("GESTIONNAIRE_STAGE", "EMPLOYEUR")
+
                         .requestMatchers("/**").permitAll()
                         //Laisser en commentaire car c'est utile pour faire des postman lorsqu'on veut tester des features :)
                         .anyRequest().denyAll()

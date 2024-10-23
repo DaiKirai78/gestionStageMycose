@@ -106,4 +106,19 @@ public class ApplicationStageService {
                 .findAllByOffreStageIdAndStatusEquals(offreId, ApplicationStage.ApplicationStatus.ACCEPTED)
                 .stream().map(this::convertToDTOAvecInfos).toList();
     }
+
+    public ApplicationStageAvecInfosDTO summonEtudiant(Long id) {
+        ApplicationStage applicationStage = applicationStageRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Application not found"));
+        Long userId = utilisateurService.getMyUserId();
+        Long applicationID = applicationStage.getOffreStage().getCreateur().getId();
+        if (!userId.equals(applicationID)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to summon this student");
+        }
+        if (applicationStage.getStatus() != ApplicationStage.ApplicationStatus.PENDING) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Application is not pending");
+        }
+        applicationStage.setStatus(ApplicationStage.ApplicationStatus.SUMMONED);
+        return convertToDTOAvecInfos(applicationStageRepository.save(applicationStage));
+    }
 }
