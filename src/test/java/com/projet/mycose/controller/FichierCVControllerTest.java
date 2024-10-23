@@ -14,11 +14,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -208,7 +210,7 @@ public class FichierCVControllerTest {
     @Test
     void test_acceptCv_UserNotFound() throws Exception {
         // Act
-        doThrow(ChangeSetPersister.NotFoundException.class)
+        doThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Fichier non trouvé"))
                 .when(fichierCVService)
                 .changeStatus(1L, FichierCV.Status.ACCEPTED, "asd");
         // Assert

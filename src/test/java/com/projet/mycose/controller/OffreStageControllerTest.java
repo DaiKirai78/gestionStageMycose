@@ -14,7 +14,7 @@ import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.test.context.support.WithMockUser;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
@@ -158,59 +158,6 @@ public class OffreStageControllerTest {
         assertEquals(amountOfPages, response.getBody());
         verify(offreStageService, times(1)).getAmountOfPages();
     }
-
-//    @Test
-//    void acceptOffreStage_Success() throws Exception {
-//        String description = "Accepted description";
-//
-//        doNothing().when(offreStageService).changeStatus(id, OffreStage.Status.ACCEPTED, description);
-//
-//        ResponseEntity<?> response = offreStageController.acceptOffreStage(id, description);
-//
-//        assertNotNull(response);
-//        assertEquals(HttpStatus.OK, response.getStatusCode());
-//        assertNull(response.getBody());
-//        verify(offreStageService, times(1)).changeStatus(id, OffreStage.Status.ACCEPTED, description);
-//    }
-//
-//    @Test
-//    void acceptOffreStage_NotFoundException() throws Exception {
-//        String description = "Accepted description";
-//        doThrow(new ChangeSetPersister.NotFoundException()).when(offreStageService).changeStatus(id, OffreStage.Status.ACCEPTED, description);
-//
-//        ResponseEntity<?> response = offreStageController.acceptOffreStage(id, description);
-//
-//        assertNotNull(response);
-//        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-//        verify(offreStageService, times(1)).changeStatus(id, OffreStage.Status.ACCEPTED, description);
-//    }
-
-//    @Test
-//    void refuseOffreStage_Success() throws Exception {
-//        String description = "Refused description";
-//
-//        doNothing().when(offreStageService).changeStatus(id, OffreStage.Status.REFUSED, "description");
-//
-//        ResponseEntity<?> response = offreStageController.refuseOffreStage(id, "description");
-//
-//        assertNotNull(response);
-//        assertEquals(HttpStatus.OK, response.getStatusCode());
-//        assertNull(response.getBody());
-//        verify(offreStageService, times(1)).changeStatus(id, OffreStage.Status.REFUSED, "description");
-//    }
-//
-//    @Test
-//    void refuseOffreStage_NotFoundException() throws Exception {
-//        String description = "Refused description";
-//        doThrow(new ChangeSetPersister.NotFoundException()).when(offreStageService).changeStatus(id, OffreStage.Status.REFUSED, "description");
-//
-//        ResponseEntity<?> response = offreStageController.refuseOffreStage(id, "description");
-//
-//        assertNotNull(response);
-//        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-//        verify(offreStageService, times(1)).changeStatus(id, OffreStage.Status.REFUSED, "description");
-//    }
-
     @Test
     void getOffreStage_Success() {
         when(offreStageService.getOffreStageWithUtilisateurInfo(id)).thenReturn(offreStageAvecUtilisateurInfoDTO);
@@ -256,4 +203,123 @@ public class OffreStageControllerTest {
         assertEquals(etudiantsList, response.getBody());
         verify(offreStageService, times(1)).getEtudiantsQuiOntAppliquesAUneOffre(applicationStageDTOList);
     }
+
+    @Test
+    void getTotalWaitingOffres_Success() {
+        // Arrange
+        Long totalWaitingOffres = 10L;
+        when(offreStageService.getTotalWaitingOffreStages()).thenReturn(totalWaitingOffres);
+
+        // Act
+        ResponseEntity<Long> response = offreStageController.getTotalWaitingOffres();
+
+        // Assert
+        assertNotNull(response, "Response should not be null");
+        assertEquals(HttpStatus.OK, response.getStatusCode(), "Status code should be OK");
+        assertEquals(totalWaitingOffres, response.getBody(), "Body should contain the correct total waiting offers count");
+        verify(offreStageService, times(1)).getTotalWaitingOffreStages();
+    }
+
+
+    @Test
+    void acceptOffreStage_Success() {
+        // Arrange
+        AcceptOffreDeStageDTO dto = new AcceptOffreDeStageDTO();
+        dto.setId(1L);
+        dto.setProgramme(Programme.TECHNIQUE_INFORMATIQUE);
+        dto.setStatusDescription("Good job!");
+        dto.setEtudiantsPrives(Arrays.asList(1001L, 1002L));
+
+        doNothing().when(offreStageService).acceptOffreDeStage(dto);
+
+        // Act
+        ResponseEntity<?> response = offreStageController.acceptOffreStage(dto);
+
+        // Assert
+        assertNotNull(response, "Response should not be null");
+        assertEquals(HttpStatus.OK, response.getStatusCode(), "Status code should be OK");
+        assertNull(response.getBody(), "Body should be null for OK response");
+        verify(offreStageService, times(1)).acceptOffreDeStage(dto);
+    }
+
+    @Test
+    void acceptOffreStage_ServiceException() {
+        // Arrange
+        AcceptOffreDeStageDTO dto = new AcceptOffreDeStageDTO();
+        dto.setId(1L);
+        dto.setProgramme(Programme.TECHNIQUE_INFORMATIQUE);
+        dto.setStatusDescription("Good job!");
+        dto.setEtudiantsPrives(Arrays.asList(1001L, 1002L));
+
+        doThrow(new RuntimeException("Service exception")).when(offreStageService).acceptOffreDeStage(dto);
+
+        // Act & Assert
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            offreStageController.acceptOffreStage(dto);
+        });
+
+        assertEquals("Service exception", exception.getMessage(), "Exception message should match the service exception");
+        verify(offreStageService, times(1)).acceptOffreDeStage(dto);
+    }
+
+    @Test
+    void refuseOffreStage_Success() {
+        // Arrange
+        Long offreStageId = 1L;
+        String commentaire = "Refusing the internship offer due to personal reasons.";
+        JsonNode jsonNode = mock(JsonNode.class);
+        when(jsonNode.get("commentaire")).thenReturn(mock(JsonNode.class));
+        when(jsonNode.get("commentaire").isNull()).thenReturn(false);
+        when(jsonNode.get("commentaire").asText()).thenReturn(commentaire);
+
+        doNothing().when(offreStageService).refuseOffreDeStage(offreStageId, commentaire);
+
+        // Act
+        ResponseEntity<?> response = offreStageController.refuseOffreStage(offreStageId, jsonNode);
+
+        // Assert
+        assertNotNull(response, "Response should not be null");
+        assertEquals(HttpStatus.OK, response.getStatusCode(), "Status code should be OK");
+        assertNull(response.getBody(), "Body should be null for OK response");
+        verify(offreStageService, times(1)).refuseOffreDeStage(offreStageId, commentaire);
+    }
+
+    @Test
+    void refuseOffreStage_MissingCommentaire() {
+        // Arrange
+        Long offreStageId = 1L;
+        JsonNode jsonNode = mock(JsonNode.class);
+        when(jsonNode.get("commentaire")).thenReturn(null);
+
+        // Act
+        ResponseEntity<?> response = offreStageController.refuseOffreStage(offreStageId, jsonNode);
+
+        // Assert
+        assertNotNull(response, "Response should not be null");
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode(), "Status code should be BAD_REQUEST");
+        assertEquals("Description field is missing", response.getBody(), "Should return missing description message");
+        verify(offreStageService, times(0)).refuseOffreDeStage(anyLong(), anyString());
+    }
+
+    @Test
+    void refuseOffreStage_ServiceException() {
+        // Arrange
+        Long offreStageId = 1L;
+        String commentaire = "Refusing the internship offer due to personal reasons.";
+        JsonNode jsonNode = mock(JsonNode.class);
+        when(jsonNode.get("commentaire")).thenReturn(mock(JsonNode.class));
+        when(jsonNode.get("commentaire").isNull()).thenReturn(false);
+        when(jsonNode.get("commentaire").asText()).thenReturn(commentaire);
+
+        doThrow(new RuntimeException("Service exception")).when(offreStageService).refuseOffreDeStage(offreStageId, commentaire);
+
+        // Act & Assert
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            offreStageController.refuseOffreStage(offreStageId, jsonNode);
+        });
+
+        assertEquals("Service exception", exception.getMessage(), "Exception message should match the service exception");
+        verify(offreStageService, times(1)).refuseOffreDeStage(offreStageId, commentaire);
+    }
+
 }
