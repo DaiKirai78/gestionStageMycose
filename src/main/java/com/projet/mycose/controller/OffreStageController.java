@@ -75,8 +75,8 @@ public class OffreStageController {
         return ResponseEntity.status(HttpStatus.OK).body(offreStageService.getTotalWaitingOffreStages());
     }
 
-    @PatchMapping(value = "/accept", consumes = "multipart/form-data")
-    public ResponseEntity<?> acceptOffreStage(@Valid @ModelAttribute AcceptOffreDeStageDTO acceptOffreDeStageDTO) {
+    @PatchMapping(value = "/accept")
+    public ResponseEntity<?> acceptOffreStage(@Valid @RequestBody AcceptOffreDeStageDTO acceptOffreDeStageDTO) {
             offreStageService.acceptOffreDeStage(acceptOffreDeStageDTO);
             return ResponseEntity.ok().build();
     }
