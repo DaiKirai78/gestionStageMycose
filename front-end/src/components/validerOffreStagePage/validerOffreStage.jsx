@@ -80,25 +80,27 @@ function ValiderOffreStage() {
         }
 
         try {
-            const formData = new FormData();
-            formData.append("id", offreStage.id);
-            formData.append("programme", programme);
-            formData.append("statusDescription", commentaire);
+            const payload = {
+                id: offreStage.id,
+                programme: programme,
+                statusDescription: commentaire,
+                // Only include etudiantsPrives if isPrivate is true
+                ...(isPrivate && { etudiantsPrives: selectedStudents }),
+            };
 
-            if (isPrivate) {
-                selectedStudents.forEach((studentId) => formData.append("etudiantsPrives", studentId));
-            }
+            // Log the payload for debugging
+            console.log("Payload to send:", payload);
 
-            const response = await axios.patch(`http://localhost:8080/api/offres-stages/accept`, formData, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error(t("errorAcceptingInternship"));
-            }
+            const response = await axios.patch(
+                `http://localhost:8080/api/offres-stages/accept`,
+                payload, // Send the payload directly
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
             navigate("/validerOffreStage");
         } catch (error) {
             console.error(error);
