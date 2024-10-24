@@ -21,6 +21,14 @@ const navLinks = {
             "titre": "attribuer",
             "lien": "/attribuer/eleve",
             "autreLiens": ["/attribuer/prof"]
+        },
+        {
+            "titre": "validerOffre",
+            "lien": "/validerOffreStage",
+        },
+        {
+            "titre": "televerserOffre",
+            "lien": "/televerserOffreStage"
         }
     ],
     "ENSEIGNANT": []
@@ -139,7 +147,7 @@ const Navbar = ({ userInfo }) => {
                                 <BsBellFill className="h-6 w-6" />
                             </button>
                             {isNotificationMenuOpen && (
-                                <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg p-1 bg-orange-light ring-1 ring-orange ring-opacity-40">
+                                <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg p-1 bg-orange-light ring-1 ring-orange ring-opacity-40 z-30">
                                     <p className="px-4 py-2 text-black">{t("noNotification")}</p>
                                 </div>
                             )}

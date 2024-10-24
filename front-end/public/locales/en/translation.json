@@ -187,7 +187,6 @@
     "attribuer":  "Assign",
     "loadingStudent": "Loading students",
     "noStudents": "No students",
-    "commentRequired": "Please leave a comment.",
     "noStudentSelected": "No student selected",
     "rechercheProf": "Search teacher",
     "search": "Search",
@@ -196,5 +195,15 @@
     "onlyLettersForTeacherSearch": "Only letters, spaces, '-' and apostrophes are accepted",
     "detailsEtudiant" : "Student Details",
     "voir" : "See",
-    "candidatures" : "Application(s)"
+    "candidatures" : "Application(s)",
+    "validerOffre": "Validate offer",
+    "commentRequired": "Please leave a comment.",
+    "studentSummoned": "The student has been successfully summoned.",
+    "studentAccepted": "The student has been successfully accepted.",
+    "studentRefused": "The student has been successfully refused.",
+    "errorSummoningStudent": "Error summoning the student.",
+    "errorAcceptingStudent": "Error accepting the student.",
+    "errorRefusingStudent": "Error refusing the student.",
+    "summon": "Summon",
+    "alreadySummoned": "Already summoned"
 }

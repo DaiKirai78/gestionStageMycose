@@ -102,20 +102,30 @@ public class ApplicationStageService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Application not found"));
     }
 
-    public List<ApplicationStageAvecInfosDTO> getAllApplicationsPourUneOffreById(Long offreId) {
+    public List<ApplicationStageAvecInfosDTO> getAllApplicationsPourUneOffreByIdPendingOrSummoned(Long offreId) {
         return applicationStageRepository
-                .findAllByOffreStageIdAndStatusEquals(offreId, ApplicationStage.ApplicationStatus.ACCEPTED)
-                .stream().map(this::convertToDTOAvecInfos).toList();
+                .findAllByOffreStageIdAndStatusIn(offreId, List.of(ApplicationStage.ApplicationStatus.PENDING, ApplicationStage.ApplicationStatus.SUMMONED))
+                .stream()
+                .map(this::convertToDTOAvecInfos)
+                .toList();
+    }
+
+    public List<ApplicationStageAvecInfosDTO> getApplicationsByEtudiant(Long etudiantId) {
+        return applicationStageRepository.findByEtudiantId(etudiantId).stream().map(this::convertToDTOAvecInfos).toList();
     }
 
     @Transactional
     public ApplicationStageAvecInfosDTO accepterOuRefuserApplication(Long id, ApplicationStage.ApplicationStatus status) {
-        ApplicationStageAvecInfosDTO applicationStageAvecInfosDTO = getApplicationById(id);
+        ApplicationStage applicationStage = applicationStageRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Application not found"));
+
+        ApplicationStageAvecInfosDTO applicationStageAvecInfosDTO = convertToDTOAvecInfos(applicationStage);
+
 
         Etudiant etudiant = EtudiantDTO.toEntity(utilisateurService.getEtudiantDTO(applicationStageAvecInfosDTO.getEtudiant_id()));
         OffreStage offreStage = getValidatedOffreStage(applicationStageAvecInfosDTO.getOffreStage_id());
 
-        ApplicationStage applicationStage = mettreAJourApplication(applicationStageAvecInfosDTO, etudiant, offreStage, status);
+        applicationStage = mettreAJourApplication(applicationStageAvecInfosDTO, etudiant, offreStage, status);
         return ApplicationStageAvecInfosDTO.toDTO(applicationStageRepository.save(applicationStage));
     }
 

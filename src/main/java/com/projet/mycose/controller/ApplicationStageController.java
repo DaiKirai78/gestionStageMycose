@@ -41,19 +41,35 @@ public class ApplicationStageController {
         return new ResponseEntity<>(applicationStageService.getApplicationById(id), HttpStatus.OK);
     }
 
+    @GetMapping("/get/{id}")
+    public ResponseEntity
+            <List<ApplicationStageAvecInfosDTO>> getApplication(@PathVariable Long id) {
+        return new ResponseEntity<>(applicationStageService.getApplicationsByEtudiant(id), HttpStatus.OK);
+    }
+
     @PatchMapping("/application/{id}/accepter")
     public ResponseEntity<?> accepterApplication(@PathVariable Long id) {
-        applicationStageService.accepterOuRefuserApplication(id, ApplicationStage.ApplicationStatus.ACCEPTED);
-        return ResponseEntity.ok().body("Application acceptée");
+        try {
+            applicationStageService.accepterOuRefuserApplication(id, ApplicationStage.ApplicationStatus.ACCEPTED);
+            return ResponseEntity.ok().body("Application acceptée");
+        } catch (Exception e) {
+            System.err.println("Une erreur est survenue lors de la tentative de récupération des étudiants qui ont appliqués à une offre: " + e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PatchMapping("/application/{id}/refuser")
     public ResponseEntity<?> refuserApplication(@PathVariable Long id) {
-        applicationStageService.accepterOuRefuserApplication(id, ApplicationStage.ApplicationStatus.REJECTED);
-        return ResponseEntity.ok().body("Application refusée");
+        try {
+            applicationStageService.accepterOuRefuserApplication(id, ApplicationStage.ApplicationStatus.REJECTED);
+            return ResponseEntity.ok().body("Application refusée");
+        } catch (Exception e) {
+            System.err.println("Une erreur est survenue lors de la tentative de récupération des étudiants qui ont appliqués à une offre: " + e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
-    @PostMapping("/summon/{id}")
+    @PatchMapping("/summon/{id}")
     public ResponseEntity<ApplicationStageAvecInfosDTO> summonEtudiant(@PathVariable Long id) {
         return new ResponseEntity<>(applicationStageService.summonEtudiant(id), HttpStatus.OK);
     }

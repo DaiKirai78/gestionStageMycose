@@ -193,7 +193,7 @@ public class OffreStageControllerTest {
         applicationStageDTOList.add(applicationStageDTO);
         List<EtudiantDTO> etudiantsList = new ArrayList<>();
         etudiantsList.add(EtudiantDTO.toDTO(etudiant));
-        when(applicationStageService.getAllApplicationsPourUneOffreById(1L)).thenReturn(applicationStageDTOList);
+        when(applicationStageService.getAllApplicationsPourUneOffreByIdPendingOrSummoned(1L)).thenReturn(applicationStageDTOList);
         when(offreStageService.getEtudiantsQuiOntAppliquesAUneOffre(any())).thenReturn(etudiantsList);
 
         ResponseEntity<List<EtudiantDTO>> response = offreStageController.getAllEtudiantQuiOntAppliquesAUneOffre(1L);

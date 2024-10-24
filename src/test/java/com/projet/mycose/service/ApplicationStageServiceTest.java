@@ -338,19 +338,19 @@ public class ApplicationStageServiceTest {
     void getAllApplicationsPourUneOffreByIdTest() {
         // Arrange
         ApplicationStage applicationStage1 = new ApplicationStage(etudiant, fichierOffreStage);
-        applicationStage1.setStatus(ApplicationStage.ApplicationStatus.ACCEPTED);
+        applicationStage1.setStatus(ApplicationStage.ApplicationStatus.PENDING);
         ApplicationStage applicationStage2 = new ApplicationStage(etudiant2, fichierOffreStage);
-        applicationStage2.setStatus(ApplicationStage.ApplicationStatus.ACCEPTED);
+        applicationStage2.setStatus(ApplicationStage.ApplicationStatus.SUMMONED);
 
         List<ApplicationStage> applicationStageList = new ArrayList<>();
         applicationStageList.add(applicationStage1);
         applicationStageList.add(applicationStage2);
 
         when(applicationStageRepository
-                .findAllByOffreStageIdAndStatusEquals(1L, ApplicationStage.ApplicationStatus.ACCEPTED)).thenReturn(applicationStageList);
+                .findAllByOffreStageIdAndStatusIn(1L, List.of(ApplicationStage.ApplicationStatus.PENDING, ApplicationStage.ApplicationStatus.SUMMONED))).thenReturn(applicationStageList);
 
         // Act
-        List<ApplicationStageAvecInfosDTO> applicationStageAvecInfosDTOList = applicationStageService.getAllApplicationsPourUneOffreById(1L);
+        List<ApplicationStageAvecInfosDTO> applicationStageAvecInfosDTOList = applicationStageService.getAllApplicationsPourUneOffreByIdPendingOrSummoned(1L);
 
         // Assert
         assertEquals(2, applicationStageAvecInfosDTOList.size());

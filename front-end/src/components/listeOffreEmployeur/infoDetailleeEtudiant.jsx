@@ -1,12 +1,13 @@
 import { BsX } from "react-icons/bs";
-import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
-function InfoDetailleeEtudiant({ isModalOpen, setIsModalOpen, infosEtudiant }) {
+function InfoDetailleeEtudiant({ isModalOpen, setIsModalOpen, infosEtudiant, summonEtudiant, summonMessage, setSummonMessage, studentInfo, accepterEtudiant, refuserEtudiant }) {
+    const [isStudentSummoned, setIsStudentSummoned] = useState(false);
     const [cvEtudiantCourrant ,setCvEtudiantCourrant] = useState();
     const { t } = useTranslation();
 
-    useEffect(() => {        
+    useEffect(() => {
         fetchCVEtudiant();
     }, [infosEtudiant])
 
@@ -19,18 +20,33 @@ function InfoDetailleeEtudiant({ isModalOpen, setIsModalOpen, infosEtudiant }) {
                 headers: {Authorization: `Bearer ${token}`}
             }
         );
-        
+
         const base64String = await response.json();
-        
+
         const dataUrl = `data:application/pdf;base64,${base64String.fileData}`;
         setCvEtudiantCourrant(dataUrl);
     }
+
+    useEffect(() => {
+        if (isModalOpen) {
+            if (studentInfo.status === 'SUMMONED') {
+                setIsStudentSummoned(true);
+            } else {
+                setIsStudentSummoned(false);
+            }
+        }
+    }, [studentInfo]);
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setSummonMessage('');
+    };
 
     return (
         isModalOpen && (
             <div
                 className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50 transition-opacity duration-300"
-                onClick={() => setIsModalOpen(false)}
+                onClick={handleCloseModal}
             >
                 <div
                     className="w-full h-[85%] sm:w-2/3 lg:w-1/2 bg-white rounded-2xl shadow-2xl p-6 relative transform transition-transform duration-500 ease-out scale-100 hover:scale-105"
@@ -41,7 +57,7 @@ function InfoDetailleeEtudiant({ isModalOpen, setIsModalOpen, infosEtudiant }) {
                         <button
                             id="closeStageDetails"
                             className="text-gray-600 hover:text-gray-900 transition-colors duration-200 focus:outline-none"
-                            onClick={() => setIsModalOpen(false)}
+                            onClick={handleCloseModal}
                         >
                             <BsX size={25}/>
                         </button>
@@ -56,14 +72,44 @@ function InfoDetailleeEtudiant({ isModalOpen, setIsModalOpen, infosEtudiant }) {
                                     <p><strong>{t("program") + ": "}</strong>{t(infosEtudiant.programme)}</p>
                                 </div>
                                 <div className="h-full">
-                                <iframe
-                                    src={`${cvEtudiantCourrant}`}
-                                    title="CV"
-                                    className="w-full h-full border"
-                                ></iframe>
+                                    <iframe
+                                        src={`${cvEtudiantCourrant}`}
+                                        title="CV"
+                                        className="w-full h-full border"
+                                    ></iframe>
                                 </div>
-                            </div>
-
+                                <div className="flex flex-col gap-3">
+                                    <p><strong>Nom : </strong>{infosEtudiant.prenom} {infosEtudiant.nom}</p>
+                                    {/* Autres informations */}
+                                    <div className="flex gap-4">
+                                        <button
+                                            onClick={() => summonEtudiant()}
+                                            className={`bg-blue-500 text-white px-4 py-2 rounded ${isStudentSummoned ? 'opacity-50' : 'hover:bg-blue-600'}`}
+                                            disabled={isStudentSummoned}
+                                        >
+                                            {isStudentSummoned ? t("alreadySummoned") : t("summon")}
+                                        </button>
+                                        <button
+                                            onClick={() => accepterEtudiant()}
+                                            className={`bg-green-500 text-white px-4 py-2 rounded`}
+                                        >
+                                            {t("accept")}
+                                        </button>
+                                        <button
+                                            onClick={() => refuserEtudiant()}
+                                            className={`bg-red-500 text-white px-4 py-2 rounded`}
+                                        >
+                                            {t("refuse")}
+                                        </button>
+                                    </div>
+                                    {summonMessage && (
+                                            <div
+                                                className={`mt-4 text-sm ${summonMessage.includes('Err') ? 'text-red-600' : 'text-green-600'}`}>
+                                                {summonMessage}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
                         ) : (
                             <p>Aucune information sur l'étudiant sélectionné</p>
                         )}

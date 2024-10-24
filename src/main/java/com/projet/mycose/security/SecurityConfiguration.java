@@ -57,6 +57,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/cv/refuse").hasAuthority("GESTIONNAIRE_STAGE")
                         .requestMatchers("/api/application-stage/apply").hasAuthority("ETUDIANT")
                         .requestMatchers("/api/application-stage/my-applications").hasAuthority("ETUDIANT")
+                        .requestMatchers("/api/application-stage/get/*").hasAuthority("EMPLOYEUR")
                         .requestMatchers("/api/application-stage/my-applications/status/*").hasAnyAuthority("GESTIONNAIRE_STAGE", "EMPLOYEUR")
 
                         .requestMatchers("/**").permitAll()
