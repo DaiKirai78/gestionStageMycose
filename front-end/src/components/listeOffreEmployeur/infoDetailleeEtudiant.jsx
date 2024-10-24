@@ -5,6 +5,8 @@ function InfoDetailleeEtudiant({ isModalOpen, setIsModalOpen, infosEtudiant }) {
     const [cvEtudiantCourrant ,setCvEtudiantCourrant] = useState();
     
     useEffect(() => {
+        console.log("MEEEEEC");
+        
         fetchCVEtudiant();
     }, [infosEtudiant])
 
@@ -17,10 +19,10 @@ function InfoDetailleeEtudiant({ isModalOpen, setIsModalOpen, infosEtudiant }) {
                 headers: {Authorization: `Bearer ${token}`}
             }
         );
-        console.log(response);
         
-        const base64String = await response.fileData;
-        const dataUrl = `data:application/pdf;base64,${base64String}`;
+        const base64String = await response.json();
+        
+        const dataUrl = `data:application/pdf;base64,${base64String.fileData}`;
         setCvEtudiantCourrant(dataUrl);
     }
 
@@ -44,18 +46,18 @@ function InfoDetailleeEtudiant({ isModalOpen, setIsModalOpen, infosEtudiant }) {
                             <BsX size={25}/>
                         </button>
                     </div>
-                    <div className="pt-4">
+                    <div className="pt-4 h-2/3">
                         {infosEtudiant ? (
-                            <div>
+                            <div className="h-full">
                                 <div className="mb-12 flex flex-col gap-2">
                                     <p><strong>Nom : </strong>{infosEtudiant.prenom} {infosEtudiant.nom}</p>
                                     <p><strong>Email: </strong>{infosEtudiant.courriel}</p>
                                     <p><strong>Téléphone: </strong>{infosEtudiant.numeroDeTelephone}</p>
                                     <p><strong>Programme: </strong>{infosEtudiant.programme}</p>
                                 </div>
-                                <div>
+                                <div className="h-full">
                                 <iframe
-                                    src={`data:application/pdf;base64,${cvEtudiantCourrant}`}
+                                    src={`${cvEtudiantCourrant}`}
                                     title="CV"
                                     className="w-full h-full border"
                                 ></iframe>
