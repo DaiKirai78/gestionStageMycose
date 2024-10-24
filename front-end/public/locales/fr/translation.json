@@ -194,5 +194,10 @@
     "search": "Recherche",
     "nomPrenomEmail": "Nom, prénom, email",
     "noTeacherFound": "Aucun prof trouvé",
-    "onlyLettersForTeacherSearch": "Seulement les lettres, les espaces, les '-' et les apostrophe sont acceptés"
+    "onlyLettersForTeacherSearch": "Seulement les lettres, les espaces, les '-' et les apostrophe sont acceptés",
+    "commentRequired": "Veuillez laisser un commentaire.",
+    "studentSummoned": "L'étudiant a bien été convoqué.",
+    "errorSummoningStudent": "Erreur lors de la convocation de l'étudiant.",
+    "summon": "Convoquer",
+    "alreadySummoned": "Déjà convoqué"
 }

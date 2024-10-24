@@ -110,6 +110,10 @@ public class ApplicationStageService {
                 .toList();
     }
 
+    public List<ApplicationStageAvecInfosDTO> getApplicationsByEtudiant(Long etudiantId) {
+        return applicationStageRepository.findByEtudiantId(etudiantId).stream().map(this::convertToDTOAvecInfos).toList();
+    }
+
     @Transactional
     public ApplicationStageAvecInfosDTO accepterOuRefuserApplication(Long id, ApplicationStage.ApplicationStatus status) {
         ApplicationStageAvecInfosDTO applicationStageAvecInfosDTO = getApplicationById(id);
