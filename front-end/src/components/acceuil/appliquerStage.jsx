@@ -203,7 +203,7 @@ const AppliquerStage = ({idStage}) => {
                             className="lg:w-96 w-full bg-white shadow-md p-6 flex items-center flex-col lg:ml-8 rounded-2xl lg:rounded-none">
                             <button
                                 onClick={applyForStage}
-                                className="mt-20 bg-deep-orange-300 w-52 text-white px-12 py-3 rounded-lg"
+                                className="lg:mt-36 bg-deep-orange-300 w-52 text-white px-12 py-3 rounded-lg"
                                 disabled={successMessage}
                             >
                                 {t("boutonAppliquerAUnStage")}
