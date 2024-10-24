@@ -247,12 +247,10 @@ public class OffreStageService {
     }
     public void acceptOffreDeStage(AcceptOffreDeStageDTO acceptOffreDeStageDTO) {
         Optional<OffreStage> offreStageOptional = offreStageRepository.findById(acceptOffreDeStageDTO.getId());
-
         if (offreStageOptional.isEmpty()) {
             throw new EntityNotFoundException("OffreStage not found with ID: " + acceptOffreDeStageDTO.getId());
         }
         OffreStage offreStage = offreStageOptional.get();
-
         if (offreStage.getStatus() != OffreStage.Status.WAITING) {
             throw new IllegalArgumentException("OffreStage is not waiting");
         }

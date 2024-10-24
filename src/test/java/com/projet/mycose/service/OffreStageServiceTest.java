@@ -1039,4 +1039,57 @@ public class OffreStageServiceTest {
         verify(etudiantOffreStagePriveeRepository, never()).save(any());
     }
 
+    @Test
+    void getOffreStageWithUtilisateurInfo_Success() {
+        // Arrange
+        Long offreStageId = 1L;
+
+        fichierOffreStage.setId(offreStageId);
+        fichierOffreStage.setStatus(OffreStage.Status.WAITING);
+        fichierOffreStage.setStatusDescription("Waiting for approval");
+        fichierOffreStage.setProgramme(Programme.GENIE_LOGICIEL);
+        fichierOffreStage.setVisibility(OffreStage.Visibility.PUBLIC);
+        fichierOffreStage.setCreateur(employeur);
+
+        when(offreStageRepository.findById(offreStageId)).thenReturn(Optional.of(fichierOffreStage));
+
+        // Act
+        OffreStageAvecUtilisateurInfoDTO result = offreStageService.getOffreStageWithUtilisateurInfo(offreStageId);
+
+        // Assert
+        assertNotNull(result, "The returned DTO should not be null");
+        assertEquals(fichierOffreStage.getId(), result.getId(), "DTO ID should match the entity ID");
+        assertEquals(fichierOffreStage.getEntrepriseName(), result.getEntrepriseName(), "EntrepriseName should match");
+        assertEquals(fichierOffreStage.getCreatedAt() , result.getCreatedAt(), "CreatedAt should match");
+        assertEquals(fichierOffreStage.getTitle(), result.getTitle(), "Title should match");
+        assertEquals(fichierOffreStage.getCreateur().getId(), result.getCreateur_id(), "Createur ID should match");
+        assertEquals(fichierOffreStage.getCreateur().getPrenom(), result.getCreateur_prenom(), "Createur prenom should match");
+        assertEquals(fichierOffreStage.getCreateur().getNom(), result.getCreateur_nom(), "Createur nom should match");
+        assertEquals(fichierOffreStage.getCreateur().getNumeroDeTelephone(), result.getCreateur_telephone(), "Createur numeroDeTelephone should match");
+        assertEquals(fichierOffreStage.getCreateur().getCourriel(), result.getCreateur_email(), "Createur courriel should match");
+        assertEquals(fichierOffreStage.getCreateur().getRole(), result.getCreateur_role(), "Createur role should match");
+
+        // Verify that findById was called once with the correct ID
+        verify(offreStageRepository, times(1)).findById(offreStageId);
+    }
+
+
+    @Test
+    void getOffreStageWithUtilisateurInfo_OffreStageNotFound() {
+        // Arrange
+        Long nonExistentId = 99L;
+
+        when(offreStageRepository.findById(nonExistentId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
+            offreStageService.getOffreStageWithUtilisateurInfo(nonExistentId);
+        }, "Expected EntityNotFoundException to be thrown");
+
+        assertEquals("OffreStage not found with ID: " + nonExistentId, exception.getMessage(),
+                "Exception message should match the expected message");
+
+        // Verify that findById was called once with the correct ID
+        verify(offreStageRepository, times(1)).findById(nonExistentId);
+    }
 }
