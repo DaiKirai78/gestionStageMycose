@@ -1,5 +1,6 @@
 package com.projet.mycose.modele;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.projet.mycose.modele.auth.Credentials;
 import com.projet.mycose.modele.auth.Role;
 import jakarta.persistence.*;
@@ -23,6 +24,7 @@ public class Etudiant extends Utilisateur {
     private Programme programme;
 
     @OneToMany(mappedBy = "etudiant", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<FichierCV> fichiersCV;
 
     @OneToMany(mappedBy = "etudiant", cascade = CascadeType.ALL, orphanRemoval = true)
