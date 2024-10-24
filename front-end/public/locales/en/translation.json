@@ -186,5 +186,6 @@
     "noStudentInProgram": "No student in this program",
     "attribuer":  "Assign",
     "loadingStudent": "Loading students",
-    "noStudents": "No students"
+    "noStudents": "No students",
+    "commentRequired": "Please leave a comment."
 }

@@ -187,5 +187,6 @@
     "noStudentInProgram": "Aucun étudiant dans ce programme.",
     "attribuer":  "Attribuer",
     "loadingStudent": "Chargement des élèves",
-    "noStudents": "Aucun étudiants"
+    "noStudents": "Aucun étudiants",
+    "commentRequired": "Veuillez laisser un commentaire."
 }
