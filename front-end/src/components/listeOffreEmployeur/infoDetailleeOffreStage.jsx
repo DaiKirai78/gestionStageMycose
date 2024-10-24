@@ -50,9 +50,14 @@ const InfoDetailleeOffreStage = ({setActiveOffer, activeOffer, getColorOffreStat
     }
 
     function ouvrirModal(etudiantId) {
-        const etudiant = listeEtudiantsAppliques.find(e => e.id === parseInt(etudiantId));
-        setSelectedEtudiant(etudiant);
-        setIsModalCandidatureOpen(true);
+        console.log(etudiantId);
+        
+        if(etudiantId !== "default") {
+            const etudiant = listeEtudiantsAppliques.find(e => e.id === parseInt(etudiantId));
+            setSelectedEtudiant(etudiant);
+            setIsModalCandidatureOpen(true);
+        }
+
     }
 
     return (
