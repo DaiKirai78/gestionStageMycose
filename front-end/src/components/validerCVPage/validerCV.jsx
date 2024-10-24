@@ -8,6 +8,7 @@ function ValiderCV() {
     const { cv } = state || {};
     const navigate = useNavigate();
     const [commentaire, setCommentaire] = useState("");
+    const [commentaireError, setCommentaireError] = useState("");
     const [error, setError] = useState(null);
     const token = localStorage.getItem("token");
 
@@ -19,7 +20,7 @@ function ValiderCV() {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify({ commentaire }),
+                body: JSON.stringify({ commentaire: commentaire || "" }),
             });
 
             if (!response.ok) {
@@ -32,6 +33,11 @@ function ValiderCV() {
     };
 
     const handleReject = async () => {
+        if (!commentaire.trim()) {
+            setCommentaireError(t("commentRequired"));
+            return;
+        }
+
         try {
             const response = await fetch(`http://localhost:8080/api/cv/refuse?id=${cv.id}`, {
                 method: "PATCH",
@@ -54,7 +60,6 @@ function ValiderCV() {
     };
 
     if (!cv) return <p>{t("noCVFound")}</p>;
-    if (error) return <p>{error}</p>;
 
     return (
         <div className="min-h-screen flex items-start justify-center p-8">
@@ -93,12 +98,22 @@ function ValiderCV() {
 
                     {/* Zone de texte pour les commentaires */}
                     <textarea
-                        className="border border-gray-300 p-2 rounded w-full"
+                        className={`border p-2 rounded w-full ${commentaireError ? 'border-red-500' : 'border-gray-300'}`}
                         placeholder={t("leaveComment")}
                         rows={5}
                         value={commentaire}
-                        onChange={(e) => setCommentaire(e.target.value)}
+                        onChange={(e) => {
+                            setCommentaire(e.target.value);
+                            if (commentaireError) {
+                                setCommentaireError(""); // Efface l'erreur quand l'utilisateur tape
+                            }
+                        }}
                     ></textarea>
+                    {commentaireError && (
+                        <p className="text-red-500 mt-2">
+                            {commentaireError}
+                        </p>
+                    )}
                 </div>
             </div>
         </div>
