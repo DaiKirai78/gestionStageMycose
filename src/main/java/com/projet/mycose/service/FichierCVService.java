@@ -139,6 +139,10 @@ public class FichierCVService {
         return fileRepository.getCurrentCvByEtudiant_id(etudiant_id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Fichier non trouvé"));
     }
 
+    public FichierCVDTO getCurrentCVByEtudiantID(Long etudiant_id) {
+        return convertToDTO(fileRepository.getCurrentCvByEtudiant_id(etudiant_id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Fichier non trouvé")));
+    }
+
     public FichierCVDTO getCurrentCV_returnNullIfEmpty(Long etudiant_id) {
         Optional<FichierCV> fichierCV = fileRepository.
                 getCurrentCvByEtudiant_id(etudiant_id);

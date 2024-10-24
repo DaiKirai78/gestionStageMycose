@@ -37,12 +37,15 @@ public class GestionnaireStageService {
     public List<EtudiantDTO> getEtudiantsSansEnseignants(int pageNumber, Programme programme) {
         PageRequest pageRequest = PageRequest.of(pageNumber, LIMIT_PER_PAGE);
 
-        Page<Etudiant> pageEtudiantsRetournee = utilisateurRepository.findAllEtudiantsSansEnseignants(programme ,pageRequest);
+        Page<Etudiant> pageEtudiantsRetournee = utilisateurRepository.findAllEtudiantsSansEnseignants(programme, pageRequest);
+
         if(pageEtudiantsRetournee.isEmpty()) {
             return null;
         }
 
-        return pageEtudiantsRetournee.getContent().stream().map(EtudiantDTO::toDTO).toList();
+        List<Etudiant> etudiants = pageEtudiantsRetournee.getContent();
+
+        return etudiants.stream().map(EtudiantDTO::toDTO).toList();
     }
 
     public List<EnseignantDTO> getEnseignantsParRecherche(String recherche) {
@@ -54,8 +57,8 @@ public class GestionnaireStageService {
         return listeRecu.stream().map(EnseignantDTO::toDTO).toList();
     }
 
-    public Integer getAmountOfPages() {
-        long amountOfRows = utilisateurRepository.countAllEtudiantsSansEnseignants();
+    public Integer getAmountOfPages(Programme programme) {
+        long amountOfRows = utilisateurRepository.countAllEtudiantsSansEnseignants(programme);
 
         if (amountOfRows == 0)
             return 0;
@@ -80,7 +83,8 @@ public class GestionnaireStageService {
         Optional<Utilisateur> enseignantRecu = utilisateurRepository.findUtilisateurById(idEnseignant);
 
         if(etudiantRecu.isPresent() && enseignantRecu.isPresent()) {
-            if(etudiantRecu.get() instanceof Etudiant etudiant && enseignantRecu.get() instanceof Enseignant enseignant) {
+            if(etudiantRecu.get() instanceof Etudiant etudiant &&
+                    enseignantRecu.get() instanceof Enseignant enseignant) {
                 etudiant.setEnseignantAssignee(enseignant);
                 enseignant.getEtudiantsAssignees().add(etudiant);
 

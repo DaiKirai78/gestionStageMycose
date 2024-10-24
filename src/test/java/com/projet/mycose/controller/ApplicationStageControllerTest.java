@@ -1,6 +1,8 @@
 package com.projet.mycose.controller;
 
-import com.projet.mycose.modele.ApplicationStage;
+import com.projet.mycose.modele.*;
+import com.projet.mycose.modele.auth.Credentials;
+import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.service.ApplicationStageService;
 import com.projet.mycose.dto.ApplicationStageAvecInfosDTO;
 import com.projet.mycose.dto.ApplicationStageDTO;
@@ -9,11 +11,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -31,7 +31,11 @@ public class ApplicationStageControllerTest {
     private ApplicationStageController applicationStageController;
 
     private Long id;
+    private Long offreStageId;
+    private Etudiant etudiant;
+    private FichierOffreStage fichierOffreStage;
     private ApplicationStageDTO applicationStageDTO;
+    private ApplicationStage applicationStage;
     private ApplicationStageAvecInfosDTO applicationStageAvecInfosDTO;
     private List<ApplicationStageAvecInfosDTO> applicationStageAvecInfosDTOList;
 
@@ -39,11 +43,37 @@ public class ApplicationStageControllerTest {
     void setup() {
         id = 1L;
 
+        offreStageId = 1L;
+
         applicationStageDTO = new ApplicationStageDTO();
         // Initialize fields of applicationStageDTO as needed
 
         applicationStageAvecInfosDTO = new ApplicationStageAvecInfosDTO();
         // Initialize fields of applicationStageAvecInfosDTO as needed
+
+        etudiant = new Etudiant();
+        etudiant.setId(1L);
+        Credentials credentials = new Credentials("example@gmail.com", "passw0rd", Role.ETUDIANT);
+        etudiant.setCredentials(credentials);
+        etudiant.setProgramme(Programme.GENIE_LOGICIEL);
+
+        fichierOffreStage = new FichierOffreStage();
+        fichierOffreStage.setId(offreStageId);
+        fichierOffreStage.setTitle("Software Engineering Internship");
+        fichierOffreStage.setEntrepriseName("Tech Corp");
+        fichierOffreStage.setStatus(OffreStage.Status.ACCEPTED);
+        fichierOffreStage.setStatusDescription("Approved for applications.");
+        fichierOffreStage.setCreateur(new Etudiant());
+        fichierOffreStage.getCreateur().setId(1L);
+        fichierOffreStage.setFilename("internship_offer.pdf");
+        fichierOffreStage.setData(new byte[]{1, 2, 3});
+        fichierOffreStage.setProgramme(Programme.GENIE_LOGICIEL);
+
+        applicationStage = new ApplicationStage();
+        applicationStage.setId(1L);
+        applicationStage.setOffreStage(fichierOffreStage);
+        applicationStage.setEtudiant(etudiant);
+        applicationStage.setStatus(ApplicationStage.ApplicationStatus.PENDING);
 
         applicationStageAvecInfosDTOList = List.of(applicationStageAvecInfosDTO);
     }
@@ -141,5 +171,35 @@ public class ApplicationStageControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(applicationStageAvecInfosDTO, response.getBody());
         verify(applicationStageService, times(1)).summonEtudiant(id);
+    }
+
+    @Test
+    public void testAccepterApplication_Success() {
+        // Arrange
+        when(applicationStageService.accepterOuRefuserApplication(id, ApplicationStage.ApplicationStatus.ACCEPTED)).thenReturn(ApplicationStageAvecInfosDTO.toDTO(applicationStage));
+
+        // Act
+        ResponseEntity<?> response = applicationStageController.accepterApplication(id);
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(response.getBody(), "Application acceptée");
+        verify(applicationStageService, times(1)).accepterOuRefuserApplication(id, ApplicationStage.ApplicationStatus.ACCEPTED);
+    }
+
+    @Test
+    public void testRefuserApplication_Success() {
+        // Arrange
+        when(applicationStageService.accepterOuRefuserApplication(id, ApplicationStage.ApplicationStatus.REJECTED)).thenReturn(ApplicationStageAvecInfosDTO.toDTO(applicationStage));
+
+        // Act
+        ResponseEntity<?> response = applicationStageController.refuserApplication(id);
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(response.getBody(), "Application refusée");
+        verify(applicationStageService, times(1)).accepterOuRefuserApplication(id, ApplicationStage.ApplicationStatus.REJECTED);
     }
 }

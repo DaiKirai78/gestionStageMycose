@@ -206,27 +206,27 @@ class GestionnaireStageServiceTest {
     @Test
     public void testGetAmountOfPage_NumberEndWithZero() {
         //Arrange
-        when(utilisateurRepository.countAllEtudiantsSansEnseignants()).thenReturn(30);
+        when(utilisateurRepository.countAllEtudiantsSansEnseignants(Programme.TECHNIQUE_INFORMATIQUE)).thenReturn(30);
 
         //Act
-        int nombrePage = gestionnaireStageService.getAmountOfPages();
+        int nombrePage = gestionnaireStageService.getAmountOfPages(Programme.TECHNIQUE_INFORMATIQUE);
 
         //Assert
         assertEquals(nombrePage, 3);
-        verify(utilisateurRepository, times(1)).countAllEtudiantsSansEnseignants();
+        verify(utilisateurRepository, times(1)).countAllEtudiantsSansEnseignants(Programme.TECHNIQUE_INFORMATIQUE);
     }
 
     @Test
     public void testGetAmountOfPage_NumberNotEndWithZero() {
         //Arrange
-        when(utilisateurRepository.countAllEtudiantsSansEnseignants()).thenReturn(43);
+        when(utilisateurRepository.countAllEtudiantsSansEnseignants(Programme.TECHNIQUE_INFORMATIQUE)).thenReturn(43);
 
         //Act
-        int nombrePage = gestionnaireStageService.getAmountOfPages();
+        int nombrePage = gestionnaireStageService.getAmountOfPages(Programme.TECHNIQUE_INFORMATIQUE);
 
         //Assert
         assertEquals(nombrePage, 5);
-        verify(utilisateurRepository, times(1)).countAllEtudiantsSansEnseignants();
+        verify(utilisateurRepository, times(1)).countAllEtudiantsSansEnseignants(Programme.TECHNIQUE_INFORMATIQUE);
     }
 
     @Test

@@ -1,6 +1,7 @@
 package com.projet.mycose.controller;
 
 import com.projet.mycose.modele.ApplicationStage;
+import com.projet.mycose.security.exception.AuthenticationException;
 import com.projet.mycose.service.ApplicationStageService;
 import com.projet.mycose.dto.ApplicationStageAvecInfosDTO;
 import com.projet.mycose.dto.ApplicationStageDTO;
@@ -41,18 +42,18 @@ public class ApplicationStageController {
     }
 
     @PatchMapping("/application/{id}/accepter")
-    public ResponseEntity<ApplicationStageDTO> accepterApplication(@PathVariable Long id) {
-        return new ResponseEntity<>(applicationStageService.accepterOuRefuserApplication(id,
-                ApplicationStage.ApplicationStatus.ACCEPTED), HttpStatus.OK);
+    public ResponseEntity<?> accepterApplication(@PathVariable Long id) {
+        applicationStageService.accepterOuRefuserApplication(id, ApplicationStage.ApplicationStatus.ACCEPTED);
+        return ResponseEntity.ok().body("Application acceptée");
     }
 
     @PatchMapping("/application/{id}/refuser")
-    public ResponseEntity<ApplicationStageDTO> refuserApplication(@PathVariable Long id) {
-        return new ResponseEntity<>(applicationStageService.accepterOuRefuserApplication(id,
-                ApplicationStage.ApplicationStatus.REJECTED), HttpStatus.OK);
+    public ResponseEntity<?> refuserApplication(@PathVariable Long id) {
+        applicationStageService.accepterOuRefuserApplication(id, ApplicationStage.ApplicationStatus.REJECTED);
+        return ResponseEntity.ok().body("Application refusée");
     }
 
-    @PostMapping("/summon/{id}")
+    @PatchMapping("/summon/{id}")
     public ResponseEntity<ApplicationStageAvecInfosDTO> summonEtudiant(@PathVariable Long id) {
         return new ResponseEntity<>(applicationStageService.summonEtudiant(id), HttpStatus.OK);
     }
