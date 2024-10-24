@@ -179,5 +179,13 @@
     "EMPLOYEUR": "Employer",
     "ETUDIANT": "Student",
     "NOT_SPECIFIED": "Not Specified",
-    "televerserOffre": "Upload offer"
+    "televerserOffre": "Upload offer",
+    "makeOfferPrivate": "Assign the offer to one or more specific students",
+    "selectStudent": "Select one or more students who will be able to see the offer",
+    "selectStudentError": "Select one or more students.",
+    "noStudentInProgram": "No student in this program",
+    "attribuer":  "Assign",
+    "loadingStudent": "Loading students",
+    "noStudents": "No students",
+    "commentRequired": "Please leave a comment."
 }

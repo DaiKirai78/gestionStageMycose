@@ -84,7 +84,19 @@ public class FichierOffreStageDTO extends OffreStageDTO{
         this.setCreateur_id(createur_id);
     }
 
-
-    //TODO: Ajouter les champs title et entrepriseName au front-end pour qu'on puisse les envoyer au DTO avec validation
-
+    @Override
+    public String toString() {
+        return "FichierOffreStageDTO{" +
+                "filename='" + filename + '\'' +
+                ", fileData='" + fileData + '\'' +
+                ", title='" + getTitle() + '\'' +
+                ", entrepriseName='" + getEntrepriseName() + '\'' +
+                ", createdAt=" + getCreatedAt() +
+                ", updatedAt=" + getUpdatedAt() +
+                ", createur_id=" + getCreateur_id() +
+                ", status=" + getStatus() +
+                ", visibility=" + getVisibility() +
+                ", programme=" + getProgramme() +
+                '}';
+    }
 }

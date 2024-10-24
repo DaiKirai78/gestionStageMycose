@@ -1,9 +1,10 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { BsBellFill } from "react-icons/bs";
+import { TfiReload } from "react-icons/tfi";
 import { useLocation, useNavigate } from "react-router-dom";
 
-const NavbarMobile = ({ mobileMenuRef, userInfo, navLinks, toggleNotificationMenu, handleProfileItemClick, isNotificationMenuOpen, notificationMenuRefMobile }) => {
+const NavbarMobile = ({ lienEqual, mobileMenuRef, userInfo, navLinks, toggleNotificationMenu, handleProfileItemClick, isNotificationMenuOpen, notificationMenuRefMobile, langue, toggleLangue }) => {
     const navigate = useNavigate();
     const location = useLocation();
     const { t } = useTranslation();
@@ -25,13 +26,14 @@ const NavbarMobile = ({ mobileMenuRef, userInfo, navLinks, toggleNotificationMen
                             onClick={() => {
                                 navigate(infoBtn["lien"]);
                             } }
-                            className={`w-full text-left hover:bg-orange hover:bg-opacity-20 px-3 py-2 rounded-md font-medium ${location.pathname === infoBtn["lien"] ? "cursor-default ring-1 ring-orange text-orange hover:bg-transparent" : ""}`}>
+                            className={`w-full text-left hover:bg-orange hover:bg-opacity-20 px-3 py-2 rounded-md font-medium ${lienEqual(infoBtn) ? "cursor-default ring-1 ring-orange text-orange hover:bg-transparent" : ""}`}>
                             {t(infoBtn["titre"])}
                         </button>
                     );
                 }) : ""}
             </div>
-            <div className="pt-4 pb-3 border-t border-gray-700">
+            <hr className="w-[98%] mx-auto" />
+            <div className="pt-4 pb-3">
                 <div className="flex items-center pl-2 pr-5">
                     <div className="ml-3">
                         <div className="text-base font-medium leading-none text-black">{userInfo ? `${userInfo.prenom} ${userInfo.nom}` : "Attente"}</div>
@@ -58,6 +60,13 @@ const NavbarMobile = ({ mobileMenuRef, userInfo, navLinks, toggleNotificationMen
                         } }
                         className={`w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-orange hover:bg-opacity-20 ${location.pathname === "/profil" ? "cursor-default ring-1 ring-orange text-orange hover:bg-transparent" : ""}`}>
                         {t("profil")}
+                    </button>
+                    <button
+                        onClick={() => {
+                            toggleLangue()
+                        }} 
+                        className="flex justify-between items-center mb-1 w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-orange hover:bg-opacity-20">
+                        {langue} <TfiReload />
                     </button>
                     <button
                         onClick={handleProfileItemClick}

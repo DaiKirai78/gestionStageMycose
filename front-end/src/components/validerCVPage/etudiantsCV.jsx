@@ -77,7 +77,7 @@ function EtudiantsCV() {
     if (error) return <p>{error}</p>;
 
     return (
-        <div className="flex items-start justify-center min-h-screen p-8">
+        <div className="flex items-start justify-center min-h-full p-8">
             <div className="bg-[#FFF8F2] rounded-lg shadow-lg p-8 w-screen max-w-3xl">
                 <h1 className="text-4xl font-bold mb-6 mt-6 text-center">{t("studentList")}</h1>
                 <h2 className="mb-8 text-xl text-center">{t("clickStudentCV")}</h2>

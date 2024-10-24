@@ -49,7 +49,6 @@ public class ApplicationStageControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "USER")
     void applyForStage_Success() throws Exception {
         when(applicationStageService.applyToOffreStage(id)).thenReturn(applicationStageDTO);
 
@@ -62,7 +61,6 @@ public class ApplicationStageControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "USER")
     void applyForStage_AccessDeniedException() throws Exception {
         when(applicationStageService.applyToOffreStage(id)).thenThrow(new AccessDeniedException("Access Denied"));
 
@@ -75,7 +73,6 @@ public class ApplicationStageControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "USER")
     void applyForStage_NotFoundException() throws Exception {
         when(applicationStageService.applyToOffreStage(id)).thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "OffreStage not found"));
 
@@ -87,7 +84,6 @@ public class ApplicationStageControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "USER")
     void getMyApplications_Success() {
         when(applicationStageService.getApplicationsByEtudiant()).thenReturn(applicationStageAvecInfosDTOList);
 
@@ -100,7 +96,6 @@ public class ApplicationStageControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "USER")
     void getMyApplicationsWithStatus_Success() {
         ApplicationStage.ApplicationStatus status = ApplicationStage.ApplicationStatus.PENDING;
         when(applicationStageService.getApplicationsByEtudiantWithStatus(status)).thenReturn(applicationStageAvecInfosDTOList);
@@ -114,8 +109,7 @@ public class ApplicationStageControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "USER")
-    void getMyApplication_Success() throws Exception {
+    void getMyApplication_Success() {
         when(applicationStageService.getApplicationById(id)).thenReturn(applicationStageAvecInfosDTO);
 
         ResponseEntity<ApplicationStageAvecInfosDTO> response = applicationStageController.getMyApplication(id);
@@ -127,8 +121,7 @@ public class ApplicationStageControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "USER")
-    void getMyApplication_NotFoundException() throws Exception {
+    void getMyApplication_NotFoundException() {
         when(applicationStageService.getApplicationById(id)).thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Application not found"));
 
         assertThrows(ResponseStatusException.class, () -> {
@@ -136,5 +129,17 @@ public class ApplicationStageControllerTest {
         });
 
         verify(applicationStageService, times(1)).getApplicationById(id);
+    }
+
+    @Test
+    void summonEtudiant_Success() {
+        when(applicationStageService.summonEtudiant(id)).thenReturn(applicationStageAvecInfosDTO);
+
+        ResponseEntity<ApplicationStageAvecInfosDTO> response = applicationStageController.summonEtudiant(id);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(applicationStageAvecInfosDTO, response.getBody());
+        verify(applicationStageService, times(1)).summonEtudiant(id);
     }
 }

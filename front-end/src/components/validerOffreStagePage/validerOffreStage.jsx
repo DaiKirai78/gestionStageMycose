@@ -1,6 +1,7 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import { useTranslation } from "react-i18next";
+import axios from "axios";
 
 function ValiderOffreStage() {
     const { t } = useTranslation();
@@ -9,23 +10,98 @@ function ValiderOffreStage() {
     const navigate = useNavigate();
     const [commentaire, setCommentaire] = useState("");
     const [error, setError] = useState(null);
+    const [programmeError, setProgrammeError] = useState("");
+    const [commentError, setCommentError] = useState("");
+    const [studentSelectionError, setStudentSelectionError] = useState("");
+    const [noStudentsInProgram, setNoStudentsInProgram] = useState("");
     const token = localStorage.getItem("token");
+    const [programmes, setProgrammes] = useState([]);
+    const [programme, setProgramme] = useState("");
+    const [students, setStudents] = useState([]);
+    const [selectedStudents, setSelectedStudents] = useState([]);
+    const [isPrivate, setIsPrivate] = useState(false);
+
+    useEffect(() => {
+        const fetchProgrammes = async () => {
+            try {
+                const response = await axios.get("http://localhost:8080/api/programme");
+                setProgrammes(response.data);
+            } catch (error) {
+                console.error("Erreur lors de la récupération des programmes :", error);
+            }
+        };
+
+        fetchProgrammes();
+    }, []);
+
+    useEffect(() => {
+        if (programme) {
+            const fetchStudents = async () => {
+                const token = localStorage.getItem("token");
+                try {
+                    const response = await axios.get(
+                        `http://localhost:8080/gestionnaire/getEtudiantsParProgramme?programme=${programme}`, {
+                            headers: { Authorization: `Bearer ${token}` }
+                        }
+                    );
+                    const sortedStudents = response.data.sort((a, b) => {
+                        const fullNameA = `${a.nom} ${a.prenom}`.toLowerCase();
+                        const fullNameB = `${b.nom} ${b.prenom}`.toLowerCase();
+                        return fullNameA.localeCompare(fullNameB);
+                    });
+                    setStudents(sortedStudents);
+
+                    if (sortedStudents.length === 0) {
+                        setNoStudentsInProgram(t("noStudentsInProgram"));
+                    } else {
+                        setNoStudentsInProgram("");
+                    }
+                } catch (error) {
+                    console.error("Erreur lors de la récupération des étudiants :", error);
+                }
+            };
+
+            fetchStudents();
+        } else {
+            setStudents([]);
+            setSelectedStudents([]);
+            setIsPrivate(false);
+        }
+    }, [programme]);
 
     const handleAccept = async () => {
-        try {
-            const response = await fetch(`http://localhost:8080/api/offres-stages/accept?id=${offreStage.id}`, {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({ commentaire }),
-            });
+        if (!programme) {
+            setProgrammeError(t("programRequired"));
+            return;
+        }
 
-            if (!response.ok) {
-                throw new Error(t("errorAcceptingInternship"));
-            }
-            navigate("/validerOffreStage");
+        if (isPrivate && selectedStudents.length === 0) {
+            setStudentSelectionError(t("selectStudentError"));
+            return;
+        }
+
+        try {
+            const payload = {
+                id: offreStage.id,
+                programme: programme,
+                statusDescription: commentaire,
+                ...(isPrivate && { etudiantsPrives: selectedStudents }),
+            };
+
+            console.log("Payload to send:", payload);
+
+            const response = await axios.patch(
+                `http://localhost:8080/api/offres-stages/accept`,
+                payload,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+            offreStage.status = "ACCEPTED";
+            navigate("/validerOffreStage", { replace: true });
         } catch (error) {
             console.error(error);
             setError(t("errorAcceptingInternship"));
@@ -33,6 +109,11 @@ function ValiderOffreStage() {
     };
 
     const handleReject = async () => {
+        if (!commentaire) {
+            setCommentError(t("commentRequired"));
+            return;
+        }
+
         try {
             const response = await fetch(`http://localhost:8080/api/offres-stages/refuse?id=${offreStage.id}`, {
                 method: "PATCH",
@@ -40,21 +121,39 @@ function ValiderOffreStage() {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify({ commentaire }),
+                body: JSON.stringify({
+                    commentaire
+                }),
             });
 
             if (!response.ok) {
                 throw new Error(t("errorRefusingInternship"));
             }
-            navigate("/validerOffreStage");
+            navigate("/validerOffreStage", { replace: true });
         } catch (error) {
             console.error(error);
             setError(t("errorRefusingInternship"));
         }
     };
 
+    const handleStudentSelection = (studentId) => {
+        setSelectedStudents((prevSelected) => {
+            const newSelected = prevSelected.includes(studentId)
+                ? prevSelected.filter((id) => id !== studentId)
+                : [...prevSelected, studentId];
+
+            if (newSelected.length > 0) {
+                setStudentSelectionError("");
+            }
+
+            return newSelected;
+        });
+    };
+    function ChangeProgrammeValue(e) {
+        setProgramme(e.target.value);
+    }
+
     if (!offreStage) return <p>{t("noInternshipFound")}</p>;
-    if (error) return <p>{error}</p>;
 
     return (
         <div className="min-h-screen flex items-start justify-center p-8">
@@ -92,10 +191,8 @@ function ValiderOffreStage() {
                                         {offreStage.website}
                                     </a>
                                 </p>
-
                             )}
                         </div>
-
                     )}
                 </div>
 
@@ -103,6 +200,66 @@ function ValiderOffreStage() {
                 <div className="w-full md:w-[30%] p-8 flex flex-col items-center md:items-start">
                     <h2 className="text-2xl font-bold mb-4">{offreStage.title}</h2>
                     <p className="mb-12"><strong>{t("companyName")}:</strong> {t(offreStage.entrepriseName)}</p>
+
+                    <div>
+                        <label className="block mb-2 text-sm font-medium text-black">{t("choisirProgramme")}</label>
+                        <select
+                            className={`block w-full p-2 border border-black rounded-md ${programmeError ? 'border-red-500' : 'border-black'} bg-transparent`}
+                            value={programme}
+                            onChange={(e) => {
+                                ChangeProgrammeValue(e);
+                                setProgrammeError("");
+                            }}
+                        >
+                            <option value="" className={"text-center"}>-- {t("choisirProgramme")} --</option>
+                            {programmes.map((programme, index) => (
+                                <option key={index} value={programme}>
+                                    {t(programme)}
+                                </option>
+                            ))}
+                        </select>
+                        {programmeError && <p className="text-red-500 text-sm">{t("programRequired")}</p>}
+                    </div>
+
+                    <div className="mt-2">
+                        <label htmlFor="privateOffer" className="flex items-center space-x-2">
+                            <input
+                                type="checkbox"
+                                id="privateOffer"
+                                checked={isPrivate}
+                                onChange={() => setIsPrivate(!isPrivate)}
+                                disabled={!programme}
+                            />
+                            <span
+                                className={`${!programme ? "text-gray-400" : ""}`}>{t("makeOfferPrivate")}</span>
+                        </label>
+                    </div>
+
+                    {isPrivate && (
+                        <div className="relative w-full">
+                            <label className="block mb-2 text-sm font-medium text-black">{t("selectStudent")}</label>
+                            <div className="space-y-2">
+                                {students.map((student) => (
+                                    <div key={student.id} className="flex items-center space-x-2">
+                                        <input
+                                            type="checkbox"
+                                            id={`student-${student.id}`}
+                                            checked={selectedStudents.includes(student.id)}
+                                            onChange={() => handleStudentSelection(student.id)}
+                                        />
+                                        <label
+                                            htmlFor={`student-${student.id}`}
+                                            className="cursor-pointer"
+                                        >
+                                            {student.nom}, {student.prenom}
+                                        </label>
+                                    </div>
+                                ))}
+                            </div>
+                            {noStudentsInProgram && <p className="text-black text-m">{t("noStudentInProgram")}</p>}
+                            {studentSelectionError && <p className="text-red-500 text-sm">{t("selectStudentError")}</p>}
+                        </div>
+                    )}
 
                     {/* Boutons d'acceptation et de refus */}
                     <div className="mt-12 mb-4 w-full">
@@ -122,12 +279,18 @@ function ValiderOffreStage() {
 
                     {/* Zone de texte pour les commentaires */}
                     <textarea
-                        className="border border-gray-300 p-2 rounded w-full"
+                        className={`border p-2 rounded w-full ${commentError ? 'border-red-500' : 'border-gray-300'}`}
                         placeholder={t("leaveComment")}
                         rows={5}
                         value={commentaire}
-                        onChange={(e) => setCommentaire(e.target.value)}
+                        onChange={(e) => {
+                            setCommentaire(e.target.value);
+                            if (e.target.value) {
+                                setCommentError("");
+                            }
+                        }}
                     ></textarea>
+                    {commentError && <p className="text-red-500 text-sm">{commentError}</p>}
                 </div>
             </div>
         </div>

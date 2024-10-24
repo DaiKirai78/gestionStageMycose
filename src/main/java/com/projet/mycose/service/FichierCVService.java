@@ -118,7 +118,7 @@ public class FichierCVService {
     }
 
     @Transactional
-    public void changeStatus(Long id, FichierCV.Status status, String description) throws ChangeSetPersister.NotFoundException {
+    public void changeStatus(Long id, FichierCV.Status status, String description) {
         FichierCV fichierCV = fileRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Fichier non trouvé"));
         fichierCV.setStatus(status);
         fichierCV.setStatusDescription(description);

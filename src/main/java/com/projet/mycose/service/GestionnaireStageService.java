@@ -2,18 +2,20 @@ package com.projet.mycose.service;
 
 import com.projet.mycose.dto.EnseignantDTO;
 import com.projet.mycose.dto.EtudiantDTO;
-import com.projet.mycose.modele.Enseignant;
-import com.projet.mycose.modele.Etudiant;
-import com.projet.mycose.modele.GestionnaireStage;
+import com.projet.mycose.modele.*;
 import com.projet.mycose.repository.GestionnaireStageRepository;
 import com.projet.mycose.repository.UtilisateurRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -32,10 +34,10 @@ public class GestionnaireStageService {
         }
     }
 
-    public List<EtudiantDTO> getEtudiantsSansEnseignants(int pageNumber) {
+    public List<EtudiantDTO> getEtudiantsSansEnseignants(int pageNumber, Programme programme) {
         PageRequest pageRequest = PageRequest.of(pageNumber, LIMIT_PER_PAGE);
 
-        Page<Etudiant> pageEtudiantsRetournee = utilisateurRepository.findAllEtudiantsSansEnseignants(pageRequest);
+        Page<Etudiant> pageEtudiantsRetournee = utilisateurRepository.findAllEtudiantsSansEnseignants(programme ,pageRequest);
         if(pageEtudiantsRetournee.isEmpty()) {
             return null;
         }
@@ -68,4 +70,28 @@ public class GestionnaireStageService {
 
         return nombrePages;
     }
+
+    @Transactional
+    public void assignerEnseigantEtudiant(Long idEtudiant, Long idEnseignant) {
+        Objects.requireNonNull(idEtudiant, "ID Étudiant ne peut pas être NULL");
+        Objects.requireNonNull(idEnseignant, "ID Enseignant ne peut pas être NULL");
+
+        Optional<Utilisateur> etudiantRecu = utilisateurRepository.findUtilisateurById(idEtudiant);
+        Optional<Utilisateur> enseignantRecu = utilisateurRepository.findUtilisateurById(idEnseignant);
+
+        if(etudiantRecu.isPresent() && enseignantRecu.isPresent()) {
+            if(etudiantRecu.get() instanceof Etudiant etudiant && enseignantRecu.get() instanceof Enseignant enseignant) {
+                etudiant.setEnseignantAssignee(enseignant);
+                enseignant.getEtudiantsAssignees().add(etudiant);
+
+                utilisateurRepository.save(etudiant);
+                utilisateurRepository.save(enseignant);
+            } else {
+                throw new RuntimeException();
+            }
+
+        }
+
+    }
+
 }

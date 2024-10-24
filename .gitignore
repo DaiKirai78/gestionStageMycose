@@ -33,7 +33,7 @@ build/
 .vscode/
 
 ### Postgres ###
-/postgres/projet_local_pgdata/*
-/postgres/projet_pgadmin-data/sessions/*
+postgres/projet_local_pgdata/*
+postgres/projet_pgadmin-data/*
 
 GitScripts/

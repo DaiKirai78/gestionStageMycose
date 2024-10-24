@@ -18,8 +18,9 @@ const navLinks = {
     ],
     "GESTIONNAIRE_STAGE": [
         {
-            "titre": "testGestionnaireStage",
-            "lien": "/gest"
+            "titre": "attribuer",
+            "lien": "/attribuer/eleve",
+            "autreLiens": ["/attribuer/prof"]
         }
     ],
     "ENSEIGNANT": []
@@ -89,8 +90,13 @@ const Navbar = ({ userInfo }) => {
         localStorage.removeItem("token");
     }
 
+    function lienEqual(infoBtn) {
+        return location.pathname === infoBtn["lien"] ||
+                infoBtn["autreLiens"] && infoBtn["autreLiens"].includes(location.pathname);
+    }
+
     return (
-    <nav className="bg-orange-light border-b border-orange border-opacity-40 text-black">
+    <nav className="bg-orange-light border-b border-orange border-opacity-40 text-black min w-full">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
                 <div className="flex items-center">
@@ -114,7 +120,7 @@ const Navbar = ({ userInfo }) => {
                                             onClick={() => {
                                                 navigate(infoBtn["lien"])
                                             }}
-                                            className={`hover:bg-orange hover:bg-opacity-20 px-3 py-2 rounded-md font-medium ${location.pathname === infoBtn["lien"] ? "cursor-default ring-1 ring-orange text-orange hover:bg-transparent" : ""}`}>
+                                            className={`hover:bg-orange hover:bg-opacity-20 px-3 py-2 rounded-md font-medium ${lienEqual(infoBtn) ? "cursor-default ring-1 ring-orange text-orange hover:bg-transparent" : ""}`}>
                                             {t(infoBtn["titre"])}
                                         </button>
                                     );
@@ -174,6 +180,9 @@ const Navbar = ({ userInfo }) => {
                                     userInfo={userInfo}
                                     isNotificationMenuOpen={isNotificationMenuOpen}
                                     notificationMenuRefMobile={notificationMenuRefMobile}
+                                    langue={langues[langueIndex].langue} 
+                                    toggleLangue={toggleLangue}
+                                    lienEqual={lienEqual}
                                     />}
     </nav>
     )

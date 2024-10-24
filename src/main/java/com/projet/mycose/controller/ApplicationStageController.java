@@ -52,4 +52,10 @@ public class ApplicationStageController {
         applicationStageService.accepterOuRefuserApplication(id, ApplicationStage.ApplicationStatus.REJECTED);
         return ResponseEntity.ok().body("Application refusée");
     }
+
+    @PostMapping("/summon/{id}")
+    public ResponseEntity<ApplicationStageAvecInfosDTO> summonEtudiant(@PathVariable Long id) {
+        return new ResponseEntity<>(applicationStageService.summonEtudiant(id), HttpStatus.OK);
+    }
+
 }
