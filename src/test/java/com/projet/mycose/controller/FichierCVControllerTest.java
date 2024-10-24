@@ -136,6 +136,19 @@ public class FichierCVControllerTest {
     }
 
     @Test
+    void testUploadFile_FileNotFound_ReturnsInternalServerError() throws Exception {
+        // Arrange
+        when(utilisateurService.getMyUserId()).thenReturn(1L);
+        when(fichierCVService.getCurrentCV_returnNullIfEmpty(1L)).thenThrow(new RuntimeException("Fichier non trouvé"));
+
+        // Act & Assert
+        mockMvc.perform(multipart("/api/cv/upload")
+                        .file(mockFile)
+                        .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andExpect(status().isInternalServerError());
+    }
+
+    @Test
     void testUploadFile_ValidationFailure_ReturnsBadRequest() throws Exception {
 
         // Mocking the ConstraintViolation for the "filename" field
@@ -221,6 +234,28 @@ public class FichierCVControllerTest {
     }
 
     @Test
+    void getWaitingCV_ReturnsBadRequest() throws Exception {
+        // Arrange
+        when(fichierCVService.getWaitingCv(1)).thenThrow(new IllegalArgumentException("Page commence à 1"));
+
+        // Act & Assert
+        mockMvc.perform(get("/api/cv/waitingcv?page=1"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Page commence à 1"));
+    }
+
+    @Test
+    void getTotalWaitingCVs_Success() throws Exception {
+        // Arrange
+        when(fichierCVService.getTotalWaitingCVs()).thenReturn(5L);
+
+        // Act & Assert
+        mockMvc.perform(get("/api/cv/totalwaitingcvs"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("5"));
+    }
+
+    @Test
     void testGetCurrentCV_Success() throws Exception {
         // Arrange
         FichierCVDTO mockFichierCVDTO = new FichierCVDTO();
@@ -239,6 +274,30 @@ public class FichierCVControllerTest {
                 .andExpect(jsonPath("$.filename").value("test.pdf"))
                 .andExpect(jsonPath("$.fileData").value("Base64EncodedData"))
                 .andExpect(jsonPath("$.etudiant_id").value(1));
+    }
+
+    @Test
+    void testGetCV_UnauthorizedAccess_ReturnsUnauthorized() throws Exception {
+        // Arrange
+        when(fichierCVService.getCurrentCVDTO()).thenThrow(new AuthenticationException(HttpStatus.UNAUTHORIZED, "Incorrect username or password"));
+
+        // Act & Assert
+        mockMvc.perform(multipart("/api/cv/current")
+                        .file(mockFile)
+                        .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void testGetCV_FileNotFound_ReturnsInternalServerError() throws Exception {
+        // Arrange
+        when(fichierCVService.getCurrentCVDTO()).thenThrow(new RuntimeException("Fichier non trouvé"));
+
+        // Act & Assert
+        mockMvc.perform(multipart("/api/cv/current")
+                        .file(mockFile)
+                        .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andExpect(status().isInternalServerError());
     }
 
     @Test
@@ -266,6 +325,16 @@ public class FichierCVControllerTest {
     }
 
     @Test
+    void test_AcceptCVEmptyDescription() throws Exception {
+        // Act & Assert
+        mockMvc.perform(patch("/api/cv/accept?id=1")
+                        .content("{\"commentaire\": \"\"}")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Description field is missing"));
+    }
+
+    @Test
     void test_refuseCv_OK() throws Exception {
         // Act
         doNothing().when(fichierCVService).changeStatus(1L, FichierCV.Status.REFUSED, "asd");
@@ -274,6 +343,16 @@ public class FichierCVControllerTest {
                         .content("{\"commentaire\": \"asd\"}")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void test_RefuseCvEmptyDescription() throws Exception {
+        // Act & Assert
+        mockMvc.perform(patch("/api/cv/refuse?id=1")
+                        .content("{\"commentaire\": \"\"}")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Description field is missing"));
     }
 
     @Test
