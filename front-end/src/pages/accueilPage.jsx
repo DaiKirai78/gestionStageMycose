@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import TokenPageContainer from './tokenPageContainer';
 import { useNavigate } from 'react-router-dom';
-import AcceuilEtudiant from '../components/acceuil/acceuilEtudiant';
-import AcceuilEmployeur from '../components/acceuil/acceuilEmployeur';
+import AccueilEtudiant from '../components/accueil/accueilEtudiant.jsx';
+import AccueilEmployeur from '../components/accueil/accueilEmployeur.jsx';
 import { useOutletContext } from "react-router-dom";
 import UploadCvPage from '../pages/UploadCvPage';
 import VoirMonCVPage from "./voirMonCVPage.jsx";
 import PageIsLoading from '../components/pageIsLoading.jsx';
+import AccueilGestionnaire from "../components/accueil/accueilGestionnaire.jsx";
 
 const AccueilPage = () => {
     const [cvStatus, setCvStatus] = useState(null);
@@ -52,7 +53,7 @@ const AccueilPage = () => {
     function getEtudiantPage() {
         
         if (cvStatus === "ACCEPTED") {
-            return <AcceuilEtudiant />;
+            return <AccueilEtudiant />;
         }
         else if (cvStatus === "WAITING") {
             return <VoirMonCVPage />;
@@ -69,9 +70,9 @@ const AccueilPage = () => {
             case "ETUDIANT":
                 return getEtudiantPage()
             case "EMPLOYEUR":
-                return <AcceuilEmployeur />;
+                return <AccueilEmployeur />;
             case "GESTIONNAIRE_STAGE":
-                return <div>Acceuil Gestionnaire</div>;
+                return <AccueilGestionnaire />;
             default:
                 navigate("/");
                 break;

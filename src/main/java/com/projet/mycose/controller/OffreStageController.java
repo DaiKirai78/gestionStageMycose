@@ -2,12 +2,10 @@ package com.projet.mycose.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.projet.mycose.dto.*;
-import com.projet.mycose.modele.OffreStage;
 import com.projet.mycose.service.ApplicationStageService;
 import com.projet.mycose.service.OffreStageService;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -75,14 +73,14 @@ public class OffreStageController {
         return ResponseEntity.status(HttpStatus.OK).body(offreStageService.getTotalWaitingOffreStages());
     }
 
-    @PatchMapping("/accept")
+    @PatchMapping(value = "/accept")
     public ResponseEntity<?> acceptOffreStage(@Valid @RequestBody AcceptOffreDeStageDTO acceptOffreDeStageDTO) {
             offreStageService.acceptOffreDeStage(acceptOffreDeStageDTO);
             return ResponseEntity.ok().build();
     }
+
     @PatchMapping("/refuse")
     public ResponseEntity<?> refuseOffreStage(@RequestParam Long id, @RequestBody JsonNode jsonNode) {
-        try {
             JsonNode descriptionNode = jsonNode.get("commentaire");
 
             if (descriptionNode == null || descriptionNode.isNull()) {
@@ -90,11 +88,8 @@ public class OffreStageController {
             }
 
             String description = descriptionNode.asText();
-            offreStageService.changeStatus(id, OffreStage.Status.REFUSED, description);
+            offreStageService.refuseOffreDeStage(id, description);
             return ResponseEntity.ok().build();
-        } catch (ChangeSetPersister.NotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
     }
 
     @GetMapping("/id/{id}")

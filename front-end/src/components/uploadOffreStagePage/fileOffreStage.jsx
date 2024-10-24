@@ -14,6 +14,7 @@ function FileOffreStage() {
     const [programme, setProgramme] = useState("");
     const [students, setStudents] = useState([]);
     const [selectedStudents, setSelectedStudents] = useState([]);
+    const [noStudentsInProgram, setNoStudentsInProgram] = useState("");
     const [fileExtensionError, setFileExtensionError] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
     const [uploadError, setUploadError] = useState("");
@@ -70,6 +71,12 @@ function FileOffreStage() {
                         return fullNameA.localeCompare(fullNameB);
                     });
                     setStudents(sortedStudents);
+
+                    if (sortedStudents.length === 0) {
+                        setNoStudentsInProgram(t("noStudentsInProgram"));
+                    } else {
+                        setNoStudentsInProgram("");
+                    }
                 } catch (error) {
                     console.error("Erreur lors de la récupération des étudiants :", error);
                 }
@@ -85,11 +92,15 @@ function FileOffreStage() {
 
     const handleStudentSelection = (studentId) => {
         setSelectedStudents((prevSelected) => {
-            if (prevSelected.includes(studentId)) {
-                return prevSelected.filter((id) => id !== studentId);
-            } else {
-                return [...prevSelected, studentId];
+            const newSelected = prevSelected.includes(studentId)
+                ? prevSelected.filter((id) => id !== studentId)
+                : [...prevSelected, studentId];
+
+            if (newSelected.length > 0) {
+                setStudentSelectionError("");
             }
+
+            return newSelected;
         });
     };
 
@@ -170,6 +181,9 @@ function FileOffreStage() {
 
         if (role === "GESTIONNAIRE_STAGE" && isPrivate && selectedStudents.length === 0) {
             setStudentSelectionError("studentSelectionRequired");
+            hasError = true;
+        } else if (role === "GESTIONNAIRE_STAGE" && isPrivate && students.length === 0) {
+            setStudentSelectionError("noStudentsAvailable");
             hasError = true;
         } else {
             setStudentSelectionError("");
@@ -341,6 +355,7 @@ function FileOffreStage() {
                             </div>
                         ))}
                     </div>
+                    {noStudentsInProgram && <p className="text-black text-m">{t("noStudentInProgram")}</p>}
                     {studentSelectionError && <p className="text-red-500 text-sm">{t("selectStudentError")}</p>}
                 </div>
             )}

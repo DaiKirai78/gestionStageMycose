@@ -1,6 +1,7 @@
 package com.projet.mycose.controller;
 
 import com.projet.mycose.modele.FichierCV;
+import com.projet.mycose.security.exception.AuthenticationException;
 import com.projet.mycose.service.FichierCVService;
 import com.projet.mycose.dto.FichierCVDTO;
 import com.projet.mycose.dto.FichierCVStudInfoDTO;
@@ -14,11 +15,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -45,18 +48,22 @@ public class FichierCVControllerTest {
 
     private MockMvc mockMvc;
 
+    private MockMultipartFile mockFile;
+
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(fichierCVController)
                 .setControllerAdvice(new GlobalExceptionHandler()) // Register GlobalExceptionHandler
                 .build();
+
+
+        mockFile = new MockMultipartFile("file", "validFile.pdf",
+                MediaType.APPLICATION_PDF_VALUE, "Some content".getBytes());
     }
 
     @Test
     void testUploadFile_Success() throws Exception {
         // Arrange
-        MockMultipartFile mockFile = new MockMultipartFile("file", "validFile.pdf",
-                MediaType.APPLICATION_PDF_VALUE, "Some PDF content".getBytes());
 
         FichierCVDTO validFichierCVDTO = new FichierCVDTO();
         validFichierCVDTO.setId(1L);
@@ -84,10 +91,65 @@ public class FichierCVControllerTest {
     }
 
     @Test
+    void testUploadFile_SuccessWithDeletion() throws Exception {
+        // Arrange
+
+        FichierCVDTO validFichierCVDTO = new FichierCVDTO();
+        validFichierCVDTO.setId(1L);
+        validFichierCVDTO.setFilename("validFile.pdf");
+        validFichierCVDTO.setFileData("Base64FileData"); // Example Base64 data
+        validFichierCVDTO.setEtudiant_id(1L);
+
+        FichierCVDTO oldCVDTO = new FichierCVDTO();
+
+        when(fichierCVService.saveFile(any(MultipartFile.class)))
+                .thenReturn(validFichierCVDTO);
+
+        when(utilisateurService.getMyUserId()).thenReturn(1L);
+
+        when(fichierCVService.getCurrentCV_returnNullIfEmpty(1L)).thenReturn(oldCVDTO);
+
+        when(fichierCVService.deleteCurrentCV()).thenReturn(oldCVDTO);
+
+        // Act & Assert
+        mockMvc.perform(multipart("/api/cv/upload")
+                        .file(mockFile)
+                        .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.filename").value("validFile.pdf"))
+                .andExpect(jsonPath("$.fileData").value("Base64FileData"))
+                .andExpect(jsonPath("$.etudiant_id").value(1));
+    }
+
+    @Test
+    void testUploadFile_UnauthorizedAccess_ReturnsUnauthorized() throws Exception {
+        // Arrange
+        when(utilisateurService.getMyUserId()).thenThrow(new AuthenticationException(HttpStatus.UNAUTHORIZED, "Incorrect username or password"));
+
+        // Act & Assert
+        mockMvc.perform(multipart("/api/cv/upload")
+                        .file(mockFile)
+                        .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void testUploadFile_FileNotFound_ReturnsInternalServerError() throws Exception {
+        // Arrange
+        when(utilisateurService.getMyUserId()).thenReturn(1L);
+        when(fichierCVService.getCurrentCV_returnNullIfEmpty(1L)).thenThrow(new RuntimeException("Fichier non trouvé"));
+
+        // Act & Assert
+        mockMvc.perform(multipart("/api/cv/upload")
+                        .file(mockFile)
+                        .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andExpect(status().isInternalServerError());
+    }
+
+    @Test
     void testUploadFile_ValidationFailure_ReturnsBadRequest() throws Exception {
-        // Arrange: Create a MockMultipartFile
-        MockMultipartFile mockFile = new MockMultipartFile("file", "invalidFile.pdf",
-                MediaType.APPLICATION_PDF_VALUE, "Some content".getBytes());
 
         // Mocking the ConstraintViolation for the "filename" field
         ConstraintViolation<FichierCVDTO> mockViolation = mock(ConstraintViolation.class);
@@ -122,8 +184,6 @@ public class FichierCVControllerTest {
     @Test
     void testUploadFile_IOException_ReturnsInternalServerError() throws Exception {
         // Arrange
-        MockMultipartFile mockFile = new MockMultipartFile("file", "validFile.pdf",
-                MediaType.APPLICATION_PDF_VALUE, "Some content".getBytes());
 
         // Simulate an IOException when the service tries to save the file
         when(fichierCVService.saveFile(any(MultipartFile.class)))
@@ -174,6 +234,28 @@ public class FichierCVControllerTest {
     }
 
     @Test
+    void getWaitingCV_ReturnsBadRequest() throws Exception {
+        // Arrange
+        when(fichierCVService.getWaitingCv(1)).thenThrow(new IllegalArgumentException("Page commence à 1"));
+
+        // Act & Assert
+        mockMvc.perform(get("/api/cv/waitingcv?page=1"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Page commence à 1"));
+    }
+
+    @Test
+    void getTotalWaitingCVs_Success() throws Exception {
+        // Arrange
+        when(fichierCVService.getTotalWaitingCVs()).thenReturn(5L);
+
+        // Act & Assert
+        mockMvc.perform(get("/api/cv/totalwaitingcvs"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("5"));
+    }
+
+    @Test
     void testGetCurrentCV_Success() throws Exception {
         // Arrange
         FichierCVDTO mockFichierCVDTO = new FichierCVDTO();
@@ -195,6 +277,30 @@ public class FichierCVControllerTest {
     }
 
     @Test
+    void testGetCV_UnauthorizedAccess_ReturnsUnauthorized() throws Exception {
+        // Arrange
+        when(fichierCVService.getCurrentCVDTO()).thenThrow(new AuthenticationException(HttpStatus.UNAUTHORIZED, "Incorrect username or password"));
+
+        // Act & Assert
+        mockMvc.perform(multipart("/api/cv/current")
+                        .file(mockFile)
+                        .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void testGetCV_FileNotFound_ReturnsInternalServerError() throws Exception {
+        // Arrange
+        when(fichierCVService.getCurrentCVDTO()).thenThrow(new RuntimeException("Fichier non trouvé"));
+
+        // Act & Assert
+        mockMvc.perform(multipart("/api/cv/current")
+                        .file(mockFile)
+                        .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andExpect(status().isInternalServerError());
+    }
+
+    @Test
     void test_acceptCv_OK() throws Exception {
         // Act
         doNothing().when(fichierCVService).changeStatus(1L, FichierCV.Status.ACCEPTED, "asd");
@@ -208,7 +314,7 @@ public class FichierCVControllerTest {
     @Test
     void test_acceptCv_UserNotFound() throws Exception {
         // Act
-        doThrow(ChangeSetPersister.NotFoundException.class)
+        doThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Fichier non trouvé"))
                 .when(fichierCVService)
                 .changeStatus(1L, FichierCV.Status.ACCEPTED, "asd");
         // Assert
@@ -216,6 +322,16 @@ public class FichierCVControllerTest {
                         .content("{\"commentaire\": \"asd\"}")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void test_AcceptCVEmptyDescription() throws Exception {
+        // Act & Assert
+        mockMvc.perform(patch("/api/cv/accept?id=1")
+                        .content("{\"commentaire\": \"\"}")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Description field is missing"));
     }
 
     @Test
@@ -227,6 +343,16 @@ public class FichierCVControllerTest {
                         .content("{\"commentaire\": \"asd\"}")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void test_RefuseCvEmptyDescription() throws Exception {
+        // Act & Assert
+        mockMvc.perform(patch("/api/cv/refuse?id=1")
+                        .content("{\"commentaire\": \"\"}")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Description field is missing"));
     }
 
     @Test

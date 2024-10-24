@@ -2,6 +2,7 @@ package com.projet.mycose.service;
 
 import com.projet.mycose.modele.*;
 import com.projet.mycose.repository.ApplicationStageRepository;
+import com.projet.mycose.repository.EtudiantOffreStagePriveeRepository;
 import com.projet.mycose.repository.OffreStageRepository;
 import com.projet.mycose.dto.ApplicationStageAvecInfosDTO;
 import com.projet.mycose.dto.ApplicationStageDTO;
@@ -10,14 +11,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.nio.file.AccessDeniedException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -33,6 +30,9 @@ public class ApplicationStageServiceTest {
 
     @Mock
     private OffreStageRepository offreStageRepository;
+
+    @Mock
+    private EtudiantOffreStagePriveeRepository etudiantOffreStagePriveeRepository;
 
     @InjectMocks
     private ApplicationStageService applicationStageService;
@@ -52,6 +52,7 @@ public class ApplicationStageServiceTest {
 
         etudiant = new Etudiant();
         etudiant.setId(1L);
+        etudiant.setProgramme(Programme.GENIE_LOGICIEL);
 
         etudiant2 = new Etudiant();
         etudiant2.setId(2L);
@@ -63,8 +64,10 @@ public class ApplicationStageServiceTest {
         fichierOffreStage.setStatus(OffreStage.Status.ACCEPTED);
         fichierOffreStage.setStatusDescription("Approved for applications.");
         fichierOffreStage.setCreateur(new Etudiant());
+        fichierOffreStage.getCreateur().setId(1L);
         fichierOffreStage.setFilename("internship_offer.pdf");
         fichierOffreStage.setData(new byte[]{1, 2, 3});
+        fichierOffreStage.setProgramme(Programme.GENIE_LOGICIEL);
 
         applicationStage = new ApplicationStage();
         applicationStage.setId(1L);
@@ -141,18 +144,18 @@ public class ApplicationStageServiceTest {
     }
 
     @Test
-    void applyToOffreStage_AccessDeniedException() throws Exception {
+    void applyToOffreStage_OffreStageNotAccepted() throws Exception {
         fichierOffreStage.setStatus(OffreStage.Status.WAITING);
 
         when(utilisateurService.getMeUtilisateur()).thenReturn(etudiant);
         when(offreStageRepository.findById(offreStageId)).thenReturn(Optional.of(fichierOffreStage));
         when(applicationStageRepository.findByEtudiantAndOffreStage(etudiant, fichierOffreStage)).thenReturn(Optional.empty());
 
-        AccessDeniedException exception = assertThrows(AccessDeniedException.class, () -> {
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
             applicationStageService.applyToOffreStage(offreStageId);
-        }, "Expected AccessDeniedException to be thrown.");
+        }, "Expected ResponseStatusException to be thrown.");
 
-        assertEquals("Offre de stage non disponible", exception.getMessage(), "Exception message should match.");
+        assertEquals("400 BAD_REQUEST \"Offre de stage non disponible\"", exception.getMessage(), "Exception message should match.");
 
         verify(utilisateurService, times(1)).getMeUtilisateur();
         verify(offreStageRepository, times(1)).findById(offreStageId);
@@ -161,9 +164,92 @@ public class ApplicationStageServiceTest {
     }
 
     @Test
+    void applyToOffreStage_UserIsNotAnEtudiant() throws Exception {
+        when(utilisateurService.getMeUtilisateur()).thenReturn(new Enseignant());
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            applicationStageService.applyToOffreStage(offreStageId);
+        }, "Expected ResponseStatusException to be thrown.");
+
+        assertNotNull(exception, "Exception should not be null.");
+
+        verify(utilisateurService, times(1)).getMeUtilisateur();
+        verify(offreStageRepository, never()).findById(any());
+        verify(applicationStageRepository, never()).findByEtudiantAndOffreStage(any(), any());
+        verify(applicationStageRepository, never()).save(any());
+    }
+
+    @Test
+    void applyToOffreStage_PrivateOffreStage_AccessDeniedException() throws Exception {
+        fichierOffreStage.setVisibility(OffreStage.Visibility.PRIVATE);
+
+        when(utilisateurService.getMeUtilisateur()).thenReturn(etudiant);
+        when(offreStageRepository.findById(offreStageId)).thenReturn(Optional.of(fichierOffreStage));
+        when(applicationStageRepository.findByEtudiantAndOffreStage(etudiant, fichierOffreStage)).thenReturn(Optional.empty());
+        when(etudiantOffreStagePriveeRepository.existsByOffreStageAndEtudiant(fichierOffreStage, etudiant)).thenReturn(false);
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            applicationStageService.applyToOffreStage(offreStageId);
+        }, "Expected ResponseStatusException to be thrown.");
+
+        assertEquals("400 BAD_REQUEST \"Offre de stage non disponible\"", exception.getMessage(), "Exception message should match.");
+
+        verify(utilisateurService, times(1)).getMeUtilisateur();
+        verify(offreStageRepository, times(1)).findById(offreStageId);
+        verify(applicationStageRepository, times(1)).findByEtudiantAndOffreStage(etudiant, fichierOffreStage);
+        verify(applicationStageRepository, never()).save(any());
+    }
+
+    @Test
+    void applyToOffreStage_PrivateOffreStage_Success() throws Exception {
+        fichierOffreStage.setVisibility(OffreStage.Visibility.PRIVATE);
+
+        when(utilisateurService.getMeUtilisateur()).thenReturn(etudiant);
+        when(offreStageRepository.findById(offreStageId)).thenReturn(Optional.of(fichierOffreStage));
+        when(applicationStageRepository.findByEtudiantAndOffreStage(etudiant, fichierOffreStage)).thenReturn(Optional.empty());
+        when(etudiantOffreStagePriveeRepository.existsByOffreStageAndEtudiant(fichierOffreStage, etudiant)).thenReturn(true);
+        when(applicationStageRepository.save(any(ApplicationStage.class))).thenReturn(applicationStage);
+
+        ApplicationStageDTO result = applicationStageService.applyToOffreStage(offreStageId);
+
+        assertNotNull(result, "The returned ApplicationStageDTO should not be null.");
+        assertEquals(applicationStageDTO.getId(), result.getId(), "The ID should match.");
+        assertEquals(applicationStageDTO.getOffreStage_id(), result.getOffreStage_id(), "The OffreStage ID should match.");
+        assertEquals(applicationStageDTO.getEtudiant_id(), result.getEtudiant_id(), "The Etudiant ID should match.");
+
+        verify(utilisateurService, times(1)).getMeUtilisateur();
+        verify(offreStageRepository, times(1)).findById(offreStageId);
+        verify(applicationStageRepository, times(1)).findByEtudiantAndOffreStage(etudiant, fichierOffreStage);
+        verify(applicationStageRepository, times(1)).save(any(ApplicationStage.class));
+    }
+
+    @Test
+    void applyToOffreStageWrongProgramme() throws Exception {
+        // Arrange
+        Etudiant etudiant = new Etudiant();
+        //FichierOffreStage has GENIE_LOGICIEL programme
+        etudiant.setProgramme(Programme.TECHNIQUE_INFORMATIQUE);
+        when(utilisateurService.getMeUtilisateur()).thenReturn(etudiant);
+        when(offreStageRepository.findById(offreStageId)).thenReturn(Optional.of(fichierOffreStage));
+
+        // Act
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            applicationStageService.applyToOffreStage(offreStageId);
+        });
+
+        // Assert
+        assertNotNull(exception);
+        assertEquals("400 BAD_REQUEST \"Offre de stage non disponible car vous ne faites pas partie du programme associé à l'offre de stage\"", exception.getMessage());
+
+        verify(utilisateurService, times(1)).getMeUtilisateur();
+        verify(offreStageRepository, times(1)).findById(offreStageId);
+        verify(applicationStageRepository, never()).save(any());
+    }
+
+    @Test
     void getApplicationsByEtudiant_Success() {
         Long etudiantId = etudiant.getId();
-        List<ApplicationStage> applications = Arrays.asList(applicationStage);
+        List<ApplicationStage> applications = Collections.singletonList(applicationStage);
 
         when(utilisateurService.getMyUserId()).thenReturn(etudiantId);
         when(applicationStageRepository.findByEtudiantId(etudiantId)).thenReturn(applications);
@@ -172,7 +258,7 @@ public class ApplicationStageServiceTest {
 
         assertNotNull(result, "The result list should not be null.");
         assertEquals(1, result.size(), "The result list should contain exactly one element.");
-        ApplicationStageAvecInfosDTO dto = result.get(0);
+        ApplicationStageAvecInfosDTO dto = result.getFirst();
         assertEquals(applicationStageAvecInfosDTO.getId(), dto.getId(), "DTO ID should match.");
         assertEquals(applicationStageAvecInfosDTO.getTitle(), dto.getTitle(), "OffreStage title should match.");
         assertEquals(applicationStageAvecInfosDTO.getEntrepriseName(), dto.getEntrepriseName(), "Entreprise name should match.");
@@ -186,7 +272,7 @@ public class ApplicationStageServiceTest {
     void getApplicationsByEtudiantWithStatus_Success() {
         Long etudiantId = etudiant.getId();
         ApplicationStage.ApplicationStatus status = ApplicationStage.ApplicationStatus.PENDING;
-        List<ApplicationStage> applications = Arrays.asList(applicationStage);
+        List<ApplicationStage> applications = Collections.singletonList(applicationStage);
 
         when(utilisateurService.getMyUserId()).thenReturn(etudiantId);
         when(applicationStageRepository.findByEtudiantIdAndStatusEquals(etudiantId, status)).thenReturn(applications);
@@ -195,7 +281,7 @@ public class ApplicationStageServiceTest {
 
         assertNotNull(result, "The result list should not be null.");
         assertEquals(1, result.size(), "The result list should contain exactly one element.");
-        ApplicationStageAvecInfosDTO dto = result.get(0);
+        ApplicationStageAvecInfosDTO dto = result.getFirst();
         assertEquals(applicationStageAvecInfosDTO.getId(), dto.getId(), "DTO ID should match.");
         assertEquals(applicationStageAvecInfosDTO.getTitle(), dto.getTitle(), "OffreStage title should match.");
         assertEquals(applicationStageAvecInfosDTO.getEntrepriseName(), dto.getEntrepriseName(), "Entreprise name should match.");
@@ -206,7 +292,7 @@ public class ApplicationStageServiceTest {
     }
 
     @Test
-    void getApplicationById_Success() throws Exception {
+    void getApplicationById_Success() {
         Long etudiantId = etudiant.getId();
         Long applicationId = fichierOffreStage.getId(); // Assuming applicationId refers to OffreStage ID
 
@@ -226,7 +312,7 @@ public class ApplicationStageServiceTest {
     }
 
     @Test
-    void getApplicationById_NotFoundException() throws Exception {
+    void getApplicationById_NotFoundException() {
         Long etudiantId = etudiant.getId();
         Long applicationId = fichierOffreStage.getId();
 
@@ -263,5 +349,88 @@ public class ApplicationStageServiceTest {
 
         // Assert
         assertEquals(2, applicationStageAvecInfosDTOList.size());
+    }
+
+    @Test
+    void summonEtudiant_Success() {
+        // Arrange
+        when(applicationStageRepository.findById(1L)).thenReturn(Optional.of(applicationStage));
+        when(utilisateurService.getMyUserId()).thenReturn(1L);
+        when(applicationStageRepository.save(any(ApplicationStage.class))).thenReturn(applicationStage);
+        applicationStageAvecInfosDTO.setStatus(ApplicationStage.ApplicationStatus.SUMMONED);
+
+        // Act
+        ApplicationStageAvecInfosDTO result = applicationStageService.summonEtudiant(1L);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(applicationStageAvecInfosDTO.getId(), result.getId());
+        assertEquals(applicationStageAvecInfosDTO.getTitle(), result.getTitle());
+        assertEquals(applicationStageAvecInfosDTO.getEntrepriseName(), result.getEntrepriseName());
+        assertEquals(applicationStageAvecInfosDTO.getStatus(), result.getStatus());
+
+        verify(applicationStageRepository, times(1)).findById(1L);
+        verify(utilisateurService, times(1)).getMyUserId();
+        verify(applicationStageRepository, times(1)).save(any(ApplicationStage.class));
+    }
+
+    @Test
+    void summonEtudiant_NotFoundException() {
+        // Arrange
+        when(applicationStageRepository.findById(1L)).thenReturn(Optional.empty());
+
+        // Act
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            applicationStageService.summonEtudiant(1L);
+        });
+
+        // Assert
+        assertNotNull(exception);
+        assertEquals("404 NOT_FOUND \"Application not found\"", exception.getMessage());
+
+        verify(applicationStageRepository, times(1)).findById(1L);
+        verify(utilisateurService, never()).getMyUserId();
+        verify(applicationStageRepository, never()).save(any(ApplicationStage.class));
+    }
+
+    @Test
+    void summonEtudiant_ForbiddenException() {
+        // Arrange
+        when(applicationStageRepository.findById(1L)).thenReturn(Optional.of(applicationStage));
+        when(utilisateurService.getMyUserId()).thenReturn(2L);
+
+        // Act
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            applicationStageService.summonEtudiant(1L);
+        });
+
+        // Assert
+        assertNotNull(exception);
+        assertEquals("403 FORBIDDEN \"You are not allowed to summon this student\"", exception.getMessage());
+
+        verify(applicationStageRepository, times(1)).findById(1L);
+        verify(utilisateurService, times(1)).getMyUserId();
+        verify(applicationStageRepository, never()).save(any(ApplicationStage.class));
+    }
+
+    @Test
+    void summonEtudiant_BadRequestException() {
+        // Arrange
+        applicationStage.setStatus(ApplicationStage.ApplicationStatus.ACCEPTED);
+        when(applicationStageRepository.findById(1L)).thenReturn(Optional.of(applicationStage));
+        when(utilisateurService.getMyUserId()).thenReturn(1L);
+
+        // Act
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            applicationStageService.summonEtudiant(1L);
+        });
+
+        // Assert
+        assertNotNull(exception);
+        assertEquals("400 BAD_REQUEST \"Application is not pending\"", exception.getMessage());
+
+        verify(applicationStageRepository, times(1)).findById(1L);
+        verify(utilisateurService, times(1)).getMyUserId();
+        verify(applicationStageRepository, never()).save(any(ApplicationStage.class));
     }
 }

@@ -1,5 +1,6 @@
 package com.projet.mycose.service;
 
+import com.projet.mycose.dto.EtudiantDTO;
 import com.projet.mycose.modele.*;
 import com.projet.mycose.repository.ApplicationStageRepository;
 import com.projet.mycose.repository.EtudiantOffreStagePriveeRepository;
@@ -60,18 +61,18 @@ public class ApplicationStageService {
         }
     }
 
-    private void checkAccessToOffreStage(Etudiant etudiant, OffreStage offreStage) throws AccessDeniedException {
+    private void checkAccessToOffreStage(Etudiant etudiant, OffreStage offreStage) {
         if (offreStage.getStatus() != OffreStage.Status.ACCEPTED) {
-            throw new AccessDeniedException("Offre de stage non disponible");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Offre de stage non disponible");
         }
         if (offreStage.getVisibility() == OffreStage.Visibility.PRIVATE) {
             boolean isAssociated = etudiantOffreStagePriveeRepository.existsByOffreStageAndEtudiant(offreStage, etudiant);
             if (!isAssociated) {
-                throw new AccessDeniedException("Offre de stage non disponible");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Offre de stage non disponible");
             }
         }
         if (offreStage.getProgramme() != etudiant.getProgramme()) {
-            throw new AccessDeniedException("Offre de stage non disponible car vous ne faites pas partie du programme associé à l'offre de stage");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Offre de stage non disponible car vous ne faites pas partie du programme associé à l'offre de stage");
         }
     }
 
@@ -105,5 +106,48 @@ public class ApplicationStageService {
         return applicationStageRepository
                 .findAllByOffreStageIdAndStatusEquals(offreId, ApplicationStage.ApplicationStatus.ACCEPTED)
                 .stream().map(this::convertToDTOAvecInfos).toList();
+    }
+
+    @Transactional
+    public ApplicationStageDTO accepterOuRefuserApplication(Long id, ApplicationStage.ApplicationStatus status) {
+        ApplicationStageAvecInfosDTO applicationStageAvecInfosDTO;
+        if (id != null)
+            applicationStageAvecInfosDTO = getApplicationById(id);
+        else
+            throw new IllegalArgumentException("La demande d'application n'existe pas");
+
+        Etudiant etudiant = EtudiantDTO.toEntity(utilisateurService.getEtudiantDTO(applicationStageAvecInfosDTO.getEtudiant_id()));
+        OffreStage offreStage = getValidatedOffreStage(applicationStageAvecInfosDTO.getOffreStage_id());
+
+        ApplicationStage applicationStage = mettreAJourApplication(applicationStageAvecInfosDTO, etudiant, offreStage, status);
+        return ApplicationStageDTO.toDTO(applicationStageRepository.save(applicationStage));
+    }
+
+    private ApplicationStage mettreAJourApplication(ApplicationStageAvecInfosDTO applicationStageAvecInfosDTO,
+                                                    Etudiant etudiant,
+                                                    OffreStage offreStage,
+                                                    ApplicationStage.ApplicationStatus status) {
+        ApplicationStage applicationStage = new ApplicationStage();
+        applicationStage.setId(applicationStageAvecInfosDTO.getId());
+        applicationStage.setOffreStage(offreStage);
+        applicationStage.setEtudiant(etudiant);
+        applicationStage.setStatus(status);
+
+        return applicationStage;
+    }
+
+    public ApplicationStageAvecInfosDTO summonEtudiant(Long id) {
+        ApplicationStage applicationStage = applicationStageRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Application not found"));
+        Long userId = utilisateurService.getMyUserId();
+        Long applicationID = applicationStage.getOffreStage().getCreateur().getId();
+        if (!userId.equals(applicationID)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to summon this student");
+        }
+        if (applicationStage.getStatus() != ApplicationStage.ApplicationStatus.PENDING) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Application is not pending");
+        }
+        applicationStage.setStatus(ApplicationStage.ApplicationStatus.SUMMONED);
+        return convertToDTOAvecInfos(applicationStageRepository.save(applicationStage));
     }
 }

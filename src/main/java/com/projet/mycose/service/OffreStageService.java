@@ -14,7 +14,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -146,7 +145,7 @@ public class OffreStageService {
         ficherOffreStageRepository.save(fichierOffreStage);
 
         if (fichierOffreStage.getVisibility() == OffreStage.Visibility.PRIVATE) {
-            associateEtudiantsPrivees(fichierOffreStage, uploadFicherOffreStageDTO.getEtudiantsPrives());
+            associateEtudiantsPrives(fichierOffreStage, uploadFicherOffreStageDTO.getEtudiantsPrives());
         }
 
         return convertToDTO(fichierOffreStage);
@@ -183,106 +182,94 @@ public class OffreStageService {
         FormulaireOffreStage savedForm = formulaireOffreStageRepository.save(formulaireOffreStage);
 
         if (formulaireOffreStage.getVisibility() == OffreStage.Visibility.PRIVATE) {
-            associateEtudiantsPrivees(formulaireOffreStage, formulaireOffreStageDTO.getEtudiantsPrives());
+            associateEtudiantsPrives(formulaireOffreStage, formulaireOffreStageDTO.getEtudiantsPrives());
         }
 
         return convertToDTO(savedForm);
     }
 
-    private OffreStage associateEtudiantsPrivees(OffreStage offreStage, List<Long> etudiantsPrives) {
+    private OffreStage associateEtudiantsPrives(OffreStage offreStage, List<Long> etudiantsPrives) {
         List<Etudiant> etudiants = etudiantRepository.findAllById(etudiantsPrives);
-
         for (Etudiant etudiant : etudiants) {
             EtudiantOffreStagePrivee association = new EtudiantOffreStagePrivee();
             association.setEtudiant(etudiant);
             association.setOffreStage(offreStage);
             etudiantOffreStagePriveeRepository.save(association);
         }
-
         return offreStage;
     }
 
     public List<OffreStageAvecUtilisateurInfoDTO> getWaitingOffreStage(int page) {
         Optional<List<OffreStage>> optionalOffreStageList = offreStageRepository.getOffreStageByStatusEquals(OffreStage.Status.WAITING,
                 PageRequest.of(page - 1, LIMIT_PER_PAGE));
-
         if (optionalOffreStageList.isEmpty()) {
             return new ArrayList<>();
         }
-
         List<OffreStage> offreStages = optionalOffreStageList.get();
 
         return offreStages.stream().map(OffreStageAvecUtilisateurInfoDTO::toDto).toList();
     }
-
     public Integer getAmountOfPages() {
         long amountOfRows = offreStageRepository.countByStatus(OffreStage.Status.WAITING);
-
         if (amountOfRows == 0)
             return 0;
-
         int nombrePages = (int) Math.floor((double) amountOfRows / LIMIT_PER_PAGE);
-
         if (amountOfRows % 10 > 0) {
             nombrePages++;
         }
-
         return nombrePages;
     }
-
-    public void changeStatus(Long id, OffreStage.Status status, String description) throws ChangeSetPersister.NotFoundException {
-        Optional<OffreStage> offreStageOptional = offreStageRepository.findById(id);
-
-        if (offreStageOptional.isEmpty())
-            throw new ChangeSetPersister.NotFoundException();
-
-        OffreStage offreStage = offreStageOptional.get();
-        offreStage.setStatus(status);
-        offreStage.setStatusDescription(description);
-        offreStageRepository.save(offreStage);
-    }
-
     public OffreStageAvecUtilisateurInfoDTO getOffreStageWithUtilisateurInfo(Long id) {
         OffreStage offreStage = offreStageRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("OffreStage not found with ID: " + id));
         return OffreStageAvecUtilisateurInfoDTO.toDto(offreStage);
     }
-
     public List<OffreStageDTO> getAvailableOffreStagesForEtudiant() throws AccessDeniedException {
         EtudiantDTO etudiantDTO = (EtudiantDTO) utilisateurService.getMe();
         return offreStageRepository.findAllByEtudiantNotApplied(etudiantDTO.getId(), etudiantDTO.getProgramme()).stream().map(this::convertToDTO).toList();
     }
-
     public long getTotalWaitingOffreStages() {
         return offreStageRepository.countByStatus(OffreStage.Status.WAITING);
     }
+    public void refuseOffreDeStage(Long id, String description) {
+        Optional<OffreStage> offreStageOptional = offreStageRepository.findById(id);
 
+        if (offreStageOptional.isEmpty()) {
+            throw new EntityNotFoundException("OffreStage not found with ID: " + id);
+        }
+        OffreStage offreStage = offreStageOptional.get();
+
+        if (offreStage.getStatus() != OffreStage.Status.WAITING) {
+            throw new IllegalArgumentException("OffreStage is not waiting");
+        }
+        offreStage.setStatus(OffreStage.Status.REFUSED);
+        offreStage.setStatusDescription(description);
+        offreStageRepository.save(offreStage);
+    }
     public void acceptOffreDeStage(AcceptOffreDeStageDTO acceptOffreDeStageDTO) {
         Optional<OffreStage> offreStageOptional = offreStageRepository.findById(acceptOffreDeStageDTO.getId());
-
         if (offreStageOptional.isEmpty()) {
             throw new EntityNotFoundException("OffreStage not found with ID: " + acceptOffreDeStageDTO.getId());
         }
-
         OffreStage offreStage = offreStageOptional.get();
+        if (offreStage.getStatus() != OffreStage.Status.WAITING) {
+            throw new IllegalArgumentException("OffreStage is not waiting");
+        }
         offreStage.setStatus(OffreStage.Status.ACCEPTED);
         offreStage.setStatusDescription(acceptOffreDeStageDTO.getStatusDescription());
         offreStage.setProgramme(acceptOffreDeStageDTO.getProgramme());
-
         if (offreStage.getProgramme() != Programme.NOT_SPECIFIED) {
             offreStage.setProgramme(acceptOffreDeStageDTO.getProgramme());
             if (acceptOffreDeStageDTO.getEtudiantsPrives() != null) {
                 offreStage.setVisibility(OffreStage.Visibility.PRIVATE);
-                associateEtudiantsPrivees(offreStage, acceptOffreDeStageDTO.getEtudiantsPrives());
+                associateEtudiantsPrives(offreStage, acceptOffreDeStageDTO.getEtudiantsPrives());
             } else {
                 offreStage.setVisibility(OffreStage.Visibility.PUBLIC);
             }
         } else {
             throw new IllegalArgumentException("Programme or etudiantsPrives must be provided when uploaded by a gestionnaire de stage");
         }
-
         offreStageRepository.save(offreStage);
     }
-
     public List<EtudiantDTO> getEtudiantsQuiOntAppliquesAUneOffre(List<ApplicationStageAvecInfosDTO> applicationStageDTOList) {
         List<EtudiantDTO> etudiantDTOList = new ArrayList<>();
         if (!applicationStageDTOList.isEmpty()) {

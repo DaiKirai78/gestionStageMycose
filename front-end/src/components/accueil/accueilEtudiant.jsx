@@ -1,7 +1,7 @@
 import React from 'react';
 import ListStage from "./listeStage.jsx"
 
-const AcceuilEtudiant = () => {
+const AccueilEtudiant = () => {
     return (
         <div className="bg-orange-light w-full min-h-full">
             <div className="flex h-3/5 justify-center">
@@ -11,4 +11,4 @@ const AcceuilEtudiant = () => {
     );
 };
 
-export default AcceuilEtudiant;
+export default AccueilEtudiant;

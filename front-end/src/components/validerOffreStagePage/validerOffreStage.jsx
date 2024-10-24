@@ -11,7 +11,9 @@ function ValiderOffreStage() {
     const [commentaire, setCommentaire] = useState("");
     const [error, setError] = useState(null);
     const [programmeError, setProgrammeError] = useState("");
+    const [commentError, setCommentError] = useState("");
     const [studentSelectionError, setStudentSelectionError] = useState("");
+    const [noStudentsInProgram, setNoStudentsInProgram] = useState("");
     const token = localStorage.getItem("token");
     const [programmes, setProgrammes] = useState([]);
     const [programme, setProgramme] = useState("");
@@ -33,28 +35,41 @@ function ValiderOffreStage() {
     }, []);
 
     useEffect(() => {
-        const fetchStudents = async () => {
-            const token = localStorage.getItem("token");
-            try {
-                const response = await axios.get(
-                    `http://localhost:8080/gestionnaire/getEtudiantsParProgramme?programme=${programme}`, {
-                        headers: { Authorization: `Bearer ${token}` }
+        if (programme) {
+            const fetchStudents = async () => {
+                const token = localStorage.getItem("token");
+                try {
+                    const response = await axios.get(
+                        `http://localhost:8080/gestionnaire/getEtudiantsParProgramme?programme=${programme}`, {
+                            headers: { Authorization: `Bearer ${token}` }
+                        }
+                    );
+                    const sortedStudents = response.data.sort((a, b) => {
+                        const fullNameA = `${a.nom} ${a.prenom}`.toLowerCase();
+                        const fullNameB = `${b.nom} ${b.prenom}`.toLowerCase();
+                        return fullNameA.localeCompare(fullNameB);
                     });
-                const sortedStudents = response.data.sort((a, b) => {
-                    const fullNameA = `${a.nom} ${a.prenom}`.toLowerCase();
-                    const fullNameB = `${b.nom} ${b.prenom}`.toLowerCase();
-                    return fullNameA.localeCompare(fullNameB);
-                });
-                setStudents(sortedStudents);
-            } catch (error) {
-                console.error("Erreur lors de la récupération des étudiants :", error);
-            }
-        };
-        fetchStudents();
+                    setStudents(sortedStudents);
+
+                    if (sortedStudents.length === 0) {
+                        setNoStudentsInProgram(t("noStudentsInProgram"));
+                    } else {
+                        setNoStudentsInProgram("");
+                    }
+                } catch (error) {
+                    console.error("Erreur lors de la récupération des étudiants :", error);
+                }
+            };
+
+            fetchStudents();
+        } else {
+            setStudents([]);
+            setSelectedStudents([]);
+            setIsPrivate(false);
+        }
     }, [programme]);
 
     const handleAccept = async () => {
-
         if (!programme) {
             setProgrammeError(t("programRequired"));
             return;
@@ -66,19 +81,27 @@ function ValiderOffreStage() {
         }
 
         try {
-            const response = await fetch(`http://localhost:8080/api/offres-stages/accept?id=${offreStage.id}`, {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({ commentaire }),
-            });
+            const payload = {
+                id: offreStage.id,
+                programme: programme,
+                statusDescription: commentaire,
+                ...(isPrivate && { etudiantsPrives: selectedStudents }),
+            };
 
-            if (!response.ok) {
-                throw new Error(t("errorAcceptingInternship"));
-            }
-            navigate("/validerOffreStage");
+            console.log("Payload to send:", payload);
+
+            const response = await axios.patch(
+                `http://localhost:8080/api/offres-stages/accept`,
+                payload,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+            offreStage.status = "ACCEPTED";
+            navigate("/validerOffreStage", { replace: true });
         } catch (error) {
             console.error(error);
             setError(t("errorAcceptingInternship"));
@@ -86,14 +109,8 @@ function ValiderOffreStage() {
     };
 
     const handleReject = async () => {
-
-        if (!programme) {
-            setProgrammeError(t("programRequired"));
-            return;
-        }
-
-        if (isPrivate && selectedStudents.length === 0) {
-            setStudentSelectionError(t("selectStudentError"));
+        if (!commentaire) {
+            setCommentError(t("commentRequired"));
             return;
         }
 
@@ -104,13 +121,15 @@ function ValiderOffreStage() {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify({ commentaire }),
+                body: JSON.stringify({
+                    commentaire
+                }),
             });
 
             if (!response.ok) {
                 throw new Error(t("errorRefusingInternship"));
             }
-            navigate("/validerOffreStage");
+            navigate("/validerOffreStage", { replace: true });
         } catch (error) {
             console.error(error);
             setError(t("errorRefusingInternship"));
@@ -119,14 +138,17 @@ function ValiderOffreStage() {
 
     const handleStudentSelection = (studentId) => {
         setSelectedStudents((prevSelected) => {
-            if (prevSelected.includes(studentId)) {
-                return prevSelected.filter((id) => id !== studentId);
-            } else {
-                return [...prevSelected, studentId];
+            const newSelected = prevSelected.includes(studentId)
+                ? prevSelected.filter((id) => id !== studentId)
+                : [...prevSelected, studentId];
+
+            if (newSelected.length > 0) {
+                setStudentSelectionError("");
             }
+
+            return newSelected;
         });
     };
-
     function ChangeProgrammeValue(e) {
         setProgramme(e.target.value);
     }
@@ -199,7 +221,7 @@ function ValiderOffreStage() {
                         {programmeError && <p className="text-red-500 text-sm">{t("programRequired")}</p>}
                     </div>
 
-                    <div className="mb-4">
+                    <div className="mt-2">
                         <label htmlFor="privateOffer" className="flex items-center space-x-2">
                             <input
                                 type="checkbox"
@@ -234,6 +256,7 @@ function ValiderOffreStage() {
                                     </div>
                                 ))}
                             </div>
+                            {noStudentsInProgram && <p className="text-black text-m">{t("noStudentInProgram")}</p>}
                             {studentSelectionError && <p className="text-red-500 text-sm">{t("selectStudentError")}</p>}
                         </div>
                     )}
@@ -256,12 +279,18 @@ function ValiderOffreStage() {
 
                     {/* Zone de texte pour les commentaires */}
                     <textarea
-                        className="border border-gray-300 p-2 rounded w-full"
+                        className={`border p-2 rounded w-full ${commentError ? 'border-red-500' : 'border-gray-300'}`}
                         placeholder={t("leaveComment")}
                         rows={5}
                         value={commentaire}
-                        onChange={(e) => setCommentaire(e.target.value)}
+                        onChange={(e) => {
+                            setCommentaire(e.target.value);
+                            if (e.target.value) {
+                                setCommentError("");
+                            }
+                        }}
                     ></textarea>
+                    {commentError && <p className="text-red-500 text-sm">{commentError}</p>}
                 </div>
             </div>
         </div>

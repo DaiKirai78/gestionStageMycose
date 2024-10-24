@@ -2,23 +2,27 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 
 const AttributionProf = () => {
-    const [student, setStudent] = useOutletContext(); 
+    const [selectedStudent, setSelectedStudent] = useOutletContext(); 
     const [studentVerified, setStudentVerified] = useState();
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (student != null) {
+        if (selectedStudent != null) {
             setStudentVerified(true)
         } else {
             navigate("/attribuer/eleve")
         }
-    }, [student])
+    }, [selectedStudent])
+
+    useEffect(() => {
+        console.log(selectedStudent);
+    }, [])
 
 
     return (
         <div>
             {
-                studentVerified && <div>HEHE</div>
+                selectedStudent && <div>{selectedStudent.prenom} allo</div>
             }
         </div>
     );

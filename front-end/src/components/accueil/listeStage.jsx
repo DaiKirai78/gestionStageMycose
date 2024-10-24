@@ -313,7 +313,7 @@ const listeStage = () => {
                             {t("previous")}
                         </button>
                         <span className="px-4 py-2">
-                            {t("page ")}
+                            {t("Page ")}
                             {isSearching ? recherchePageActuelle + 1 : pageActuelle + 1}
                             {t(" / ")}{nombreDePage}
                         </span>

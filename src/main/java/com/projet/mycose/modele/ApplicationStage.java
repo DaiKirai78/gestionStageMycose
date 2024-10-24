@@ -46,7 +46,8 @@ public class ApplicationStage {
     public enum ApplicationStatus {
         PENDING,
         ACCEPTED,
-        REJECTED
+        REJECTED,
+        SUMMONED
     }
 
     @PrePersist
