@@ -1,6 +1,10 @@
 package com.projet.mycose.service;
 
+import com.projet.mycose.dto.EtudiantDTO;
+
 import com.projet.mycose.modele.*;
+import com.projet.mycose.modele.auth.Credentials;
+import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.repository.ApplicationStageRepository;
 import com.projet.mycose.repository.EtudiantOffreStagePriveeRepository;
 import com.projet.mycose.repository.OffreStageRepository;
@@ -13,7 +17,6 @@ import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.nio.file.AccessDeniedException;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -52,6 +55,8 @@ public class ApplicationStageServiceTest {
 
         etudiant = new Etudiant();
         etudiant.setId(1L);
+        Credentials credentials = new Credentials("example@gmail.com", "passw0rd", Role.ETUDIANT);
+        etudiant.setCredentials(credentials);
         etudiant.setProgramme(Programme.GENIE_LOGICIEL);
 
         etudiant2 = new Etudiant();
@@ -350,6 +355,60 @@ public class ApplicationStageServiceTest {
         // Assert
         assertEquals(2, applicationStageAvecInfosDTOList.size());
     }
+
+    @Test
+    void accepterOuRefuserApplication_SuccessAccept() {
+        // Arrange
+        Long applicationId = 1L;
+        ApplicationStage.ApplicationStatus newStatus = ApplicationStage.ApplicationStatus.ACCEPTED;
+        applicationStage.setStatus(newStatus);
+
+        applicationStageAvecInfosDTO.setId(applicationId);
+        applicationStageAvecInfosDTO.setEtudiant_id(etudiant.getId());
+        applicationStageAvecInfosDTO.setOffreStage_id(fichierOffreStage.getId());
+        applicationStageAvecInfosDTO.setStatus(ApplicationStage.ApplicationStatus.PENDING);
+
+        when(utilisateurService.getMyUserId()).thenReturn(etudiant.getId());
+        when(utilisateurService.getEtudiantDTO(any())).thenReturn(EtudiantDTO.toDTO(etudiant));
+        when(offreStageRepository.findById(fichierOffreStage.getId())).thenReturn(Optional.of(fichierOffreStage));
+        when(applicationStageRepository.save(any(ApplicationStage.class))).thenReturn(applicationStage);
+        when(applicationStageRepository.findByEtudiantIdAndOffreStageId(etudiant.getId(), fichierOffreStage.getId())).thenReturn(Optional.of(applicationStage));
+
+        // Act
+        ApplicationStageAvecInfosDTO response = applicationStageService.accepterOuRefuserApplication(applicationId, newStatus);
+
+        // Assert
+        assertEquals(newStatus, response.getStatus(), "The status should be updated to ACCEPTED.");
+        verify(applicationStageRepository, times(1)).save(any(ApplicationStage.class));
+    }
+
+    @Test
+    public void testAccepterOuRefuserApplicationNotFound() {
+        // Act et Assert
+        assertThrows(ResponseStatusException.class, () ->
+                applicationStageService.accepterOuRefuserApplication(1L, ApplicationStage.ApplicationStatus.ACCEPTED)
+        );
+    }
+
+    @Test
+    public void testMettreAJourApplicationSuccess() {
+        // Arrange
+        ApplicationStage updatedApplicationStage = new ApplicationStage();
+        updatedApplicationStage.setId(applicationStage.getId());
+        updatedApplicationStage.setOffreStage(fichierOffreStage);
+        updatedApplicationStage.setEtudiant(etudiant);
+        updatedApplicationStage.setStatus(ApplicationStage.ApplicationStatus.ACCEPTED);
+
+        // Act
+        ApplicationStage result = applicationStageService.mettreAJourApplication(applicationStageAvecInfosDTO, etudiant, fichierOffreStage, ApplicationStage.ApplicationStatus.ACCEPTED);
+
+        // Assert
+        assertEquals(updatedApplicationStage.getId(), result.getId());
+        assertEquals(updatedApplicationStage.getEtudiant(), result.getEtudiant());
+        assertEquals(updatedApplicationStage.getOffreStage(), result.getOffreStage());
+        assertEquals(updatedApplicationStage.getStatus(), result.getStatus());
+    }
+
 
     @Test
     void summonEtudiant_Success() {

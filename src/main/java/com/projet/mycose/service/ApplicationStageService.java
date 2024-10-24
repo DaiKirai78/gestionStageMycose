@@ -109,24 +109,20 @@ public class ApplicationStageService {
     }
 
     @Transactional
-    public ApplicationStageDTO accepterOuRefuserApplication(Long id, ApplicationStage.ApplicationStatus status) {
-        ApplicationStageAvecInfosDTO applicationStageAvecInfosDTO;
-        if (id != null)
-            applicationStageAvecInfosDTO = getApplicationById(id);
-        else
-            throw new IllegalArgumentException("La demande d'application n'existe pas");
+    public ApplicationStageAvecInfosDTO accepterOuRefuserApplication(Long id, ApplicationStage.ApplicationStatus status) {
+        ApplicationStageAvecInfosDTO applicationStageAvecInfosDTO = getApplicationById(id);
 
         Etudiant etudiant = EtudiantDTO.toEntity(utilisateurService.getEtudiantDTO(applicationStageAvecInfosDTO.getEtudiant_id()));
         OffreStage offreStage = getValidatedOffreStage(applicationStageAvecInfosDTO.getOffreStage_id());
 
         ApplicationStage applicationStage = mettreAJourApplication(applicationStageAvecInfosDTO, etudiant, offreStage, status);
-        return ApplicationStageDTO.toDTO(applicationStageRepository.save(applicationStage));
+        return ApplicationStageAvecInfosDTO.toDTO(applicationStageRepository.save(applicationStage));
     }
 
-    private ApplicationStage mettreAJourApplication(ApplicationStageAvecInfosDTO applicationStageAvecInfosDTO,
-                                                    Etudiant etudiant,
-                                                    OffreStage offreStage,
-                                                    ApplicationStage.ApplicationStatus status) {
+    protected ApplicationStage mettreAJourApplication(ApplicationStageAvecInfosDTO applicationStageAvecInfosDTO,
+                                            Etudiant etudiant,
+                                            OffreStage offreStage,
+                                            ApplicationStage.ApplicationStatus status) {
         ApplicationStage applicationStage = new ApplicationStage();
         applicationStage.setId(applicationStageAvecInfosDTO.getId());
         applicationStage.setOffreStage(offreStage);
