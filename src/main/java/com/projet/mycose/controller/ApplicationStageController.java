@@ -49,14 +49,24 @@ public class ApplicationStageController {
 
     @PatchMapping("/application/{id}/accepter")
     public ResponseEntity<?> accepterApplication(@PathVariable Long id) {
-        applicationStageService.accepterOuRefuserApplication(id, ApplicationStage.ApplicationStatus.ACCEPTED);
-        return ResponseEntity.ok().body("Application acceptée");
+        try {
+            applicationStageService.accepterOuRefuserApplication(id, ApplicationStage.ApplicationStatus.ACCEPTED);
+            return ResponseEntity.ok().body("Application acceptée");
+        } catch (Exception e) {
+            System.err.println("Une erreur est survenue lors de la tentative de récupération des étudiants qui ont appliqués à une offre: " + e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PatchMapping("/application/{id}/refuser")
     public ResponseEntity<?> refuserApplication(@PathVariable Long id) {
-        applicationStageService.accepterOuRefuserApplication(id, ApplicationStage.ApplicationStatus.REJECTED);
-        return ResponseEntity.ok().body("Application refusée");
+        try {
+            applicationStageService.accepterOuRefuserApplication(id, ApplicationStage.ApplicationStatus.REJECTED);
+            return ResponseEntity.ok().body("Application refusée");
+        } catch (Exception e) {
+            System.err.println("Une erreur est survenue lors de la tentative de récupération des étudiants qui ont appliqués à une offre: " + e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PatchMapping("/summon/{id}")
