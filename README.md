@@ -24,5 +24,5 @@ Jason
   2. A chaque qu'on entame quelque chose qui pourrait affecter d'autre personne, informer tout le groupe via un message.
 
 Elie
-  1.
-  2.
+  1. Quand on travaille sur les mêmes fichiers, surtout dans le back-end, on s'assure d'aviser les autres développeurs que l'on change la fonction pour éviter           qu'ils continuent de batîr sur le comportement des fonctions discontinué.
+  2. À chaque fois que l'on fini de travailler, on merge avec la branche active (ex. sprint2) pour s'assurer que celle-ci reste le plus à jour possible. De même,        on merge notre branche avec la branche active (ex. sprint2) à chaque fois que l'on commence à travailler pour avoir les fonctionnalités les plus à jour. Si         des conflits de merge apparaîssent, ceux-ci doivent être résolus avant de continuer à travailler. Cela permettra d'éviter de plus gros conflits plus tard.
