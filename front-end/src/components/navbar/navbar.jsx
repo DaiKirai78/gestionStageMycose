@@ -109,14 +109,14 @@ const Navbar = ({ userInfo }) => {
 
     return (
     <nav className="bg-orange-light border-b border-orange border-opacity-40 text-black min w-full">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 py-1.5 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
                 <div className="flex items-center">
                     <div className="flex-shrink-0">
                         <img src={logo} alt="(Logo)" className='w-10' />
                     </div>
                     <div className="hidden md:block">
-                        <div className="ml-10 flex items-baseline space-x-4">
+                        <div className="ml-10 flex items-center space-x-4">
                             <button
                                 onClick={() => {
                                     navigate("/accueil")
