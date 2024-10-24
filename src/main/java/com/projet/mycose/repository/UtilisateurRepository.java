@@ -36,8 +36,9 @@ public interface UtilisateurRepository extends JpaRepository<Utilisateur, Long> 
 
     @Query("SELECT count(e) FROM Etudiant e " +
             "WHERE e.enseignantAssignee IS NULL " +
-            "AND e.credentials.role = 'ETUDIANT'")
-    int countAllEtudiantsSansEnseignants();
+            "AND e.credentials.role = 'ETUDIANT' " +
+            "AND e.programme = :programme")
+    int countAllEtudiantsSansEnseignants(Programme programme);
 
     @Query("""
         SELECT e FROM Enseignant e 

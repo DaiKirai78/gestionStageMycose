@@ -136,10 +136,11 @@ public class GestionnaireStageControllerTest {
     @Test
     public void testGetAmountOfPages_Success() throws Exception {
         //Arrange
-        when(gestionnaireStageService.getAmountOfPages()).thenReturn(2);
+        when(gestionnaireStageService.getAmountOfPages(Programme.TECHNIQUE_INFORMATIQUE)).thenReturn(2);
 
         //Act & Assert
-        mockMvc.perform(get("/gestionnaire/getEtudiantsPages"))
+        mockMvc.perform(get("/gestionnaire/getEtudiantsPages")
+                        .param("programme", Programme.TECHNIQUE_INFORMATIQUE.toString()))
                 .andExpect(status().isAccepted())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().string("2"));
@@ -148,10 +149,11 @@ public class GestionnaireStageControllerTest {
     @Test
     public void testGetAmountOfPages_Error() throws Exception {
         //Arrange
-        when(gestionnaireStageService.getAmountOfPages()).thenThrow(new RuntimeException());
+        when(gestionnaireStageService.getAmountOfPages(Programme.TECHNIQUE_INFORMATIQUE)).thenThrow(new RuntimeException());
 
         //Act & Assert
-        mockMvc.perform(get("/gestionnaire/getEtudiantsPages"))
+        mockMvc.perform(get("/gestionnaire/getEtudiantsPages")
+                        .param("programme", Programme.TECHNIQUE_INFORMATIQUE.toString()))
                 .andExpect(status().isNoContent());
 
     }
