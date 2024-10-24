@@ -3,6 +3,7 @@ package com.projet.mycose.security;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -14,11 +15,16 @@ import java.security.Key;
 import java.util.Date;
 
 @Component
-public class JwtTokenProvider{
-	@Value("${application.security.jwt.expiration}")
-	private int expirationInMs;
-	@Value("${application.security.jwt.secret-key}")
-	private final String jwtSecret = "2B7E151628AED2A6ABF7158809CF4F3C2B7E151628AED2A6ABF7158809CF4F3C";
+public class JwtTokenProvider {
+	private final int expirationInMs;
+	private final String jwtSecret;
+
+	public JwtTokenProvider(
+			@Value("${application.security.jwt.expiration}") int expirationInMs,
+			@Value("${application.security.jwt.secret-key}") String jwtSecret) {
+		this.expirationInMs = expirationInMs;
+		this.jwtSecret = jwtSecret;
+	}
 
 	public String generateToken(Authentication authentication) {
 		try {
@@ -35,7 +41,7 @@ public class JwtTokenProvider{
 		}
 	}
 
-	private Key key(){
+	private Key key() {
 		return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
 	}
 
@@ -53,20 +59,19 @@ public class JwtTokenProvider{
 		}
 	}
 
-	public void validateToken(String token){
-		try{
+	public void validateToken(String token) {
+		try {
 			Jwts.parserBuilder().setSigningKey(key()).build().parseClaimsJws(token);
-		}catch(SecurityException ex){
+		} catch (SecurityException ex) {
 			throw new InvalidJwtTokenException(HttpStatus.BAD_REQUEST, "Invalid JWT signature");
-		}catch(MalformedJwtException ex){
+		} catch (MalformedJwtException ex) {
 			throw new InvalidJwtTokenException(HttpStatus.BAD_REQUEST, "Invalid JWT token");
-		}catch(ExpiredJwtException ex){
+		} catch (ExpiredJwtException ex) {
 			throw new InvalidJwtTokenException(HttpStatus.BAD_REQUEST, "Expired JWT token");
-		}catch(UnsupportedJwtException ex){
+		} catch (UnsupportedJwtException ex) {
 			throw new InvalidJwtTokenException(HttpStatus.BAD_REQUEST, "Unsupported JWT token");
-		}catch(IllegalArgumentException ex){
+		} catch (IllegalArgumentException ex) {
 			throw new InvalidJwtTokenException(HttpStatus.BAD_REQUEST, "JWT claims string is empty");
 		}
 	}
-
 }
