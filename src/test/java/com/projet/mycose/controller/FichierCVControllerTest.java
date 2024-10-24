@@ -1,6 +1,7 @@
 package com.projet.mycose.controller;
 
 import com.projet.mycose.modele.FichierCV;
+import com.projet.mycose.security.exception.AuthenticationException;
 import com.projet.mycose.service.FichierCVService;
 import com.projet.mycose.dto.FichierCVDTO;
 import com.projet.mycose.dto.FichierCVStudInfoDTO;
@@ -47,18 +48,22 @@ public class FichierCVControllerTest {
 
     private MockMvc mockMvc;
 
+    private MockMultipartFile mockFile;
+
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(fichierCVController)
                 .setControllerAdvice(new GlobalExceptionHandler()) // Register GlobalExceptionHandler
                 .build();
+
+
+        mockFile = new MockMultipartFile("file", "validFile.pdf",
+                MediaType.APPLICATION_PDF_VALUE, "Some content".getBytes());
     }
 
     @Test
     void testUploadFile_Success() throws Exception {
         // Arrange
-        MockMultipartFile mockFile = new MockMultipartFile("file", "validFile.pdf",
-                MediaType.APPLICATION_PDF_VALUE, "Some PDF content".getBytes());
 
         FichierCVDTO validFichierCVDTO = new FichierCVDTO();
         validFichierCVDTO.setId(1L);
@@ -86,10 +91,52 @@ public class FichierCVControllerTest {
     }
 
     @Test
+    void testUploadFile_SuccessWithDeletion() throws Exception {
+        // Arrange
+
+        FichierCVDTO validFichierCVDTO = new FichierCVDTO();
+        validFichierCVDTO.setId(1L);
+        validFichierCVDTO.setFilename("validFile.pdf");
+        validFichierCVDTO.setFileData("Base64FileData"); // Example Base64 data
+        validFichierCVDTO.setEtudiant_id(1L);
+
+        FichierCVDTO oldCVDTO = new FichierCVDTO();
+
+        when(fichierCVService.saveFile(any(MultipartFile.class)))
+                .thenReturn(validFichierCVDTO);
+
+        when(utilisateurService.getMyUserId()).thenReturn(1L);
+
+        when(fichierCVService.getCurrentCV_returnNullIfEmpty(1L)).thenReturn(oldCVDTO);
+
+        when(fichierCVService.deleteCurrentCV()).thenReturn(oldCVDTO);
+
+        // Act & Assert
+        mockMvc.perform(multipart("/api/cv/upload")
+                        .file(mockFile)
+                        .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.filename").value("validFile.pdf"))
+                .andExpect(jsonPath("$.fileData").value("Base64FileData"))
+                .andExpect(jsonPath("$.etudiant_id").value(1));
+    }
+
+    @Test
+    void testUploadFile_UnauthorizedAccess_ReturnsUnauthorized() throws Exception {
+        // Arrange
+        when(utilisateurService.getMyUserId()).thenThrow(new AuthenticationException(HttpStatus.UNAUTHORIZED, "Incorrect username or password"));
+
+        // Act & Assert
+        mockMvc.perform(multipart("/api/cv/upload")
+                        .file(mockFile)
+                        .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
     void testUploadFile_ValidationFailure_ReturnsBadRequest() throws Exception {
-        // Arrange: Create a MockMultipartFile
-        MockMultipartFile mockFile = new MockMultipartFile("file", "invalidFile.pdf",
-                MediaType.APPLICATION_PDF_VALUE, "Some content".getBytes());
 
         // Mocking the ConstraintViolation for the "filename" field
         ConstraintViolation<FichierCVDTO> mockViolation = mock(ConstraintViolation.class);
@@ -124,8 +171,6 @@ public class FichierCVControllerTest {
     @Test
     void testUploadFile_IOException_ReturnsInternalServerError() throws Exception {
         // Arrange
-        MockMultipartFile mockFile = new MockMultipartFile("file", "validFile.pdf",
-                MediaType.APPLICATION_PDF_VALUE, "Some content".getBytes());
 
         // Simulate an IOException when the service tries to save the file
         when(fichierCVService.saveFile(any(MultipartFile.class)))

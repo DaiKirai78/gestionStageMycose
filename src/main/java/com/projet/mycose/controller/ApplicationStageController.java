@@ -36,7 +36,7 @@ public class ApplicationStageController {
     }
 
     @GetMapping("/my-applications/{id}")
-    public ResponseEntity<ApplicationStageAvecInfosDTO> getMyApplication(@PathVariable Long id) throws ChangeSetPersister.NotFoundException {
+    public ResponseEntity<ApplicationStageAvecInfosDTO> getMyApplication(@PathVariable Long id) {
         return new ResponseEntity<>(applicationStageService.getApplicationById(id), HttpStatus.OK);
     }
 
