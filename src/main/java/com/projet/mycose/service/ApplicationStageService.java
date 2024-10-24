@@ -116,12 +116,16 @@ public class ApplicationStageService {
 
     @Transactional
     public ApplicationStageAvecInfosDTO accepterOuRefuserApplication(Long id, ApplicationStage.ApplicationStatus status) {
-        ApplicationStageAvecInfosDTO applicationStageAvecInfosDTO = getApplicationById(id);
+        ApplicationStage applicationStage = applicationStageRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Application not found"));
+
+        ApplicationStageAvecInfosDTO applicationStageAvecInfosDTO = convertToDTOAvecInfos(applicationStage);
+
 
         Etudiant etudiant = EtudiantDTO.toEntity(utilisateurService.getEtudiantDTO(applicationStageAvecInfosDTO.getEtudiant_id()));
         OffreStage offreStage = getValidatedOffreStage(applicationStageAvecInfosDTO.getOffreStage_id());
 
-        ApplicationStage applicationStage = mettreAJourApplication(applicationStageAvecInfosDTO, etudiant, offreStage, status);
+        applicationStage = mettreAJourApplication(applicationStageAvecInfosDTO, etudiant, offreStage, status);
         return ApplicationStageAvecInfosDTO.toDTO(applicationStageRepository.save(applicationStage));
     }
 

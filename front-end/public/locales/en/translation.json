@@ -196,7 +196,11 @@
     "validerOffre": "Validate offer",
     "commentRequired": "Please leave a comment.",
     "studentSummoned": "The student has been successfully summoned.",
+    "studentAccepted": "The student has been successfully accepted.",
+    "studentRefused": "The student has been successfully refused.",
     "errorSummoningStudent": "Error summoning the student.",
+    "errorAcceptingStudent": "Error accepting the student.",
+    "errorRefusingStudent": "Error refusing the student.",
     "summon": "Summon",
     "alreadySummoned": "Already summoned"
 }

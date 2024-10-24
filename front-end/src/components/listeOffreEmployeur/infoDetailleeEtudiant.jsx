@@ -2,7 +2,7 @@ import { BsX } from "react-icons/bs";
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-function InfoDetailleeEtudiant({ isModalOpen, setIsModalOpen, infosEtudiant, summonEtudiant, summonMessage, setSummonMessage, studentInfo }) {
+function InfoDetailleeEtudiant({ isModalOpen, setIsModalOpen, infosEtudiant, summonEtudiant, summonMessage, setSummonMessage, studentInfo, accepterEtudiant, refuserEtudiant }) {
     const [isStudentSummoned, setIsStudentSummoned] = useState(false);
     const { t } = useTranslation();
 
@@ -43,22 +43,36 @@ function InfoDetailleeEtudiant({ isModalOpen, setIsModalOpen, infosEtudiant, sum
                     </div>
                     <div className="pt-4">
                         {infosEtudiant ? (
-                            <div>
+                            <div className="flex flex-col gap-3">
                                 <p><strong>Nom : </strong>{infosEtudiant.prenom} {infosEtudiant.nom}</p>
                                 {/* Autres informations */}
-                                <button
-                                    onClick={() => summonEtudiant(infosEtudiant.id)}
-                                    className={`bg-blue-500 text-white px-4 py-2 rounded mt-4 ${isStudentSummoned ? 'opacity-50' : 'hover:bg-blue-600'}`}
-                                    disabled={isStudentSummoned}
-                                >
-                                    {isStudentSummoned ? t("alreadySummoned") : t("summon")}
-                                </button>
+                                <div className="flex gap-4">
+                                    <button
+                                        onClick={() => summonEtudiant()}
+                                        className={`bg-blue-500 text-white px-4 py-2 rounded ${isStudentSummoned ? 'opacity-50' : 'hover:bg-blue-600'}`}
+                                        disabled={isStudentSummoned}
+                                    >
+                                        {isStudentSummoned ? t("alreadySummoned") : t("summon")}
+                                    </button>
+                                    <button
+                                        onClick={() => accepterEtudiant()}
+                                        className={`bg-green-500 text-white px-4 py-2 rounded`}
+                                    >
+                                        {t("accept")}
+                                    </button>
+                                    <button
+                                        onClick={() => refuserEtudiant()}
+                                        className={`bg-red-500 text-white px-4 py-2 rounded`}
+                                    >
+                                        {t("refuse")}
+                                    </button>
+                                </div>
                                 {summonMessage && (
-                                    <div
-                                        className={`mt-4 text-sm ${summonMessage.includes('Err') ? 'text-red-600' : 'text-green-600'}`}>
-                                        {summonMessage}
-                                    </div>
-                                )}
+                                        <div
+                                            className={`mt-4 text-sm ${summonMessage.includes('Err') ? 'text-red-600' : 'text-green-600'}`}>
+                                            {summonMessage}
+                                        </div>
+                                    )}
                             </div>
                         ) : (
                             <p>Aucune information sur l'étudiant sélectionné</p>

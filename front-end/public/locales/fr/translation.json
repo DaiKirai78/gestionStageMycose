@@ -197,7 +197,11 @@
     "validerOffre": "Valider offre",
     "commentRequired": "Veuillez laisser un commentaire.",
     "studentSummoned": "L'étudiant a bien été convoqué.",
+    "studentAccepted": "L'étudiant a bien été accepté.",
+    "studentRefused": "L'étudiant a bien été refusé.",
     "errorSummoningStudent": "Erreur lors de la convocation de l'étudiant.",
+    "errorAcceptingStudent": "Erreur lors de l'acceptation de l'étudiant.",
+    "errorRefusingStudent": "Erreur lors du refus de l'étudiant.",
     "summon": "Convoquer",
     "alreadySummoned": "Déjà convoqué"
 }

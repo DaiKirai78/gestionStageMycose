@@ -101,6 +101,44 @@ const InfoDetailleeOffreStage = ({ setActiveOffer, activeOffer, getColorOffreSta
             setSummonMessage(t("errorSummoningStudent"));
         }
     }
+    async function accepterEtudiant() {
+        const token = localStorage.getItem("token");
+
+        try {
+            const response = await axios.patch(`http://localhost:8080/api/application-stage/application/${studentInfo.id}/accepter`, {}, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.status === 200) {
+                setSummonMessage(t("studentAccepted"));
+            }
+        } catch (error) {
+            console.error("Erreur lors de l'acceptation de l'étudiant:", error);
+            setSummonMessage(t("errorAcceptingStudent"));
+        }
+    }
+    async function refuserEtudiant() {
+        const token = localStorage.getItem("token");
+
+        try {
+            const response = await axios.patch(`http://localhost:8080/api/application-stage/application/${studentInfo.id}/refuser`, {}, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.status === 200) {
+                setSummonMessage(t("studentRefused"));
+            }
+        } catch (error) {
+            console.error("Erreur lors du refus de l'étudiant:", error);
+            setSummonMessage(t("errorRefusingStudent"));
+        }
+    }
 
     const closeModal = () => {
         setIsModalCandidatureOpen(false);
@@ -174,6 +212,8 @@ const InfoDetailleeOffreStage = ({ setActiveOffer, activeOffer, getColorOffreSta
                 summonMessage={summonMessage}
                 setSummonMessage={setSummonMessage}
                 studentInfo={studentInfo}
+                refuserEtudiant={refuserEtudiant}
+                accepterEtudiant={accepterEtudiant}
             />
         </div>
     );
