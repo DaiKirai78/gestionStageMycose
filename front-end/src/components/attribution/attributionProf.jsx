@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import AssignCard from './assignCard';
 import { Input } from '@material-tailwind/react';
+import InputErrorMessage from '../inputErrorMesssage';
 
 const AttributionProf = () => {
     const { selectedStudent } = useOutletContext();
@@ -16,7 +17,7 @@ const AttributionProf = () => {
     async function handleSearch() {
         const regex = new RegExp("^[a-zA-Zà-ÿÀ-Ÿ -']+$")
         if (!regex.test(searchTerm.trim())) {
-            setSearchTermError(true);
+            setSearchTermError("onlyLettersForTeacherSearch");
             return;
         }
         setIsFetching(true)
@@ -82,16 +83,17 @@ const AttributionProf = () => {
                 <h1 className="text-3xl md:text-4xl font-bold text-center mb-8">{t("rechercheProf")}</h1>
                 <div className="space-y-4">
                 <Input
-                    error={searchTermError}
+                    error={searchTermError.length > 0}
                     type="text"
                     label={t("nomPrenomEmail")}
                     className="w-full px-4 py-2 border border-gray-300 bg-white rounded-md"
                     value={searchTerm}
                     onChange={(e) => {
                         setSearchTerm(e.target.value)
-                        setSearchTermError(false)
+                        setSearchTermError("")
                     }}
                 />
+                <InputErrorMessage messageKey={searchTermError} />
                 <button
                     className="w-full px-4 py-2 text-white bg-orange rounded-md hover:bg-orange hover:bg-opacity-90 disabled:cursor-default"
                     onClick={handleSearch}
