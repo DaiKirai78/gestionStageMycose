@@ -82,10 +82,10 @@ public class FichierCVController {
         }
     }
 
-    @GetMapping("/get-cv")
-    public ResponseEntity<?> getCV(@RequestParam Long id) {
+    @GetMapping("/get-cv-by-etudiant-id/{id}")
+    public ResponseEntity<?> getCV(@PathVariable Long id) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(fichierCVService.getFile(id));
+            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(fichierCVService.getCurrentCVByEtudiantID(id));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Fichier non trouvé");
         }

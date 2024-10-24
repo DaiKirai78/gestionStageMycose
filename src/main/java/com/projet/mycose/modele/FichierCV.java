@@ -1,4 +1,5 @@
 package com.projet.mycose.modele;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -43,7 +44,8 @@ public class FichierCV {
 
     private String statusDescription;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(optional = false)
+    @JsonBackReference
     @JoinColumn(name = "etudiant_id", nullable = false)
     private Etudiant etudiant;
 
