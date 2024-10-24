@@ -35,10 +35,10 @@ public class GestionnaireController {
     }
 
     @GetMapping("/getEtudiantsPages")
-    public ResponseEntity<Integer> getAmountOfPages() {
+    public ResponseEntity<Integer> getAmountOfPages(@RequestParam Programme programme) {
         try {
             return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
-                    gestionnaireStageService.getAmountOfPages());
+                    gestionnaireStageService.getAmountOfPages(programme));
         } catch (Exception e) {
             return ResponseEntity.noContent().build();
         }

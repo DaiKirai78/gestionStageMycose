@@ -54,8 +54,8 @@ public class GestionnaireStageService {
         return listeRecu.stream().map(EnseignantDTO::toDTO).toList();
     }
 
-    public Integer getAmountOfPages() {
-        long amountOfRows = utilisateurRepository.countAllEtudiantsSansEnseignants();
+    public Integer getAmountOfPages(Programme programme) {
+        long amountOfRows = utilisateurRepository.countAllEtudiantsSansEnseignants(programme);
 
         if (amountOfRows == 0)
             return 0;
