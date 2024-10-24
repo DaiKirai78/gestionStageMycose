@@ -186,5 +186,10 @@
     "noStudentInProgram": "No student in this program",
     "attribuer":  "Assign",
     "loadingStudent": "Loading students",
-    "noStudents": "No students"
+    "noStudents": "No students",
+    "noStudentSelected": "No student selected",
+    "rechercheProf": "Search teacher",
+    "search": "Search",
+    "nomPrenomEmail": "Last/first name, email",
+    "noTeacherFound": "No teacher found"
 }
