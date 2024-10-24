@@ -1,10 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BsX } from "react-icons/bs";
+import InfoDetailleeEtudiant from './infoDetailleeEtudiant';
 
 const InfoDetailleeOffreStage = ({setActiveOffer, activeOffer, getColorOffreStatus, setVoirPdf, voirPdf}) => {
 
+    const [listeEtudiantsAppliques, setListeEtudiantsAppliques] = useState([]);
+    const [isModalCandidatureOpen, setIsModalCandidatureOpen] = useState(false);
+    const [selectedEtudiant, setSelectedEtudiant] = useState(null);
+
     const { t } = useTranslation();
+
 
     const format = getFormat();
 
@@ -22,11 +28,12 @@ const InfoDetailleeOffreStage = ({setActiveOffer, activeOffer, getColorOffreStat
                 headers: {Authorization: `Bearer ${token}`}
             }
         );
-
-        console.log(response);
-        
-        const fetchedData = await response.text();
-        console.log(fetchedData);
+        let fetchedData = await response.text();
+        if(fetchedData) {
+            //setListeEtudiantsAppliques([...listeEtudiantsAppliques, JSON.parse(fetchedData)]);
+            setListeEtudiantsAppliques(JSON.parse(fetchedData));
+            //console.log(fetchedData);
+        }
     }
 
     function getFormat() {
@@ -40,6 +47,12 @@ const InfoDetailleeOffreStage = ({setActiveOffer, activeOffer, getColorOffreStat
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const year = date.getFullYear();
         return `${day}-${month}-${year}`;
+    }
+
+    function ouvrirModal(etudiantId) {
+        const etudiant = listeEtudiantsAppliques.find(e => e.id === parseInt(etudiantId));
+        setSelectedEtudiant(etudiant);
+        setIsModalCandidatureOpen(true);
     }
 
     return (
@@ -82,21 +95,33 @@ const InfoDetailleeOffreStage = ({setActiveOffer, activeOffer, getColorOffreStat
                                 {t("seePDF")}</button>
                         }
                         <div className='flex flex-col w-full mt-7'>
-                            <label htmlFor="candidatures">Voir (10) Candidatures</label>
                             <select
-                            className='bg-orange px-4 py-2 rounded text-white mt-3 w-1/2'
+
+                            className='bg-orange px-4 py-2 rounded text-white mt-3'
                             name='candidatures'
+                            defaultValue="default"
+                            onChange={(e) => ouvrirModal(e.target.value)}
                             >
-                                <option value="Un">Un</option>
-                                <option value="Deux">Deux</option>
-                                <option value="Trois">Trois</option>
-                                <option value="Quatre">Quatre</option>
+                                <option value="default">
+                                    --- Voir ({listeEtudiantsAppliques.length}) Candidature (s) ---
+                                </option>
+                                
+                                {listeEtudiantsAppliques.map((etudiant) => {
+                                    console.log(etudiant);
+                                    return (
+                                        <option key={etudiant.id} value={etudiant.id}>
+                                            {etudiant.prenom} {etudiant.nom}
+                                        </option>
+                                    );
+                                })}
+
                             </select>
                         </div>
                     </div>
 
                 </div>
             }
+            <InfoDetailleeEtudiant isModalOpen={isModalCandidatureOpen} setIsModalOpen={setIsModalCandidatureOpen} infosEtudiant={selectedEtudiant}/>
         </div>
     );
 };
