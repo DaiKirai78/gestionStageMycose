@@ -15,7 +15,7 @@ const AttributionEtudiant = () => {
 
 
     useEffect(() => {
-        setPages({minPages: 1, maxPages: null, currentPage: 1});
+        setPages({minPages: 1, maxPages: pages.maxPages === null ? undefined : null, currentPage: 1});
     }, [programme])
 
     useEffect(() => {
@@ -57,7 +57,7 @@ const AttributionEtudiant = () => {
                 }
             }
         } catch (e) {
-            console.error("Erreur lors de la récupération des élèves" + e);
+            console.error("Erreur lors de la récupération des élèves " + e);
         }
     }
     
@@ -84,7 +84,7 @@ const AttributionEtudiant = () => {
                 }
             }
         } catch (e) {
-            console.error("Erreur lors de la récupération des élèves" + e);
+            console.error("Erreur lors de la récupération des pages " + e);
         }
     }
 
