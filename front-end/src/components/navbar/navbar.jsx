@@ -21,6 +21,14 @@ const navLinks = {
             "titre": "attribuer",
             "lien": "/attribuer/eleve",
             "autreLiens": ["/attribuer/prof"]
+        },
+        {
+            "titre": "validerOffre",
+            "lien": "/validerOffreStage",
+        },
+        {
+            "titre": "televerserOffre",
+            "lien": "/televerserOffreStage"
         }
     ],
     "ENSEIGNANT": []
