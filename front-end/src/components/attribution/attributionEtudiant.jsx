@@ -95,7 +95,7 @@ const AttributionEtudiant = () => {
 
     return (
         <div className='w-full min-h-full bg-orange-light flex flex-col items-center p-6 gap-y-8'>
-            <h1 className='text-3xl md:text-4xl font-bold text-center'>{t("attribuer")}</h1>
+            <h1 className='text-3xl md:text-4xl font-bold text-center'>{t("attribuerProfEtudiant")}</h1>
             <select 
                 disabled={isFetching}
                 className='px-4 py-2 shadow rounded max-w-full'
@@ -114,7 +114,7 @@ const AttributionEtudiant = () => {
                 <div className='flex flex-col gap-3 mb-5'>
                     {
                         students != null ? students.map((etudiant, index) => {
-                            return <AssignCard key={index} action={assignerProf} personne={etudiant}/>
+                            return <AssignCard key={index} action={assignerProf} personne={etudiant} text={t("searchTeacher")}/>
                         })
                         : <p className='text-center'>{t("noStudents")}</p>
                     }

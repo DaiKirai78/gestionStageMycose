@@ -4,7 +4,7 @@ import { BsBellFill } from "react-icons/bs";
 import { TfiReload } from "react-icons/tfi";
 import { useLocation, useNavigate } from "react-router-dom";
 
-const NavbarMobile = ({ lienEqual, mobileMenuRef, userInfo, navLinks, toggleNotificationMenu, handleProfileItemClick, isNotificationMenuOpen, notificationMenuRefMobile, langue, toggleLangue }) => {
+const NavbarMobile = ({ lienEqual, mobileMenuRef, userInfo, navLinks, toggleNotificationMenu, handleProfileItemClick, isNotificationMenuOpen, notificationMenuRefMobile, langue, toggleLangue, signOut }) => {
     const navigate = useNavigate();
     const location = useLocation();
     const { t } = useTranslation();
@@ -69,7 +69,10 @@ const NavbarMobile = ({ lienEqual, mobileMenuRef, userInfo, navLinks, toggleNoti
                         {langue} <TfiReload />
                     </button>
                     <button
-                        onClick={handleProfileItemClick}
+                        onClick={(e) => {
+                            handleProfileItemClick(e)
+                            signOut(e)
+                        }}
                         className="w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-orange hover:bg-opacity-20">
                         {t("signOut")}
                     </button>

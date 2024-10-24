@@ -106,7 +106,7 @@ const AttributionProf = () => {
                 <div className='flex flex-col gap-5'>
                     {
                     professeurs.map((prof, index) => (
-                        <AssignCard key={index} action={assignerProf} personne={prof} />
+                        <AssignCard key={index} action={assignerProf} personne={prof} text={t("attribuerTheTeacher")} />
                     ))
                     }
                 </div>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-const AssignCard = ({personne, action}) => {
+const AssignCard = ({personne, action, text}) => {
     const { t } = useTranslation();
 
     return (
@@ -15,7 +15,7 @@ const AssignCard = ({personne, action}) => {
             <button 
                 onClick={() => {action(personne)}}
                 className="px-4 py-2 bg-orange-500 text-white text-sm font-medium rounded-md bg-orange hover:bg-orange hover:bg-opacity-90">
-            {t("attribuer")}
+            {text}
             </button>
         </div>
     );

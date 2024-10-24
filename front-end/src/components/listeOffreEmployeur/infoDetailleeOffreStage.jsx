@@ -26,6 +26,9 @@ const InfoDetailleeOffreStage = ({ setActiveOffer, activeOffer, getColorOffreSta
         setIsFetching(true);
 
         try {
+            if (activeOffer == null) {
+                return;
+            }
             const response = await fetch(
                 `http://localhost:8080/api/offres-stages/offre-applications/${activeOffer.id}`,
                 {

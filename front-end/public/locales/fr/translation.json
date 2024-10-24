@@ -125,6 +125,7 @@
     "waitingCV": "CV en attente",
     "noCVWaiting": "Aucun CV en attente",
     "program": "Programme",
+    "programme": "Programme",
     "page": "Page",
     "previous": "Précédent",
     "next": "Suivant",
@@ -207,5 +208,8 @@
     "errorAcceptingStudent": "Erreur lors de l'acceptation de l'étudiant.",
     "errorRefusingStudent": "Erreur lors du refus de l'étudiant.",
     "summon": "Convoquer",
-    "alreadySummoned": "Déjà convoqué"
+    "alreadySummoned": "Déjà convoqué",
+    "attribuerProfEtudiant": "Attribuer un élève à un professeur",
+    "searchTeacher": "Chercher un prof",
+    "attribuerTheTeacher": "Attibuer le prof"
 }

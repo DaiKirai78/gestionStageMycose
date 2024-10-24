@@ -206,5 +206,8 @@
     "errorAcceptingStudent": "Error accepting the student.",
     "errorRefusingStudent": "Error refusing the student.",
     "summon": "Summon",
-    "alreadySummoned": "Already summoned"
+    "alreadySummoned": "Already summoned",
+    "attribuerProfEtudiant": "Assign a student to a teacher",
+    "searchTeacher": "Search a teacher",
+    "attribuerTheTeacher": "Assign the teacher"
 }

@@ -195,6 +195,7 @@ const Navbar = ({ userInfo }) => {
                                     langue={langues[langueIndex].langue} 
                                     toggleLangue={toggleLangue}
                                     lienEqual={lienEqual}
+                                    signOut={signOut}
                                     />}
     </nav>
     )

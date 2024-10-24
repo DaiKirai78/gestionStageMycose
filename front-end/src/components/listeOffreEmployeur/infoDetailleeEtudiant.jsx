@@ -14,6 +14,9 @@ function InfoDetailleeEtudiant({ isModalOpen, setIsModalOpen, infosEtudiant, sum
 
     async function fetchCVEtudiant() {
         let token = localStorage.getItem("token");
+        if (infosEtudiant == null) {
+            return;
+        }
         const response = await fetch(
             `http://localhost:8080/api/cv/get-cv-by-etudiant-id/${infosEtudiant.id}`,
             {
@@ -72,7 +75,7 @@ function InfoDetailleeEtudiant({ isModalOpen, setIsModalOpen, infosEtudiant, sum
                                     <p><strong>{t("inputLabelNom") + ": "} </strong>{infosEtudiant.prenom} {infosEtudiant.nom}</p>
                                     <p><strong>{t("inputLabelEmail") + ": "}</strong>{infosEtudiant.courriel}</p>
                                     <p><strong>{t("telephone") + ": "}</strong>{infosEtudiant.numeroDeTelephone}</p>
-                                    <p><strong>{t("program") + ": "}</strong>{t(infosEtudiant.programme)}</p>
+                                    <p><strong>{t("programme") + ": "}</strong>{t(infosEtudiant.programme)}</p>
                                 </div>
                                 <div className="h-full">
                                     <iframe
