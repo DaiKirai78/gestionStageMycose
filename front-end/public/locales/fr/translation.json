@@ -194,5 +194,8 @@
     "search": "Recherche",
     "nomPrenomEmail": "Nom, prénom, email",
     "noTeacherFound": "Aucun prof trouvé",
-    "onlyLettersForTeacherSearch": "Seulement les lettres, les espaces, les '-' et les apostrophe sont acceptés"
+    "onlyLettersForTeacherSearch": "Seulement les lettres, les espaces, les '-' et les apostrophe sont acceptés",
+    "detailsEtudiant" : "Détails de l'étudiant",
+    "voir" : "Voir",
+    "candidatures" : "Candidature(s)"
 }

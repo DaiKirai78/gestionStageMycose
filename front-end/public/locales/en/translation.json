@@ -193,5 +193,8 @@
     "search": "Search",
     "nomPrenomEmail": "Last, first name, email",
     "noTeacherFound": "No teacher found",
-    "onlyLettersForTeacherSearch": "Only letters, spaces, '-' and apostrophes are accepted"
+    "onlyLettersForTeacherSearch": "Only letters, spaces, '-' and apostrophes are accepted",
+    "detailsEtudiant" : "Student Details",
+    "voir" : "See",
+    "candidatures" : "Application(s)"
 }

@@ -11,7 +11,6 @@ const InfoDetailleeOffreStage = ({setActiveOffer, activeOffer, getColorOffreStat
 
     const { t } = useTranslation();
 
-
     const format = getFormat();
 
     useEffect(() => {
@@ -109,7 +108,7 @@ const InfoDetailleeOffreStage = ({setActiveOffer, activeOffer, getColorOffreStat
                             onChange={(e) => ouvrirModal(e.target.value)}
                             >
                                 <option value="default">
-                                    --- Voir ({listeEtudiantsAppliques.length}) Candidature (s) ---
+                                    --- {t("voir")} ({listeEtudiantsAppliques.length}) {t("candidatures")} ---
                                 </option>
                                 
                                 {listeEtudiantsAppliques.map((etudiant) => {

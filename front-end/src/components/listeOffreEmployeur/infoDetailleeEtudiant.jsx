@@ -1,9 +1,11 @@
 import { BsX } from "react-icons/bs";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 function InfoDetailleeEtudiant({ isModalOpen, setIsModalOpen, infosEtudiant }) {
     const [cvEtudiantCourrant ,setCvEtudiantCourrant] = useState();
-    
+    const { t } = useTranslation();
+
     useEffect(() => {        
         fetchCVEtudiant();
     }, [infosEtudiant])
@@ -35,7 +37,7 @@ function InfoDetailleeEtudiant({ isModalOpen, setIsModalOpen, infosEtudiant }) {
                     onClick={(e) => e.stopPropagation()}
                 >
                     <div className="flex justify-between items-center border-b pb-3">
-                        <h2 className="text-2xl font-bold text-gray-800">Détails de l'étudiant</h2>
+                        <h2 className="text-2xl font-bold text-gray-800">{t("detailsEtudiant")}</h2>
                         <button
                             id="closeStageDetails"
                             className="text-gray-600 hover:text-gray-900 transition-colors duration-200 focus:outline-none"
@@ -48,10 +50,10 @@ function InfoDetailleeEtudiant({ isModalOpen, setIsModalOpen, infosEtudiant }) {
                         {infosEtudiant ? (
                             <div className="h-full">
                                 <div className="mb-12 flex flex-col gap-2">
-                                    <p><strong>Nom : </strong>{infosEtudiant.prenom} {infosEtudiant.nom}</p>
-                                    <p><strong>Email: </strong>{infosEtudiant.courriel}</p>
-                                    <p><strong>Téléphone: </strong>{infosEtudiant.numeroDeTelephone}</p>
-                                    <p><strong>Programme: </strong>{infosEtudiant.programme}</p>
+                                    <p><strong>{t("inputLabelNom") + ": "} </strong>{infosEtudiant.prenom} {infosEtudiant.nom}</p>
+                                    <p><strong>{t("inputLabelEmail") + ": "}</strong>{infosEtudiant.courriel}</p>
+                                    <p><strong>{t("telephone") + ": "}</strong>{infosEtudiant.numeroDeTelephone}</p>
+                                    <p><strong>{t("program") + ": "}</strong>{t(infosEtudiant.programme)}</p>
                                 </div>
                                 <div className="h-full">
                                 <iframe
