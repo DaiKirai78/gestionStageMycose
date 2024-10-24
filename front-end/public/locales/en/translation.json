@@ -187,5 +187,11 @@
     "attribuer":  "Assign",
     "loadingStudent": "Loading students",
     "noStudents": "No students",
-    "commentRequired": "Please leave a comment."
+    "commentRequired": "Please leave a comment.",
+    "noStudentSelected": "No student selected",
+    "rechercheProf": "Search teacher",
+    "search": "Search",
+    "nomPrenomEmail": "Last, first name, email",
+    "noTeacherFound": "No teacher found",
+    "onlyLettersForTeacherSearch": "Only letters, spaces, '-' and apostrophes are accepted"
 }

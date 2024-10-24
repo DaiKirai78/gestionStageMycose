@@ -188,5 +188,11 @@
     "attribuer":  "Attribuer",
     "loadingStudent": "Chargement des élèves",
     "noStudents": "Aucun étudiants",
-    "commentRequired": "Veuillez laisser un commentaire."
+    "commentRequired": "Veuillez laisser un commentaire.",
+    "noStudentSelected": "Aucun étudiant sélectionné",
+    "rechercheProf": "Recherche prof",
+    "search": "Recherche",
+    "nomPrenomEmail": "Nom, prénom, email",
+    "noTeacherFound": "Aucun prof trouvé",
+    "onlyLettersForTeacherSearch": "Seulement les lettres, les espaces, les '-' et les apostrophe sont acceptés"
 }
