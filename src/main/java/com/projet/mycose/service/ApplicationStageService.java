@@ -109,14 +109,14 @@ public class ApplicationStageService {
     }
 
     @Transactional
-    public void accepterOuRefuserApplication(Long id, ApplicationStage.ApplicationStatus status) {
+    public ApplicationStageAvecInfosDTO accepterOuRefuserApplication(Long id, ApplicationStage.ApplicationStatus status) {
         ApplicationStageAvecInfosDTO applicationStageAvecInfosDTO = getApplicationById(id);
 
         Etudiant etudiant = EtudiantDTO.toEntity(utilisateurService.getEtudiantDTO(applicationStageAvecInfosDTO.getEtudiant_id()));
         OffreStage offreStage = getValidatedOffreStage(applicationStageAvecInfosDTO.getOffreStage_id());
 
         ApplicationStage applicationStage = mettreAJourApplication(applicationStageAvecInfosDTO, etudiant, offreStage, status);
-        ApplicationStageDTO.toDTO(applicationStageRepository.save(applicationStage));
+        return ApplicationStageAvecInfosDTO.toDTO(applicationStageRepository.save(applicationStage));
     }
 
     ApplicationStage mettreAJourApplication(ApplicationStageAvecInfosDTO applicationStageAvecInfosDTO,
