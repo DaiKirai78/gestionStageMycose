@@ -30,9 +30,10 @@ const InfoDetailleeOffreStage = ({setActiveOffer, activeOffer, getColorOffreStat
         );
         let fetchedData = await response.text();
         if(fetchedData) {
-            //setListeEtudiantsAppliques([...listeEtudiantsAppliques, JSON.parse(fetchedData)]);
             setListeEtudiantsAppliques(JSON.parse(fetchedData));
-            //console.log(fetchedData);
+        }
+        else {
+            setListeEtudiantsAppliques([]);
         }
     }
 
@@ -112,7 +113,6 @@ const InfoDetailleeOffreStage = ({setActiveOffer, activeOffer, getColorOffreStat
                                 </option>
                                 
                                 {listeEtudiantsAppliques.map((etudiant) => {
-                                    console.log(etudiant);
                                     return (
                                         <option key={etudiant.id} value={etudiant.id}>
                                             {etudiant.prenom} {etudiant.nom}

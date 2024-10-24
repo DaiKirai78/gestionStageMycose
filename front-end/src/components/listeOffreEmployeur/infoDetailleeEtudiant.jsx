@@ -4,9 +4,7 @@ import { useEffect, useState } from "react";
 function InfoDetailleeEtudiant({ isModalOpen, setIsModalOpen, infosEtudiant }) {
     const [cvEtudiantCourrant ,setCvEtudiantCourrant] = useState();
     
-    useEffect(() => {
-        console.log("MEEEEEC");
-        
+    useEffect(() => {        
         fetchCVEtudiant();
     }, [infosEtudiant])
 
