@@ -119,7 +119,7 @@ public class ApplicationStageService {
         return ApplicationStageAvecInfosDTO.toDTO(applicationStageRepository.save(applicationStage));
     }
 
-    ApplicationStage mettreAJourApplication(ApplicationStageAvecInfosDTO applicationStageAvecInfosDTO,
+    protected ApplicationStage mettreAJourApplication(ApplicationStageAvecInfosDTO applicationStageAvecInfosDTO,
                                             Etudiant etudiant,
                                             OffreStage offreStage,
                                             ApplicationStage.ApplicationStatus status) {

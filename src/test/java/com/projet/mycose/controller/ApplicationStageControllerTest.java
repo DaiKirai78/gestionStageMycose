@@ -1,8 +1,8 @@
 package com.projet.mycose.controller;
 
-import com.projet.mycose.dto.AcceptOffreDeStageDTO;
-import com.projet.mycose.modele.ApplicationStage;
-import com.projet.mycose.modele.Programme;
+import com.projet.mycose.modele.*;
+import com.projet.mycose.modele.auth.Credentials;
+import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.service.ApplicationStageService;
 import com.projet.mycose.dto.ApplicationStageAvecInfosDTO;
 import com.projet.mycose.dto.ApplicationStageDTO;
@@ -16,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -32,7 +31,11 @@ public class ApplicationStageControllerTest {
     private ApplicationStageController applicationStageController;
 
     private Long id;
+    private Long offreStageId;
+    private Etudiant etudiant;
+    private FichierOffreStage fichierOffreStage;
     private ApplicationStageDTO applicationStageDTO;
+    private ApplicationStage applicationStage;
     private ApplicationStageAvecInfosDTO applicationStageAvecInfosDTO;
     private List<ApplicationStageAvecInfosDTO> applicationStageAvecInfosDTOList;
 
@@ -40,11 +43,37 @@ public class ApplicationStageControllerTest {
     void setup() {
         id = 1L;
 
+        offreStageId = 1L;
+
         applicationStageDTO = new ApplicationStageDTO();
         // Initialize fields of applicationStageDTO as needed
 
         applicationStageAvecInfosDTO = new ApplicationStageAvecInfosDTO();
         // Initialize fields of applicationStageAvecInfosDTO as needed
+
+        etudiant = new Etudiant();
+        etudiant.setId(1L);
+        Credentials credentials = new Credentials("example@gmail.com", "passw0rd", Role.ETUDIANT);
+        etudiant.setCredentials(credentials);
+        etudiant.setProgramme(Programme.GENIE_LOGICIEL);
+
+        fichierOffreStage = new FichierOffreStage();
+        fichierOffreStage.setId(offreStageId);
+        fichierOffreStage.setTitle("Software Engineering Internship");
+        fichierOffreStage.setEntrepriseName("Tech Corp");
+        fichierOffreStage.setStatus(OffreStage.Status.ACCEPTED);
+        fichierOffreStage.setStatusDescription("Approved for applications.");
+        fichierOffreStage.setCreateur(new Etudiant());
+        fichierOffreStage.getCreateur().setId(1L);
+        fichierOffreStage.setFilename("internship_offer.pdf");
+        fichierOffreStage.setData(new byte[]{1, 2, 3});
+        fichierOffreStage.setProgramme(Programme.GENIE_LOGICIEL);
+
+        applicationStage = new ApplicationStage();
+        applicationStage.setId(1L);
+        applicationStage.setOffreStage(fichierOffreStage);
+        applicationStage.setEtudiant(etudiant);
+        applicationStage.setStatus(ApplicationStage.ApplicationStatus.PENDING);
 
         applicationStageAvecInfosDTOList = List.of(applicationStageAvecInfosDTO);
     }
@@ -147,13 +176,7 @@ public class ApplicationStageControllerTest {
     @Test
     public void testAccepterApplication_Success() {
         // Arrange
-        AcceptOffreDeStageDTO dto = new AcceptOffreDeStageDTO();
-        dto.setId(id);
-        dto.setProgramme(Programme.TECHNIQUE_INFORMATIQUE);
-        dto.setStatusDescription("Good job!");
-        dto.setEtudiantsPrives(Arrays.asList(1001L, 1002L));
-
-        doNothing().when(applicationStageService).accepterOuRefuserApplication(id, ApplicationStage.ApplicationStatus.ACCEPTED);
+        when(applicationStageService.accepterOuRefuserApplication(id, ApplicationStage.ApplicationStatus.ACCEPTED)).thenReturn(ApplicationStageAvecInfosDTO.toDTO(applicationStage));
 
         // Act
         ResponseEntity<?> response = applicationStageController.accepterApplication(id);
@@ -168,7 +191,7 @@ public class ApplicationStageControllerTest {
     @Test
     public void testRefuserApplication_Success() {
         // Arrange
-        doNothing().when(applicationStageService).accepterOuRefuserApplication(id, ApplicationStage.ApplicationStatus.REJECTED);
+        when(applicationStageService.accepterOuRefuserApplication(id, ApplicationStage.ApplicationStatus.REJECTED)).thenReturn(ApplicationStageAvecInfosDTO.toDTO(applicationStage));
 
         // Act
         ResponseEntity<?> response = applicationStageController.refuserApplication(id);

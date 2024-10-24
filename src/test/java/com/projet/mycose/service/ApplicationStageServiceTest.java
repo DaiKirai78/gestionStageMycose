@@ -29,9 +29,6 @@ public class ApplicationStageServiceTest {
     private ApplicationStageRepository applicationStageRepository;
 
     @Mock
-    private ApplicationStageService monApplicationStageService;
-
-    @Mock
     private UtilisateurService utilisateurService;
 
     @Mock
