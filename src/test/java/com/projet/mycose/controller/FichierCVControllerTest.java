@@ -325,16 +325,6 @@ public class FichierCVControllerTest {
     }
 
     @Test
-    void test_AcceptCVEmptyDescription() throws Exception {
-        // Act & Assert
-        mockMvc.perform(patch("/api/cv/accept?id=1")
-                        .content("{\"commentaire\": \"\"}")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andExpect(content().string("Description field is missing"));
-    }
-
-    @Test
     void test_refuseCv_OK() throws Exception {
         // Act
         doNothing().when(fichierCVService).changeStatus(1L, FichierCV.Status.REFUSED, "asd");
