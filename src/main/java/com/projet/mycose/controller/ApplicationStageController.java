@@ -41,6 +41,12 @@ public class ApplicationStageController {
         return new ResponseEntity<>(applicationStageService.getApplicationById(id), HttpStatus.OK);
     }
 
+    @GetMapping("/get/{id}")
+    public ResponseEntity
+            <List<ApplicationStageAvecInfosDTO>> getApplication(@PathVariable Long id) {
+        return new ResponseEntity<>(applicationStageService.getApplicationsByEtudiant(id), HttpStatus.OK);
+    }
+
     @PatchMapping("/application/{id}/accepter")
     public ResponseEntity<?> accepterApplication(@PathVariable Long id) {
         applicationStageService.accepterOuRefuserApplication(id, ApplicationStage.ApplicationStatus.ACCEPTED);

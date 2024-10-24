@@ -188,12 +188,16 @@
     "attribuer":  "Attribuer",
     "loadingStudent": "Chargement des élèves",
     "noStudents": "Aucun étudiants",
-    "commentRequired": "Veuillez laisser un commentaire.",
     "noStudentSelected": "Aucun étudiant sélectionné",
     "rechercheProf": "Recherche prof",
     "search": "Recherche",
     "nomPrenomEmail": "Nom, prénom, email",
     "noTeacherFound": "Aucun prof trouvé",
     "onlyLettersForTeacherSearch": "Seulement les lettres, les espaces, les '-' et les apostrophe sont acceptés",
-    "validerOffre": "Valider offre"
+    "validerOffre": "Valider offre",
+    "commentRequired": "Veuillez laisser un commentaire.",
+    "studentSummoned": "L'étudiant a bien été convoqué.",
+    "errorSummoningStudent": "Erreur lors de la convocation de l'étudiant.",
+    "summon": "Convoquer",
+    "alreadySummoned": "Déjà convoqué"
 }

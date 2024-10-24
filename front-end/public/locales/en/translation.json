@@ -187,12 +187,16 @@
     "attribuer":  "Assign",
     "loadingStudent": "Loading students",
     "noStudents": "No students",
-    "commentRequired": "Please leave a comment.",
     "noStudentSelected": "No student selected",
     "rechercheProf": "Search teacher",
     "search": "Search",
     "nomPrenomEmail": "Last, first name, email",
     "noTeacherFound": "No teacher found",
     "onlyLettersForTeacherSearch": "Only letters, spaces, '-' and apostrophes are accepted",
-    "validerOffre": "Validate offer"
+    "validerOffre": "Validate offer",
+    "commentRequired": "Please leave a comment.",
+    "studentSummoned": "The student has been successfully summoned.",
+    "errorSummoningStudent": "Error summoning the student.",
+    "summon": "Summon",
+    "alreadySummoned": "Already summoned"
 }
