@@ -65,7 +65,7 @@ const AttributionEtudiant = () => {
         try {
             const token = localStorage.getItem("token");
             const response = await fetch(
-                `http://localhost:8080/gestionnaire/getEtudiantsPages`,
+                `http://localhost:8080/gestionnaire/getEtudiantsPages?programme=${programme}`,
                 {
                     headers: {Authorization: `Bearer ${token}`}
                 }
@@ -111,7 +111,7 @@ const AttributionEtudiant = () => {
             {isFetching ? <PageIsLoading />
             :
             <div>
-                <div className='mb-5'>
+                <div className='flex flex-col gap-3 mb-5'>
                     {
                         students != null ? students.map((etudiant, index) => {
                             return <AssignCard key={index} action={assignerProf} personne={etudiant}/>
