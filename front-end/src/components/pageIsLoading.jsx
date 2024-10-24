@@ -1,9 +1,10 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 const PageIsLoading = () => {
-
+    const { t } = useTranslation();
     return (
-        <p>Loading</p>
+        <p>{t("loading")}</p>
     )
 }
 

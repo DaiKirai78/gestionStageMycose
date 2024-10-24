@@ -3,16 +3,17 @@ import { useNavigate, useOutletContext } from 'react-router-dom';
 import PageIsLoading from '../pageIsLoading';
 import { useTranslation } from 'react-i18next';
 import BoutonAvancerReculer from '../listeOffreEmployeur/boutonAvancerReculer';
+import AssignCard from './assignCard';
 
 const AttributionEtudiant = () => {
-    const [selectedStudent, setSelectedStudent] = useOutletContext();
+    const { setSelectedStudent, programme, setProgramme } = useOutletContext();
     const [students, setStudents] = useState();
     const [isFetching, setIsFetching] = useState();
-    const [programme, setProgramme] = useState("NOT_SPECIFIED");
     const { t } = useTranslation();
     const [pages, setPages] = useState({minPages: 1, maxPages: null, currentPage: 1});
     const navigate = useNavigate();
-    
+
+
     useEffect(() => {
         setPages({minPages: 1, maxPages: null, currentPage: 1});
     }, [programme])
@@ -33,7 +34,6 @@ const AttributionEtudiant = () => {
         await fetchEleves()
         setIsFetching(false);
     }
-
 
 
     async function fetchEleves() {
@@ -65,7 +65,7 @@ const AttributionEtudiant = () => {
         try {
             const token = localStorage.getItem("token");
             const response = await fetch(
-                `http://localhost:8080/gestionnaire/getEtudiantsPages`,
+                `http://localhost:8080/gestionnaire/getEtudiantsPages?programme=${programme}`,
                 {
                     headers: {Authorization: `Bearer ${token}`}
                 }
@@ -98,7 +98,7 @@ const AttributionEtudiant = () => {
             <h1 className='text-3xl md:text-4xl font-bold text-center'>{t("attribuer")}</h1>
             <select 
                 disabled={isFetching}
-                className='px-4 py-2 mx-auto shadow rounded'
+                className='px-4 py-2 shadow rounded max-w-full'
                 name="programmeDropDown" 
                 id="programmeDropDown" 
                 value={programme} 
@@ -111,29 +111,15 @@ const AttributionEtudiant = () => {
             {isFetching ? <PageIsLoading />
             :
             <div>
-                <div className='mb-5'>
+                <div className='flex flex-col gap-3 mb-5'>
                     {
-                        students != null ? students.map(etudiant => (
-                            <div key={etudiant.id} className="max-w-md mx-auto bg-white shadow-sm rounded-lg overflow-hidden">
-                                <div className="px-4 py-3 flex items-center justify-between">
-                                    <div className="flex items-center space-x-3">
-                                    <div className="flex flex-col">
-                                        <span className="text-md font-medium text-gray-900">{etudiant.prenom} {etudiant.nom}</span>
-                                        <span className="text-sm mt-[-5px] text-gray-500">{etudiant.courriel}</span>
-                                    </div>
-                                    </div>
-                                    <button 
-                                        onClick={() => {assignerProf(etudiant)}}
-                                        className="px-4 py-2 ml-8 bg-orange-500 text-white text-sm font-medium rounded-md bg-orange hover:bg-orange hover:bg-opacity-90">
-                                    {t("attribuer")}
-                                    </button>
-                                </div>
-                            </div>
-                        ))
+                        students != null ? students.map((etudiant, index) => {
+                            return <AssignCard key={index} action={assignerProf} personne={etudiant}/>
+                        })
                         : <p className='text-center'>{t("noStudents")}</p>
                     }
                 </div>
-                {pages.maxPages && <BoutonAvancerReculer pages={pages} setPages={setPages} />}
+                {pages.maxPages ? <BoutonAvancerReculer pages={pages} setPages={setPages} /> : ""}
             </div>
             }
         </div>

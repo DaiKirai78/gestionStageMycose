@@ -166,12 +166,12 @@
     "programRequired": "Le programme est requis.",
     "profil": "Profil",
     "noCv": "Aucun cv envoyé",
-    "cvAccepted": "Votre CV est accepté",
-    "cvRefused": "Votre CV est refusé",
-    "cvWaiting": "Votre CV est en attente",
+    "cvAccepted": "Votre cv est Accepté",
+    "cvRefused": "Votre cv est refusé",
+    "cvWaiting": "Votre cv est en attente",
     "cvStatusTitle": "Status du CV",
-    "managerNotes": "Note du gestionnaire :",
-    "noNotes": "Aucune note",
+    "managerNotes": "Notes du gestionnaire:",
+    "noNotes": "Aucunes notes",
     "accueil": "Accueil",
     "noNotification": "Aucune notification pour le moment",
     "signOut": "Déconnexion",
@@ -189,4 +189,9 @@
     "loadingStudent": "Chargement des élèves",
     "noStudents": "Aucun étudiants",
     "commentRequired": "Veuillez laisser un commentaire."
+    "noStudentSelected": "Aucun étudiant sélectionné",
+    "rechercheProf": "Recherche prof",
+    "search": "Recherche",
+    "nomPrenomEmail": "Nom, prénom, email",
+    "noTeacherFound": "Aucun prof trouvé"
 }
