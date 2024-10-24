@@ -104,7 +104,7 @@ public class ApplicationStageService {
 
     public List<ApplicationStageAvecInfosDTO> getAllApplicationsPourUneOffreById(Long offreId) {
         return applicationStageRepository
-                .findAllByOffreStageIdAndStatusEquals(offreId, ApplicationStage.ApplicationStatus.ACCEPTED)
+                .findAllByOffreStageIdAndStatusEquals(offreId, ApplicationStage.ApplicationStatus.PENDING)
                 .stream().map(this::convertToDTOAvecInfos).toList();
     }
 
