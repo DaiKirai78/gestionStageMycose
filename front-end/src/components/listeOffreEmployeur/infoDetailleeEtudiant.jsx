@@ -2,7 +2,7 @@ import { BsX } from "react-icons/bs";
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-function InfoDetailleeEtudiant({ isModalOpen, setIsModalOpen, infosEtudiant, summonEtudiant, summonMessage, setSummonMessage, studentInfo, accepterEtudiant, refuserEtudiant }) {
+function InfoDetailleeEtudiant({ isModalOpen, setIsModalOpen, infosEtudiant, summonEtudiant, summonMessage, setSummonMessage, studentInfo, accepterEtudiant, refuserEtudiant, isFetching }) {
     const [isStudentSummoned, setIsStudentSummoned] = useState(false);
     const [cvEtudiantCourrant ,setCvEtudiantCourrant] = useState();
     const { t } = useTranslation();
@@ -49,7 +49,7 @@ function InfoDetailleeEtudiant({ isModalOpen, setIsModalOpen, infosEtudiant, sum
                 onClick={handleCloseModal}
             >
                 <div
-                    className="w-full h-[85%] sm:w-2/3 lg:w-1/2 bg-white rounded-2xl shadow-2xl p-6 relative transform transition-transform duration-500 ease-out scale-100 hover:scale-105"
+                    className="overflow-auto w-full h-[85%] py-5 sm:w-2/3 lg:w-1/2 bg-white rounded-2xl shadow-2xl p-6 relative transform transition-transform duration-500 ease-out scale-100 hover:scale-105"
                     onClick={(e) => e.stopPropagation()}
                 >
                     <div className="flex justify-between items-center border-b pb-3">
@@ -78,26 +78,27 @@ function InfoDetailleeEtudiant({ isModalOpen, setIsModalOpen, infosEtudiant, sum
                                         className="w-full h-full border"
                                     ></iframe>
                                 </div>
-                                <div className="flex flex-col gap-3">
-                                    <p><strong>Nom : </strong>{infosEtudiant.prenom} {infosEtudiant.nom}</p>
+                                <div className="flex flex-col gap-3 justify-center items-center mt-5 pb-7">
                                     {/* Autres informations */}
                                     <div className="flex gap-4">
                                         <button
                                             onClick={() => summonEtudiant()}
                                             className={`bg-blue-500 text-white px-4 py-2 rounded ${isStudentSummoned ? 'opacity-50' : 'hover:bg-blue-600'}`}
-                                            disabled={isStudentSummoned}
+                                            disabled={isStudentSummoned || isFetching}
                                         >
                                             {isStudentSummoned ? t("alreadySummoned") : t("summon")}
                                         </button>
                                         <button
                                             onClick={() => accepterEtudiant()}
                                             className={`bg-green-500 text-white px-4 py-2 rounded`}
+                                            disabled={isFetching}
                                         >
                                             {t("accept")}
                                         </button>
                                         <button
                                             onClick={() => refuserEtudiant()}
                                             className={`bg-red-500 text-white px-4 py-2 rounded`}
+                                            disabled={isFetching}
                                         >
                                             {t("refuse")}
                                         </button>

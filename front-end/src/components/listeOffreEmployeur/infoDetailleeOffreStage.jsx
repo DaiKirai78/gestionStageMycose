@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { BsX } from "react-icons/bs";
 import InfoDetailleeEtudiant from './infoDetailleeEtudiant';
 import axios from 'axios';
+import PageIsLoading from '../pageIsLoading';
 
 const InfoDetailleeOffreStage = ({ setActiveOffer, activeOffer, getColorOffreStatus, setVoirPdf, voirPdf }) => {
     const [listeEtudiantsAppliques, setListeEtudiantsAppliques] = useState([]);
@@ -10,6 +11,8 @@ const InfoDetailleeOffreStage = ({ setActiveOffer, activeOffer, getColorOffreSta
     const [selectedEtudiant, setSelectedEtudiant] = useState(null);
     const [summonMessage, setSummonMessage] = useState('');
     const [studentInfo, setStudentInfo] = useState(null);
+    const [isFetching, setIsFetching] = useState(false);
+    const [isFetchingStatus, setIsFetchingStatus] = useState(false);
     const { t } = useTranslation();
 
     const format = getFormat();
@@ -20,20 +23,27 @@ const InfoDetailleeOffreStage = ({ setActiveOffer, activeOffer, getColorOffreSta
 
     async function fetchCandidatures() {
         const token = localStorage.getItem("token");
+        setIsFetching(true);
 
-        const response = await fetch(
-            `http://localhost:8080/api/offres-stages/offre-applications/${activeOffer.id}`,
-            {
-                method: "GET",
-                headers: { Authorization: `Bearer ${token}` }
+        try {
+            const response = await fetch(
+                `http://localhost:8080/api/offres-stages/offre-applications/${activeOffer.id}`,
+                {
+                    method: "GET",
+                    headers: { Authorization: `Bearer ${token}` }
+                }
+            );
+            let fetchedData = await response.text();
+            if (fetchedData) {
+                setListeEtudiantsAppliques(JSON.parse(fetchedData));
             }
-        );
-        let fetchedData = await response.text();
-        if (fetchedData) {
-            setListeEtudiantsAppliques(JSON.parse(fetchedData));
-        }
-        else {
-            setListeEtudiantsAppliques([]);
+            else {
+                setListeEtudiantsAppliques([]);
+            }
+        } catch (e) {
+            console.log(e);
+        } finally {
+            setIsFetching(false);
         }
     }
 
@@ -92,6 +102,7 @@ const InfoDetailleeOffreStage = ({ setActiveOffer, activeOffer, getColorOffreSta
     // Fonction pour convoquer l'étudiant
     async function summonEtudiant() {
         const token = localStorage.getItem("token");
+        setIsFetchingStatus(true);
 
         try {
             const response = await axios.patch(`http://localhost:8080/api/application-stage/summon/${studentInfo.id}`, {}, {
@@ -107,10 +118,13 @@ const InfoDetailleeOffreStage = ({ setActiveOffer, activeOffer, getColorOffreSta
         } catch (error) {
             console.error("Erreur lors de la convocation de l'étudiant:", error);
             setSummonMessage(t("errorSummoningStudent"));
+        } finally {
+            setIsFetchingStatus(false);
         }
     }
     async function accepterEtudiant() {
         const token = localStorage.getItem("token");
+        setIsFetchingStatus(true);
 
         try {
             const response = await axios.patch(`http://localhost:8080/api/application-stage/application/${studentInfo.id}/accepter`, {}, {
@@ -126,10 +140,13 @@ const InfoDetailleeOffreStage = ({ setActiveOffer, activeOffer, getColorOffreSta
         } catch (error) {
             console.error("Erreur lors de l'acceptation de l'étudiant:", error);
             setSummonMessage(t("errorAcceptingStudent"));
+        } finally {
+            setIsFetchingStatus(false);
         }
     }
     async function refuserEtudiant() {
         const token = localStorage.getItem("token");
+        setIsFetchingStatus(true);
 
         try {
             const response = await axios.patch(`http://localhost:8080/api/application-stage/application/${studentInfo.id}/refuser`, {}, {
@@ -145,15 +162,19 @@ const InfoDetailleeOffreStage = ({ setActiveOffer, activeOffer, getColorOffreSta
         } catch (error) {
             console.error("Erreur lors du refus de l'étudiant:", error);
             setSummonMessage(t("errorRefusingStudent"));
+        } finally {
+            setIsFetchingStatus(false);
         }
     }
 
     const closeModal = () => {
         setIsModalCandidatureOpen(false);
         setSummonMessage('');
+        fetchCandidatures();
     };
 
     return (
+        isFetching ? <PageIsLoading /> : 
         <div className={`pb-8 sm:pt-0 bg-orange-light z-20 rounded border border-deep-orange-200 w-full md:h-full h-[90vh] fixed left-0 md:sticky md:top-2 flex flex-col md:transition-none transition-all ease-in-out overflow-y-auto ${activeOffer === null ? "bottom-[-90vh]" : "bottom-0"}`}>
             <button className='absolute right-2 top-2 md:hidden'
                     onClick={() => { setActiveOffer(null) }}>
@@ -222,6 +243,7 @@ const InfoDetailleeOffreStage = ({ setActiveOffer, activeOffer, getColorOffreSta
                 studentInfo={studentInfo}
                 refuserEtudiant={refuserEtudiant}
                 accepterEtudiant={accepterEtudiant}
+                isFetching={isFetchingStatus}
             />
         </div>
     );
