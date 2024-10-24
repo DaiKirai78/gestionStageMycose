@@ -5,11 +5,17 @@ import TokenPageContainer from './tokenPageContainer';
 const AttributionPage = () => {
     const [userInfo, setUserInfo] = useOutletContext();
     const [selectedStudent, setSelectedStudent] = useState(null);
+    const [programme, setProgramme] = useState("NOT_SPECIFIED");
 
     return (
         <TokenPageContainer role={["GESTIONNAIRE_STAGE"]} setUserInfo={setUserInfo}>
             <div className='bg-orange-light min-h-full'>
-                <Outlet context={[selectedStudent, setSelectedStudent]} />
+                <Outlet context={{
+                    "selectedStudent": selectedStudent,
+                    "setSelectedStudent": setSelectedStudent,
+                    "programme": programme,
+                    "setProgramme": setProgramme
+                }} />
             </div>
         </TokenPageContainer>
     );

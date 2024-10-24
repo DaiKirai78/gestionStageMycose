@@ -118,7 +118,7 @@ public class FichierCVController {
     public ResponseEntity<?> acceptCV(@RequestParam Long id,@RequestBody JsonNode jsonNode) {
         JsonNode descriptionNode = jsonNode.get("commentaire");
 
-        if (descriptionNode == null || descriptionNode.isNull()) {
+        if (descriptionNode == null || descriptionNode.isNull() || descriptionNode.asText().isEmpty()) {
             return ResponseEntity.badRequest().body("Description field is missing");
         }
 
@@ -130,7 +130,7 @@ public class FichierCVController {
     public ResponseEntity<?> refuseCV(@RequestParam Long id, @RequestBody JsonNode jsonNode) {
             JsonNode descriptionNode = jsonNode.get("commentaire");
 
-            if (descriptionNode == null || descriptionNode.isNull()) {
+            if (descriptionNode == null || descriptionNode.isNull() || descriptionNode.asText().isEmpty()) {
                 return ResponseEntity.badRequest().body("Description field is missing");
             }
 
