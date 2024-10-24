@@ -102,10 +102,12 @@ public class ApplicationStageService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Application not found"));
     }
 
-    public List<ApplicationStageAvecInfosDTO> getAllApplicationsPourUneOffreById(Long offreId) {
+    public List<ApplicationStageAvecInfosDTO> getAllApplicationsPourUneOffreByIdPendingOrSummoned(Long offreId) {
         return applicationStageRepository
-                .findAllByOffreStageIdAndStatusEquals(offreId, ApplicationStage.ApplicationStatus.ACCEPTED)
-                .stream().map(this::convertToDTOAvecInfos).toList();
+                .findAllByOffreStageIdAndStatusIn(offreId, List.of(ApplicationStage.ApplicationStatus.PENDING, ApplicationStage.ApplicationStatus.SUMMONED))
+                .stream()
+                .map(this::convertToDTOAvecInfos)
+                .toList();
     }
 
     @Transactional
