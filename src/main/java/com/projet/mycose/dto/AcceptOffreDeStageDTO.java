@@ -1,5 +1,6 @@
 package com.projet.mycose.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.projet.mycose.modele.Programme;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -14,12 +15,11 @@ import java.util.List;
 public class AcceptOffreDeStageDTO {
 
     @NotNull(message = "ID cannot be null.")
+    @JsonProperty("id")
     private Long id;
 
-    @NotNull(message = "Status description cannot be null.")
     @Size(max = 255, message = "Status description cannot exceed 255 characters.")
     private String statusDescription;
-
 
     private Programme programme;
 

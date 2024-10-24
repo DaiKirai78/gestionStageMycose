@@ -3,7 +3,7 @@ Définition de Done:
   2. Les tests marchent avec une couverture de plus 80%
   3. Le plan de démo a été suivit et aucun problème a été rencontré
   4. La review a été faite
-  5. La tâche a été merge avec la branche main
+  5. La tâche a été merge avec la branche du sprint actuel
   6 La tâche reste 0 heure de temps
 
 Points à améiorer:

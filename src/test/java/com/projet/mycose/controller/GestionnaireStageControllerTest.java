@@ -6,6 +6,7 @@ import com.projet.mycose.modele.Etudiant;
 import com.projet.mycose.modele.Programme;
 import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.repository.UtilisateurRepository;
+import com.projet.mycose.service.EtudiantService;
 import com.projet.mycose.service.GestionnaireStageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,6 +22,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -39,22 +42,20 @@ public class GestionnaireStageControllerTest {
     private GestionnaireStageService gestionnaireStageService;
 
     @Mock
-    private UtilisateurRepository utilisateurRepository;
+    private EtudiantService etudiantService;
 
     @InjectMocks
     private GestionnaireController gestionnaireController;
+
+    EtudiantDTO etudiantMock;
+    EtudiantDTO etudiantMock2;
 
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(gestionnaireController)
                 .setControllerAdvice(new GlobalExceptionHandler())
                 .build();
-    }
-
-    @Test
-    public void testGetEtudiantsSansEnseignants_Success() throws Exception {
-        // Arrange
-        EtudiantDTO etudiantMock = new EtudiantDTO(
+         etudiantMock = new EtudiantDTO(
                 1L,
                 "unPrenom",
                 "unNom",
@@ -63,6 +64,21 @@ public class GestionnaireStageControllerTest {
                 Role.ETUDIANT,
                 Programme.TECHNIQUE_INFORMATIQUE
         );
+         etudiantMock2 = new EtudiantDTO(
+                2L,
+                "unPrenom",
+                "unNom",
+                "unCourriel@mail.com",
+                "555-666-4756",
+                Role.ETUDIANT,
+                Programme.TECHNIQUE_INFORMATIQUE
+        );
+
+    }
+
+    @Test
+    public void testGetEtudiantsSansEnseignants_Success() throws Exception {
+        // Arrange
 
         List<EtudiantDTO> listeEtudiantsDTOMock = new ArrayList<>();
         listeEtudiantsDTOMock.add(etudiantMock);
@@ -190,5 +206,67 @@ public class GestionnaireStageControllerTest {
                 .andExpect(status().isNoContent());
 
         verify(gestionnaireStageService, times(1)).assignerEnseigantEtudiant(idEtudiant, idEnseignant);
+    }
+
+    @Test
+    void getEtudiantsByProgramme_Success() throws Exception {
+        // Arrange
+        Programme programme = Programme.TECHNIQUE_INFORMATIQUE;
+        List<EtudiantDTO> etudiants = Arrays.asList(
+                etudiantMock,
+                etudiantMock2
+        );
+
+        when(etudiantService.findEtudiantsByProgramme(programme)).thenReturn(etudiants);
+
+        // Act & Assert
+        mockMvc.perform(get("/gestionnaire/getEtudiantsParProgramme")
+                        .param("programme", "TECHNIQUE_INFORMATIQUE")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isAccepted())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.length()").value(etudiants.size()))
+                .andExpect(jsonPath("$[0].id").value(etudiants.get(0).getId()))
+                .andExpect(jsonPath("$[0].nom").value(etudiants.get(0).getNom()))
+                .andExpect(jsonPath("$[1].id").value(etudiants.get(1).getId()))
+                .andExpect(jsonPath("$[1].nom").value(etudiants.get(1).getNom()));
+
+        verify(etudiantService, times(1)).findEtudiantsByProgramme(programme);
+    }
+
+    @Test
+    void getEtudiantsByProgramme_ServiceThrowsException() throws Exception {
+        // Arrange
+        Programme programme = Programme.TECHNIQUE_INFORMATIQUE;
+
+        when(etudiantService.findEtudiantsByProgramme(programme))
+                .thenThrow(new RuntimeException("Service failure"));
+
+        // Act & Assert
+        mockMvc.perform(get("/gestionnaire/getEtudiantsParProgramme")
+                        .param("programme", "TECHNIQUE_INFORMATIQUE")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+
+        verify(etudiantService, times(1)).findEtudiantsByProgramme(programme);
+    }
+
+    @Test
+    void getEtudiantsByProgramme_EmptyList() throws Exception {
+        // Arrange
+        Programme programme = Programme.TECHNIQUE_INFORMATIQUE;
+        List<EtudiantDTO> etudiants = Collections.emptyList();
+
+        when(etudiantService.findEtudiantsByProgramme(programme)).thenReturn(etudiants);
+
+        // Act & Assert
+        mockMvc.perform(get("/gestionnaire/getEtudiantsParProgramme")
+                        .param("programme", "TECHNIQUE_INFORMATIQUE")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isAccepted())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.length()").value(0));
+
+        verify(etudiantService, times(1)).findEtudiantsByProgramme(programme);
     }
 }

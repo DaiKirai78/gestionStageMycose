@@ -54,10 +54,12 @@ public class OffreStageServiceTest {
     @Mock
     private MultipartFile file;
 
+    @Mock
+    private EtudiantOffreStagePriveeRepository etudiantOffreStagePriveeRepository;
+
     @InjectMocks
     private OffreStageService offreStageService;
 
-    // Sample data for tests
     private UtilisateurDTO employeurDTO;
     private UtilisateurDTO gestionnaireDTO;
     private UploadFicherOffreStageDTO uploadFicherOffreStageDTO;
@@ -67,6 +69,18 @@ public class OffreStageServiceTest {
     private FormulaireOffreStage formulaireOffreStage;
     private Employeur employeur;
     private Etudiant etudiant;
+    private GestionnaireStage gestionnaire;
+
+
+    private List<Long> etudiantsPrivesIds;
+    private List<Etudiant> etudiantsPrives;
+
+
+    private AcceptOffreDeStageDTO acceptDtoPrivate;
+    private AcceptOffreDeStageDTO acceptDtoPublic;
+    private AcceptOffreDeStageDTO acceptDtoNonExistent;
+    private AcceptOffreDeStageDTO acceptDtoInvalidStatus;
+    private AcceptOffreDeStageDTO acceptDtoProgramNotSpecified;
 
     private static final String SAMPLE_DATA = "sampleData";
     private static final String BASE64_SAMPLE_DATA = "c2FtcGxlRGF0YQ==";
@@ -75,7 +89,6 @@ public class OffreStageServiceTest {
 
     @BeforeEach
     public void setUp() {
-        // Initialize sample data
         employeurDTO = EmployeurDTO.empty();
         employeurDTO.setId(1L);
         employeurDTO.setRole(Role.EMPLOYEUR);
@@ -124,14 +137,66 @@ public class OffreStageServiceTest {
                 .motDePasse("securePass!")
                 .entrepriseName("TechCorp")
                 .build();
+
+        gestionnaire = GestionnaireStage.builder()
+                .id(2L)
+                .prenom("John")
+                .nom("Doe")
+                .numeroDeTelephone("123-456-7890")
+                .courriel("elie@gmail.com")
+                .motDePasse("JohnDoe123$")
+                .build();
+
+        Etudiant etudiant2 = new Etudiant();
+        etudiant2.setId(2L);
+        Etudiant etudiant3 = new Etudiant();
+        etudiant3.setId(3L);
+        etudiantsPrives = Arrays.asList(etudiant, etudiant2, etudiant3);
+        etudiantsPrivesIds = Arrays.asList(1L, 2L, 3L);
+
+
+
+        // Initialize AcceptOffreDeStageDTO for PRIVATE visibility
+        acceptDtoPrivate = new AcceptOffreDeStageDTO();
+        acceptDtoPrivate.setId(1L);
+        acceptDtoPrivate.setStatusDescription("Approved for the position");
+        acceptDtoPrivate.setProgramme(Programme.GENIE_LOGICIEL);
+        etudiantsPrivesIds = Arrays.asList(10L, 20L);
+        acceptDtoPrivate.setEtudiantsPrives(etudiantsPrivesIds);
+
+        // Initialize AcceptOffreDeStageDTO for PUBLIC visibility
+        acceptDtoPublic = new AcceptOffreDeStageDTO();
+        acceptDtoPublic.setId(1L);
+        acceptDtoPublic.setStatusDescription("Approved for the position");
+        acceptDtoPublic.setProgramme(Programme.GENIE_LOGICIEL);
+        acceptDtoPublic.setEtudiantsPrives(null);
+
+        // Initialize AcceptOffreDeStageDTO for non-existent OffreStage
+        acceptDtoNonExistent = new AcceptOffreDeStageDTO();
+        acceptDtoNonExistent.setId(99L);
+        acceptDtoNonExistent.setStatusDescription("Approved for the position");
+        acceptDtoNonExistent.setProgramme(Programme.GENIE_LOGICIEL);
+        acceptDtoNonExistent.setEtudiantsPrives(etudiantsPrivesIds);
+
+        // Initialize AcceptOffreDeStageDTO for invalid status (non-WAITING)
+        acceptDtoInvalidStatus = new AcceptOffreDeStageDTO();
+        acceptDtoInvalidStatus.setId(2L);
+        acceptDtoInvalidStatus.setStatusDescription("Approved for the position");
+        acceptDtoInvalidStatus.setProgramme(Programme.GENIE_LOGICIEL);
+        acceptDtoInvalidStatus.setEtudiantsPrives(etudiantsPrivesIds);
+
+        // Initialize AcceptOffreDeStageDTO with PROGRAMME_NOT_SPECIFIED
+        acceptDtoProgramNotSpecified = new AcceptOffreDeStageDTO();
+        acceptDtoProgramNotSpecified.setId(1L);
+        acceptDtoProgramNotSpecified.setStatusDescription("Approved for the position");
+        acceptDtoProgramNotSpecified.setProgramme(Programme.NOT_SPECIFIED);
+        acceptDtoProgramNotSpecified.setEtudiantsPrives(etudiantsPrivesIds);
     }
 
-    // --------------------- Test Cases for saveFile ---------------------
 
     @Test
     public void shouldSaveFileSuccessfully_WhenUserIsEmployeur() throws IOException {
         // Arrange
-        String token = VALID_TOKEN;
         when(utilisateurService.getMe()).thenReturn(employeurDTO);
 
         // Specific stubbing for this test
@@ -224,7 +289,7 @@ public class OffreStageServiceTest {
     }
 
     @Test
-    public void shouldThrowEntityNotFoundException_WhenCreateurNotFound() throws AccessDeniedException, IOException {
+    public void shouldThrowEntityNotFoundException_WhenCreateurNotFound() throws IOException {
         // Arrange
         String token = VALID_TOKEN;
         when(utilisateurService.getMe()).thenReturn(employeurDTO);
@@ -244,15 +309,12 @@ public class OffreStageServiceTest {
         verify(ficherOffreStageRepository, never()).save(any(FichierOffreStage.class));
     }
 
-    // --------------------- Test Cases for saveForm ---------------------
 
     @Test
     public void shouldSaveFormSuccessfully_WhenUserIsEmployeur() throws AccessDeniedException {
         // Arrange
-        String token = VALID_TOKEN;
         when(utilisateurService.getMe()).thenReturn(employeurDTO);
 
-        // Specific stubbing for this test
         // Mapping DTO to Entity
         when(modelMapper.map(formulaireOffreStageDTO, FormulaireOffreStage.class)).thenReturn(formulaireOffreStage);
         // Mapping Entity back to DTO
@@ -271,6 +333,258 @@ public class OffreStageServiceTest {
         verify(formulaireOffreStageRepository, times(1)).save(any(FormulaireOffreStage.class));
         verify(modelMapper, times(1)).map(formulaireOffreStageDTO, FormulaireOffreStage.class);
         verify(modelMapper, times(1)).map(formulaireOffreStage, FormulaireOffreStageDTO.class);
+    }
+
+    @Test
+    void convertToEntityIllegalArgumentException() {
+        // Arrange
+        FormulaireOffreStageDTO formulaireOffreStageDTO = new FormulaireOffreStageDTO();
+        formulaireOffreStageDTO.setCreateur_id(null);
+        when(modelMapper.map(formulaireOffreStageDTO, FormulaireOffreStage.class)).thenReturn(formulaireOffreStage);
+
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            offreStageService.convertToEntity(formulaireOffreStageDTO);
+        });
+
+        assertEquals("createur_id cannot be null", exception.getMessage());
+        verify(utilisateurRepository, never()).findById(anyLong());
+    }
+
+    @Test
+    void saveFileNullEntrepriseName() throws IOException {
+        when(utilisateurService.getMe()).thenReturn(gestionnaireDTO);
+        when(file.getBytes()).thenReturn(SAMPLE_DATA.getBytes());
+        when(file.getOriginalFilename()).thenReturn("sampleFile.txt");
+        uploadFicherOffreStageDTO.setEntrepriseName(null);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> {
+            offreStageService.saveFile(uploadFicherOffreStageDTO);
+        });
+    }
+
+    @Test
+    void saveFileWithEtudiantsPrives() throws IOException {
+        // Arrange
+        uploadFicherOffreStageDTO.setProgramme(Programme.GENIE_LOGICIEL);
+        uploadFicherOffreStageDTO.setEtudiantsPrives(List.of(1L, 2L, 3L));
+
+        FichierOffreStageDTO fichierOffreStageDTO = new FichierOffreStageDTO();
+        fichierOffreStageDTO.setCreateur_id(2L);
+        fichierOffreStageDTO.setEntrepriseName("Entreprise XYZ");
+
+        FichierOffreStage fichierOffreStage = new FichierOffreStage();
+        fichierOffreStage.setVisibility(OffreStage.Visibility.PRIVATE);
+
+        // Mocking utilisateurService.getMe()
+        when(utilisateurService.getMe()).thenReturn(gestionnaireDTO);
+
+        // Mocking modelMapper.map for DTO to Entity
+        when(modelMapper.map(any(FichierOffreStageDTO.class), eq(FichierOffreStage.class)))
+                .thenReturn(fichierOffreStage);
+
+        // Mocking ficherOffreStageRepository.save()
+        when(ficherOffreStageRepository.save(any(FichierOffreStage.class)))
+                .thenReturn(fichierOffreStage);
+
+        // Mocking modelMapper.map for Entity to DTO
+        when(modelMapper.map(fichierOffreStage, FichierOffreStageDTO.class))
+                .thenReturn(fichierOffreStageDTO);
+
+        // Mocking validator.validate()
+        when(validator.validate(any(FichierOffreStageDTO.class)))
+                .thenReturn(Collections.emptySet());
+
+        // Mocking file operations if necessary
+        when(file.getBytes()).thenReturn("Sample Data".getBytes());
+        when(file.getOriginalFilename()).thenReturn("sampleFile.txt");
+
+        // Mocking utilisateurRepository.findById()
+        when(utilisateurRepository.findById(2L))
+                .thenReturn(Optional.of(new GestionnaireStage()));
+
+        // Mocking etudiantRepository.findAllById()
+        Etudiant etudiant1 = new Etudiant();
+        etudiant1.setId(1L);
+        Etudiant etudiant2 = new Etudiant();
+        etudiant2.setId(2L);
+        Etudiant etudiant3 = new Etudiant();
+        etudiant3.setId(3L);
+        when(etudiantRepository.findAllById(List.of(1L, 2L, 3L)))
+                .thenReturn(List.of(etudiant1, etudiant2, etudiant3));
+
+        // Act
+        FichierOffreStageDTO result = offreStageService.saveFile(uploadFicherOffreStageDTO);
+
+        // Assert
+        assertNotNull(result, "The result should not be null");
+        assertEquals(fichierOffreStageDTO.getCreateur_id(), result.getCreateur_id(),
+                "Createur ID should match");
+        assertEquals(fichierOffreStageDTO.getEntrepriseName(), result.getEntrepriseName(),
+                "Entreprise Name should match");
+
+        // Verify that ficherOffreStageRepository.save() was called once
+        verify(ficherOffreStageRepository, times(1)).save(any(FichierOffreStage.class));
+
+        // Verify that etudiantRepository.findAllById() was called with the correct IDs
+        verify(etudiantRepository, times(1)).findAllById(uploadFicherOffreStageDTO.getEtudiantsPrives());
+
+        // Capture the arguments passed to etudiantOffreStagePriveeRepository.save()
+        ArgumentCaptor<EtudiantOffreStagePrivee> captor = ArgumentCaptor.forClass(EtudiantOffreStagePrivee.class);
+        verify(etudiantOffreStagePriveeRepository, times(3)).save(captor.capture());
+
+        // Verify each association
+        List<EtudiantOffreStagePrivee> savedAssociations = captor.getAllValues();
+        assertEquals(3, savedAssociations.size(), "Three associations should be saved");
+
+        for (int i = 0; i < savedAssociations.size(); i++) {
+            EtudiantOffreStagePrivee association = savedAssociations.get(i);
+            assertEquals(List.of(1L, 2L, 3L).get(i), association.getEtudiant().getId(),
+                    "Etudiant ID should match");
+            assertEquals(fichierOffreStage, association.getOffreStage(),
+                    "OffreStage should match");
+        }
+    }
+
+    @Test
+    public void shouldSaveFormSuccessfully_WhenUserIsGestionnaire() throws AccessDeniedException {
+        // Arrange
+        when(utilisateurService.getMe()).thenReturn(gestionnaireDTO);
+
+        // Mapping DTO to Entity
+        when(modelMapper.map(formulaireOffreStageDTO, FormulaireOffreStage.class)).thenReturn(formulaireOffreStage);
+        // Mapping Entity back to DTO
+        when(modelMapper.map(formulaireOffreStage, FormulaireOffreStageDTO.class)).thenReturn(formulaireOffreStageDTO);
+
+        when(formulaireOffreStageRepository.save(any(FormulaireOffreStage.class))).thenReturn(formulaireOffreStage);
+
+        when(utilisateurRepository.findById(2L)).thenReturn(Optional.of(gestionnaire));
+
+        // Act
+        FormulaireOffreStageDTO result = offreStageService.saveForm(formulaireOffreStageDTO);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(formulaireOffreStageDTO.getCreateur_id(), result.getCreateur_id());
+        verify(formulaireOffreStageRepository, times(1)).save(any(FormulaireOffreStage.class));
+        verify(modelMapper, times(1)).map(formulaireOffreStageDTO, FormulaireOffreStage.class);
+        verify(modelMapper, times(1)).map(formulaireOffreStage, FormulaireOffreStageDTO.class);
+    }
+
+    @Test
+    void saveFileProgrammeNotSpecified() throws IOException {
+        // Arrange
+        uploadFicherOffreStageDTO.setProgramme(Programme.NOT_SPECIFIED);
+        when(utilisateurService.getMe()).thenReturn(gestionnaireDTO);
+        when(file.getBytes()).thenReturn(SAMPLE_DATA.getBytes());
+        when(file.getOriginalFilename()).thenReturn("sampleFile.txt");
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> {
+            offreStageService.saveFile(uploadFicherOffreStageDTO);
+        });
+    }
+
+    @Test
+    void saveFormFailsBecauseNoProgrammeOrEtudiants() throws AccessDeniedException {
+        // Arrange
+        formulaireOffreStageDTO.setProgramme(Programme.NOT_SPECIFIED);
+        when(utilisateurService.getMe()).thenReturn(gestionnaireDTO);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> {
+            offreStageService.saveForm(formulaireOffreStageDTO);
+        });
+    }
+
+    @Test
+    void saveFormWithEtudiantsPrives() throws AccessDeniedException {
+        // Arrange
+        formulaireOffreStageDTO.setEntrepriseName("Entreprise ABC");
+        formulaireOffreStageDTO.setProgramme(Programme.GENIE_LOGICIEL);
+        formulaireOffreStage.setEntrepriseName("Entreprise ABC");
+        formulaireOffreStage.setProgramme(Programme.GENIE_LOGICIEL);
+        formulaireOffreStage.setCreateur(gestionnaire);
+        formulaireOffreStage.setVisibility(OffreStage.Visibility.PRIVATE);
+        formulaireOffreStageDTO.setVisibility(OffreStage.Visibility.PRIVATE);
+        formulaireOffreStageDTO.setEtudiantsPrives(etudiantsPrivesIds);
+
+        // Mock utilisateurService.getMe() to return gestionnaireDTO
+        when(utilisateurService.getMe()).thenReturn(gestionnaireDTO);
+
+        // Mock utilisateurRepository.findById() to return gestionnaire
+        when(utilisateurRepository.findById(2L)).thenReturn(Optional.of(gestionnaire));
+
+        // Mock modelMapper.map() to convert DTO to Entity
+        when(modelMapper.map(formulaireOffreStageDTO, FormulaireOffreStage.class))
+                .thenReturn(formulaireOffreStage);
+
+        // Mock formulaireOffreStageRepository.save() to return the saved entity
+        when(formulaireOffreStageRepository.save(any(FormulaireOffreStage.class)))
+                .thenReturn(formulaireOffreStage);
+
+        // Mock modelMapper.map() to convert Entity back to DTO
+        when(modelMapper.map(formulaireOffreStage, FormulaireOffreStageDTO.class))
+                .thenReturn(formulaireOffreStageDTO);
+
+        // Mock etudiantRepository.findAllById() to return the list of Etudiants
+        when(etudiantRepository.findAllById(etudiantsPrivesIds))
+                .thenReturn(etudiantsPrives);
+
+        // Act
+        FormulaireOffreStageDTO result = offreStageService.saveForm(formulaireOffreStageDTO);
+
+        // Assert
+
+        // Verify that the result is not null
+        assertNotNull(result, "The returned FormulaireOffreStageDTO should not be null");
+
+        // Verify that the createur_id is set correctly
+        assertEquals(formulaireOffreStageDTO.getCreateur_id(), gestionnaireDTO.getId(),
+                "The createur_id should match the gestionnaire's ID");
+
+        // Verify that the entrepriseName is set correctly
+        assertEquals("Entreprise ABC", result.getEntrepriseName(),
+                "The entrepriseName should be correctly set in the DTO");
+
+        // Verify that the programme is set correctly
+        assertEquals(Programme.GENIE_LOGICIEL, result.getProgramme(),
+                "The programme should be correctly set in the DTO");
+
+        // Verify that visibility is set to PRIVATE
+        assertEquals(OffreStage.Visibility.PRIVATE, result.getVisibility(),
+                "The visibility should be set to PRIVATE");
+
+        // Verify that formulaireOffreStageRepository.save() was called once
+        verify(formulaireOffreStageRepository, times(1))
+                .save(any(FormulaireOffreStage.class));
+
+        // Verify that etudiantRepository.findAllById() was called with correct IDs
+        verify(etudiantRepository, times(1)).findAllById(etudiantsPrivesIds);
+
+        // Capture the arguments passed to etudiantOffreStagePriveeRepository.save()
+        ArgumentCaptor<EtudiantOffreStagePrivee> captor = ArgumentCaptor.forClass(EtudiantOffreStagePrivee.class);
+        verify(etudiantOffreStagePriveeRepository, times(etudiantsPrives.size()))
+                .save(captor.capture());
+
+        // Retrieve the captured associations
+        List<EtudiantOffreStagePrivee> savedAssociations = captor.getAllValues();
+
+        // Assert that the correct number of associations were saved
+        assertEquals(etudiantsPrives.size(), savedAssociations.size(),
+                "The number of saved associations should match the number of etudiantsPrives");
+
+        // Verify each association
+        for (int i = 0; i < etudiantsPrives.size(); i++) {
+            EtudiantOffreStagePrivee association = savedAssociations.get(i);
+            Etudiant expectedEtudiant = etudiantsPrives.get(i);
+
+            assertEquals(expectedEtudiant.getId(), association.getEtudiant().getId(),
+                    "The Etudiant ID in the association should match the expected ID");
+            assertEquals(formulaireOffreStage, association.getOffreStage(),
+                    "The OffreStage in the association should match the saved OffreStage");
+        }
     }
 
 
@@ -292,45 +606,6 @@ public class OffreStageServiceTest {
         verify(formulaireOffreStageRepository, never()).save(any(FormulaireOffreStage.class));
     }
 
-    // --------------------- Test Cases for changeStatus ---------------------
-
-    @Test
-    public void shouldChangeStatusSuccessfully_WhenOffreStageExists() throws ChangeSetPersister.NotFoundException {
-        // Arrange
-        Long offreStageId = 1L;
-        OffreStage.Status newStatus = OffreStage.Status.ACCEPTED;
-        String description = "Approved by admin";
-        when(offreStageRepository.findById(offreStageId)).thenReturn(Optional.of(fichierOffreStage));
-        when(offreStageRepository.save(any(OffreStage.class))).thenReturn(fichierOffreStage);
-
-        // Act
-        offreStageService.changeStatus(offreStageId, newStatus, description);
-
-        // Assert
-        assertEquals(newStatus, fichierOffreStage.getStatus());
-        assertEquals(description, fichierOffreStage.getStatusDescription());
-        verify(offreStageRepository, times(1)).findById(offreStageId);
-        verify(offreStageRepository, times(1)).save(fichierOffreStage);
-    }
-
-    @Test
-    public void shouldThrowNotFoundException_WhenOffreStageDoesNotExist() {
-        // Arrange
-        Long offreStageId = 999L;
-        OffreStage.Status newStatus = OffreStage.Status.ACCEPTED;
-        String description = "Approved by admin";
-        when(offreStageRepository.findById(offreStageId)).thenReturn(Optional.empty());
-
-        // Act & Assert
-        assertThrows(ChangeSetPersister.NotFoundException.class, () -> {
-            offreStageService.changeStatus(offreStageId, newStatus, description);
-        });
-
-        verify(offreStageRepository, times(1)).findById(offreStageId);
-        verify(offreStageRepository, never()).save(any(OffreStage.class));
-    }
-
-    // --------------------- Test Cases for getWaitingOffreStage ---------------------
 
     @Test
     public void shouldReturnWaitingOffreStages_WhenThereAreResults() {
@@ -354,7 +629,6 @@ public class OffreStageServiceTest {
                         dto.setId(offreStage.getId());
                         dto.setEntrepriseName(offreStage.getEntrepriseName());
                         dto.setCreateur_id(offreStage.getCreateur().getId());
-                        // Set other fields as necessary
                         return dto;
                     });
 
@@ -391,7 +665,6 @@ public class OffreStageServiceTest {
         verify(offreStageRepository, times(1)).getOffreStageByStatusEquals(OffreStage.Status.WAITING, PageRequest.of(page - 1, 10));
     }
 
-    // --------------------- Test Cases for getAmountOfPages ---------------------
 
     @Test
     public void shouldReturnZeroPages_WhenNoRowsExist() {
@@ -432,7 +705,6 @@ public class OffreStageServiceTest {
         verify(offreStageRepository, times(1)).countByStatus(OffreStage.Status.WAITING);
     }
 
-    // --------------------- Test Cases for getAvailableOffreStagesForEtudiant ---------------------
 
 
     @Test
@@ -491,7 +763,6 @@ public class OffreStageServiceTest {
 
 
 
-    // --------------------- Test Cases for convertToDTO and convertToEntity ---------------------
 
     @Test
     public void shouldConvertFichierOffreStageToDTO() {
@@ -580,5 +851,245 @@ public class OffreStageServiceTest {
 
         // Assert
         assertNull(etudiantDTOList);
+    }
+
+    @Test
+    void getTotalWaitingOffreStages_WithWaitingOffreStages() {
+        // Arrange
+        long expectedCount = 5L;
+        when(offreStageRepository.countByStatus(OffreStage.Status.WAITING)).thenReturn(expectedCount);
+
+        // Act
+        long actualCount = offreStageService.getTotalWaitingOffreStages();
+
+        // Assert
+        assertEquals(expectedCount, actualCount, "The count of waiting OffreStages should match the expected value");
+        verify(offreStageRepository, times(1)).countByStatus(OffreStage.Status.WAITING);
+    }
+
+    @Test
+    void getTotalWaitingOffreStages_NoWaitingOffreStages() {
+        // Arrange
+        long expectedCount = 0L;
+        when(offreStageRepository.countByStatus(OffreStage.Status.WAITING)).thenReturn(expectedCount);
+
+        // Act
+        long actualCount = offreStageService.getTotalWaitingOffreStages();
+
+        // Assert
+        assertEquals(expectedCount, actualCount, "The count should be zero when there are no waiting OffreStages");
+        verify(offreStageRepository, times(1)).countByStatus(OffreStage.Status.WAITING);
+    }
+
+    @Test
+    void refuseOffreDeStage_Success() {
+        // Arrange
+        Long offreStageId = 1L;
+        String refusalDescription = "Not suitable for the position";
+        fichierOffreStage.setStatus(OffreStage.Status.WAITING);
+
+        when(offreStageRepository.findById(offreStageId)).thenReturn(Optional.of(fichierOffreStage));
+        when(offreStageRepository.save(any(OffreStage.class))).thenReturn(fichierOffreStage);
+
+        // Act
+        offreStageService.refuseOffreDeStage(offreStageId, refusalDescription);
+
+        // Assert
+        assertEquals(OffreStage.Status.REFUSED, fichierOffreStage.getStatus(), "OffreStage status should be REFUSED");
+        assertEquals(refusalDescription, fichierOffreStage.getStatusDescription(), "Status description should be set correctly");
+        verify(offreStageRepository, times(1)).findById(offreStageId);
+        verify(offreStageRepository, times(1)).save(fichierOffreStage);
+    }
+
+    @Test
+    void refuseOffreDeStage_OffreStageNotFound() {
+        // Arrange
+        Long nonExistentId = 99L;
+        String refusalDescription = "Not suitable for the position";
+
+        when(offreStageRepository.findById(nonExistentId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
+            offreStageService.refuseOffreDeStage(nonExistentId, refusalDescription);
+        }, "Expected EntityNotFoundException to be thrown");
+
+        assertEquals("OffreStage not found with ID: " + nonExistentId, exception.getMessage(),
+                "Exception message should match");
+        verify(offreStageRepository, times(1)).findById(nonExistentId);
+        verify(offreStageRepository, never()).save(any(OffreStage.class));
+    }
+
+    @Test
+    void refuseOffreDeStage_InvalidStatus() {
+        // Arrange
+        Long offreStageId = 2L;
+        String refusalDescription = "Already processed";
+        fichierOffreStage.setStatus(OffreStage.Status.ACCEPTED);
+
+        when(offreStageRepository.findById(offreStageId)).thenReturn(Optional.of(fichierOffreStage));
+
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            offreStageService.refuseOffreDeStage(offreStageId, refusalDescription);
+        }, "Expected IllegalArgumentException to be thrown");
+
+        assertEquals("OffreStage is not waiting", exception.getMessage(),
+                "Exception message should match");
+        verify(offreStageRepository, times(1)).findById(offreStageId);
+        verify(offreStageRepository, never()).save(any(OffreStage.class));
+    }
+
+    @Test
+    void acceptOffreDeStage_Success_PrivateVisibility() {
+        // Arrange
+        fichierOffreStage.setStatus(OffreStage.Status.WAITING);
+        when(offreStageRepository.findById(1L)).thenReturn(Optional.of(fichierOffreStage));
+        when(offreStageRepository.save(any(OffreStage.class))).thenReturn(fichierOffreStage);
+        when(etudiantRepository.findAllById(etudiantsPrivesIds)).thenReturn(etudiantsPrives);
+
+        // Act
+        offreStageService.acceptOffreDeStage(acceptDtoPrivate);
+
+        // Assert
+        assertEquals(OffreStage.Status.ACCEPTED, fichierOffreStage.getStatus(), "OffreStage status should be ACCEPTED");
+        assertEquals("Approved for the position", fichierOffreStage.getStatusDescription(), "Status description should be set correctly");
+        assertEquals(Programme.GENIE_LOGICIEL, fichierOffreStage.getProgramme(), "Programme should be set correctly");
+        assertEquals(OffreStage.Visibility.PRIVATE, fichierOffreStage.getVisibility(), "Visibility should be PRIVATE");
+
+        verify(offreStageRepository, times(1)).findById(1L);
+        verify(offreStageRepository, times(1)).save(fichierOffreStage);
+        verify(etudiantRepository, times(1)).findAllById(etudiantsPrivesIds);
+        verify(etudiantOffreStagePriveeRepository, times(etudiantsPrives.size())).save(any());
+    }
+
+    @Test
+    void acceptOffreDeStage_Success_PublicVisibility() {
+        // Arrange
+        fichierOffreStage.setStatus(OffreStage.Status.WAITING);
+        when(offreStageRepository.findById(1L)).thenReturn(Optional.of(fichierOffreStage));
+        when(offreStageRepository.save(any(OffreStage.class))).thenReturn(fichierOffreStage);
+
+        // Act
+        offreStageService.acceptOffreDeStage(acceptDtoPublic);
+
+        // Assert
+        assertEquals(OffreStage.Status.ACCEPTED, fichierOffreStage.getStatus(), "OffreStage status should be ACCEPTED");
+        assertEquals("Approved for the position", fichierOffreStage.getStatusDescription(), "Status description should be set correctly");
+        assertEquals(Programme.GENIE_LOGICIEL, fichierOffreStage.getProgramme(), "Programme should be set correctly");
+        assertEquals(OffreStage.Visibility.PUBLIC, fichierOffreStage.getVisibility(), "Visibility should be PUBLIC");
+
+        verify(offreStageRepository, times(1)).findById(1L);
+        verify(offreStageRepository, times(1)).save(fichierOffreStage);
+        verify(etudiantRepository, never()).findAllById(anyList());
+        verify(etudiantOffreStagePriveeRepository, never()).save(any());
+    }
+
+    @Test
+    void acceptOffreDeStage_OffreStageNotFound() {
+        // Arrange
+        when(offreStageRepository.findById(99L)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
+            offreStageService.acceptOffreDeStage(acceptDtoNonExistent);
+        }, "Expected EntityNotFoundException to be thrown");
+
+        assertEquals("OffreStage not found with ID: 99", exception.getMessage(), "Exception message should match");
+        verify(offreStageRepository, times(1)).findById(99L);
+        verify(offreStageRepository, never()).save(any(OffreStage.class));
+        verify(etudiantRepository, never()).findAllById(anyList());
+        verify(etudiantOffreStagePriveeRepository, never()).save(any());
+    }
+
+    @Test
+    void acceptOffreDeStage_InvalidStatus() {
+        // Arrange
+        fichierOffreStage.setStatus(OffreStage.Status.ACCEPTED);
+        when(offreStageRepository.findById(2L)).thenReturn(Optional.of(fichierOffreStage));
+
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            offreStageService.acceptOffreDeStage(acceptDtoInvalidStatus);
+        }, "Expected IllegalArgumentException to be thrown");
+
+        assertEquals("OffreStage is not waiting", exception.getMessage(), "Exception message should match");
+        verify(offreStageRepository, times(1)).findById(2L);
+        verify(offreStageRepository, never()).save(any(OffreStage.class));
+        verify(etudiantRepository, never()).findAllById(anyList());
+        verify(etudiantOffreStagePriveeRepository, never()).save(any());
+    }
+
+    @Test
+    void acceptOffreDeStage_ProgramNotSpecified() {
+        // Arrange
+        fichierOffreStage.setStatus(OffreStage.Status.WAITING);
+        when(offreStageRepository.findById(1L)).thenReturn(Optional.of(fichierOffreStage));
+
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            offreStageService.acceptOffreDeStage(acceptDtoProgramNotSpecified);
+        }, "Expected IllegalArgumentException to be thrown");
+
+        assertEquals("Programme or etudiantsPrives must be provided when uploaded by a gestionnaire de stage", exception.getMessage(),
+                "Exception message should match");
+        verify(offreStageRepository, times(1)).findById(1L);
+        verify(offreStageRepository, never()).save(any(OffreStage.class));
+        verify(etudiantRepository, never()).findAllById(anyList());
+        verify(etudiantOffreStagePriveeRepository, never()).save(any());
+    }
+
+    @Test
+    void getOffreStageWithUtilisateurInfo_Success() {
+        // Arrange
+        Long offreStageId = 1L;
+
+        fichierOffreStage.setId(offreStageId);
+        fichierOffreStage.setStatus(OffreStage.Status.WAITING);
+        fichierOffreStage.setStatusDescription("Waiting for approval");
+        fichierOffreStage.setProgramme(Programme.GENIE_LOGICIEL);
+        fichierOffreStage.setVisibility(OffreStage.Visibility.PUBLIC);
+        fichierOffreStage.setCreateur(employeur);
+
+        when(offreStageRepository.findById(offreStageId)).thenReturn(Optional.of(fichierOffreStage));
+
+        // Act
+        OffreStageAvecUtilisateurInfoDTO result = offreStageService.getOffreStageWithUtilisateurInfo(offreStageId);
+
+        // Assert
+        assertNotNull(result, "The returned DTO should not be null");
+        assertEquals(fichierOffreStage.getId(), result.getId(), "DTO ID should match the entity ID");
+        assertEquals(fichierOffreStage.getEntrepriseName(), result.getEntrepriseName(), "EntrepriseName should match");
+        assertEquals(fichierOffreStage.getCreatedAt() , result.getCreatedAt(), "CreatedAt should match");
+        assertEquals(fichierOffreStage.getTitle(), result.getTitle(), "Title should match");
+        assertEquals(fichierOffreStage.getCreateur().getId(), result.getCreateur_id(), "Createur ID should match");
+        assertEquals(fichierOffreStage.getCreateur().getPrenom(), result.getCreateur_prenom(), "Createur prenom should match");
+        assertEquals(fichierOffreStage.getCreateur().getNom(), result.getCreateur_nom(), "Createur nom should match");
+        assertEquals(fichierOffreStage.getCreateur().getNumeroDeTelephone(), result.getCreateur_telephone(), "Createur numeroDeTelephone should match");
+        assertEquals(fichierOffreStage.getCreateur().getCourriel(), result.getCreateur_email(), "Createur courriel should match");
+        assertEquals(fichierOffreStage.getCreateur().getRole(), result.getCreateur_role(), "Createur role should match");
+
+        // Verify that findById was called once with the correct ID
+        verify(offreStageRepository, times(1)).findById(offreStageId);
+    }
+
+
+    @Test
+    void getOffreStageWithUtilisateurInfo_OffreStageNotFound() {
+        // Arrange
+        Long nonExistentId = 99L;
+
+        when(offreStageRepository.findById(nonExistentId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
+            offreStageService.getOffreStageWithUtilisateurInfo(nonExistentId);
+        }, "Expected EntityNotFoundException to be thrown");
+
+        assertEquals("OffreStage not found with ID: " + nonExistentId, exception.getMessage(),
+                "Exception message should match the expected message");
+
+        // Verify that findById was called once with the correct ID
+        verify(offreStageRepository, times(1)).findById(nonExistentId);
     }
 }

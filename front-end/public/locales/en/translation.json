@@ -169,8 +169,8 @@
     "cvRefused": "Your CV is refused",
     "cvWaiting": "Your CV is pending",
     "cvStatusTitle": "CV Status",
-    "managerNotes": "Manager's Notes:",
-    "noNotes": "No notes",
+    "managerNotes": "Manager's note:",
+    "noNotes": "No note",
     "accueil": "Home",
     "noNotification": "No notification for now",
     "signOut": "Sign out",
@@ -182,6 +182,10 @@
     "televerserOffre": "Upload offer",
     "makeOfferPrivate": "Assign the offer to one or more specific students",
     "selectStudent": "Select one or more students who will be able to see the offer",
-    "selectStudentError":  "Select one or more students.",
-    "attribuer":  "Assign"
+    "selectStudentError": "Select one or more students.",
+    "noStudentInProgram": "No student in this program",
+    "attribuer":  "Assign",
+    "loadingStudent": "Loading students",
+    "noStudents": "No students",
+    "commentRequired": "Please leave a comment."
 }

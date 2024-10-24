@@ -9,7 +9,7 @@ import { useOutletContext } from 'react-router-dom';
 const STATUS_CODE_ACCEPTED = 202;
 const STATUS_CODE_NO_CONTENT = 204;
 
-const AcceuilEmployeur = () => {
+const AccueilEmployeur = () => {
     const [userInfo, setUserInfo] = useOutletContext();
     const [isFetching, setIsFetching] = useState(true);
     const [data, setData] = useState(null)
@@ -123,4 +123,4 @@ const AcceuilEmployeur = () => {
     );
 };
 
-export default AcceuilEmployeur;
+export default AccueilEmployeur;

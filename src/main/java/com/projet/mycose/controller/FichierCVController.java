@@ -116,34 +116,26 @@ public class FichierCVController {
 
     @PatchMapping("/accept")
     public ResponseEntity<?> acceptCV(@RequestParam Long id,@RequestBody JsonNode jsonNode) {
-        try {
-            JsonNode descriptionNode = jsonNode.get("commentaire");
+        JsonNode descriptionNode = jsonNode.get("commentaire");
 
-            if (descriptionNode == null || descriptionNode.isNull()) {
-                return ResponseEntity.badRequest().body("Description field is missing");
-            }
-
-            String description = descriptionNode.asText();
-            fichierCVService.changeStatus(id, FichierCV.Status.ACCEPTED, description);
-            return ResponseEntity.ok().build();
-        } catch (ChangeSetPersister.NotFoundException e) {
-            return ResponseEntity.notFound().build();
+        if (descriptionNode == null || descriptionNode.isNull() || descriptionNode.asText().isEmpty()) {
+            return ResponseEntity.badRequest().body("Description field is missing");
         }
+
+        String description = descriptionNode.asText();
+        fichierCVService.changeStatus(id, FichierCV.Status.ACCEPTED, description);
+        return ResponseEntity.ok().build();
     }
     @PatchMapping("/refuse")
     public ResponseEntity<?> refuseCV(@RequestParam Long id, @RequestBody JsonNode jsonNode) {
-        try {
             JsonNode descriptionNode = jsonNode.get("commentaire");
 
-            if (descriptionNode == null || descriptionNode.isNull()) {
+            if (descriptionNode == null || descriptionNode.isNull() || descriptionNode.asText().isEmpty()) {
                 return ResponseEntity.badRequest().body("Description field is missing");
             }
 
             String description = descriptionNode.asText();
             fichierCVService.changeStatus(id, FichierCV.Status.REFUSED, description);
             return ResponseEntity.ok().build();
-        } catch (ChangeSetPersister.NotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
     }
 }
