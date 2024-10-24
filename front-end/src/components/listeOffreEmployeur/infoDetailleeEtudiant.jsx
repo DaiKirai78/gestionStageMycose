@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 function InfoDetailleeEtudiant({ isModalOpen, setIsModalOpen, infosEtudiant, summonEtudiant, summonMessage, setSummonMessage, studentInfo, accepterEtudiant, refuserEtudiant, isFetching }) {
     const [isStudentSummoned, setIsStudentSummoned] = useState(false);
+    const [isAcceptedOrRefused, setIsAcceptedOrRefused] = useState(false);
     const [cvEtudiantCourrant ,setCvEtudiantCourrant] = useState();
     const { t } = useTranslation();
 
@@ -31,6 +32,8 @@ function InfoDetailleeEtudiant({ isModalOpen, setIsModalOpen, infosEtudiant, sum
         if (isModalOpen) {
             if (studentInfo.status === 'SUMMONED') {
                 setIsStudentSummoned(true);
+            } else if (studentInfo.status === 'ACCEPTED' || studentInfo.status === 'REFUSED') {
+                setIsAcceptedOrRefused(true);
             } else {
                 setIsStudentSummoned(false);
             }
@@ -83,22 +86,22 @@ function InfoDetailleeEtudiant({ isModalOpen, setIsModalOpen, infosEtudiant, sum
                                     <div className="flex gap-4">
                                         <button
                                             onClick={() => summonEtudiant()}
-                                            className={`bg-blue-500 text-white px-4 py-2 rounded ${isStudentSummoned ? 'opacity-50' : 'hover:bg-blue-600'}`}
-                                            disabled={isStudentSummoned || isFetching}
+                                            className={`bg-blue-500 text-white px-4 py-2 rounded disabled:bg-gray-600 ${isStudentSummoned ? 'opacity-50' : 'hover:bg-blue-600'}`}
+                                            disabled={isStudentSummoned || isFetching || isAcceptedOrRefused}
                                         >
                                             {isStudentSummoned ? t("alreadySummoned") : t("summon")}
                                         </button>
                                         <button
                                             onClick={() => accepterEtudiant()}
-                                            className={`bg-green-500 text-white px-4 py-2 rounded`}
-                                            disabled={isFetching}
+                                            className={`bg-green-500 text-white px-4 py-2 rounded disabled:bg-gray-600`}
+                                            disabled={isFetching || isAcceptedOrRefused}
                                         >
                                             {t("accept")}
                                         </button>
                                         <button
                                             onClick={() => refuserEtudiant()}
-                                            className={`bg-red-500 text-white px-4 py-2 rounded`}
-                                            disabled={isFetching}
+                                            className={`bg-red-500 text-white px-4 py-2 rounded disabled:bg-gray-600`}
+                                            disabled={isFetching || isAcceptedOrRefused}
                                         >
                                             {t("refuse")}
                                         </button>

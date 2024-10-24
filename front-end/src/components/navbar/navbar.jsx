@@ -29,6 +29,10 @@ const navLinks = {
         {
             "titre": "televerserOffre",
             "lien": "/televerserOffreStage"
+        },
+        {
+            "titre": "validerCv",
+            "lien": "/validerCV"
         }
     ],
     "ENSEIGNANT": []

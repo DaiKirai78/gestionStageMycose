@@ -234,6 +234,7 @@ function FormOffreStage() {
                 {
                     ...formData,
                     etudiantsPrives: isPrivate ? selectedStudents : null,
+                    programme: !formData.programme ? "NOT_SPECIFIED" : formData.programme 
                 },
                 {
                     headers: {

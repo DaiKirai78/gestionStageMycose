@@ -114,6 +114,10 @@ const InfoDetailleeOffreStage = ({ setActiveOffer, activeOffer, getColorOffreSta
 
             if (response.status === 200) {
                 setSummonMessage(t("studentSummoned"));
+                setStudentInfo({
+                    ...studentInfo,
+                    status: 'SUMMONED'
+                })
             }
         } catch (error) {
             console.error("Erreur lors de la convocation de l'étudiant:", error);
@@ -136,6 +140,10 @@ const InfoDetailleeOffreStage = ({ setActiveOffer, activeOffer, getColorOffreSta
 
             if (response.status === 200) {
                 setSummonMessage(t("studentAccepted"));
+                setStudentInfo({
+                    ...studentInfo,
+                    status: 'ACCEPTED'
+                })
             }
         } catch (error) {
             console.error("Erreur lors de l'acceptation de l'étudiant:", error);
@@ -158,6 +166,10 @@ const InfoDetailleeOffreStage = ({ setActiveOffer, activeOffer, getColorOffreSta
 
             if (response.status === 200) {
                 setSummonMessage(t("studentRefused"));
+                setStudentInfo({
+                    ...studentInfo,
+                    status: 'REFUSED'
+                })
             }
         } catch (error) {
             console.error("Erreur lors du refus de l'étudiant:", error);
