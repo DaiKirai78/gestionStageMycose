@@ -5,30 +5,72 @@ import {useTranslation} from "react-i18next";
 const ListeEtudiants = () => {
 
     const localhost = "http://localhost:8080/";
-    const apiUrl = "gestionnaire/getEtudiantsSansContrat"
+    const apiUrlGetEtudiantsSansContrat = "gestionnaire/getEtudiantsSansContrat";
+    const apiUrlGetNombreDePages = "gestionnaire/getEtudiantsSansContratPages";
     const token = localStorage.getItem("token");
-    const { t } = useTranslation();
+    const {t} = useTranslation();
 
-    const [etudiants, setEtudiants] = useState({})
+    const [etudiants, setEtudiants] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+
+    const etudiantsBootstrap = [
+        {
+            id: 1,
+            nom: "Berrios",
+            prenom: "Roberto",
+            programme: "Technique de l'informatique"
+        },
+        {
+            id: 1,
+            nom: "Cabezas",
+            prenom: "Vicente",
+            programme: "Génie logiciel"
+        },
+        {
+            id: 1,
+            nom: "Mihoubi",
+            prenom: "Karim",
+            programme: "Technique de l'informatique"
+        }
+    ];
+
 
     useEffect(() => {
-        fetchEtudiants();
+        // fetchEtudiants();
+        // fetchTotalPages();
+        setEtudiants(etudiantsBootstrap);
     }, []);
+    //
+    // const fetchEtudiants = async () => {
+    //     try {
+    //         const response = await axios.get(localhost + apiUrlGetEtudiantsSansContrat,
+    //             {
+    //                 headers: {
+    //                     Authorization: `Bearer ${token}`,
+    //                     'Content-Type': 'application/json'
+    //                 }
+    //             });
+    //         setEtudiants(response.data);
+    //     } catch (e) {
+    //         console.error("Erreur lors de la récupération des étudiants sans contrat : " + e);
+    //     }
+    // }
 
-    const fetchEtudiants = async () => {
-        try {
-            const response = await axios.get(localhost + apiUrl,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-            setEtudiants(response.data);
-        } catch (e) {
-            console.error("Erreur lors de la récupération des étudiants sans contrat : " + e);
-        }
-    }
+    // const fetchTotalPages = async () => {
+    //     try {
+    //         const response = await fetch(localhost + apiUrlGetNombreDePages, {
+    //             headers: { Authorization: `Bearer ${token}` },
+    //         });
+    //         if (!response.ok) {
+    //             throw new Error(t("errorRetrievingNbPages"));
+    //         }
+    //         const pages = await response.json();
+    //         setTotalPages(pages);
+    //     } catch (error) {
+    //         console.error(t("errorRetrievingNbPages"), error);
+    //     }
+    // };
 
     return (
         <div className="flex items-start justify-center min-h-full p-8">
@@ -42,6 +84,41 @@ const ListeEtudiants = () => {
                 ) : (
                     <p className="text-center text-gray-700 mb-4">{t("noStudentWaiting")}</p>
                 )}
+                <ul className="space-y-4">
+                    {etudiants.map((etudiant) => (
+                        <li
+                            key={etudiant.id}
+                            className="p-6 border border-gray-300 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer"
+                            // onClick={() => {
+                            //     navigate(`/validerCV/${student.studentFirstName}${student.studentLastName}`, {state: {cv: student}})
+                            // }}
+                        >
+                            <h2 className="text-2xl font-semibold">{etudiant.prenom} {etudiant.nom}</h2>
+                            <p className="text-gray-700">{t("program")} : {t(etudiant.programme)}</p>
+                        </li>
+                    ))}
+                </ul>
+                <div className="flex justify-center mt-8">
+                    <button
+                        className={`px-4 py-2 ${
+                            currentPage === 1 ? "bg-gray-200 text-gray-700" : "bg-gray-400 text-gray-900"
+                        } rounded-l`}
+                        onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                        disabled={currentPage === 1}
+                    >
+                        {t("previous")}
+                    </button>
+                    <span className="px-4 py-2">{t("page")} {currentPage} / {Math.max(totalPages, 1)}</span>
+                    <button
+                        className={`px-4 py-2 ${
+                            currentPage === totalPages || etudiants.length === 0 ? "bg-gray-200 text-gray-700" : "bg-gray-400 text-gray-900"
+                        } rounded-r`}
+                        onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                        disabled={currentPage === totalPages || etudiants.length === 0}
+                    >
+                        {t("next")}
+                    </button>
+                </div>
             </div>
         </div>
     )
