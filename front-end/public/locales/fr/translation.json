@@ -211,5 +211,11 @@
     "alreadySummoned": "Déjà convoqué",
     "attribuerProfEtudiant": "Attribuer un élève à un professeur",
     "searchTeacher": "Chercher un prof",
-    "attribuerTheTeacher": "Attibuer le prof"
+    "attribuerTheTeacher": "Attibuer le prof",
+    "erreurAnnee": "Année invalide",
+    "ete": "Été",
+    "hiver": "Hiver",
+    "automne": "Automne",
+    "selectSession" : "Sélectionner la session",
+    "annee" : "Année"
 }

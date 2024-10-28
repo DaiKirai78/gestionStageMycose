@@ -2,6 +2,7 @@ import {useEffect, useState} from "react";
 import axios from "axios";
 import {useTranslation} from "react-i18next";
 import {useNavigate} from "react-router-dom";
+import FiltreSession from "../filtreSession";
 
 const listeStage = () => {
 
@@ -22,6 +23,10 @@ const listeStage = () => {
 
     const [pageActuelle, setPageActuelle] = useState(0);
     const [nombreDePage, setNombreDePage] = useState(0);
+
+    const [annee, setAnnee] = useState("");
+    const [session, setSession] = useState("");
+    const [anneeErrorKey, setAnneeErrorKey] = useState("");
 
     const {t} = useTranslation();
 
@@ -121,10 +126,19 @@ const listeStage = () => {
         setRecherche(e.target.value)
     }
 
+    function isValidYear() {
+        const regex = /^[0-9]{4}$/;
+        if (!regex.test(annee)) {
+            setAnneeErrorKey("erreurAnnee");
+        }
+
+        return regex.test(annee);
+    }
+
     async function rechercher(e) {
         e.preventDefault();
 
-        if (recherche !== "") {
+        if (recherche !== "" && isValidYear()) {
             setUneRechercheEstFaite(true);
             setIsSearching(true);
             setRecherchePageActuelle(0);
@@ -274,6 +288,13 @@ const listeStage = () => {
                         )
                     }
                 </div>
+                <FiltreSession annee={annee} 
+                                anneeErrorKey={anneeErrorKey} 
+                                session={session} t
+                                setAnnee={setAnnee} 
+                                setSession={setSession}
+                                setAnneeErrorKey={setAnneeErrorKey} />
+
                 <div className="mb-7">
                     <hr/>
                     {

@@ -209,5 +209,11 @@
     "alreadySummoned": "Already summoned",
     "attribuerProfEtudiant": "Assign a student to a teacher",
     "searchTeacher": "Search a teacher",
-    "attribuerTheTeacher": "Assign the teacher"
+    "attribuerTheTeacher": "Assign the teacher",
+    "erreurAnnee": "Invalid year",
+    "ete": "Summer",
+    "hiver": "Winter",
+    "automne": "Autumn",
+    "selectSession" : "Select session",
+    "annee" : "Year"
 }
