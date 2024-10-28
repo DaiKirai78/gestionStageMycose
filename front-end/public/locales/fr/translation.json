@@ -21,8 +21,8 @@
     "login": "Connexion",
     "password": "Mot de passe",
     "uploadFile": "Téléverser un fichier",
-    "uploadInternshipFilePDF": "Téléverser votre offre de stage en PDF",
-    "uploadCVFilePDF": "Téléverser votre CV en PDF",
+    "uploadInternshipFilePDF": "Téléversez votre offre de stage en format PDF",
+    "uploadCVFilePDF": "Téléversez votre CV en format PDF",
     "fileRequired": "Téléverser un fichier PDF.",
     "fillForm": "Remplir le formulaire",
     "fillFormInternship": "Remplir les champs de votre offre de stage",
@@ -212,9 +212,12 @@
     "attribuerProfEtudiant": "Attribuer un élève à un professeur",
     "searchTeacher": "Chercher un prof",
     "attribuerTheTeacher": "Attibuer le prof",
-    "studentListWithoutContract": "Liste des étudiants sans contrat",
+    "studentListWithoutContract": "Liste des étudiants en attente de contrat",
     "clickStudentContract": "Appuyez sur un étudiant pour lui attribuer un contrat",
-    "waitingStudent": "étudiant en attente de contrat",
-    "waitingStudents": "étudiants en attente de contrat",
-    "noStudentWaiting": "Aucun étudiant en attente de contrat"
+    "waitingStudent": "étudiant en attente",
+    "waitingStudents": "étudiants en attente",
+    "noStudentWaiting": "Aucun étudiant en attente",
+    "contrat": "Contrat",
+    "uploadContract": "Téléverser un contrat",
+    "uploadContractFilePDF": "Téléversez votre contrat en format PDF"
 }

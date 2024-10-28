@@ -2,8 +2,8 @@
     "errorMessageEmail": "Enter a valid email address",
     "errorMessagePassword": "Enter a valid password with a minimum of 8 letters",
     "uploadFile": "Upload a File",
-    "uploadInternshipFilePDF": "Upload your internship offer in PDF",
-    "uploadCVFilePDF": "Upload your resume in PDF",
+    "uploadInternshipFilePDF": "Upload your internship offer as a PDF file",
+    "uploadCVFilePDF": "Upload your resume as a PDF file",
     "fileRequired": "Upload a PDF file.",
     "fillForm": "Fill the Form",
     "fillFormInternship": "Fill in the fields of your internship offer",
@@ -210,9 +210,12 @@
     "attribuerProfEtudiant": "Assign a student to a teacher",
     "searchTeacher": "Search a teacher",
     "attribuerTheTeacher": "Assign the teacher",
-    "studentListWithoutContract": "List of students without a contract",
+    "studentListWithoutContract": "List of students waiting for a contract",
     "clickStudentContract": "Click on a student to assign a contract",
-    "waitingStudent": "student waiting for a contract",
-    "waitingStudents": "students waiting for a contract",
-    "noStudentWaiting": "No student waiting for a contract"
+    "waitingStudent": "student waiting",
+    "waitingStudents": "students waiting",
+    "noStudentWaiting": "No student waiting",
+    "contrat": "Contract",
+    "uploadContract": "Upload a contract",
+    "uploadContractFilePDF": "Upload your contract as a PDF file"
 }

@@ -33,6 +33,10 @@ const navLinks = {
         {
             "titre": "validerCv",
             "lien": "/validerCV"
+        },
+        {
+            "titre": "contrat",
+            "lien": "/attribuerContrat"
         }
     ],
     "ENSEIGNANT": []

@@ -1,6 +1,7 @@
 import axios from "axios";
 import {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
+import {useNavigate} from "react-router-dom";
 
 const ListeEtudiants = () => {
 
@@ -9,6 +10,7 @@ const ListeEtudiants = () => {
     const apiUrlGetNombreDePages = "gestionnaire/getEtudiantsSansContratPages";
     const token = localStorage.getItem("token");
     const {t} = useTranslation();
+    const navigate = useNavigate();
 
     const [etudiants, setEtudiants] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
@@ -89,9 +91,9 @@ const ListeEtudiants = () => {
                         <li
                             key={etudiant.id}
                             className="p-6 border border-gray-300 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer"
-                            // onClick={() => {
-                            //     navigate(`/validerCV/${student.studentFirstName}${student.studentLastName}`, {state: {cv: student}})
-                            // }}
+                            onClick={() => {
+                                navigate(`/attribuerContrat/${etudiant.id}`, {state: {etudiant: etudiant}})
+                            }}
                         >
                             <h2 className="text-2xl font-semibold">{etudiant.prenom} {etudiant.nom}</h2>
                             <p className="text-gray-700">{t("program")} : {t(etudiant.programme)}</p>

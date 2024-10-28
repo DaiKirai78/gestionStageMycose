@@ -24,6 +24,7 @@ import AttributionEtudiant from './components/attribution/attributionEtudiant.js
 import AttributionProf from './components/attribution/attributionProf.jsx';
 import AppliquerStagePage from './pages/appliquerStagePage.jsx';
 import EtudiantsSansContratPage from "./pages/etudiantsSansContratPage.jsx";
+import AttribuerContratPage from "./pages/attribuerContratPage.jsx";
 
 const router = createBrowserRouter([
   { path: "/", element: <ConnectionPage /> },
@@ -43,6 +44,7 @@ const router = createBrowserRouter([
       { path: "/profil", element: <ProfilPage /> },
       { path: "/appliquer", element: <AppliquerStagePage/> },
       { path: "/attribuerContrat", element: <EtudiantsSansContratPage/> },
+      { path: "/attribuerContrat/:id", element: <AttribuerContratPage/> },
 
       {
         path: "/attribuer", 
