@@ -23,6 +23,7 @@ import AttributionPage from './pages/attributionPage.jsx';
 import AttributionEtudiant from './components/attribution/attributionEtudiant.jsx';
 import AttributionProf from './components/attribution/attributionProf.jsx';
 import AppliquerStagePage from './pages/appliquerStagePage.jsx';
+import EtudiantsSansContratPage from "./pages/etudiantsSansContratPage.jsx";
 
 const router = createBrowserRouter([
   { path: "/", element: <ConnectionPage /> },
@@ -41,6 +42,7 @@ const router = createBrowserRouter([
       { path: "/validerOffreStage", element: <ValiderOffreStagePage /> },
       { path: "/profil", element: <ProfilPage /> },
       { path: "/appliquer", element: <AppliquerStagePage/> },
+      { path: "/attribuerContrat", element: <EtudiantsSansContratPage/> },
 
       {
         path: "/attribuer", 

@@ -211,5 +211,10 @@
     "alreadySummoned": "Déjà convoqué",
     "attribuerProfEtudiant": "Attribuer un élève à un professeur",
     "searchTeacher": "Chercher un prof",
-    "attribuerTheTeacher": "Attibuer le prof"
+    "attribuerTheTeacher": "Attibuer le prof",
+    "studentListWithoutContract": "Liste des étudiants sans contrat",
+    "clickStudentContract": "Cliquer sur un étudiant pour lui attribuer un contrat",
+    "waitingStudent": "étudiant en attente de contrat",
+    "waitingStudents": "étudiants en attente de contrat",
+    "noStudentWaiting": "Aucun étudiant en attente de contrat"
 }
