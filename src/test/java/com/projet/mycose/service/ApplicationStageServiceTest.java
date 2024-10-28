@@ -363,15 +363,18 @@ public class ApplicationStageServiceTest {
         ApplicationStage.ApplicationStatus newStatus = ApplicationStage.ApplicationStatus.ACCEPTED;
         applicationStage.setStatus(newStatus);
 
-        applicationStageAvecInfosDTO.setId(applicationId);
-        applicationStageAvecInfosDTO.setEtudiant_id(etudiant.getId());
-        applicationStageAvecInfosDTO.setOffreStage_id(fichierOffreStage.getId());
-        applicationStageAvecInfosDTO.setStatus(ApplicationStage.ApplicationStatus.PENDING);
+        ApplicationStage applicationStage1 = new ApplicationStage();
+        applicationStage1.setId(applicationId);
+        applicationStage1.setEtudiant(etudiant);
+        applicationStage1.setOffreStage(fichierOffreStage);
+        applicationStage1.setStatus(ApplicationStage.ApplicationStatus.PENDING);
 
+        when(applicationStageRepository.findById(applicationId)).thenReturn(Optional.of(applicationStage1));
+        //when(utilisateurService.getMyUserId()).thenReturn(etudiant.getId());
         when(utilisateurService.getEtudiantDTO(any())).thenReturn(EtudiantDTO.toDTO(etudiant));
         when(offreStageRepository.findById(fichierOffreStage.getId())).thenReturn(Optional.of(fichierOffreStage));
         when(applicationStageRepository.save(any(ApplicationStage.class))).thenReturn(applicationStage);
-        when(applicationStageRepository.findById(applicationId)).thenReturn(Optional.of(applicationStage));
+        //when(applicationStageRepository.findByEtudiantIdAndOffreStageId(etudiant.getId(), fichierOffreStage.getId())).thenReturn(Optional.of(applicationStage));
 
         // Act
         ApplicationStageAvecInfosDTO response = applicationStageService.accepterOuRefuserApplication(applicationId, newStatus);
@@ -382,11 +385,28 @@ public class ApplicationStageServiceTest {
     }
 
     @Test
-    public void testAccepterOuRefuserApplicationNotFound() {
+    void accepterOuRefuserApplication_AlreadyAccepted() {
+        // Arrange
+        Long applicationId = 1L;
+        ApplicationStage.ApplicationStatus newStatus = ApplicationStage.ApplicationStatus.ACCEPTED;
+        applicationStage.setStatus(newStatus);
+
+        when(applicationStageRepository.findById(applicationId)).thenReturn(Optional.of(applicationStage));
+
         // Act et Assert
-        assertThrows(ResponseStatusException.class, () ->
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () ->
                 applicationStageService.accepterOuRefuserApplication(1L, ApplicationStage.ApplicationStatus.ACCEPTED)
         );
+        assertEquals("409 CONFLICT \"La candidature a déjà été acceptée ou refusée et ne peut pas être modifiée.\"", exception.getMessage());
+    }
+
+    @Test
+    public void testAccepterOuRefuserApplicationNotFound() {
+        // Act et Assert
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () ->
+                applicationStageService.accepterOuRefuserApplication(1L, ApplicationStage.ApplicationStatus.ACCEPTED)
+        );
+        assertEquals("404 NOT_FOUND \"Application not found\"", exception.getMessage());
     }
 
     @Test
