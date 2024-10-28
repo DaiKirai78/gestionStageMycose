@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import Divider from '../divider.jsx';
-import { Input } from '@material-tailwind/react';
+import { button, Input } from '@material-tailwind/react';
 import InputErrorMessage from '../inputErrorMesssage.jsx';
 import { useTranslation } from "react-i18next"
 import { useNavigate } from 'react-router-dom';
+import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa';
 
 const FormConnection = () => {
 
@@ -30,6 +31,8 @@ const FormConnection = () => {
 
     const [isFetching, setIsFetching] = useState(false)
     const [errorKeyResponse, setErrorKeyResponse] = useState(false)
+
+    const [isPasswordHidden, setIsPasswordHidden] = useState();
 
     function onLogin(e) {
         e.preventDefault();
@@ -158,10 +161,23 @@ const FormConnection = () => {
                                onChange={(e) => {
                                    changePasswordValue(e);
                                }}
-                               type='password'
+                               type={isPasswordHidden ? "password" : "text"}
                                autoComplete='on'
                                value={password}
                                error={errorKeyPassword.length > 0}
+                               icon={
+                                <button onClick={(e) => {
+                                    e.preventDefault();
+                                    setIsPasswordHidden(!isPasswordHidden)
+                                }}>
+                                    {
+                                        isPasswordHidden ? 
+                                        <FaRegEyeSlash />
+                                        :
+                                        <FaRegEye />
+                                    }
+                                </button>
+                            }
                         />
                         <InputErrorMessage messageKey={errorKeyPassword}/>
                     </div>
