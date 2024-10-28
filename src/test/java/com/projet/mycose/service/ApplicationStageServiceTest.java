@@ -370,11 +370,9 @@ public class ApplicationStageServiceTest {
         applicationStage1.setStatus(ApplicationStage.ApplicationStatus.PENDING);
 
         when(applicationStageRepository.findById(applicationId)).thenReturn(Optional.of(applicationStage1));
-        //when(utilisateurService.getMyUserId()).thenReturn(etudiant.getId());
         when(utilisateurService.getEtudiantDTO(any())).thenReturn(EtudiantDTO.toDTO(etudiant));
         when(offreStageRepository.findById(fichierOffreStage.getId())).thenReturn(Optional.of(fichierOffreStage));
         when(applicationStageRepository.save(any(ApplicationStage.class))).thenReturn(applicationStage);
-        //when(applicationStageRepository.findByEtudiantIdAndOffreStageId(etudiant.getId(), fichierOffreStage.getId())).thenReturn(Optional.of(applicationStage));
 
         // Act
         ApplicationStageAvecInfosDTO response = applicationStageService.accepterOuRefuserApplication(applicationId, newStatus);
