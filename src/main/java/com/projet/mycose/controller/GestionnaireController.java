@@ -76,10 +76,10 @@ public class GestionnaireController {
         }
     }
 
-    @GetMapping("/getEtudiantsSansContrat")
-    public ResponseEntity<List<EtudiantDTO>> getEtudiantsSansContrat() {
+    @GetMapping("/getEtudiantsContratEnDemande")
+    public ResponseEntity<List<EtudiantDTO>> getEtudiantsContratEnDemande() {
         try {
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(etudiantService.getEtudiantsSansContrat());
+            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(etudiantService.getEtudiantsContratEnDemande());
         } catch (Exception e) {
             System.err.println("Une erreur est survenue lors de la récupération des étudiants en demande de contrat : " + e.getMessage());
             return ResponseEntity.internalServerError().build();

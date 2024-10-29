@@ -45,7 +45,7 @@ public class EtudiantServiceTest {
     @Test
     public void creationDeCompteAvecSucces() {
         //Arrange
-        Etudiant etudiant = new Etudiant(1L, "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$", Programme.TECHNIQUE_INFORMATIQUE);
+        Etudiant etudiant = new Etudiant(1L, "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$", Programme.TECHNIQUE_INFORMATIQUE, Etudiant.ContractStatus.NO_CONTRACT);
         when(etudiantRepositoryMock.save(any(Etudiant.class))).thenReturn(etudiant);
 
         //Act
@@ -294,4 +294,25 @@ public class EtudiantServiceTest {
         verify(offreStageRepositoryMock, times(1)).findOffresByEtudiantIdWithSearch(etudiantId, recherche, pageRequest);
     }
 
+    @Test
+    public void testGetEtudiantsContratEnDemande() {
+        // Arrange
+        Etudiant etudiant = new Etudiant(1L, "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$", Programme.TECHNIQUE_INFORMATIQUE, Etudiant.ContractStatus.PENDING);
+        List<EtudiantDTO> etudiantDTOList = new ArrayList<>();
+        etudiantDTOList.add(EtudiantDTO.toDTO(etudiant));
+        List<Etudiant> etudiantList = new ArrayList<>();
+        etudiantList.add(etudiant);
+        when(etudiantRepositoryMock.findEtudiantsByContractStatusEquals(Etudiant.ContractStatus.PENDING)).thenReturn(etudiantList);
+
+        // Act
+        List<EtudiantDTO> vraieEtudiantsList = etudiantService.getEtudiantsContratEnDemande();
+
+        // Assert
+        assertEquals(etudiantDTOList.getFirst().getId(), vraieEtudiantsList.getFirst().getId());
+        assertEquals(etudiantDTOList.getLast().getId(), vraieEtudiantsList.getLast().getId());
+        assertEquals(etudiantDTOList.getFirst().getContractStatus(), vraieEtudiantsList.getFirst().getContractStatus());
+        assertEquals(etudiantDTOList.getLast().getContractStatus(), vraieEtudiantsList.getLast().getContractStatus());
+        assertEquals(etudiantDTOList.size(), vraieEtudiantsList.size());
+        verify(etudiantRepositoryMock, times(1)).findEtudiantsByContractStatusEquals(Etudiant.ContractStatus.PENDING);
+    }
 }

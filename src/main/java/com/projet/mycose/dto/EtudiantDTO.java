@@ -11,10 +11,12 @@ import lombok.*;
 @ToString
 public class EtudiantDTO extends UtilisateurDTO {
     private Programme programme;
+    private Etudiant.ContractStatus contractStatus;
     @Builder
-    public EtudiantDTO(Long id, String prenom, String nom, String courriel, String numeroDeTelephone, Role role, Programme programme) {
+    public EtudiantDTO(Long id, String prenom, String nom, String courriel, String numeroDeTelephone, Role role, Programme programme, Etudiant.ContractStatus contractStatus) {
         super(id, prenom, nom, courriel, numeroDeTelephone, role);
         this.programme = programme;
+        this.contractStatus = contractStatus;
     }
 
     public static EtudiantDTO toDTO(Etudiant etudiant) {
@@ -26,6 +28,7 @@ public class EtudiantDTO extends UtilisateurDTO {
                 .numeroDeTelephone(etudiant.getNumeroDeTelephone())
                 .role(etudiant.getRole())
                 .programme(etudiant.getProgramme())
+                .contractStatus(etudiant.getContractStatus())
                 .build();
 
     }
@@ -38,6 +41,7 @@ public class EtudiantDTO extends UtilisateurDTO {
                 .courriel(etudiantDTO.getCourriel())
                 .numeroDeTelephone(etudiantDTO.getNumeroDeTelephone())
                 .programme(etudiantDTO.getProgramme())
+                .contractStatus(etudiantDTO.getContractStatus())
                 .build();
 
     }

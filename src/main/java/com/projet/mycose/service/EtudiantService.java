@@ -90,7 +90,7 @@ public class EtudiantService {
         return etudiants.stream().map(EtudiantDTO::toDTO).collect(Collectors.toList());
     }
 
-    public List<EtudiantDTO> getEtudiantsSansContrat() {
+    public List<EtudiantDTO> getEtudiantsContratEnDemande() {
         List<Etudiant> etudiants = etudiantRepository.findEtudiantsByContractStatusEquals(Etudiant.ContractStatus.PENDING);
         return etudiants.stream().map(EtudiantDTO::toDTO).collect(Collectors.toList());
     }

@@ -7,7 +7,7 @@ import LoadingSpinner from "../loadingSpinner.jsx";
 const ListeEtudiantsSansContrat = () => {
 
     const localhost = "http://localhost:8080/";
-    const apiUrlGetEtudiantsSansContrat = "gestionnaire/getEtudiantsSansContrat";
+    const apiUrlGetEtudiantsSansContrat = "gestionnaire/getEtudiantsContratEnDemande";
     const apiUrlGetNombreDePages = "gestionnaire/getEtudiantsSansContratPages";
     const token = localStorage.getItem("token");
     const {t} = useTranslation();

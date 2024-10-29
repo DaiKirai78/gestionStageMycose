@@ -62,7 +62,8 @@ public class GestionnaireStageControllerTest {
                 "unCourriel@mail.com",
                 "555-666-4756",
                 Role.ETUDIANT,
-                Programme.TECHNIQUE_INFORMATIQUE
+                Programme.TECHNIQUE_INFORMATIQUE,
+                 Etudiant.ContractStatus.NO_CONTRACT
         );
          etudiantMock2 = new EtudiantDTO(
                 2L,
@@ -71,7 +72,8 @@ public class GestionnaireStageControllerTest {
                 "unCourriel@mail.com",
                 "555-666-4756",
                 Role.ETUDIANT,
-                Programme.TECHNIQUE_INFORMATIQUE
+                Programme.TECHNIQUE_INFORMATIQUE,
+                 Etudiant.ContractStatus.NO_CONTRACT
         );
 
     }
