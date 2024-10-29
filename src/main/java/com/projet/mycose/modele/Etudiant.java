@@ -37,7 +37,6 @@ public class Etudiant extends Utilisateur {
     private List<Contrat> contrat;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private ContractStatus contractStatus;
 
     public enum ContractStatus {

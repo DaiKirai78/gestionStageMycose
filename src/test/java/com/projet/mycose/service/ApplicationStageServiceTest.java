@@ -7,6 +7,7 @@ import com.projet.mycose.modele.auth.Credentials;
 import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.repository.ApplicationStageRepository;
 import com.projet.mycose.repository.EtudiantOffreStagePriveeRepository;
+import com.projet.mycose.repository.EtudiantRepository;
 import com.projet.mycose.repository.OffreStageRepository;
 import com.projet.mycose.dto.ApplicationStageAvecInfosDTO;
 import com.projet.mycose.dto.ApplicationStageDTO;
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
@@ -33,6 +35,9 @@ public class ApplicationStageServiceTest {
 
     @Mock
     private OffreStageRepository offreStageRepository;
+
+    @Mock
+    private EtudiantRepository etudiantRepository;
 
     @Mock
     private EtudiantOffreStagePriveeRepository etudiantOffreStagePriveeRepository;
@@ -362,6 +367,7 @@ public class ApplicationStageServiceTest {
         Long applicationId = 1L;
         ApplicationStage.ApplicationStatus newStatus = ApplicationStage.ApplicationStatus.ACCEPTED;
         applicationStage.setStatus(newStatus);
+        etudiant.setContractStatus(Etudiant.ContractStatus.NO_CONTRACT);
 
         ApplicationStage applicationStage1 = new ApplicationStage();
         applicationStage1.setId(applicationId);
@@ -373,6 +379,7 @@ public class ApplicationStageServiceTest {
         when(utilisateurService.getEtudiantDTO(any())).thenReturn(EtudiantDTO.toDTO(etudiant));
         when(offreStageRepository.findById(fichierOffreStage.getId())).thenReturn(Optional.of(fichierOffreStage));
         when(applicationStageRepository.save(any(ApplicationStage.class))).thenReturn(applicationStage);
+        when(etudiantRepository.save(any(Etudiant.class))).thenReturn(etudiant);
 
         // Act
         ApplicationStageAvecInfosDTO response = applicationStageService.accepterOuRefuserApplication(applicationId, newStatus);
@@ -508,5 +515,49 @@ public class ApplicationStageServiceTest {
         verify(applicationStageRepository, times(1)).findById(1L);
         verify(utilisateurService, times(1)).getMyUserId();
         verify(applicationStageRepository, never()).save(any(ApplicationStage.class));
+    }
+
+    @Test
+    void testChangeContractStatusToPending_Success() {
+        // Arrange
+        Etudiant.ContractStatus newContractStatus = Etudiant.ContractStatus.PENDING;
+        etudiant.setContractStatus(Etudiant.ContractStatus.NO_CONTRACT);
+        when(utilisateurService.getEtudiantDTO(any())).thenReturn(EtudiantDTO.toDTO(etudiant));
+        when(etudiantRepository.save(any(Etudiant.class))).thenAnswer(invocation -> {
+            Etudiant savedEtudiant = invocation.getArgument(0);
+            savedEtudiant.setContractStatus(Etudiant.ContractStatus.PENDING);
+            return savedEtudiant;
+        });
+
+        // Act
+        EtudiantDTO etudiantDTO = applicationStageService.changeContractStatusToPending(etudiant.getId());
+
+        // Assert
+        assertEquals(newContractStatus, etudiantDTO.getContractStatus());
+        verify(etudiantRepository, times(1)).save(any(Etudiant.class));
+    }
+
+    @Test
+    void testChangeContractStatusToPending_etudiantEmpty() {
+        // Act & Assert
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            applicationStageService.changeContractStatusToPending(etudiant.getId());
+        });
+
+        assertEquals("404 NOT_FOUND \"L'étudiant avec l'ID 1 est innexistant\"", exception.getMessage());
+    }
+
+    @Test
+    void testChangeContractStatusToPending_contractStatusIsAlreadyPending() {
+        // Arrange
+        etudiant.setContractStatus(Etudiant.ContractStatus.PENDING);
+        when(utilisateurService.getEtudiantDTO(1L)).thenReturn(EtudiantDTO.toDTO(etudiant));
+
+        // Act & Assert
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            applicationStageService.changeContractStatusToPending(etudiant.getId());
+        });
+
+        assertEquals("409 CONFLICT \"L'étudiant a déjà un stage actif ou une demande de stage active\"", exception.getMessage());
     }
 }

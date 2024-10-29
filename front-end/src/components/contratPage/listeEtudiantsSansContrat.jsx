@@ -18,31 +18,31 @@ const ListeEtudiantsSansContrat = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
 
-    const etudiantsBootstrap = [
-        {
-            id: 1,
-            nom: "Berrios",
-            prenom: "Roberto",
-            programme: "Technique de l'informatique"
-        },
-        {
-            id: 2,
-            nom: "Cabezas",
-            prenom: "Vicente",
-            programme: "Génie logiciel"
-        },
-        {
-            id: 3,
-            nom: "Mihoubi",
-            prenom: "Karim",
-            programme: "Technique de l'informatique"
-        }
-    ];
+    // const etudiantsBootstrap = [
+    //     {
+    //         id: 1,
+    //         nom: "Berrios",
+    //         prenom: "Roberto",
+    //         programme: "Technique de l'informatique"
+    //     },
+    //     {
+    //         id: 2,
+    //         nom: "Cabezas",
+    //         prenom: "Vicente",
+    //         programme: "Génie logiciel"
+    //     },
+    //     {
+    //         id: 3,
+    //         nom: "Mihoubi",
+    //         prenom: "Karim",
+    //         programme: "Technique de l'informatique"
+    //     }
+    // ];
 
 
     useEffect(() => {
         fetchEtudiants();
-        //fetchTotalPages();
+        fetchTotalPages();
         setEtudiants(etudiantsBootstrap);
     }, []);
 
@@ -64,23 +64,23 @@ const ListeEtudiantsSansContrat = () => {
         }
     }
 
-    // const fetchTotalPages = async () => {
-    //     try {
-    //         setLoading(true);
-    //         const response = await fetch(localhost + apiUrlGetNombreDePages, {
-    //             headers: { Authorization: `Bearer ${token}` },
-    //         });
-    //         if (!response.ok) {
-    //             throw new Error(t("errorRetrievingNbPages"));
-    //         }
-    //         const pages = await response.json();
-    //         setTotalPages(pages);
-    //         setLoading(false);
-    //     } catch (error) {
-    //         console.error(t("errorRetrievingNbPages"), error);
-    //         setLoading(false);
-    //     }
-    // }
+    const fetchTotalPages = async () => {
+        try {
+            setLoading(true);
+            const response = await fetch(localhost + apiUrlGetNombreDePages, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            if (!response.ok) {
+                throw new Error(t("errorRetrievingNbPages"));
+            }
+            const pages = await response.json();
+            setTotalPages(pages);
+            setLoading(false);
+        } catch (error) {
+            console.error(t("errorRetrievingNbPages"), error);
+            setLoading(false);
+        }
+    }
 
     if (loading) return (
         <div className="flex items-start justify-center min-h-screen p-8">

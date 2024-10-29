@@ -1,5 +1,6 @@
 package com.projet.mycose.service;
 
+import com.projet.mycose.dto.ApplicationStageAvecInfosDTO;
 import com.projet.mycose.dto.EtudiantDTO;
 import com.projet.mycose.dto.OffreStageDTO;
 import com.projet.mycose.modele.Etudiant;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;

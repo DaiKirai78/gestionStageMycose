@@ -1,10 +1,12 @@
 package com.projet.mycose.controller;
 
 import com.projet.mycose.modele.ApplicationStage;
+import com.projet.mycose.modele.Etudiant;
 import com.projet.mycose.security.exception.AuthenticationException;
 import com.projet.mycose.service.ApplicationStageService;
 import com.projet.mycose.dto.ApplicationStageAvecInfosDTO;
 import com.projet.mycose.dto.ApplicationStageDTO;
+import com.projet.mycose.service.EtudiantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ApplicationStageController {
     private final ApplicationStageService applicationStageService;
+    private final EtudiantService etudiantService;
 
     @PostMapping("/apply")
     public ResponseEntity<ApplicationStageDTO> applyForStage(@RequestParam Long id) throws AccessDeniedException {
