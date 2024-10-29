@@ -8,7 +8,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 
 @Entity
 @Getter
@@ -55,10 +54,6 @@ public class Contrat {
     public String toString() {
         return "Contrat{" +
                 "id=" + id +
-                ", pdf=" + Arrays.toString(pdf) +
-                ", signatureGestionnaire=" + Arrays.toString(signatureGestionnaire) +
-                ", signatureEtudiant=" + Arrays.toString(signatureEtudiant) +
-                ", signatureEmployeur=" + Arrays.toString(signatureEmployeur) +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 ", etudiant=" + etudiant +
