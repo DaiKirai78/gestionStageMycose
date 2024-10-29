@@ -10,6 +10,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -20,6 +21,9 @@ import java.util.Set;
 public class Employeur extends Utilisateur {
 
     private String entrepriseName;
+
+    @OneToMany(mappedBy = "etudiant", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Contrat> contrat;
     @Builder
     public Employeur(Long id, String prenom, String nom, String numeroDeTelephone, String courriel, String motDePasse, String entrepriseName) {
         super(id, prenom, nom, numeroDeTelephone, Credentials.builder().email(courriel).password(motDePasse).role(Role.EMPLOYEUR).build());

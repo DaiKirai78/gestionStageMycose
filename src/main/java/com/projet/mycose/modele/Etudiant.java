@@ -33,6 +33,19 @@ public class Etudiant extends Utilisateur {
     @ManyToOne
     private Enseignant enseignantAssignee;
 
+    @OneToMany(mappedBy = "etudiant", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Contrat> contrat;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ContractStatus contractStatus;
+
+    public enum ContractStatus {
+        ACTIVE,
+        NO_CONTRACT,
+        PENDING
+    }
+
     @Builder
     public Etudiant(Long id, String prenom, String nom, String numeroDeTelephone, String courriel, String motDePasse, Programme programme) {
         super(id,
