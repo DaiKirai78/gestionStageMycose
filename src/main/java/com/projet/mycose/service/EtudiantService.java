@@ -89,4 +89,9 @@ public class EtudiantService {
         List<Etudiant> etudiants = etudiantRepository.findAllByProgramme(programme);
         return etudiants.stream().map(EtudiantDTO::toDTO).collect(Collectors.toList());
     }
+
+    public List<EtudiantDTO> getEtudiantsSansContrat() {
+        List<Etudiant> etudiants = etudiantRepository.findEtudiantsByContractStatusEquals(Etudiant.ContractStatus.PENDING);
+        return etudiants.stream().map(EtudiantDTO::toDTO).collect(Collectors.toList());
+    }
 }

@@ -1,7 +1,7 @@
 import {useLocation, useOutletContext} from "react-router-dom";
 import TokenPageContainer from "./tokenPageContainer.jsx";
 import React from "react";
-import AttribuerContrat from "../components/etudiantsSansContratPage/attribuerContrat.jsx";
+import AttribuerContrat from "../components/contratPage/attribuerContrat.jsx";
 
 const AttribuerContratPage = () => {
     const [userInfo, setUserInfo] = useOutletContext();

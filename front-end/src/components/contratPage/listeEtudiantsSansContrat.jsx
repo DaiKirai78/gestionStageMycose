@@ -4,7 +4,7 @@ import {useTranslation} from "react-i18next";
 import {useNavigate} from "react-router-dom";
 import LoadingSpinner from "../loadingSpinner.jsx";
 
-const ListeEtudiants = () => {
+const ListeEtudiantsSansContrat = () => {
 
     const localhost = "http://localhost:8080/";
     const apiUrlGetEtudiantsSansContrat = "gestionnaire/getEtudiantsSansContrat";
@@ -142,4 +142,4 @@ const ListeEtudiants = () => {
     )
 }
 
-export default ListeEtudiants;
+export default ListeEtudiantsSansContrat;

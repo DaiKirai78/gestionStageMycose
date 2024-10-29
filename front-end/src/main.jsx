@@ -23,7 +23,7 @@ import AttributionPage from './pages/attributionPage.jsx';
 import AttributionEtudiant from './components/attribution/attributionEtudiant.jsx';
 import AttributionProf from './components/attribution/attributionProf.jsx';
 import AppliquerStagePage from './pages/appliquerStagePage.jsx';
-import EtudiantsSansContratPage from "./pages/etudiantsSansContratPage.jsx";
+import ContratPage from "./pages/contratPage.jsx";
 import AttribuerContratPage from "./pages/attribuerContratPage.jsx";
 
 const router = createBrowserRouter([
@@ -43,7 +43,7 @@ const router = createBrowserRouter([
       { path: "/validerOffreStage", element: <ValiderOffreStagePage /> },
       { path: "/profil", element: <ProfilPage /> },
       { path: "/appliquer", element: <AppliquerStagePage/> },
-      { path: "/attribuerContrat", element: <EtudiantsSansContratPage/> },
+      { path: "/attribuerContrat", element: <ContratPage/> },
       { path: "/attribuerContrat/:id", element: <AttribuerContratPage/> },
 
       {
