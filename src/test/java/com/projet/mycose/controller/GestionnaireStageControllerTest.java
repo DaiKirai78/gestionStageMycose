@@ -55,7 +55,7 @@ public class GestionnaireStageControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(gestionnaireController)
                 .setControllerAdvice(new GlobalExceptionHandler())
                 .build();
-         etudiantMock = new EtudiantDTO(
+        etudiantMock = new EtudiantDTO(
                 1L,
                 "unPrenom",
                 "unNom",
@@ -63,9 +63,9 @@ public class GestionnaireStageControllerTest {
                 "555-666-4756",
                 Role.ETUDIANT,
                 Programme.TECHNIQUE_INFORMATIQUE,
-                 Etudiant.ContractStatus.NO_CONTRACT
+                Etudiant.ContractStatus.NO_CONTRACT
         );
-         etudiantMock2 = new EtudiantDTO(
+        etudiantMock2 = new EtudiantDTO(
                 2L,
                 "unPrenom",
                 "unNom",
@@ -73,7 +73,7 @@ public class GestionnaireStageControllerTest {
                 "555-666-4756",
                 Role.ETUDIANT,
                 Programme.TECHNIQUE_INFORMATIQUE,
-                 Etudiant.ContractStatus.NO_CONTRACT
+                Etudiant.ContractStatus.NO_CONTRACT
         );
 
     }
@@ -88,9 +88,9 @@ public class GestionnaireStageControllerTest {
 
         // Act & Assert
         mockMvc.perform(post("/gestionnaire/getEtudiants")
-                .param("pageNumber", String.valueOf(0))
-                .param("programme", Programme.TECHNIQUE_INFORMATIQUE.toString())
-                .contentType(MediaType.APPLICATION_JSON))
+                        .param("pageNumber", String.valueOf(0))
+                        .param("programme", Programme.TECHNIQUE_INFORMATIQUE.toString())
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isAccepted())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$[0].id").value(1L))
@@ -196,7 +196,7 @@ public class GestionnaireStageControllerTest {
 
 
     @Test
-    public void testAssignerEnseignantEtudiant_Error() throws Exception{
+    public void testAssignerEnseignantEtudiant_Error() throws Exception {
         // Arrange
         Long idEtudiant = 1L;
         Long idEnseignant = 2L;
@@ -272,5 +272,78 @@ public class GestionnaireStageControllerTest {
                 .andExpect(jsonPath("$.length()").value(0));
 
         verify(etudiantService, times(1)).findEtudiantsByProgramme(programme);
+    }
+
+    @Test
+    void testGetEtudiantsContratEnDemande_Success() throws Exception {
+        // Arrange
+        Etudiant etudiant = new Etudiant(1L, "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$", Programme.TECHNIQUE_INFORMATIQUE, Etudiant.ContractStatus.PENDING);
+        List<EtudiantDTO> etudiantDTOList = new ArrayList<>();
+        etudiantDTOList.add(EtudiantDTO.toDTO(etudiant));
+        when(etudiantService.getEtudiantsContratEnDemande()).thenReturn(etudiantDTOList);
+
+        // Act & Assert
+        mockMvc.perform(get("/gestionnaire/getEtudiantsContratEnDemande")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].id").value(1L))
+                .andExpect(jsonPath("$[0].prenom").value("Karim"))
+                .andExpect(jsonPath("$[0].nom").value("Mihoubi"))
+                .andExpect(jsonPath("$[0].contractStatus").value("PENDING"));
+        verify(etudiantService, times(1)).getEtudiantsContratEnDemande();
+    }
+
+    @Test
+    void testGetEtudiantsContratEnDemande_Vide() throws Exception {
+        // Arrange
+        when(etudiantService.getEtudiantsContratEnDemande()).thenReturn(new ArrayList<>());
+
+        // Act & Assert
+        mockMvc.perform(get("/gestionnaire/getEtudiantsContratEnDemande")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.length()").value(0));
+        verify(etudiantService, times(1)).getEtudiantsContratEnDemande();
+    }
+
+    @Test
+    void testGetEtudiantsContratEnDemande_Erreur() throws Exception {
+        // Arrange
+        when(etudiantService.getEtudiantsContratEnDemande()).thenThrow(new RuntimeException("Service failure"));
+
+        // Act & Assert
+        mockMvc.perform(get("/gestionnaire/getEtudiantsContratEnDemande")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError());
+        verify(etudiantService, times(1)).getEtudiantsContratEnDemande();
+    }
+
+    @Test
+    void testGetEtudiantsSansContratPages_Success() throws Exception {
+        // Arrange
+        when(etudiantService.getEtudiantsSansContratPages()).thenReturn(3);
+
+        // Act & Assert
+        mockMvc.perform(get("/gestionnaire/getEtudiantsSansContratPages")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().string("3"));
+        verify(etudiantService, times(1)).getEtudiantsSansContratPages();
+    }
+
+    @Test
+    void testGetEtudiantsSansContratPages_Erreur() throws Exception {
+        // Arrange
+        when(etudiantService.getEtudiantsSansContratPages()).thenThrow(new RuntimeException("Service failure"));
+
+        // Act & Assert
+        mockMvc.perform(get("/gestionnaire/getEtudiantsSansContratPages")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError());
+        verify(etudiantService, times(1)).getEtudiantsSansContratPages();
     }
 }

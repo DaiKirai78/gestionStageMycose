@@ -315,4 +315,43 @@ public class EtudiantServiceTest {
         assertEquals(etudiantDTOList.size(), vraieEtudiantsList.size());
         verify(etudiantRepositoryMock, times(1)).findEtudiantsByContractStatusEquals(Etudiant.ContractStatus.PENDING);
     }
+
+    @Test
+    public void testGetAmountOfPageEtudiantContratEnDemande_NumberEndWithZero() {
+        //Arrange
+        when(etudiantRepositoryMock.countByContractStatusEquals(Etudiant.ContractStatus.PENDING)).thenReturn(30);
+
+        //Act
+        int nombrePage = etudiantService.getEtudiantsSansContratPages();
+
+        //Assert
+        assertEquals(nombrePage, 3);
+        verify(etudiantRepositoryMock, times(1)).countByContractStatusEquals(Etudiant.ContractStatus.PENDING);
+    }
+
+    @Test
+    public void testGetAmountOfPageEtudiantContratEnDemande_NumberNotEndWithZero() {
+        //Arrange
+        when(etudiantRepositoryMock.countByContractStatusEquals(Etudiant.ContractStatus.PENDING)).thenReturn(43);
+
+        //Act
+        int nombrePage = etudiantService.getEtudiantsSansContratPages();
+
+        //Assert
+        assertEquals(nombrePage, 5);
+        verify(etudiantRepositoryMock, times(1)).countByContractStatusEquals(Etudiant.ContractStatus.PENDING);
+    }
+
+    @Test
+    public void testGetAmountOfPageEtudiantContratEnDemande_NoStudent() {
+        //Arrange
+        when(etudiantRepositoryMock.countByContractStatusEquals(Etudiant.ContractStatus.PENDING)).thenReturn(0);
+
+        //Act
+        int nombrePage = etudiantService.getEtudiantsSansContratPages();
+
+        //Assert
+        assertEquals(nombrePage, 0);
+        verify(etudiantRepositoryMock, times(1)).countByContractStatusEquals(Etudiant.ContractStatus.PENDING);
+    }
 }

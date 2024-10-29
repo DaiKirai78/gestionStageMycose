@@ -94,4 +94,21 @@ public class EtudiantService {
         List<Etudiant> etudiants = etudiantRepository.findEtudiantsByContractStatusEquals(Etudiant.ContractStatus.PENDING);
         return etudiants.stream().map(EtudiantDTO::toDTO).collect(Collectors.toList());
     }
+
+    public Integer getEtudiantsSansContratPages() {
+        long amountOfRows = etudiantRepository.countByContractStatusEquals(Etudiant.ContractStatus.PENDING);
+
+        if (amountOfRows == 0)
+            return 0;
+
+        int nombrePages = (int) Math.floor((double) amountOfRows / LIMIT_PER_PAGE);
+
+        if (amountOfRows % 10 > 0) {
+            // Return ++ (équivalent -> nombrePage + 1) parce que
+            // floor(13/10) = 1 mais il y a 2 page et pas 1
+            nombrePages++;
+        }
+
+        return nombrePages;
+    }
 }

@@ -85,4 +85,14 @@ public class GestionnaireController {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+    @GetMapping("/getEtudiantsSansContratPages")
+    public ResponseEntity<Integer> getEtudiantsSansContratPages() {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(
+                    etudiantService.getEtudiantsSansContratPages());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 }

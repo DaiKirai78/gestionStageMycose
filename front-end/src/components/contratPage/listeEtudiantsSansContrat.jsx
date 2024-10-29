@@ -41,28 +41,28 @@ const ListeEtudiantsSansContrat = () => {
 
 
     useEffect(() => {
-        // fetchEtudiants();
-        // fetchTotalPages();
+        fetchEtudiants();
+        //fetchTotalPages();
         setEtudiants(etudiantsBootstrap);
     }, []);
-    //
-    // const fetchEtudiants = async () => {
-    //     try {
-    //         setLoading(true);
-    //         const response = await axios.get(localhost + apiUrlGetEtudiantsSansContrat,
-    //             {
-    //                 headers: {
-    //                     Authorization: `Bearer ${token}`,
-    //                     'Content-Type': 'application/json'
-    //                 }
-    //             });
-    //         setEtudiants(response.data);
-    //         setLoading(false);
-    //     } catch (e) {
-    //         console.error("Erreur lors de la récupération des étudiants sans contrat : " + e);
-    //         setLoading(false);
-    //     }
-    // }
+
+    const fetchEtudiants = async () => {
+         try {
+             setLoading(true);
+             const response = await axios.get(localhost + apiUrlGetEtudiantsSansContrat,
+                 {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+            setEtudiants(response.data);
+            setLoading(false);
+        } catch (e) {
+            console.error("Erreur lors de la récupération des étudiants sans contrat : " + e);
+            setLoading(false);
+        }
+    }
 
     // const fetchTotalPages = async () => {
     //     try {
