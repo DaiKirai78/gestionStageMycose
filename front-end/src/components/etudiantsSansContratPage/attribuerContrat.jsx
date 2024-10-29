@@ -1,17 +1,34 @@
 import {BsCloudArrowUpFill} from "react-icons/bs";
 import InputErrorMessage from "../inputErrorMesssage.jsx";
 import logoPdf from "../../assets/pdficon.png";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
-import Divider from "../divider.jsx";
-import FileOffreStage from "../uploadOffreStagePage/fileOffreStage.jsx";
-import FormOffreStage from "../uploadOffreStagePage/formOffreStage.jsx";
+import axios from "axios";
+import LoadingSpinner from "../loadingSpinner.jsx";
+import {useNavigate} from "react-router-dom";
 
 const AttribuerContrat = ({etudiant}) => {
     const {t} = useTranslation();
 
     const [file, setFile] = useState(null);
     const [fileExtensionError, setFileExtensionError] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
+    const [uploadError, setUploadError] = useState("");
+    const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
+
+    const localhost = "http://localhost:8080/";
+    const apiUrlUploadContract = "contrat/upload"
+    const token = localStorage.getItem("token");
+
+    useEffect(() => {
+        isLoading();
+    }, []);
+
+    function isLoading() {
+        if (etudiant !== null)
+            setLoading(false);
+    }
 
     const handleSubmitFile = async (e) => {
         e.preventDefault();
@@ -24,9 +41,36 @@ const AttribuerContrat = ({etudiant}) => {
             setFileExtensionError("");
         }
 
-        //if (hasError) return;
+        if (hasError) return;
 
-        //await handleFileUpload();
+        await handleFileUpload();
+    };
+
+    const handleFileUpload = async () => {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        try {
+            setLoading(true);
+            const response = await axios.post(localhost + apiUrlUploadContract, formData,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "multipart/form-data",
+                    },
+                });
+            console.log("Fichier envoyé avec succès :", response.data);
+            setSuccessMessage(t("fileUploadSuccess"));
+            setUploadError("");
+            setFile(null);
+            setLoading(false);
+            navigate(`/attribuerContrat`);
+        } catch (error) {
+            console.error("Erreur lors de l'envoi du fichier :", error);
+            setUploadError(t("fileUploadError"));
+            setSuccessMessage("");
+            setLoading(false);
+        }
     };
 
     const handleFileChange = (e) => {
@@ -56,6 +100,14 @@ const AttribuerContrat = ({etudiant}) => {
         setFile(fichier);
     }
 
+    if (loading) return (
+        <div className="flex items-start justify-center min-h-screen p-8">
+            <div className="w-full max-w-3xl bg-white py-14 px-12 rounded-lg shadow-lg border border-gray-200 mt-10">
+                <LoadingSpinner/>
+            </div>
+        </div>
+    )
+
     return (
         <div className="flex items-start justify-center min-h-screen p-8">
             <div className="w-full max-w-3xl bg-white py-14 px-12 rounded-lg shadow-lg border border-gray-200 mt-10">
@@ -66,11 +118,11 @@ const AttribuerContrat = ({etudiant}) => {
                     {t("uploadContractFilePDF")}
                 </h2>
                 <div className="bg-[#f9fafb] rounded-lg py-6 px-5 mb-8 border-l-4 border-orange shadow-sm">
-                    <h3 className="text-xl font-semibold text-gray-700">Étudiant :</h3>
+                    <h3 className="text-xl font-semibold text-gray-700">{t("etudiant")} :</h3>
                     <p className="text-lg font-medium text-gray-800">
                         {etudiant.prenom + " " + etudiant.nom}
                     </p>
-                    <h3 className="text-xl font-semibold text-gray-700 mt-3">Programme :</h3>
+                    <h3 className="text-xl font-semibold text-gray-700 mt-3">{t("program")} :</h3>
                     <p className="text-lg font-medium text-gray-800">
                         {etudiant.programme}
                     </p>
@@ -105,6 +157,8 @@ const AttribuerContrat = ({etudiant}) => {
                             </div>
                         )}
                     </div>
+                    {successMessage && <p className="text-green-500 mt-4">{successMessage}</p>}
+                    {uploadError && <p className="text-red-500 mt-4">{uploadError}</p>}
                     <button type="submit"
                             className="w-full py-3 text-lg font-semibold text-white bg-orange rounded-lg hover:bg-orange-dark transition duration-200">
                         {t("submit")}

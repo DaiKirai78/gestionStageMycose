@@ -2,6 +2,7 @@ import axios from "axios";
 import {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
 import {useNavigate} from "react-router-dom";
+import LoadingSpinner from "../loadingSpinner.jsx";
 
 const ListeEtudiants = () => {
 
@@ -12,6 +13,7 @@ const ListeEtudiants = () => {
     const {t} = useTranslation();
     const navigate = useNavigate();
 
+    const [loading, setLoading] = useState(true);
     const [etudiants, setEtudiants] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
@@ -24,13 +26,13 @@ const ListeEtudiants = () => {
             programme: "Technique de l'informatique"
         },
         {
-            id: 1,
+            id: 2,
             nom: "Cabezas",
             prenom: "Vicente",
             programme: "Génie logiciel"
         },
         {
-            id: 1,
+            id: 3,
             nom: "Mihoubi",
             prenom: "Karim",
             programme: "Technique de l'informatique"
@@ -46,6 +48,7 @@ const ListeEtudiants = () => {
     //
     // const fetchEtudiants = async () => {
     //     try {
+    //         setLoading(true);
     //         const response = await axios.get(localhost + apiUrlGetEtudiantsSansContrat,
     //             {
     //                 headers: {
@@ -54,13 +57,16 @@ const ListeEtudiants = () => {
     //                 }
     //             });
     //         setEtudiants(response.data);
+    //         setLoading(false);
     //     } catch (e) {
     //         console.error("Erreur lors de la récupération des étudiants sans contrat : " + e);
+    //         setLoading(false);
     //     }
     // }
 
     // const fetchTotalPages = async () => {
     //     try {
+    //         setLoading(true);
     //         const response = await fetch(localhost + apiUrlGetNombreDePages, {
     //             headers: { Authorization: `Bearer ${token}` },
     //         });
@@ -69,10 +75,20 @@ const ListeEtudiants = () => {
     //         }
     //         const pages = await response.json();
     //         setTotalPages(pages);
+    //         setLoading(false);
     //     } catch (error) {
     //         console.error(t("errorRetrievingNbPages"), error);
+    //         setLoading(false);
     //     }
-    // };
+    // }
+
+    if (loading) return (
+        <div className="flex items-start justify-center min-h-screen p-8">
+            <div className="w-full max-w-3xl bg-white py-14 px-12 rounded-lg shadow-lg border border-gray-200 mt-10">
+                <LoadingSpinner/>
+            </div>
+        </div>
+    )
 
     return (
         <div className="flex items-start justify-center min-h-full p-8">
