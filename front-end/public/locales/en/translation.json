@@ -215,5 +215,8 @@
     "hiver": "Winter",
     "automne": "Autumn",
     "selectSession" : "Select session",
-    "annee" : "Year"
+    "annee" : "Year",
+    "PENDING" : "Pending",
+    "REJECTED" : "Rejected",
+    "SUMMONED" : "Summoned"
 }

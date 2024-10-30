@@ -217,5 +217,8 @@
     "hiver": "Hiver",
     "automne": "Automne",
     "selectSession" : "Sélectionner la session",
-    "annee" : "Année"
+    "annee" : "Année",
+    "PENDING" : "En attente",
+    "REJECTED" : "Refusé",
+    "SUMMONED" : "Convoqué"
 }
