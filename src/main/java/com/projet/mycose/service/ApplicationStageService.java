@@ -4,6 +4,7 @@ import com.projet.mycose.dto.EtudiantDTO;
 import com.projet.mycose.modele.*;
 import com.projet.mycose.repository.ApplicationStageRepository;
 import com.projet.mycose.repository.EtudiantOffreStagePriveeRepository;
+import com.projet.mycose.repository.EtudiantRepository;
 import com.projet.mycose.repository.OffreStageRepository;
 import com.projet.mycose.dto.ApplicationStageAvecInfosDTO;
 import com.projet.mycose.dto.ApplicationStageDTO;
@@ -24,6 +25,7 @@ public class ApplicationStageService {
     private final UtilisateurService utilisateurService;
     private final OffreStageRepository offreStageRepository;
     private final EtudiantOffreStagePriveeRepository etudiantOffreStagePriveeRepository;
+    private final EtudiantRepository etudiantRepository;
 
     @Transactional
     public ApplicationStageDTO applyToOffreStage(Long offreStageId) throws AccessDeniedException {
@@ -127,6 +129,9 @@ public class ApplicationStageService {
         Etudiant etudiant = EtudiantDTO.toEntity(utilisateurService.getEtudiantDTO(applicationStageAvecInfosDTO.getEtudiant_id()));
         OffreStage offreStage = getValidatedOffreStage(applicationStageAvecInfosDTO.getOffreStage_id());
 
+        if (status == ApplicationStage.ApplicationStatus.ACCEPTED)
+            changeContractStatusToPending(applicationStageAvecInfosDTO.getEtudiant_id());
+
         applicationStage = mettreAJourApplication(applicationStageAvecInfosDTO, etudiant, offreStage, status);
         return ApplicationStageAvecInfosDTO.toDTO(applicationStageRepository.save(applicationStage));
     }
@@ -142,6 +147,19 @@ public class ApplicationStageService {
         applicationStage.setStatus(status);
 
         return applicationStage;
+    }
+
+    public EtudiantDTO changeContractStatusToPending(Long etudiantId) {
+        if (utilisateurService.getEtudiantDTO(etudiantId) == null)
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "L'étudiant avec l'ID " + etudiantId + " est innexistant");
+
+        Etudiant etudiant = EtudiantDTO.toEntity(utilisateurService.getEtudiantDTO(etudiantId));
+
+        if (etudiant.getContractStatus() == Etudiant.ContractStatus.NO_CONTRACT) {
+            etudiant.setContractStatus(Etudiant.ContractStatus.PENDING);
+            return EtudiantDTO.toDTO(etudiantRepository.save(etudiant));
+        } else
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "L'étudiant a déjà un stage actif ou une demande de stage active");
     }
 
     public ApplicationStageAvecInfosDTO summonEtudiant(Long id) {

@@ -27,4 +27,8 @@ public interface EtudiantRepository extends JpaRepository<Etudiant, Long> {
 
 
     List<Etudiant> findAllByProgramme(@Param("programme") Programme programme);
+
+    List<Etudiant> findEtudiantsByContractStatusEquals(Etudiant.ContractStatus contractStatus);
+
+    int countByContractStatusEquals(Etudiant.ContractStatus contractStatus);
 }

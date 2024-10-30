@@ -33,14 +33,33 @@ public class Etudiant extends Utilisateur {
     @ManyToOne
     private Enseignant enseignantAssignee;
 
+    @OneToMany(mappedBy = "etudiant", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Contrat> contrat;
+
+    @Enumerated(EnumType.STRING)
+    private ContractStatus contractStatus;
+
+    public enum ContractStatus {
+        ACTIVE,
+        NO_CONTRACT,
+        PENDING
+    }
+
+    @PrePersist
+    public void PrePersist() {
+        if (contractStatus == null)
+            contractStatus = ContractStatus.NO_CONTRACT;
+    }
+
     @Builder
-    public Etudiant(Long id, String prenom, String nom, String numeroDeTelephone, String courriel, String motDePasse, Programme programme) {
+    public Etudiant(Long id, String prenom, String nom, String numeroDeTelephone, String courriel, String motDePasse, Programme programme, ContractStatus contractStatus) {
         super(id,
                 prenom,
                 nom,
                 numeroDeTelephone,
                 Credentials.builder().email(courriel).password(motDePasse).role(Role.ETUDIANT).build());
         this.programme = programme;
+        this.contractStatus = contractStatus;
     }
 
     // Sans Id

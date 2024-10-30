@@ -113,7 +113,8 @@ class GestionnaireStageServiceTest {
                 "555-656-0965",
                 "unCourriel@mail.com",
                 "unMotDePasse",
-                Programme.TECHNIQUE_INFORMATIQUE
+                Programme.TECHNIQUE_INFORMATIQUE,
+                Etudiant.ContractStatus.NO_CONTRACT
         );
         
         int page = 0;
@@ -242,7 +243,8 @@ class GestionnaireStageServiceTest {
                 "555-666-7777",
                 "unCourriel@mail.com",
                 "unMotDePasse",
-                Programme.TECHNIQUE_INFORMATIQUE
+                Programme.TECHNIQUE_INFORMATIQUE,
+                Etudiant.ContractStatus.NO_CONTRACT
         );
 
         Enseignant enseignant = new Enseignant(

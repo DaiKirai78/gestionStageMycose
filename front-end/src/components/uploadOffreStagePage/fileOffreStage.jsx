@@ -258,7 +258,6 @@ function FileOffreStage() {
                 )}
             </div>
 
-            {/* Champ pour le nom de l'entreprise */}
             {role === "GESTIONNAIRE_STAGE" && (
                 <div className="relative w-full">
                     <label htmlFor="companyName"

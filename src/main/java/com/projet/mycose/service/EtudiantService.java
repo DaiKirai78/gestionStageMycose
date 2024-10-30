@@ -1,5 +1,6 @@
 package com.projet.mycose.service;
 
+import com.projet.mycose.dto.ApplicationStageAvecInfosDTO;
 import com.projet.mycose.dto.EtudiantDTO;
 import com.projet.mycose.dto.OffreStageDTO;
 import com.projet.mycose.modele.Etudiant;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -88,5 +90,27 @@ public class EtudiantService {
     public List<EtudiantDTO> findEtudiantsByProgramme(Programme programme) {
         List<Etudiant> etudiants = etudiantRepository.findAllByProgramme(programme);
         return etudiants.stream().map(EtudiantDTO::toDTO).collect(Collectors.toList());
+    }
+
+    public List<EtudiantDTO> getEtudiantsContratEnDemande() {
+        List<Etudiant> etudiants = etudiantRepository.findEtudiantsByContractStatusEquals(Etudiant.ContractStatus.PENDING);
+        return etudiants.stream().map(EtudiantDTO::toDTO).collect(Collectors.toList());
+    }
+
+    public Integer getEtudiantsSansContratPages() {
+        long amountOfRows = etudiantRepository.countByContractStatusEquals(Etudiant.ContractStatus.PENDING);
+
+        if (amountOfRows == 0)
+            return 0;
+
+        int nombrePages = (int) Math.floor((double) amountOfRows / LIMIT_PER_PAGE);
+
+        if (amountOfRows % 10 > 0) {
+            // Return ++ (équivalent -> nombrePage + 1) parce que
+            // floor(13/10) = 1 mais il y a 2 page et pas 1
+            nombrePages++;
+        }
+
+        return nombrePages;
     }
 }
