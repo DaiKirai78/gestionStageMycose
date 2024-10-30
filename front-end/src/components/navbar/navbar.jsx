@@ -9,7 +9,12 @@ import { useTranslation } from 'react-i18next';
 import langues from '../../utils/langues'
 
 const navLinks = {
-    "ETUDIANT": [],
+    "ETUDIANT": [
+        {
+            "titre": "Convocations",
+            "lien": "/convocations"
+        }
+    ],
     "EMPLOYEUR": [
         {
             "titre": "televerserOffre",
