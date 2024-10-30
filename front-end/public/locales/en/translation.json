@@ -224,5 +224,8 @@
     "automne": "Autumn",
     "selectSession" : "Select session",
     "annee" : "Year",
-    "signerContrats": "Sign contracts"
+    "signerContrats": "Sign contracts",
+    "validate": "Validate",
+    "noContratToSign" : "No contrat to sign", 
+    "signContract": "Sign contract"
 }
