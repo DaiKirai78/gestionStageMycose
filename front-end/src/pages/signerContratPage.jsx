@@ -32,7 +32,7 @@ const AccueilPage = () => {
             const res = await fetch('http://localhost:8080/api/cv/current', {
                 method: "POST",
                 headers: { Authorization: `Bearer ${token}` }
-            });
+            });            
 
             if (res.ok) {
                 const cvData = await res.json();
@@ -53,13 +53,11 @@ const AccueilPage = () => {
     function getEtudiantPage() {
         
         if (cvStatus === "ACCEPTED") {
-            return <AccueilEtudiant />;
-        }
-        else if (cvStatus === "WAITING") {
-            return <VoirMonCVPage />;
+            return <p>Contrat etudiant</p>;
         }
         else {
-            return <UploadCvPage />;
+            navigate("/accueil")
+            return;
         }
     }
 
@@ -70,13 +68,11 @@ const AccueilPage = () => {
             case "ETUDIANT":
                 return getEtudiantPage()
             case "EMPLOYEUR":
-                return <AccueilEmployeur />;
+                return <p>Contrat Employeur</p>;
             case "GESTIONNAIRE_STAGE":
-                return <AccueilGestionnaire />;
-            case "ENSEIGNANT":
-                return <p>Enseignant</p>;
+                return <p>Contrat Gestionnaire</p>;
             default:
-                navigate("/");
+                navigate("/accueil");
                 break;
         }
     }
