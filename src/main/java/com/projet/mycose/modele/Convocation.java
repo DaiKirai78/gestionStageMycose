@@ -45,6 +45,7 @@ public class Convocation {
         this.scheduledAt = summonEtudiantDTO.getScheduledAt();
         this.location = summonEtudiantDTO.getLocation();
         this.messageConvocation = summonEtudiantDTO.getMessageConvocation();
+        this.status = ConvocationStatus.PENDING;
     }
 
     public enum ConvocationStatus {
