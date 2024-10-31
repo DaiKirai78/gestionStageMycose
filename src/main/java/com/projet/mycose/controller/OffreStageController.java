@@ -2,6 +2,8 @@ package com.projet.mycose.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.projet.mycose.dto.*;
+import com.projet.mycose.modele.OffreStage;
+import com.projet.mycose.modele.Programme;
 import com.projet.mycose.service.ApplicationStageService;
 import com.projet.mycose.service.OffreStageService;
 import jakarta.validation.ConstraintViolationException;
@@ -12,9 +14,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.Year;
+import java.util.*;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/api/offres-stages")
@@ -115,5 +117,15 @@ public class OffreStageController {
             System.err.println("Une erreur est survenue lors de la tentative de récupération des étudiants qui ont appliqués à une offre: " + e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("/sessions")
+    public List<String> getSessions() {
+        return offreStageService.getSessions();
+    }
+
+    @GetMapping("/years")
+    public List<Integer> getYears() {
+        return offreStageService.getFutureYears();
     }
 }

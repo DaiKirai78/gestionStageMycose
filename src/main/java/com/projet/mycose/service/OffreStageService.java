@@ -20,7 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
+import java.time.Year;
 import java.util.*;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -278,5 +280,17 @@ public class OffreStageService {
         } else
             return null;
         return etudiantDTOList;
+    }
+
+    public List<String> getSessions() {
+        return new ArrayList<>(Arrays.stream(OffreStage.SessionEcole.values())
+                .map(OffreStage.SessionEcole::toString)
+                .toList());
+    }
+
+    public List<Integer> getFutureYears() {
+        return Stream.of(Year.now(), Year.now().plusYears(1), Year.now().plusYears(2), Year.now().plusYears(3), Year.now().plusYears(4))
+                .map(Year::getValue)
+                .toList();
     }
 }
