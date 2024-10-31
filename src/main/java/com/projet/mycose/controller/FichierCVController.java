@@ -10,7 +10,6 @@ import com.projet.mycose.dto.FichierCVDTO;
 import com.projet.mycose.dto.FichierCVStudInfoDTO;
 import jakarta.validation.ConstraintViolationException;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

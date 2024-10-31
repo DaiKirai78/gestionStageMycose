@@ -1,5 +1,6 @@
 package com.projet.mycose.dto;
 
+import com.projet.mycose.modele.Contrat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;

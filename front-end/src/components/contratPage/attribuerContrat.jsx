@@ -15,13 +15,11 @@ const AttribuerContrat = () => {
     const [successMessage, setSuccessMessage] = useState("");
     const [uploadError, setUploadError] = useState("");
     const [loading, setLoading] = useState(true);
-    const navigate = useNavigate();
     const [applications, setApplications] = useState([]);
     const [etudiant, setEtudiant] = useState(null);
     const [offresStage, setOffreStage] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
-    const [applicationsLoaded, setApplicationsLoaded] = useState(false);
 
     const localhost = "http://localhost:8080/";
     const apiUrlGetEtudiantFromApplicationId = "api/application-stage/getEtudiant/";
@@ -44,9 +42,8 @@ const AttribuerContrat = () => {
                     'Content-Type': 'application/json'
                 }
             });
-            console.log("Mes applications : " + JSON.stringify(response.data));
+            console.log("app : " + JSON.stringify(response.data));
             setApplications(response.data);
-            setApplicationsLoaded(true);
             setLoading(false);
         } catch (e) {
             console.error("Erreur lors de la récupération des applications acceptées : " + e);
@@ -55,21 +52,21 @@ const AttribuerContrat = () => {
     };
 
     useEffect(() => {
-        console.log("Applications Loaded:", applicationsLoaded, "Applications Length:", applications.length);
-        if (applicationsLoaded && applications.length > 0) {
+        if (applications.length > 0) {
             const applicationId = applications[currentPage - 1]?.id;
             if (applicationId) {
                 fetchEtudiant(applicationId);
                 fetchOffresStage(applicationId);
             }
         }
-    }, [applications, applicationsLoaded, currentPage]);
+    }, [applications, currentPage]);
 
     useEffect(() => {
         setTotalPages(applications.length);
+        if (currentPage > 1)
+            setCurrentPage(currentPage-1);
     }, [applications]);
 
-    console.log("Final Applications Length:", applications.length, "Applications Loaded:", applicationsLoaded);
 
     const fetchEtudiant = async (applicationId) => {
         try {
@@ -80,7 +77,7 @@ const AttribuerContrat = () => {
                     'Content-Type': 'application/json'
                 }
             });
-            console.log("Mes étudiants : ", response.data);
+            console.log("Étudiant : " + response.data);
             setEtudiant(response.data);
             setLoading(false);
         } catch (e) {
@@ -91,18 +88,14 @@ const AttribuerContrat = () => {
 
     const fetchOffresStage = async (applicationId) => {
         try {
-            setLoading(true);
             const response = await axios.get(localhost + apiUrlGetOffreStageFromApplicationId + applicationId, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 }
             });
-            console.log("Mes offres de stage : ", response.data);
             setOffreStage(response.data);
-            setLoading(false);
         } catch (e) {
-            setLoading(false);
             console.error(`Erreur lors de la récupération de l'offre de stage associé à l'application ${applicationId} : `, e);
         }
     };
@@ -130,7 +123,9 @@ const AttribuerContrat = () => {
 
     const handleFileUpload = async () => {
         const formData = new FormData();
-        formData.append("file", file);
+        formData.append("contratPDF", file);
+        formData.append("etudiantId", applications[currentPage - 1].etudiant_id);
+        formData.append("employeurId", offresStage.createur_id);
 
         try {
             setLoading(true);
@@ -146,7 +141,7 @@ const AttribuerContrat = () => {
             setUploadError("");
             setFile(null);
             setLoading(false);
-            navigate(`/attribuerContrat`);
+            fetchApplicationsAccepted();
         } catch (error) {
             console.error("Erreur lors de l'envoi du fichier :", error);
             setUploadError(t("fileUploadError"));
@@ -199,16 +194,34 @@ const AttribuerContrat = () => {
                 <h2 className="text-lg text-gray-600 mb-8 text-center">
                     {t("uploadContractFilePDF")}
                 </h2>
-                <div className="bg-[#f9fafb] rounded-lg py-6 px-5 mb-8 border-l-4 border-orange shadow-sm">
-                    <h3 className="text-xl font-semibold text-gray-700">{t("etudiant")} :</h3>
-                    <p className="text-lg font-medium text-gray-800">
-                        {etudiant.prenom + " " + etudiant.nom}
-                    </p>
-                    <h3 className="text-xl font-semibold text-gray-700 mt-3">{t("program")} :</h3>
-                    <p className="text-lg font-medium text-gray-800">
-                        {etudiant.programme}
-                    </p>
-                </div>
+                {
+                    etudiant ?
+                    <div className="bg-[#f9fafb] rounded-lg py-6 px-5 mb-8 border-l-4 border-orange shadow-sm">
+                        <h3 className="text-xl font-semibold text-gray-700">{t("etudiant")} :</h3>
+                        <p className="text-lg font-medium text-gray-800">
+                            {etudiant.prenom + " " + etudiant.nom}
+                        </p>
+                        <h3 className="text-xl font-semibold text-gray-700 mt-3">{t("program")} :</h3>
+                        <p className="text-lg font-medium text-gray-800">
+                            {t(etudiant.programme)}
+                        </p>
+                    </div>
+                    : <div></div>
+                }
+                {
+                    applications[currentPage-1] ?
+                        <div className="bg-[#f9fafb] rounded-lg py-6 px-5 mb-8 border-l-4 border-red-300 shadow-sm">
+                            <h3 className="text-xl font-semibold text-gray-700">Stage :</h3>
+                            <p className="text-lg font-medium text-gray-800">
+                                {applications[currentPage-1].title}
+                            </p>
+                            <h3 className="text-xl font-semibold text-gray-700 mt-3">Entreprise :</h3>
+                            <p className="text-lg font-medium text-gray-800">
+                                {applications[currentPage-1].entrepriseName}
+                            </p>
+                        </div>
+                        : <div></div>
+                }
                 <form onSubmit={handleSubmitFile} className="space-y-6">
                     <div className="relative">
                         <label

@@ -100,7 +100,10 @@ public class ApplicationStageService {
     }
 
     public List<ApplicationStageAvecInfosDTO> getApplicationsWithStatus(ApplicationStage.ApplicationStatus status) {
-        return applicationStageRepository.findByStatusEquals(status).stream().map(this::convertToDTOAvecInfos).toList();
+        return applicationStageRepository.findByStatusAndContractStatus(status, Etudiant.ContractStatus.PENDING)
+                .stream()
+                .map(this::convertToDTOAvecInfos)
+                .toList();
     }
 
     public ApplicationStageAvecInfosDTO getApplicationById(Long applicationId) {
@@ -159,7 +162,7 @@ public class ApplicationStageService {
         if (utilisateurService.getEtudiantDTO(etudiantId) == null)
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "L'étudiant avec l'ID " + etudiantId + " est innexistant");
 
-        Etudiant etudiant = EtudiantDTO.toEntity(utilisateurService.getEtudiantDTO(etudiantId));
+        Etudiant etudiant = etudiantRepository.findEtudiantById(etudiantId);
 
         if (etudiant.getContractStatus() == Etudiant.ContractStatus.NO_CONTRACT) {
             etudiant.setContractStatus(Etudiant.ContractStatus.PENDING);

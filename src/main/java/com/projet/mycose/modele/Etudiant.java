@@ -71,12 +71,4 @@ public class Etudiant extends Utilisateur {
                 Credentials.builder().email(courriel).password(motDePasse).role(Role.ETUDIANT).build());
         this.programme = programme;
     }
-
-    public void addApplication(ApplicationStage application) {
-        if (applications == null) {
-            applications = new ArrayList<>();
-        }
-        applications.add(application);
-        application.setEtudiant(this);
-    }
 }

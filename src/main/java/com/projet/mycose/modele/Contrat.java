@@ -17,19 +17,15 @@ public class Contrat {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Lob
     @Column(columnDefinition = "BYTEA")
     private byte[] pdf;
 
-    @Lob
     @Column(columnDefinition = "BYTEA")
     private byte[] signatureGestionnaire;
 
-    @Lob
     @Column(columnDefinition = "BYTEA")
     private byte[] signatureEtudiant;
 
-    @Lob
     @Column(columnDefinition = "BYTEA")
     private byte[] signatureEmployeur;
 

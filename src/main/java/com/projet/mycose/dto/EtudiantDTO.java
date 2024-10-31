@@ -1,9 +1,11 @@
 package com.projet.mycose.dto;
 
-import com.projet.mycose.modele.Etudiant;
-import com.projet.mycose.modele.Programme;
+import com.projet.mycose.modele.*;
 import com.projet.mycose.modele.auth.Role;
 import lombok.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @NoArgsConstructor
 @Getter
