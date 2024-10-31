@@ -247,5 +247,13 @@
     "messageRefus": "Raison du refus",
     "cancel": "Annuler",
     "place": "Lieu",
-    "dateAndTime": "Date et heure"
+    "dateAndTime": "Date et heure",
+    "acceptedOrRejectedConvocations": "Convocations acceptées ou refusées",
+    "waitingConvocations": "Convocations en attente",
+    "noAcceptedOrRejectedConvocations": "Aucune convocation acceptée ou refusée",
+    "noWaitingConvocations": "Aucune convocation en attente",
+    "summonStudent": "Convoquer l'étudiant",
+    "date": "Date",
+    "time": "Heure",
+    "summonLocation": "Lieu de la convocation"
 }

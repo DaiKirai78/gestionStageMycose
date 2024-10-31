@@ -245,5 +245,13 @@
     "messageRefus": "Reason of refusal",
     "cancel": "Cancel",
     "place": "Location",
-    "dateAndTime": "Date and time"
+    "dateAndTime": "Date and time",
+    "acceptedOrRejectedConvocations": "Accepted or rejected summonses",
+    "waitingConvocations": "Waiting summonses",
+    "noAcceptedOrRejectedConvocations": "No accepted or rejected summonses",
+    "noWaitingConvocations": "No waiting summonses",
+    "summonStudent": "Summon student",
+    "date": "Date",
+    "time": "Time",
+    "summonLocation": "Summon location"
 }

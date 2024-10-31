@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ModalConvocation from "./ModalConvocation";
-import { useTranslation } from "react-i18next"
+import { useTranslation } from "react-i18next";
 
 function ListeConvocations() {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -10,7 +10,7 @@ function ListeConvocations() {
     const [responseMessage, setResponseMessage] = useState("");
     const [convocations, setConvocations] = useState([]);
 
-    const { t } = useTranslation()
+    const { t } = useTranslation();
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -83,54 +83,113 @@ function ListeConvocations() {
             .catch(error => console.error("Erreur:", error));
     };
 
+    // Sépare les convocations selon le statut
+    const acceptedOrRejectedConvocations = convocations.filter(convocation =>
+        convocation.convocationStatus === "ACCEPTED" || convocation.convocationStatus === "REJECTED"
+    );
+
+    const otherConvocations = convocations.filter(convocation =>
+        convocation.convocationStatus !== "ACCEPTED" && convocation.convocationStatus !== "REJECTED"
+    );
+
     return (
         <div className="flex items-start justify-center min-h-full p-8">
             <div className="bg-[#FFF8F2] rounded-lg shadow-lg p-8 w-screen max-w-3xl">
                 <h1 className="text-4xl font-bold mb-6 mt-6 text-center">{t("convocationsList")}</h1>
-                <ul className="space-y-4">
-                    {convocations.map((convocation) => (
-                        <li key={convocation.id} className="p-6 border border-gray-300 rounded-lg shadow-md">
-                            <div className="flex justify-between items-center">
-                                <div>
-                                    <h2 className="text-2xl font-semibold">{convocation.title}</h2>
-                                    <p className="text-gray-700">{convocation.entrepriseName}</p>
+
+                {/* Section des convocations acceptées ou refusées */}
+                <h2 className="text-2xl font-semibold mb-4">{t("acceptedOrRejectedConvocations")}</h2>
+                {acceptedOrRejectedConvocations.length > 0 ? (
+                    <ul className="space-y-4">
+                        {acceptedOrRejectedConvocations.map((convocation) => (
+                            <li key={convocation.id} className="p-6 border border-gray-300 rounded-lg shadow-md">
+                                <div className="flex justify-between items-center">
+                                    <div>
+                                        <h2 className="text-2xl font-semibold">{convocation.title}</h2>
+                                        <p className="text-gray-700">{convocation.entrepriseName}</p>
+                                    </div>
+                                    <div className="flex items-center space-x-4">
+                                        <button
+                                            onClick={() => openModal(convocation)}
+                                            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                                        >
+                                            {t("infos")}
+                                        </button>
+                                        <span className="text-lg font-semibold text-gray-600">
+                                            {convocation.convocationStatus === "ACCEPTED" ? t("ACCEPTED") : t("REFUSED")}
+                                        </span>
+                                    </div>
                                 </div>
-                                <div className="flex space-x-4">
-                                    <button
-                                        onClick={() => openModal(convocation)}
-                                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                                    >
-                                        {t("infos")}
-                                    </button>
-                                    <button
-                                        onClick={() => openAcceptanceModal(convocation)}
-                                        className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-                                    >
-                                        {t("accept")}
-                                    </button>
-                                    <button
-                                        onClick={() => openRefusalModal(convocation)}
-                                        className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-                                    >
-                                        {t("refuse")}
-                                    </button>
+                                <p className="text-gray-600 mt-4">{t("place")} : {convocation.locationConvocation}</p>
+                                <p className="text-gray-600">
+                                    {t("dateAndTime")} : {new Date(convocation.scheduledAt).toLocaleString('fr-FR', {
+                                    day: '2-digit',
+                                    month: '2-digit',
+                                    year: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                    hour12: false
+                                })}
+                                </p>
+                                <p className="text-gray-600">{t("message")} : {convocation.messageConvocation}</p>
+                            </li>
+
+                        ))}
+                    </ul>
+                ) : (
+                    <p className="text-gray-500">{t("noAcceptedOrRejectedConvocations")}</p>
+                )}
+
+                {/* Section des autres convocations */}
+                <h2 className="text-2xl font-semibold mt-8 mb-4">{t("waitingConvocations")}</h2>
+                {otherConvocations.length > 0 ? (
+                    <ul className="space-y-4">
+                        {otherConvocations.map((convocation) => (
+                            <li key={convocation.id} className="p-6 border border-gray-300 rounded-lg shadow-md">
+                                <div className="flex justify-between items-center">
+                                    <div>
+                                        <h2 className="text-2xl font-semibold">{convocation.title}</h2>
+                                        <p className="text-gray-700">{convocation.entrepriseName}</p>
+                                    </div>
+                                    <div className="flex space-x-4">
+                                        <button
+                                            onClick={() => openModal(convocation)}
+                                            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                                        >
+                                            {t("infos")}
+                                        </button>
+                                        <button
+                                            onClick={() => openAcceptanceModal(convocation)}
+                                            className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                                        >
+                                            {t("accept")}
+                                        </button>
+                                        <button
+                                            onClick={() => openRefusalModal(convocation)}
+                                            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                                        >
+                                            {t("refuse")}
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                            <p className="text-gray-600 mt-4">{t("place")} : {convocation.locationConvocation}</p>
-                            <p className="text-gray-600">
-                                {t("dateAndTime")} : {new Date(convocation.scheduledAt).toLocaleString('fr-FR', {
-                                day: '2-digit',
-                                month: '2-digit',
-                                year: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit',
-                                hour12: false
-                            })}
-                            </p>
-                            <p className="text-gray-600">{t("message")} : {convocation.messageConvocation}</p>
-                        </li>
-                    ))}
-                </ul>
+                                <p className="text-gray-600 mt-4">{t("place")} : {convocation.locationConvocation}</p>
+                                <p className="text-gray-600">
+                                    {t("dateAndTime")} : {new Date(convocation.scheduledAt).toLocaleString('fr-FR', {
+                                    day: '2-digit',
+                                    month: '2-digit',
+                                    year: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                    hour12: false
+                                })}
+                                </p>
+                                <p className="text-gray-600">{t("message")} : {convocation.messageConvocation}</p>
+                            </li>
+                        ))}
+                    </ul>
+                ) : (
+                    <p className="text-gray-500">{t("noWaitingConvocations")}</p>
+                )}
 
                 <ModalConvocation isOpen={isModalOpen} onClose={closeModal} offerDetails={selectedOffer} />
 
@@ -167,7 +226,7 @@ function ListeConvocations() {
                                         isAcceptanceModalOpen ? "bg-green-600" : "bg-red-600"
                                     }`}
                                 >
-                                    Soumettre
+                                    {t("submit")}
                                 </button>
                                 <button
                                     onClick={closeResponseModal}
