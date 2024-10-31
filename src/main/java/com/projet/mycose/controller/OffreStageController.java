@@ -128,4 +128,12 @@ public class OffreStageController {
     public List<Integer> getYears() {
         return offreStageService.getFutureYears();
     }
+
+    @GetMapping(value = "/my-offres", params = {"year", "sessionEcole"})
+    public ResponseEntity<List<OffreStageDTO>> getMyOffresByYearAndSessionEcole(
+            @RequestParam Integer year,
+            @RequestParam OffreStage.SessionEcole sessionEcole) throws AccessDeniedException {
+        List<OffreStageDTO> offreStageDTOList = offreStageService.getAvailableOffreStagesForEtudiantFiltered(year, sessionEcole);
+        return ResponseEntity.status(HttpStatus.OK).body(offreStageDTOList);
+    }
 }

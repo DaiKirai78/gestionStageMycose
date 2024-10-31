@@ -229,6 +229,12 @@ public class OffreStageService {
         EtudiantDTO etudiantDTO = (EtudiantDTO) utilisateurService.getMe();
         return offreStageRepository.findAllByEtudiantNotApplied(etudiantDTO.getId(), etudiantDTO.getProgramme()).stream().map(this::convertToDTO).toList();
     }
+
+    public List<OffreStageDTO> getAvailableOffreStagesForEtudiantFiltered(Integer annee, OffreStage.SessionEcole session) throws AccessDeniedException {
+        EtudiantDTO etudiantDTO = (EtudiantDTO) utilisateurService.getMe();
+        return offreStageRepository.findAllByEtudiantNotAppliedFiltered(etudiantDTO.getId(), etudiantDTO.getProgramme(), annee, session).stream().map(this::convertToDTO).toList();
+    }
+
     public long getTotalWaitingOffreStages() {
         return offreStageRepository.countByStatus(OffreStage.Status.WAITING);
     }

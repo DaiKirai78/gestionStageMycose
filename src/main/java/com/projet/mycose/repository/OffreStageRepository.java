@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,4 +47,22 @@ public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
     Page<OffreStage> findOffreStageByCreateurId(@Param("employeurId") Long employeurId, Pageable pageable);
 
     int countByCreateurId(Long employeurId);
+
+    @Query("SELECT o FROM OffreStage o " +
+            "LEFT JOIN EtudiantOffreStagePrivee eop ON o.id = eop.offreStage.id " +
+            "LEFT JOIN o.applicationStages a ON a.etudiant.id = :etudiantId " +
+            "WHERE a.id IS NULL " +
+            "AND o.annee = :year " +
+            "AND o.session = :sessionEcole " +
+            "AND (" +
+            "(o.visibility = 'PUBLIC' AND o.programme = :programme) " +
+            "OR " +
+            "(o.visibility = 'PRIVATE' AND eop.etudiant.id = :etudiantId)" +
+            ")")
+    List<OffreStage> findAllByEtudiantNotAppliedFiltered(
+            @Param("etudiantId") Long id,
+            @Param("programme") Programme programme,
+            @Param("annee") Integer annee,
+            @Param("session") OffreStage.SessionEcole session
+    );
 }
