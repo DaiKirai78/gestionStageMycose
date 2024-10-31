@@ -12,7 +12,8 @@ const navLinks = {
     "ETUDIANT": [
         {
             "titre": "signerContrats",
-            "lien": "/contrats"
+            "lien": "/contrats",
+            "autreLiens": ["/contrats/signer"]
         }
     ],
     "EMPLOYEUR": [
@@ -22,7 +23,8 @@ const navLinks = {
         },
         {
             "titre": "signerContrats",
-            "lien": "/contrats"
+            "lien": "/contrats",
+            "autreLiens": ["/contrats/signer"]
         }
     ],
     "GESTIONNAIRE_STAGE": [
