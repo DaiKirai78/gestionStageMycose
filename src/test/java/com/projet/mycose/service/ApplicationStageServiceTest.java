@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.time.Year;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -61,6 +62,8 @@ public class ApplicationStageServiceTest {
 
         etudiant = new Etudiant();
         etudiant.setId(1L);
+        etudiant.setPrenom("Roberto");
+        etudiant.setNom("Berrios");
         Credentials credentials = new Credentials("example@gmail.com", "passw0rd", Role.ETUDIANT);
         etudiant.setCredentials(credentials);
         etudiant.setProgramme(Programme.GENIE_LOGICIEL);
@@ -79,6 +82,8 @@ public class ApplicationStageServiceTest {
         fichierOffreStage.setFilename("internship_offer.pdf");
         fichierOffreStage.setData(new byte[]{1, 2, 3});
         fichierOffreStage.setProgramme(Programme.GENIE_LOGICIEL);
+        fichierOffreStage.setAnnee(Year.of(2024));
+        fichierOffreStage.setSession(OffreStage.SessionEcole.AUTOMNE);
 
         applicationStage = new ApplicationStage();
         applicationStage.setId(1L);
@@ -386,6 +391,8 @@ public class ApplicationStageServiceTest {
         when(offreStageRepository.findById(fichierOffreStage.getId())).thenReturn(Optional.of(fichierOffreStage));
         when(applicationStageRepository.save(any(ApplicationStage.class))).thenReturn(applicationStage);
         when(etudiantRepository.save(any(Etudiant.class))).thenReturn(etudiant);
+        when(etudiantRepository.findEtudiantById(applicationStage1.getEtudiant().getId())).thenReturn(etudiant);
+
 
         // Act
         ApplicationStageAvecInfosDTO response = applicationStageService.accepterOuRefuserApplication(applicationId, newStatus);
@@ -529,6 +536,7 @@ public class ApplicationStageServiceTest {
         Etudiant.ContractStatus newContractStatus = Etudiant.ContractStatus.PENDING;
         etudiant.setContractStatus(Etudiant.ContractStatus.NO_CONTRACT);
         when(utilisateurService.getEtudiantDTO(any())).thenReturn(EtudiantDTO.toDTO(etudiant));
+        when(etudiantRepository.findEtudiantById(anyLong())).thenReturn(etudiant);
         when(etudiantRepository.save(any(Etudiant.class))).thenAnswer(invocation -> {
             Etudiant savedEtudiant = invocation.getArgument(0);
             savedEtudiant.setContractStatus(Etudiant.ContractStatus.PENDING);
@@ -557,6 +565,7 @@ public class ApplicationStageServiceTest {
     void testChangeContractStatusToPending_contractStatusIsAlreadyPending() {
         // Arrange
         etudiant.setContractStatus(Etudiant.ContractStatus.PENDING);
+        when(etudiantRepository.findEtudiantById(anyLong())).thenReturn(etudiant);
         when(utilisateurService.getEtudiantDTO(1L)).thenReturn(EtudiantDTO.toDTO(etudiant));
 
         // Act & Assert
@@ -700,5 +709,35 @@ public class ApplicationStageServiceTest {
         verify(applicationStageRepository, times(1)).findById(applicationStageId);
         verify(utilisateurService, times(1)).getMyUserId();
         verify(applicationStageRepository, times(0)).save(any(ApplicationStage.class));
+    }
+
+    @Test
+    void testGetEtudiantFromApplicationId_Success() {
+        // Arrange
+        when(applicationStageRepository.findById(anyLong())).thenReturn(Optional.ofNullable(applicationStage));
+
+        // Act
+        EtudiantDTO etudiantDTO = applicationStageService.getEtudiantFromApplicationId(applicationStage.getId());
+
+        // Assert
+        assertEquals(1L, etudiantDTO.getId());
+        assertEquals("Roberto", etudiantDTO.getPrenom());
+        assertEquals("Berrios", etudiantDTO.getNom());
+        verify(applicationStageRepository, times(1)).findById(anyLong());
+    }
+
+    @Test
+    void testGetOffreStageFromApplicationId_Success() {
+        // Arrange
+        when(applicationStageRepository.findById(anyLong())).thenReturn(Optional.ofNullable(applicationStage));
+
+        // Act
+        OffreStageDTO offreStageDTO = applicationStageService.getOffreStageFromApplicationId(applicationStage.getId());
+
+        // Assert
+        assertEquals(1L, offreStageDTO.getId());
+        assertEquals("Software Engineering Internship", offreStageDTO.getTitle());
+        assertEquals("Tech Corp", offreStageDTO.getEntrepriseName());
+        verify(applicationStageRepository, times(1)).findById(anyLong());
     }
 }

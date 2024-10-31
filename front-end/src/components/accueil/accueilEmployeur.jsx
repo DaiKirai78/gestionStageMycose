@@ -45,14 +45,14 @@ const AccueilEmployeur = () => {
         
         try {
             const response = await fetch(
-                `http://localhost:8080/entreprise/getOffresPosted?pageNumber=${pages.currentPage - 1}`,
+                `http://localhost:8080/api/offres-stages/getOffresPosted?pageNumber=${pages.currentPage - 1}`,
                 {
                     method: "POST",
                     headers: {Authorization: `Bearer ${token}`}
                 }
             );
 
-            if (response.status == STATUS_CODE_ACCEPTED) {                
+            if (response.status == STATUS_CODE_ACCEPTED) {
                 const fetchedData = await response.json();
                 setData(fetchedData);
                 
@@ -70,7 +70,7 @@ const AccueilEmployeur = () => {
 
         try {
             const response = await fetch(
-                "http://localhost:8080/entreprise/pages",
+                "http://localhost:8080/api/offres-stages/pagesForCreateur",
                 {
                     method: "GET",
                     headers: {Authorization: `Bearer ${token}`}
@@ -87,7 +87,7 @@ const AccueilEmployeur = () => {
                 }           
 
                 
-            } else if (response.status == STATUS_CODE_NO_CONTENT) {
+            } else if (response.status === STATUS_CODE_NO_CONTENT) {
                 setData("Nothing found")
             }
         } catch (e) {

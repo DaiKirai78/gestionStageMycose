@@ -15,15 +15,22 @@ import org.modelmapper.ModelMapper;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
+import java.time.Year;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 public class OffreStageServiceTest {
@@ -1092,5 +1099,88 @@ public class OffreStageServiceTest {
 
         // Verify that findById was called once with the correct ID
         verify(offreStageRepository, times(1)).findById(nonExistentId);
+    }
+
+    @Test
+    public void testGetStages_Success() {
+        // Arrange
+        String token = "unTokenValide";
+        Long createurId = 1L;
+        int page = 0;
+        PageRequest pageRequest = PageRequest.of(page, 10);
+        Employeur createur = new Employeur(2L, "unPrenom", "unNom", "514-222-0385", "courriel@courriel.com", "123123123", "uneEntreprise");
+
+        FormulaireOffreStage mockFormulaireOffreStage = new FormulaireOffreStage("unTitreForm", "uneEntreprise", "unEmployeur", "unEmail@mail.com", "unsite.com", "uneLocalisation", "1000", "uneDescription", createur, OffreStage.Visibility.PUBLIC, null, OffreStage.Status.ACCEPTED, OffreStage.SessionEcole.AUTOMNE, Year.of(2021));
+        FichierOffreStage mockFichierOffreStage = new FichierOffreStage("unTitreFichier", "uneEntreprise", "nom.pdf", "data".getBytes(), createur, OffreStage.Visibility.PUBLIC, null, OffreStage.Status.ACCEPTED, OffreStage.SessionEcole.AUTOMNE, Year.of(2021));
+        List<OffreStage> mockOffresListe = new ArrayList<>();
+        mockOffresListe.add(mockFormulaireOffreStage);
+        mockOffresListe.add(mockFichierOffreStage);
+
+        Page<OffreStage> offresPage = new PageImpl<>(mockOffresListe, pageRequest, 2);
+
+        when(utilisateurService.getMyUserId()).thenReturn(createurId);
+        when(offreStageRepository.findOffreStageByCreateurId(createurId, pageRequest)).thenReturn(offresPage);
+
+        // Act
+        List<OffreStageDTO> result = offreStageService.getStages(page);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals("unTitreForm", result.get(0).getTitle());
+        assertEquals("unTitreFichier", result.get(1).getTitle());
+
+        verify(utilisateurService, times(1)).getMyUserId();
+        verify(offreStageRepository, times(1)).findOffreStageByCreateurId(createurId, pageRequest);
+    }
+
+    @Test
+    public void testGetStages_Null() {
+        // Arrange
+        String token = "unTokenValide";
+        Long createurId = 1L;
+        int page = 0;
+        PageRequest pageRequest = PageRequest.of(page, 10);
+        Page<OffreStage> offresPage = new PageImpl<>(List.of(), pageRequest, 0);
+
+        when(utilisateurService.getMyUserId()).thenReturn(createurId);
+        when(offreStageRepository.findOffreStageByCreateurId(createurId, pageRequest)).thenReturn(offresPage);
+
+        // Act
+        List<OffreStageDTO> result = offreStageService.getStages(page);
+
+        // Assert
+        assertNull(result);
+
+        verify(utilisateurService, times(1)).getMyUserId();
+        verify(offreStageRepository, times(1)).findOffreStageByCreateurId(createurId, pageRequest);
+    }
+
+    @Test
+    public void testGetAmountOfPageForCreateur_NumberEndWithZero() {
+        //Arrange
+        when(utilisateurService.getMyUserId()).thenReturn(1L);
+        when(offreStageRepository.countByCreateurId(1L)).thenReturn(30);
+
+        //Act
+        int nombrePage = offreStageService.getAmountOfPagesForCreateur();
+
+        //Assert
+        assertEquals(nombrePage, 3);
+        verify(offreStageRepository, times(1)).countByCreateurId(1L);
+    }
+
+    @Test
+    public void testGetAmountOfPageForCreateur_NumberNotEndWithZero() {
+        //Arrange
+        when(utilisateurService.getMyUserId()).thenReturn(1L);
+        when(offreStageRepository.countByCreateurId(1L)).thenReturn(43);
+
+        //Act
+        int nombrePage = offreStageService.getAmountOfPagesForCreateur();
+
+        //Assert
+        assertEquals(nombrePage, 5);
+        verify(offreStageRepository, times(1)).countByCreateurId(1L);
     }
 }

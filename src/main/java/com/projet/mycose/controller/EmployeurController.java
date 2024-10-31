@@ -1,7 +1,11 @@
 package com.projet.mycose.controller;
 
-import com.projet.mycose.dto.*;
+import com.projet.mycose.dto.ContratDTO;
+import com.projet.mycose.modele.OffreStage;
 import com.projet.mycose.service.EmployeurService;
+import com.projet.mycose.dto.EmployeurDTO;
+import com.projet.mycose.dto.OffreStageDTO;
+import com.projet.mycose.dto.RegisterEmployeurDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,26 +32,6 @@ public class EmployeurController {
                 nouveauCompteEmployeur.getMotDePasse(),
                 nouveauCompteEmployeur.getNomOrganisation());
         return employeurResultat != null ? ResponseEntity.status(HttpStatus.CREATED).body(employeurResultat) : ResponseEntity.status(HttpStatus.CONFLICT).body("L'employeur existe déjà ou les credentials sont invalides");
-    }
-
-    @PostMapping("/getOffresPosted")
-    public ResponseEntity<List<OffreStageDTO>> getOffresStagesPubliees(@RequestParam int pageNumber) {
-        try {
-            return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
-                    employeurService.getStages(pageNumber));
-        } catch (Exception e) {
-            return ResponseEntity.noContent().build();
-        }
-    }
-
-    @GetMapping("/pages")
-    public ResponseEntity<Integer> getAmountOfPages() {
-        try{
-            return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
-                    employeurService.getAmountOfPages());
-        } catch(Exception e) {
-            return ResponseEntity.noContent().build();
-        }
     }
 
     @PostMapping("/getContratsNonSignees")

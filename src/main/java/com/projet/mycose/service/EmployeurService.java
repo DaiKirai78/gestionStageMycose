@@ -46,27 +46,6 @@ public class EmployeurService {
             return null;
     }
 
-    private List<OffreStageDTO> listeOffreStageToDTO(List<OffreStage> listeAMapper) {
-        System.out.println(listeAMapper);
-        List<OffreStageDTO> listeMappee = new ArrayList<>();
-        for(OffreStage offreStage : listeAMapper) {
-            listeMappee.add(OffreStageDTO.toOffreStageInstaceDTOAll(offreStage));
-        }
-        return listeMappee;
-    }
-
-    public List<OffreStageDTO> getStages(int page) {
-        Long idEmployeur = utilisateurService.getMyUserId();
-        PageRequest pageRequest = PageRequest.of(page, LIMIT_PER_PAGE);
-
-        Page<OffreStage> offresRetourneesEnPages = offreStageRepository.findOffreStageByCreateurId(idEmployeur, pageRequest);
-        if(offresRetourneesEnPages.isEmpty()) {
-            return null;
-        }
-
-        return listeOffreStageToDTO(offresRetourneesEnPages.getContent());
-    }
-
     public List<ContratDTO> getAllContratsNonSignes(int page) {
         Long employeurId = utilisateurService.getMyUserId();
         PageRequest pageRequest = PageRequest.of(page, LIMIT_PER_PAGE);
@@ -104,24 +83,6 @@ public class EmployeurService {
         contratDispo.setSignatureEmployeur(signature.getBytes());
         contratRepository.save(contratDispo);
         return "Signature sauvegardé";
-    }
-
-    public Integer getAmountOfPages() {
-        Long employeurId = utilisateurService.getMyUserId();
-        long amountOfRows = offreStageRepository.countByCreateurId(employeurId);
-
-        if (amountOfRows == 0)
-            return 0;
-
-        int nombrePages = (int) Math.floor((double) amountOfRows / LIMIT_PER_PAGE);
-
-        if (amountOfRows % 10 > 0) {
-            // Return ++ (équivalent -> nombrePage + 1) parce que
-            // floor(13/10) = 1 mais il y a 2 page et pas 1
-            nombrePages++;
-        }
-
-        return nombrePages;
     }
 
     public Integer getAmountOfPagesOfContractNonSignees() {

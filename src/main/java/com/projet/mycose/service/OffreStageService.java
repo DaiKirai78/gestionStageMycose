@@ -14,6 +14,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -310,5 +311,57 @@ public class OffreStageService {
         return Stream.of(Year.now(), Year.now().plusYears(1), Year.now().plusYears(2), Year.now().plusYears(3), Year.now().plusYears(4))
                 .map(Year::getValue)
                 .toList();
+    }
+
+    private List<OffreStageDTO> listeOffreStageToDTO(List<OffreStage> listeAMapper) {
+        List<OffreStageDTO> listeMappee = new ArrayList<>();
+        for(OffreStage offreStage : listeAMapper) {
+            listeMappee.add(OffreStageDTO.toOffreStageInstaceDTOAll(offreStage));
+        }
+        return listeMappee;
+    }
+
+    public List<OffreStageDTO> getStages(int page) {
+        Long idCreateur = utilisateurService.getMyUserId();
+        PageRequest pageRequest = PageRequest.of(page, LIMIT_PER_PAGE);
+
+        Page<OffreStage> offresRetourneesEnPages = offreStageRepository.findOffreStageByCreateurId(idCreateur, pageRequest);
+        if(offresRetourneesEnPages.isEmpty()) {
+            return null;
+        }
+
+        return listeOffreStageToDTO(offresRetourneesEnPages.getContent());
+    }
+
+    public List<OffreStageDTO> getStagesFiltered(int page, Integer annee, OffreStage.SessionEcole session) {
+        Long idCreateur = utilisateurService.getMyUserId();
+        PageRequest pageRequest = PageRequest.of(page, LIMIT_PER_PAGE);
+
+        Page<OffreStage> offresRetourneesEnPages = offreStageRepository.findOffreStageByCreateurIdFiltered(idCreateur, annee, session, pageRequest);
+        if(offresRetourneesEnPages.isEmpty()) {
+            return null;
+        }
+
+        return listeOffreStageToDTO(offresRetourneesEnPages.getContent());
+    }
+
+
+
+    public Integer getAmountOfPagesForCreateur() {
+        Long createurId = utilisateurService.getMyUserId();
+        long amountOfRows = offreStageRepository.countByCreateurId(createurId);
+
+        if (amountOfRows == 0)
+            return 0;
+
+        int nombrePages = (int) Math.floor((double) amountOfRows / LIMIT_PER_PAGE);
+
+        if (amountOfRows % 10 > 0) {
+            // Return ++ (équivalent -> nombrePage + 1) parce que
+            // floor(13/10) = 1 mais il y a 2 page et pas 1
+            nombrePages++;
+        }
+
+        return nombrePages;
     }
 }

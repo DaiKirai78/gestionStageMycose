@@ -3,6 +3,7 @@ package com.projet.mycose.controller;
 import com.projet.mycose.dto.*;
 import com.projet.mycose.modele.ApplicationStage;
 import com.projet.mycose.modele.Etudiant;
+import com.projet.mycose.modele.OffreStage;
 import com.projet.mycose.modele.Programme;
 import com.projet.mycose.service.ApplicationStageService;
 import com.projet.mycose.service.OffreStageService;
@@ -13,18 +14,26 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import com.fasterxml.jackson.databind.JsonNode;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
 public class OffreStageControllerTest {
+    private MockMvc mockMvc;
 
     @Mock
     private OffreStageService offreStageService;
@@ -46,6 +55,10 @@ public class OffreStageControllerTest {
 
     @BeforeEach
     void setup() {
+        mockMvc = MockMvcBuilders.standaloneSetup(offreStageController)
+                .setControllerAdvice(new GlobalExceptionHandler())
+                .build();
+
         id = 1L;
 
         uploadFicherOffreStageDTO = new UploadFicherOffreStageDTO();
@@ -322,4 +335,79 @@ public class OffreStageControllerTest {
         verify(offreStageService, times(1)).refuseOffreDeStage(offreStageId, commentaire);
     }
 
+
+    @Test
+    public void testGetStages_Success() throws Exception{
+        //nouveau contructeur
+
+        FormulaireOffreStageDTO mockFormulaire = new FormulaireOffreStageDTO(
+                1L,
+                "unNomEntreprise",
+                "unNomEmployeur",
+                "unEmail@mail.com",
+                "unSite.com",
+                "unTitreStage",
+                "uneLcalisation",
+                "1000",
+                "uneDescription",
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                1L,
+                OffreStage.Status.WAITING,
+                Programme.TECHNIQUE_INFORMATIQUE,
+                OffreStage.Visibility.PUBLIC,
+                null,
+                OffreStage.SessionEcole.AUTOMNE,
+                2022
+        );
+
+        List<OffreStageDTO> mockListeOffres = new ArrayList<>();
+        mockListeOffres.add(mockFormulaire);
+        when(offreStageService.getStages(0)).thenReturn(mockListeOffres);
+
+        // Act & Assert
+        mockMvc.perform(post("/api/offres-stages/getOffresPosted")
+                        .param("pageNumber", String.valueOf(0))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isAccepted())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].id").value(1L))
+                .andExpect(jsonPath("$[0].status").value("WAITING"));
+
+    }
+
+    @Test
+    public void testGetStages_Error() throws Exception {
+        //Arrange
+        when(offreStageService.getStages(0)).thenThrow(new RuntimeException());
+
+
+        //Act & Assert
+        mockMvc.perform(post("/api/offres-stages/getOffresPosted")
+                        .param("pageNumber", String.valueOf(0))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void testGetAmountOfPagesForCreateur_Error() throws Exception {
+        //Arrange
+        when(offreStageService.getAmountOfPagesForCreateur()).thenThrow(new RuntimeException());
+
+        //Act & Assert
+        mockMvc.perform(get("/api/offres-stages/pagesForCreateur"))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void testGetAmountOfPagesForCreateur_Success() throws Exception {
+        //Arrange
+        when(offreStageService.getAmountOfPagesForCreateur()).thenReturn(2);
+
+        //Act & Assert
+        mockMvc.perform(get("/api/offres-stages/pagesForCreateur"))
+                .andExpect(status().isAccepted())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().string("2"));
+    }
 }
