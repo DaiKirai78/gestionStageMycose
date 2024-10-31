@@ -1,10 +1,12 @@
 package com.projet.mycose.controller;
 
+import com.projet.mycose.dto.*;
 import com.projet.mycose.modele.ApplicationStage;
+import com.projet.mycose.modele.Etudiant;
 import com.projet.mycose.security.exception.AuthenticationException;
 import com.projet.mycose.service.ApplicationStageService;
-import com.projet.mycose.dto.ApplicationStageAvecInfosDTO;
-import com.projet.mycose.dto.ApplicationStageDTO;
+import com.projet.mycose.service.EtudiantService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ApplicationStageController {
     private final ApplicationStageService applicationStageService;
+    private final EtudiantService etudiantService;
 
     @PostMapping("/apply")
     public ResponseEntity<ApplicationStageDTO> applyForStage(@RequestParam Long id) throws AccessDeniedException {
@@ -70,8 +73,12 @@ public class ApplicationStageController {
     }
 
     @PatchMapping("/summon/{id}")
-    public ResponseEntity<ApplicationStageAvecInfosDTO> summonEtudiant(@PathVariable Long id) {
-        return new ResponseEntity<>(applicationStageService.summonEtudiant(id), HttpStatus.OK);
+    public ResponseEntity<ApplicationStageAvecInfosDTO> summonEtudiant(@PathVariable Long id, @Valid @RequestBody SummonEtudiantDTO summonEtudiantDTO) {
+        return new ResponseEntity<>(applicationStageService.summonEtudiant(id, summonEtudiantDTO), HttpStatus.OK);
     }
 
+    @PatchMapping("/answer-summon/{id}")
+    public ResponseEntity<ApplicationStageAvecInfosDTO> answerSummon(@PathVariable Long id, @Valid @RequestBody AnswerSummonDTO answer) {
+        return new ResponseEntity<>(applicationStageService.answerSummon(id, answer), HttpStatus.OK);
+    }
 }

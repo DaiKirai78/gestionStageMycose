@@ -59,6 +59,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/application-stage/my-applications").hasAuthority("ETUDIANT")
                         .requestMatchers("/api/application-stage/get/*").hasAuthority("EMPLOYEUR")
                         .requestMatchers("/api/application-stage/my-applications/status/*").hasAnyAuthority("GESTIONNAIRE_STAGE", "EMPLOYEUR")
+                        .requestMatchers("/api/application-stage/application/*").hasAuthority("EMPLOYEUR")
 
                         .requestMatchers("/**").permitAll()
                         //Laisser en commentaire car c'est utile pour faire des postman lorsqu'on veut tester des features :)

@@ -1,7 +1,9 @@
 package com.projet.mycose.controller;
 
+import com.projet.mycose.dto.ApplicationStageDTO;
 import com.projet.mycose.dto.EnseignantDTO;
 import com.projet.mycose.dto.EtudiantDTO;
+import com.projet.mycose.modele.Employeur;
 import com.projet.mycose.modele.Programme;
 import com.projet.mycose.service.EtudiantService;
 import com.projet.mycose.service.GestionnaireStageService;
@@ -25,7 +27,7 @@ public class GestionnaireController {
     }
 
     @PostMapping("/getEtudiants")
-    public ResponseEntity<List<EtudiantDTO>> getEtudiantsSansEnseignant(@RequestParam int pageNumber, @RequestParam Programme programme)  {
+    public ResponseEntity<List<EtudiantDTO>> getEtudiantsSansEnseignant(@RequestParam int pageNumber, @RequestParam Programme programme) {
         try {
             return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
                     gestionnaireStageService.getEtudiantsSansEnseignants(pageNumber, programme));
@@ -46,7 +48,7 @@ public class GestionnaireController {
 
     @PostMapping("/rechercheEnseignants")
     public ResponseEntity<List<EnseignantDTO>> rechercherEnseignants(@RequestParam String search) {
-        try{
+        try {
             return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
                     gestionnaireStageService.getEnseignantsParRecherche(search));
         } catch (Exception e) {
@@ -66,11 +68,31 @@ public class GestionnaireController {
 
     @PostMapping("/assignerEnseignantEtudiant")
     public ResponseEntity<?> assignerEnseignantVersEtudiant(@RequestParam Long idEtudiant, @RequestParam Long idEnseignant) {
-        try{
+        try {
             gestionnaireStageService.assignerEnseigantEtudiant(idEtudiant, idEnseignant);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.noContent().build();
+        }
+    }
+
+    @GetMapping("/getEtudiantsContratEnDemande")
+    public ResponseEntity<List<EtudiantDTO>> getEtudiantsContratEnDemande() {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(etudiantService.getEtudiantsContratEnDemande());
+        } catch (Exception e) {
+            System.err.println("Une erreur est survenue lors de la récupération des étudiants en demande de contrat : " + e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @GetMapping("/getEtudiantsSansContratPages")
+    public ResponseEntity<Integer> getEtudiantsSansContratPages() {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(
+                    etudiantService.getEtudiantsSansContratPages());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
         }
     }
 }

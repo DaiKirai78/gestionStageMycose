@@ -5,6 +5,7 @@ import com.projet.mycose.dto.EtudiantDTO;
 import com.projet.mycose.dto.FormulaireOffreStageDTO;
 import com.projet.mycose.dto.OffreStageDTO;
 import com.projet.mycose.dto.RegisterEtudiantDTO;
+import com.projet.mycose.modele.Etudiant;
 import com.projet.mycose.modele.OffreStage;
 import com.projet.mycose.modele.Programme;
 import com.projet.mycose.modele.SessionEcole;
@@ -57,7 +58,7 @@ public class EtudiantControllerTest {
         );
 
         when(etudiantService.creationDeCompte(any(), any(), any(), any(), any(), any()))
-                .thenReturn(new EtudiantDTO(1L, "Karim", "Mihoubi", "mihoubi@gmail.com", "438-532-2729", Role.ETUDIANT, Programme.TECHNIQUE_INFORMATIQUE));
+                .thenReturn(new EtudiantDTO(1L, "Karim", "Mihoubi", "mihoubi@gmail.com", "438-532-2729", Role.ETUDIANT, Programme.TECHNIQUE_INFORMATIQUE, Etudiant.ContractStatus.NO_CONTRACT));
 
         ObjectMapper objectMapper = new ObjectMapper();
         String etudiantJson = objectMapper.writeValueAsString(newEtudiant);
@@ -74,7 +75,8 @@ public class EtudiantControllerTest {
                 .andExpect(jsonPath("$.courriel").value("mihoubi@gmail.com"))
                 .andExpect(jsonPath("$.numeroDeTelephone").value("438-532-2729"))
                 .andExpect(jsonPath("$.role").value("ETUDIANT"))
-                .andExpect(jsonPath("$.programme").value(Programme.TECHNIQUE_INFORMATIQUE.name()));
+                .andExpect(jsonPath("$.programme").value(Programme.TECHNIQUE_INFORMATIQUE.name()))
+                .andExpect(jsonPath("$.contractStatus").value(Etudiant.ContractStatus.NO_CONTRACT.name()));
     }
 
     @Test

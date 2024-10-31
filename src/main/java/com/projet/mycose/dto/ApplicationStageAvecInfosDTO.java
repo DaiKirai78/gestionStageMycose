@@ -1,6 +1,7 @@
 package com.projet.mycose.dto;
 
 import com.projet.mycose.modele.ApplicationStage;
+import com.projet.mycose.modele.Convocation;
 import com.projet.mycose.modele.FichierOffreStage;
 import com.projet.mycose.modele.FormulaireOffreStage;
 import lombok.Getter;
@@ -31,6 +32,13 @@ public class ApplicationStageAvecInfosDTO {
     private LocalDateTime updatedAt;
     private Long etudiant_id;
     private Long offreStage_id;
+    private Long convocation_id;
+    private LocalDateTime scheduledAt;
+    private LocalDateTime summonedAt;
+    private String messageConvocation;
+    private String convocationMessageEtudiant;
+    private String locationConvocation;
+    private Convocation.ConvocationStatus convocationStatus;
     private ApplicationStage.ApplicationStatus status;
     private LocalDateTime appliedAt;
 
@@ -45,6 +53,15 @@ public class ApplicationStageAvecInfosDTO {
         dto.setUpdatedAt(applicationStage.getOffreStage().getUpdatedAt());
         dto.setTitle(applicationStage.getOffreStage().getTitle());
         dto.setEntrepriseName(applicationStage.getOffreStage().getEntrepriseName());
+        if (applicationStage.getConvocation() != null) {
+            dto.setConvocation_id(applicationStage.getConvocation().getId());
+            dto.setScheduledAt(applicationStage.getConvocation().getScheduledAt());
+            dto.setSummonedAt(applicationStage.getConvocation().getSummonedAt());
+            dto.setMessageConvocation(applicationStage.getConvocation().getMessageConvocation());
+            dto.setConvocationMessageEtudiant(applicationStage.getConvocation().getMessageEtudiant());
+            dto.setLocationConvocation(applicationStage.getConvocation().getLocation());
+            dto.setConvocationStatus(applicationStage.getConvocation().getStatus());
+        }
         if (applicationStage.getOffreStage() instanceof FichierOffreStage fichier) {
             System.out.println("FichierOffreStage");
             dto.setFilename(fichier.getFilename());

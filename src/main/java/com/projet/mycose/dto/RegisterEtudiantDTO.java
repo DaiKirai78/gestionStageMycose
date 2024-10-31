@@ -1,5 +1,6 @@
 package com.projet.mycose.dto;
 
+import com.projet.mycose.modele.Etudiant;
 import com.projet.mycose.modele.Programme;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

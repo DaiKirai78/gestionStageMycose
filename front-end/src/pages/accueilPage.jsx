@@ -73,6 +73,8 @@ const AccueilPage = () => {
                 return <AccueilEmployeur />;
             case "GESTIONNAIRE_STAGE":
                 return <AccueilGestionnaire />;
+            case "ENSEIGNANT":
+                return <p>Enseignant</p>;
             default:
                 navigate("/");
                 break;
