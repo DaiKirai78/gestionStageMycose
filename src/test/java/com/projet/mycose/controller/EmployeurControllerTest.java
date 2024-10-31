@@ -173,12 +173,13 @@ public class EmployeurControllerTest {
                 null,
                 null,
                 2L,
-                3L
+                3L,
+                null
         );
 
         List<ContratDTO> listeContratsMock = new ArrayList<>();
         listeContratsMock.add(contratDTOMock);
-        when(employeurService.getAllContratsNonSignes(0)).thenReturn(listeContratsMock);
+        when(employeurService.getAllContratsNongSignes(0)).thenReturn(listeContratsMock);
 
         //Act & Assert
         mockMvc.perform(post("/entreprise/getContratsNonSignees")
