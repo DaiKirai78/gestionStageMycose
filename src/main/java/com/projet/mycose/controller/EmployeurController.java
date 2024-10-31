@@ -34,26 +34,6 @@ public class EmployeurController {
         return employeurResultat != null ? ResponseEntity.status(HttpStatus.CREATED).body(employeurResultat) : ResponseEntity.status(HttpStatus.CONFLICT).body("L'employeur existe déjà ou les credentials sont invalides");
     }
 
-    @PostMapping("/getOffresPosted")
-    public ResponseEntity<List<OffreStageDTO>> getOffresStagesPubliees(@RequestParam int pageNumber) {
-        try {
-            return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
-                    employeurService.getStages(pageNumber));
-        } catch (Exception e) {
-            return ResponseEntity.noContent().build();
-        }
-    }
-
-    @GetMapping("/getOffresPosted")
-    public ResponseEntity<List<OffreStageDTO>> getOffresStagesPublieesFiltre(@RequestParam int pageNumber, @RequestParam Integer annee, @RequestParam OffreStage.SessionEcole session) {
-        try {
-            return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
-                    employeurService.getStagesFiltered(pageNumber, annee, session));
-        } catch (Exception e) {
-            return ResponseEntity.noContent().build();
-        }
-    }
-
     @GetMapping("/pages")
     public ResponseEntity<Integer> getAmountOfPages() {
         try{

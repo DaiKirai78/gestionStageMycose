@@ -84,6 +84,12 @@ function InfoDetailleeEtudiant({ isModalOpen, setIsModalOpen, infosEtudiant, sum
                                     <p><strong>{t("telephone") + ": "}</strong>{infosEtudiant.numeroDeTelephone}</p>
                                     <p><strong>{t("programme") + ": "}</strong>{t(infosEtudiant.programme)}</p>
                                 </div>
+                                {studentInfo && ((studentInfo.convocationStatus === 'ACCEPTED' || studentInfo.convocationStatus === 'REJECTED')) && (
+                                    <div className="mt-4 p-4 bg-gray-100 rounded-md w-full text-center">
+                                        <p><strong>{t("Status")}:</strong> {t(studentInfo.convocationStatus)}</p>
+                                        <p><strong>{t("Message")}:</strong> {studentInfo.convocationMessageEtudiant}</p>
+                                    </div>
+                                )}
                                 <div className="h-full">
                                     <iframe
                                         src={`${cvEtudiantCourrant}`}

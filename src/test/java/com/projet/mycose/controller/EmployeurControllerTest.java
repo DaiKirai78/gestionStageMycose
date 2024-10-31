@@ -90,60 +90,6 @@ public class EmployeurControllerTest {
                 .andExpect(status().isConflict());
     }
 
-
-    @Test
-    public void testGetStages_Success() throws Exception{
-        //nouveau contructeur
-
-        FormulaireOffreStageDTO mockFormulaire = new FormulaireOffreStageDTO(
-                1L,
-                "unNomEntreprise",
-                "unNomEmployeur",
-                "unEmail@mail.com",
-                "unSite.com",
-                "unTitreStage",
-                "uneLcalisation",
-                "1000",
-                "uneDescription",
-                LocalDateTime.now(),
-                LocalDateTime.now(),
-                1L,
-                OffreStage.Status.WAITING,
-                Programme.TECHNIQUE_INFORMATIQUE,
-                OffreStage.Visibility.PUBLIC,
-                null,
-                OffreStage.SessionEcole.AUTOMNE,
-                2022
-        );
-
-        List<OffreStageDTO> mockListeOffres = new ArrayList<>();
-        mockListeOffres.add(mockFormulaire);
-        when(employeurService.getStages(0)).thenReturn(mockListeOffres);
-
-        // Act & Assert
-        mockMvc.perform(post("/entreprise/getOffresPosted")
-                        .param("pageNumber", String.valueOf(0))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isAccepted())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$[0].id").value(1L))
-                .andExpect(jsonPath("$[0].status").value("WAITING"));
-
-    }
-
-    @Test
-    public void testGetStages_Error() throws Exception {
-        //Arrange
-        when(employeurService.getStages(0)).thenThrow(new RuntimeException());
-
-
-        //Act & Assert
-        mockMvc.perform(post("/entreprise/getOffresPosted")
-                        .param("pageNumber", String.valueOf(0))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNoContent());
-    }
-
     @Test
     public void testGetAmountOfPages_Error() throws Exception {
         //Arrange

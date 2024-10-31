@@ -40,7 +40,7 @@ const InfoDetailleeOffreStage = ({ setActiveOffer, activeOffer, getColorOffreSta
             let fetchedData = await response.text();
             if (fetchedData) {
                 setListeEtudiantsAppliques(JSON.parse(fetchedData));
-                //console.log(fetchedData);
+                console.log("1er fetch" + fetchedData);
                 await assignerStatusEtudiants(JSON.parse(fetchedData))
             }
             else {
@@ -65,7 +65,9 @@ const InfoDetailleeOffreStage = ({ setActiveOffer, activeOffer, getColorOffreSta
 
                 if (response.status === 200) {
                     const applications = response.data;
+                    console.log("2eme fetch 1", applications);
                     const studentApplication = applications.find(app => app.etudiant_id === etudiant.id && app.offreStage_id === activeOffer.id);
+                    console.log("2eme fetch 2", studentApplication);
                     newStatus[etudiant.id] = studentApplication ? studentApplication.status : "N/A";
                 }
             } catch (error) {
@@ -120,11 +122,12 @@ const InfoDetailleeOffreStage = ({ setActiveOffer, activeOffer, getColorOffreSta
                 });
 
             if (response.status === 200) {
-                const applications = response.data;
-                console.log("applications", applications);
+                const applications = response.data
+                console.log("3eme fetch 1", applications);
 
                 // On vérifie l'application avec le bon etudiantId et l'offreStageId
                 const studentApplication = applications.find(app => app.etudiant_id === selectedEtudiant.id && app.offreStage_id === activeOffer.id);
+                console.log("3eme fetch 2", studentApplication);
                 setStudentInfo(studentApplication);
             }
         } catch (error) {
@@ -209,18 +212,6 @@ const InfoDetailleeOffreStage = ({ setActiveOffer, activeOffer, getColorOffreSta
         } finally {
             setIsFetchingStatus(false);
         }
-    }
-
-    function getEtudiantInfoStatus(etudiant) {
-        //etudiantInfosApplication = await checkSummonStatus();
-        setSelectedEtudiant(etudiant)
-
-        //console.log(etudiantInfosApplication);
-        console.log(studentInfo);
-        if(studentInfo)
-            return studentInfo.status
-        else
-            return "Chargement"
     }
 
     const closeModal = () => {
