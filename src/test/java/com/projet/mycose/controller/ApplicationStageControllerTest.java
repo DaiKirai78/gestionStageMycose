@@ -1,5 +1,6 @@
 package com.projet.mycose.controller;
 
+import com.projet.mycose.dto.SummonEtudiantDTO;
 import com.projet.mycose.modele.*;
 import com.projet.mycose.modele.auth.Credentials;
 import com.projet.mycose.modele.auth.Role;
@@ -16,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -161,17 +163,21 @@ public class ApplicationStageControllerTest {
         verify(applicationStageService, times(1)).getApplicationById(id);
     }
 
-//    @Test
-//    void summonEtudiant_Success() {
-//        when(applicationStageService.summonEtudiant(id)).thenReturn(applicationStageAvecInfosDTO);
-//
-//        ResponseEntity<ApplicationStageAvecInfosDTO> response = applicationStageController.summonEtudiant(id);
-//
-//        assertNotNull(response);
-//        assertEquals(HttpStatus.OK, response.getStatusCode());
-//        assertEquals(applicationStageAvecInfosDTO, response.getBody());
-//        verify(applicationStageService, times(1)).summonEtudiant(id);
-//    }
+    @Test
+    void summonEtudiant_Success() {
+        SummonEtudiantDTO summonEtudiantDTO = new SummonEtudiantDTO();
+        summonEtudiantDTO.setScheduledAt(LocalDateTime.now().plusDays(1));
+        summonEtudiantDTO.setLocation("Tech Corp");
+        summonEtudiantDTO.setMessageConvocation("You have been summoned for an interview.");
+        when(applicationStageService.summonEtudiant(id, summonEtudiantDTO)).thenReturn(applicationStageAvecInfosDTO);
+
+        ResponseEntity<ApplicationStageAvecInfosDTO> response = applicationStageController.summonEtudiant(id, summonEtudiantDTO);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(applicationStageAvecInfosDTO, response.getBody());
+        verify(applicationStageService, times(1)).summonEtudiant(id, summonEtudiantDTO);
+    }
 
     @Test
     void testAccepterApplication_Success() {

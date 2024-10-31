@@ -23,7 +23,7 @@ public class ApplicationStage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "etudiant_id", nullable = false)
     private Etudiant etudiant;
 
@@ -37,7 +37,7 @@ public class ApplicationStage {
     @CreationTimestamp
     private LocalDateTime appliedAt;
 
-    @OneToOne(mappedBy = "applicationStage", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.EAGER, mappedBy = "applicationStage", cascade = CascadeType.ALL, orphanRemoval = true)
     private Convocation convocation;
 
     @Builder

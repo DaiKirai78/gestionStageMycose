@@ -1,14 +1,11 @@
 package com.projet.mycose.service;
 
-import com.projet.mycose.dto.EtudiantDTO;
-import com.projet.mycose.dto.SummonEtudiantDTO;
+import com.projet.mycose.dto.*;
 import com.projet.mycose.modele.*;
 import com.projet.mycose.repository.ApplicationStageRepository;
 import com.projet.mycose.repository.EtudiantOffreStagePriveeRepository;
 import com.projet.mycose.repository.EtudiantRepository;
 import com.projet.mycose.repository.OffreStageRepository;
-import com.projet.mycose.dto.ApplicationStageAvecInfosDTO;
-import com.projet.mycose.dto.ApplicationStageDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -185,5 +182,29 @@ public class ApplicationStageService {
         Convocation convocation = new Convocation(applicationStage, summonEtudiantDTO);
         applicationStage.setConvocation(convocation);
         applicationStage.setStatus(ApplicationStage.ApplicationStatus.SUMMONED);
+    }
+
+
+    public ApplicationStageAvecInfosDTO answerSummon(Long id, AnswerSummonDTO answer) {
+        //Fetch type is set to EAGER for Convocation & Etudiant so no need for a special query to fetch the convocation
+        ApplicationStage applicationStage = applicationStageRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Application not found"));
+        Long userId = utilisateurService.getMyUserId();
+        Long applicationID = applicationStage.getEtudiant().getId();
+        if (!userId.equals(applicationID)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to answer this summon");
+        }
+        if (applicationStage.getStatus() != ApplicationStage.ApplicationStatus.SUMMONED) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Application is not summoned");
+        }
+        if (applicationStage.getConvocation().getStatus() != Convocation.ConvocationStatus.PENDING) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Convocation is not pending");
+        }
+        if (answer.getStatus() != Convocation.ConvocationStatus.ACCEPTED && answer.getStatus() != Convocation.ConvocationStatus.REJECTED) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid status");
+        }
+        applicationStage.getConvocation().setMessageEtudiant(answer.getMessageEtudiant());
+        applicationStage.getConvocation().setStatus(answer.getStatus());
+        return convertToDTOAvecInfos(applicationStageRepository.save(applicationStage));
     }
 }

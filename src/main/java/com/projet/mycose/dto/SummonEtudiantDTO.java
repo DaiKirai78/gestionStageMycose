@@ -1,5 +1,6 @@
 package com.projet.mycose.dto;
 
+import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 public class SummonEtudiantDTO {
 
     @NotBlank(message = "L'heure de la convocation est obligatoire")
+    @Future(message = "Event date must be in the future")
     private LocalDateTime scheduledAt;
 
     @NotBlank(message = "Le lieu de la convocation est obligatoire")

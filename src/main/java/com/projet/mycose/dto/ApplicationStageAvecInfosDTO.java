@@ -31,6 +31,7 @@ public class ApplicationStageAvecInfosDTO {
     private LocalDateTime updatedAt;
     private Long etudiant_id;
     private Long offreStage_id;
+    private Long convocation_id;
     private ApplicationStage.ApplicationStatus status;
     private LocalDateTime appliedAt;
 
@@ -45,6 +46,9 @@ public class ApplicationStageAvecInfosDTO {
         dto.setUpdatedAt(applicationStage.getOffreStage().getUpdatedAt());
         dto.setTitle(applicationStage.getOffreStage().getTitle());
         dto.setEntrepriseName(applicationStage.getOffreStage().getEntrepriseName());
+        if (applicationStage.getConvocation() != null) {
+            dto.setConvocation_id(applicationStage.getConvocation().getId());
+        }
         if (applicationStage.getOffreStage() instanceof FichierOffreStage fichier) {
             System.out.println("FichierOffreStage");
             dto.setFilename(fichier.getFilename());

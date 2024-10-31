@@ -1,13 +1,10 @@
 package com.projet.mycose.controller;
 
-import com.projet.mycose.dto.FormulaireOffreStageDTO;
-import com.projet.mycose.dto.SummonEtudiantDTO;
+import com.projet.mycose.dto.*;
 import com.projet.mycose.modele.ApplicationStage;
 import com.projet.mycose.modele.Etudiant;
 import com.projet.mycose.security.exception.AuthenticationException;
 import com.projet.mycose.service.ApplicationStageService;
-import com.projet.mycose.dto.ApplicationStageAvecInfosDTO;
-import com.projet.mycose.dto.ApplicationStageDTO;
 import com.projet.mycose.service.EtudiantService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -80,4 +77,8 @@ public class ApplicationStageController {
         return new ResponseEntity<>(applicationStageService.summonEtudiant(id, summonEtudiantDTO), HttpStatus.OK);
     }
 
+    @PatchMapping("/answer-summon/{id}")
+    public ResponseEntity<ApplicationStageAvecInfosDTO> answerSummon(@PathVariable Long id, @Valid @RequestBody AnswerSummonDTO answer) {
+        return new ResponseEntity<>(applicationStageService.answerSummon(id, answer), HttpStatus.OK);
+    }
 }
