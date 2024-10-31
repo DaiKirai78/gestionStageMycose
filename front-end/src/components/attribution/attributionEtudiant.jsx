@@ -8,11 +8,15 @@ import AssignCard from './assignCard';
 const AttributionEtudiant = () => {
     const { setSelectedStudent, programme, setProgramme } = useOutletContext();
     const [students, setStudents] = useState();
+    const [programmes, setProgrammes] = useState([]);
     const [isFetching, setIsFetching] = useState();
     const { t } = useTranslation();
     const [pages, setPages] = useState({minPages: 1, maxPages: null, currentPage: 1});
     const navigate = useNavigate();
 
+    useEffect(() => {
+        fetchProgrammes()
+    }, []);
 
     useEffect(() => {
         setPages({minPages: 1, maxPages: pages.maxPages === null ? undefined : null, currentPage: 1});
@@ -21,6 +25,20 @@ const AttributionEtudiant = () => {
     useEffect(() => {
         fetchAll()
     }, [pages.currentPage, pages.maxPages])
+
+    async function fetchProgrammes() {
+        try {
+            const response = await fetch("http://localhost:8080/api/programme");
+            if (response.ok) {
+                const data = await response.json();
+                setProgrammes(data);
+            } else {
+                console.error("Erreur lors de la récupération des programmes");
+            }
+        } catch (e) {
+            console.error("Erreur lors de la récupération des programmes " + e);
+        }
+    }
 
     async function fetchAll() {
         setIsFetching(true);
@@ -103,10 +121,11 @@ const AttributionEtudiant = () => {
                 id="programmeDropDown" 
                 value={programme} 
                 onChange={(e) => setProgramme(e.target.value)}>
-                <option value="NOT_SPECIFIED">{t("NOT_SPECIFIED")}</option>
-                <option value="TECHNIQUE_INFORMATIQUE">{t("TECHNIQUE_INFORMATIQUE")}</option>
-                <option value="GENIE_LOGICIEL">{t("GENIE_LOGICIEL")}</option>
-                <option value="RESEAU_TELECOMMUNICATION">{t("RESEAU_TELECOMMUNICATION")}</option>
+                {programmes.map((programme, index) => (
+                    <option key={index} value={programme}>
+                        {t(programme)}
+                    </option>
+                ))}
             </select>
             {isFetching ? <PageIsLoading />
             :
