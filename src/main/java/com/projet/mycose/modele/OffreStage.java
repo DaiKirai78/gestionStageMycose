@@ -92,4 +92,10 @@ public abstract class OffreStage {
         PRIVATE,
         UNDEFINED
     }
+
+    public enum SessionEcole {
+        AUTOMNE,
+        HIVER,
+        ETE
+    }
 }

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.projet.mycose.dto.*;
 import com.projet.mycose.modele.OffreStage;
 import com.projet.mycose.modele.Programme;
-import com.projet.mycose.modele.SessionEcole;
 import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.service.EmployeurService;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +17,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.LocalDateTime;
-import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -111,7 +109,7 @@ public class EmployeurControllerTest {
                 Programme.TECHNIQUE_INFORMATIQUE,
                 OffreStage.Visibility.PUBLIC,
                 null,
-                SessionEcole.AUTOMNE,
+                OffreStage.SessionEcole.AUTOMNE,
                 2022
         );
 

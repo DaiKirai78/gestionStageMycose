@@ -27,7 +27,7 @@ public class OffreStageDTO {
     private OffreStage.Status status;
     private OffreStage.Visibility visibility;
     private Programme programme;
-    private SessionEcole session;
+    private OffreStage.SessionEcole session;
     private int annee;
 
     public OffreStageDTO(long id) {
@@ -45,7 +45,7 @@ public class OffreStageDTO {
         return offreStageDTO;
     }
 
-    public OffreStageDTO(Long id, String title, String entrepriseName, Long createurId, LocalDateTime createdAt, LocalDateTime updatedAt, OffreStage.Status status, OffreStage.Visibility visibility, Programme programme, SessionEcole session, int annee) {
+    public OffreStageDTO(Long id, String title, String entrepriseName, Long createurId, LocalDateTime createdAt, LocalDateTime updatedAt, OffreStage.Status status, OffreStage.Visibility visibility, Programme programme, OffreStage.SessionEcole session, int annee) {
         this.id = id;
         this.title = title;
         this.entrepriseName = entrepriseName;

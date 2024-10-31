@@ -3,7 +3,6 @@ package com.projet.mycose.dto;
 import com.projet.mycose.modele.FichierOffreStage;
 import com.projet.mycose.modele.OffreStage;
 import com.projet.mycose.modele.Programme;
-import com.projet.mycose.modele.SessionEcole;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -14,7 +13,6 @@ import lombok.Setter;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.time.Year;
 import java.util.Base64;
 
 
@@ -35,7 +33,7 @@ public class FichierOffreStageDTO extends OffreStageDTO{
     private String fileData;
 
     @Builder
-    public FichierOffreStageDTO(long id, String filename, String fileData, String title, String entrepriseName, LocalDateTime createdAt, LocalDateTime updateAt, Long createur_id, OffreStage.Status status, OffreStage.Visibility visibility, Programme programme, SessionEcole session, int annee) {
+    public FichierOffreStageDTO(long id, String filename, String fileData, String title, String entrepriseName, LocalDateTime createdAt, LocalDateTime updateAt, Long createur_id, OffreStage.Status status, OffreStage.Visibility visibility, Programme programme, OffreStage.SessionEcole session, int annee) {
         super(id);
         this.filename = filename;
         this.fileData = fileData;

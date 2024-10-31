@@ -1,11 +1,10 @@
 package com.projet.mycose.dto;
 
+import com.projet.mycose.modele.OffreStage;
 import com.projet.mycose.modele.Programme;
-import com.projet.mycose.modele.SessionEcole;
 import jakarta.persistence.PreUpdate;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,7 +27,7 @@ public class UploadFicherOffreStageDTO {
 
     private List<Long> etudiantsPrives;
 
-    private SessionEcole session;
+    private OffreStage.SessionEcole session;
 
     private int annee;
 

@@ -161,8 +161,8 @@ public class EtudiantServiceTest {
         PageRequest pageRequest = PageRequest.of(page, 10);
         Employeur createur = new Employeur(2L, "unPrenom", "unNom", "514-222-0385", "courriel@courriel.com", "123123123", "uneEntreprise");
 
-        FormulaireOffreStage mockFormulaireOffreStage = new FormulaireOffreStage("unTitreForm", "uneEntreprise", "unEmployeur", "unEmail@mail.com", "unsite.com", "uneLocalisation", "1000", "uneDescription", createur, OffreStage.Visibility.PUBLIC, null, OffreStage.Status.ACCEPTED, SessionEcole.AUTOMNE, Year.of(2022));
-        FichierOffreStage mockFichierOffreStage = new FichierOffreStage("unTitreFichier", "uneEntreprise", "nom.pdf", "data".getBytes(), createur, OffreStage.Visibility.PUBLIC, null, OffreStage.Status.ACCEPTED, SessionEcole.AUTOMNE, Year.of(2022));
+        FormulaireOffreStage mockFormulaireOffreStage = new FormulaireOffreStage("unTitreForm", "uneEntreprise", "unEmployeur", "unEmail@mail.com", "unsite.com", "uneLocalisation", "1000", "uneDescription", createur, OffreStage.Visibility.PUBLIC, null, OffreStage.Status.ACCEPTED, OffreStage.SessionEcole.AUTOMNE, Year.of(2022));
+        FichierOffreStage mockFichierOffreStage = new FichierOffreStage("unTitreFichier", "uneEntreprise", "nom.pdf", "data".getBytes(), createur, OffreStage.Visibility.PUBLIC, null, OffreStage.Status.ACCEPTED, OffreStage.SessionEcole.AUTOMNE, Year.of(2022));
         List<OffreStage> mockOffresListe = new ArrayList<>();
         mockOffresListe.add(mockFormulaireOffreStage);
         mockOffresListe.add(mockFichierOffreStage);
@@ -246,8 +246,8 @@ public class EtudiantServiceTest {
         PageRequest pageRequest = PageRequest.of(page, 10);
         Employeur createur = new Employeur(2L, "unPrenom", "unNom", "514-222-0385", "courriel@courriel.com", "123123123", "uneEntreprise");
 
-        FormulaireOffreStage mockFormulaireOffreStage = new FormulaireOffreStage("Titre Form", "Entreprise A", "Employeur A", "emailA@mail.com", "siteA.com", "Localisation A", "1000", "Description A", createur, OffreStage.Visibility.PUBLIC, null, OffreStage.Status.ACCEPTED, SessionEcole.AUTOMNE, Year.of(2022));
-        FichierOffreStage mockFichierOffreStage = new FichierOffreStage("Titre Fichier", "Entreprise B", "nomB.pdf", "data".getBytes(), createur, OffreStage.Visibility.PUBLIC, null, OffreStage.Status.ACCEPTED, SessionEcole.AUTOMNE, Year.of(2022));
+        FormulaireOffreStage mockFormulaireOffreStage = new FormulaireOffreStage("Titre Form", "Entreprise A", "Employeur A", "emailA@mail.com", "siteA.com", "Localisation A", "1000", "Description A", createur, OffreStage.Visibility.PUBLIC, null, OffreStage.Status.ACCEPTED, OffreStage.SessionEcole.AUTOMNE, Year.of(2022));
+        FichierOffreStage mockFichierOffreStage = new FichierOffreStage("Titre Fichier", "Entreprise B", "nomB.pdf", "data".getBytes(), createur, OffreStage.Visibility.PUBLIC, null, OffreStage.Status.ACCEPTED, OffreStage.SessionEcole.AUTOMNE, Year.of(2022));
         List<OffreStage> mockOffresListe = new ArrayList<>();
         mockOffresListe.add(mockFormulaireOffreStage);
         mockOffresListe.add(mockFichierOffreStage);
