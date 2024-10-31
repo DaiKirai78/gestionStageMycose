@@ -1,6 +1,7 @@
 package com.projet.mycose.controller;
 
 import com.projet.mycose.dto.ContratDTO;
+import com.projet.mycose.modele.OffreStage;
 import com.projet.mycose.service.EmployeurService;
 import com.projet.mycose.dto.EmployeurDTO;
 import com.projet.mycose.dto.OffreStageDTO;
@@ -37,6 +38,16 @@ public class EmployeurController {
         try {
             return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
                     employeurService.getStages(pageNumber));
+        } catch (Exception e) {
+            return ResponseEntity.noContent().build();
+        }
+    }
+
+    @GetMapping("/getOffresPosted")
+    public ResponseEntity<List<OffreStageDTO>> getOffresStagesPublieesFiltre(@RequestParam int pageNumber, @RequestParam Integer annee, @RequestParam OffreStage.SessionEcole session) {
+        try {
+            return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
+                    employeurService.getStagesFiltered(pageNumber, annee, session));
         } catch (Exception e) {
             return ResponseEntity.noContent().build();
         }
