@@ -69,5 +69,15 @@ public class EmployeurController {
             return ResponseEntity.noContent().build();
         }
     }
+
+    @GetMapping
+    public ResponseEntity<Integer> getAmountOfPagesOfCandidaturesNonSignees() {
+        try{
+            return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
+                    employeurService.getAmountOfPages());
+        } catch(Exception e) {
+            return ResponseEntity.noContent().build();
+        }
+    }
 }
 

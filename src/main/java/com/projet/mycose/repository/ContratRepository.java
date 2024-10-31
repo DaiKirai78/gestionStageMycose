@@ -12,4 +12,5 @@ import java.util.List;
 public interface ContratRepository extends JpaRepository<Contrat, Long> {
 
     Page<Contrat> findContratsBySignatureEmployeurIsNullAndEmployeur_Id(Long emprunteurId, Pageable pageable);
+    int countBySignatureEmployeurIsNullAndEmployeurId(Long emloyeurId);
 }
