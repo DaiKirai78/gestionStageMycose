@@ -228,5 +228,12 @@
     "noStudentWaiting": "Aucun étudiant en attente",
     "contrat": "Contrat",
     "uploadContract": "Téléverser un contrat",
-    "uploadContractFilePDF": "Téléversez votre contrat en format PDF"
+    "uploadContractFilePDF": "Téléversez votre contrat en format PDF",
+    "signerContrats": "Signer contrats",
+    "validate": "Valider",
+    "noContratToSign" : "Aucun contrat a signer", 
+    "signContract": "Signer contrat",
+    "signContractOf": "Signer le contrat de",
+    "signature": "Signature",
+    "envoyerSignature": "Envoyer la signature"
 }
