@@ -36,4 +36,6 @@ public class ContratDTO {
     private Long etudiantId;
 
     private Long employeurId;
+
+    private Contrat.Status status;
 }
