@@ -1,6 +1,7 @@
 package com.projet.mycose.service;
 
 import com.projet.mycose.dto.EtudiantDTO;
+import com.projet.mycose.dto.SummonEtudiantDTO;
 import com.projet.mycose.modele.*;
 import com.projet.mycose.repository.ApplicationStageRepository;
 import com.projet.mycose.repository.EtudiantOffreStagePriveeRepository;
@@ -162,7 +163,8 @@ public class ApplicationStageService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "L'étudiant a déjà un stage actif ou une demande de stage active");
     }
 
-    public ApplicationStageAvecInfosDTO summonEtudiant(Long id) {
+    @Transactional
+    public ApplicationStageAvecInfosDTO summonEtudiant(Long id, SummonEtudiantDTO summonEtudiantDTO) {
         ApplicationStage applicationStage = applicationStageRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Application not found"));
         Long userId = utilisateurService.getMyUserId();
@@ -173,7 +175,15 @@ public class ApplicationStageService {
         if (applicationStage.getStatus() != ApplicationStage.ApplicationStatus.PENDING) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Application is not pending");
         }
-        applicationStage.setStatus(ApplicationStage.ApplicationStatus.SUMMONED);
+        createConvocation(applicationStage, summonEtudiantDTO);
+
+        //Convocation should be properly persisted without accessing the convocationRepository as CascadeType is set to ALL in the Entity
         return convertToDTOAvecInfos(applicationStageRepository.save(applicationStage));
+    }
+
+    private void createConvocation(ApplicationStage applicationStage, SummonEtudiantDTO summonEtudiantDTO) {
+        Convocation convocation = new Convocation(applicationStage, summonEtudiantDTO);
+        applicationStage.setConvocation(convocation);
+        applicationStage.setStatus(ApplicationStage.ApplicationStatus.SUMMONED);
     }
 }

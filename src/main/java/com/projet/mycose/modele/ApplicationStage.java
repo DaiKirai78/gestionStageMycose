@@ -37,6 +37,9 @@ public class ApplicationStage {
     @CreationTimestamp
     private LocalDateTime appliedAt;
 
+    @OneToOne(mappedBy = "applicationStage", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Convocation convocation;
+
     @Builder
     public ApplicationStage(Etudiant etudiant, OffreStage offreStage) {
         this.etudiant = etudiant;
