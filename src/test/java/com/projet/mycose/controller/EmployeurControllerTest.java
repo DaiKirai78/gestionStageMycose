@@ -2,6 +2,7 @@ package com.projet.mycose.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.projet.mycose.dto.*;
+import com.projet.mycose.modele.Contrat;
 import com.projet.mycose.modele.OffreStage;
 import com.projet.mycose.modele.Programme;
 import com.projet.mycose.modele.auth.Role;
@@ -171,7 +172,8 @@ public class EmployeurControllerTest {
                 null,
                 null,
                 2L,
-                3L
+                3L,
+                Contrat.Status.ACTIVE
         );
 
         List<ContratDTO> listeContratsMock = new ArrayList<>();
