@@ -1,10 +1,7 @@
 package com.projet.mycose.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.projet.mycose.dto.EmployeurDTO;
-import com.projet.mycose.dto.FormulaireOffreStageDTO;
-import com.projet.mycose.dto.OffreStageDTO;
-import com.projet.mycose.dto.RegisterEmployeurDTO;
+import com.projet.mycose.dto.*;
 import com.projet.mycose.modele.OffreStage;
 import com.projet.mycose.modele.Programme;
 import com.projet.mycose.modele.auth.Role;
@@ -162,5 +159,43 @@ public class EmployeurControllerTest {
                 .andExpect(status().isAccepted())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().string("2"));
+    }
+
+    @Test
+    public void testGetAllContratsNonSignees_Success() throws Exception {
+        //Arrange
+        ContratDTO contratDTOMock = new ContratDTO(
+                1L,
+                null,
+                null,
+                null,
+                null,
+                2L,
+                3L
+        );
+
+        List<ContratDTO> listeContratsMock = new ArrayList<>();
+        listeContratsMock.add(contratDTOMock);
+        when(employeurService.getAllContratsNonSignes(0)).thenReturn(listeContratsMock);
+
+        //Act & Assert
+        mockMvc.perform(post("/entreprise/getContratsNonSignees")
+                .param("pageNumber", "0")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isAccepted())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].id").value(1L));
+    }
+
+    @Test
+    public void testGetAllContratsNonSignees_Error() throws Exception {
+        //Arrange
+        when(employeurService.getAllContratsNonSignes(0)).thenThrow(new RuntimeException());
+
+        //Act & Assert
+        mockMvc.perform(post("/entreprise/getContratsNonSignees")
+                .param("pageNumber", "0")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
     }
 }

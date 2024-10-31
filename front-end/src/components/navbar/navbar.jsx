@@ -13,12 +13,22 @@ const navLinks = {
         {
             "titre": "Convocations",
             "lien": "/convocations"
+        },
+        {
+            "titre": "signerContrats",
+            "lien": "/contrats",
+            "autreLiens": ["/contrats/signer"]
         }
     ],
     "EMPLOYEUR": [
         {
             "titre": "televerserOffre",
             "lien": "/televerserOffreStage"
+        },
+        {
+            "titre": "signerContrats",
+            "lien": "/contrats",
+            "autreLiens": ["/contrats/signer"]
         }
     ],
     "GESTIONNAIRE_STAGE": [
@@ -28,21 +38,35 @@ const navLinks = {
             "autreLiens": ["/attribuer/prof"]
         },
         {
-            "titre": "validerOffre",
-            "lien": "/validerOffreStage",
+            "titre": "validate",
+            "sousLiens": [
+                {
+                    "titre": "validerOffre",
+                    "lien": "/validerOffreStage"
+                },
+                {
+                    "titre": "validerCv",
+                    "lien": "/validerCV"
+                }
+            ]
         },
         {
             "titre": "televerserOffre",
             "lien": "/televerserOffreStage"
         },
         {
-            "titre": "validerCv",
-            "lien": "/validerCV"
-        },
-        {
             "titre": "contrat",
-            "lien": "/attribuerContrat"
-        }
+            "sousLiens": [
+                {
+                    "titre": "contrat",
+                    "lien": "/attribuerContrat"
+                },
+                {
+                    "titre": "signerContrats",
+                    "lien": "/contrats"
+                }
+            ]
+        },
     ],
     "ENSEIGNANT": []
 }
@@ -56,7 +80,9 @@ const Navbar = ({ userInfo }) => {
     const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
     const [isNotificationMenuOpen, setIsNotificationMenuOpen] = useState(false)
     const [langueIndex, setLangueIndex] = useState(0)
+    const [openDropdown, setOpenDropdown] = useState(null);
 
+    const dropdownRefs = useRef([]);
     const profileMenuRef = useRef(null)
     const mobileMenuRef = useRef(null)
     const notificationMenuRef = useRef(null)
@@ -105,6 +131,24 @@ const Navbar = ({ userInfo }) => {
         }
     }, [isMobileMenuOpen])
 
+    useEffect(() => {
+        function handleClickOutside(event) {
+            const isClickInsideDropdowns = dropdownRefs.current.some(ref => ref && ref.contains(event.target));
+
+            if (!isClickInsideDropdowns) {
+                setOpenDropdown(null);
+            }
+        }
+
+        document.addEventListener("mousedown", handleClickOutside);
+        document.addEventListener("scroll", () => setOpenDropdown(null), true);
+
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+            document.removeEventListener("scroll", () => setOpenDropdown(null), true);
+        };
+    }, []);
+
     function signOut(e) {
         handleProfileItemClick(e);
         navigate("/");
@@ -134,18 +178,46 @@ const Navbar = ({ userInfo }) => {
                                     {t("accueil")}
                             </button>
                             {
-                                userInfo ? navLinks[userInfo.role].map((infoBtn, index) => {
-                                    return (
-                                        <button
-                                            key={"nav"+index}
-                                            onClick={() => {
-                                                navigate(infoBtn["lien"])
-                                            }}
-                                            className={`hover:bg-orange hover:bg-opacity-20 px-3 py-2 rounded-md font-medium ${lienEqual(infoBtn) ? "cursor-default ring-1 ring-orange text-orange hover:bg-transparent" : ""}`}>
-                                            {t(infoBtn["titre"])}
-                                        </button>
-                                    );
-                                }) : ""
+                                userInfo && (
+                                    navLinks[userInfo.role].map((infoBtn, index) => (
+                                        infoBtn.sousLiens ? (
+                                            <div ref={el => dropdownRefs.current[index] = el} className="relative" key={"nav" + index}>
+                                                <button
+                                                    onClick={() => setOpenDropdown(openDropdown === index ? null : index)}
+                                                    className="hover:bg-orange hover:bg-opacity-20 px-3 py-2 rounded-md font-medium flex gap-2 items-center"
+                                                >
+                                                    {t(infoBtn["titre"])} <IoMdArrowDown />
+                                                </button>
+                                                {openDropdown === index && (
+                                                    <div className="absolute bg-white shadow-lg rounded mt-1">
+                                                        {infoBtn.sousLiens.map((sousLien, subIndex) => (
+                                                            <button
+                                                                key={"sousNav" + subIndex}
+                                                                onClick={() => {
+                                                                    navigate(sousLien["lien"]);
+                                                                    setOpenDropdown(null);
+                                                                }}
+                                                                className="block px-4 py-2 text-left hover:bg-gray-100 w-full"
+                                                            >
+                                                                {t(sousLien["titre"])}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ) : (
+                                            <button
+                                                key={"nav" + index}
+                                                onClick={() => navigate(infoBtn["lien"])}
+                                                className={`hover:bg-orange hover:bg-opacity-20 px-3 py-2 rounded-md font-medium ${
+                                                    lienEqual(infoBtn) ? "cursor-default ring-1 ring-orange text-orange hover:bg-transparent" : ""
+                                                }`}
+                                            >
+                                                {t(infoBtn["titre"])}
+                                            </button>
+                                        )
+                                    ))
+                                )
                             }
                         </div>
                     </div>
