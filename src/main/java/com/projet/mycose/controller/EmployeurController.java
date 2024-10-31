@@ -34,16 +34,6 @@ public class EmployeurController {
         return employeurResultat != null ? ResponseEntity.status(HttpStatus.CREATED).body(employeurResultat) : ResponseEntity.status(HttpStatus.CONFLICT).body("L'employeur existe déjà ou les credentials sont invalides");
     }
 
-    @GetMapping("/pages")
-    public ResponseEntity<Integer> getAmountOfPages() {
-        try{
-            return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
-                    employeurService.getAmountOfPages());
-        } catch(Exception e) {
-            return ResponseEntity.noContent().build();
-        }
-    }
-
     @PostMapping("/getContratsNonSignees")
     public ResponseEntity<List<ContratDTO>> getContrats(@RequestParam int pageNumber) {
         try {

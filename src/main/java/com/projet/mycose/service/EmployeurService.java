@@ -85,24 +85,6 @@ public class EmployeurService {
         return "Signature sauvegardé";
     }
 
-    public Integer getAmountOfPages() {
-        Long employeurId = utilisateurService.getMyUserId();
-        long amountOfRows = offreStageRepository.countByCreateurId(employeurId);
-
-        if (amountOfRows == 0)
-            return 0;
-
-        int nombrePages = (int) Math.floor((double) amountOfRows / LIMIT_PER_PAGE);
-
-        if (amountOfRows % 10 > 0) {
-            // Return ++ (équivalent -> nombrePage + 1) parce que
-            // floor(13/10) = 1 mais il y a 2 page et pas 1
-            nombrePages++;
-        }
-
-        return nombrePages;
-    }
-
     public Integer getAmountOfPagesOfContractNonSignees() {
         Long employeurId = utilisateurService.getMyUserId();
         long amountOfRows = contratRepository.countBySignatureEmployeurIsNullAndEmployeurId(employeurId);

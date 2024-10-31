@@ -159,4 +159,14 @@ public class OffreStageController {
             return ResponseEntity.noContent().build();
         }
     }
+
+    @GetMapping("/pagesForCreateur")
+    public ResponseEntity<Integer> getAmountOfPagesForCreateur() {
+        try{
+            return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
+                    offreStageService.getAmountOfPagesForCreateur());
+        } catch(Exception e) {
+            return ResponseEntity.noContent().build();
+        }
+    }
 }
