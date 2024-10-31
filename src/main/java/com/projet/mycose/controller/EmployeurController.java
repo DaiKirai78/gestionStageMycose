@@ -70,11 +70,11 @@ public class EmployeurController {
         }
     }
 
-    @GetMapping
+    @GetMapping("/pagesContrats")
     public ResponseEntity<Integer> getAmountOfPagesOfCandidaturesNonSignees() {
         try{
             return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
-                    employeurService.getAmountOfPages());
+                    employeurService.getAmountOfPagesOfContractNonSignees());
         } catch(Exception e) {
             return ResponseEntity.noContent().build();
         }

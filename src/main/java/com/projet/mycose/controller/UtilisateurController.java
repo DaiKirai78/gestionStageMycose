@@ -50,7 +50,7 @@ public class UtilisateurController {
             return ResponseEntity.status(HttpStatus.OK).body(courrielTelephoneDTO);
     }
 
-    @GetMapping
+    @GetMapping("/getPrenomNomEtudiant")
     public ResponseEntity<String> getNomEtudiantSelonId(@RequestParam long id) {
         try {
 

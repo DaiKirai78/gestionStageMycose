@@ -298,4 +298,32 @@ public class EmployeurServiceTest {
         verify(contratRepositoryMock, times(1)).findContratsBySignatureEmployeurIsNullAndEmployeur_Id(employeurId, pageRequest);
     }
 
+    @Test
+    public void testGetAmountOfPageContratsNonSignees_NumberEndWithZero() {
+        //Arrange
+        when(utilisateurService.getMyUserId()).thenReturn(1L);
+        when(contratRepositoryMock.countBySignatureEmployeurIsNullAndEmployeurId(1L)).thenReturn(30);
+
+        //Act
+        int nombrePages = employeurService.getAmountOfPagesOfContractNonSignees();
+
+        //Assert
+        assertEquals(nombrePages, 3);
+        verify(contratRepositoryMock, times(1)).countBySignatureEmployeurIsNullAndEmployeurId(1L);
+    }
+
+    @Test
+    public void testGetAmountOfPageContratsNonSignees_NumberNotEndWithZero() {
+        //Arrange
+        when(utilisateurService.getMyUserId()).thenReturn(1L);
+        when(contratRepositoryMock.countBySignatureEmployeurIsNullAndEmployeurId(1L)).thenReturn(43);
+
+        //Act
+        int nombrePages = employeurService.getAmountOfPagesOfContractNonSignees();
+
+        //Assert
+        assertEquals(nombrePages, 5);
+        verify(contratRepositoryMock, times(1)).countBySignatureEmployeurIsNullAndEmployeurId(1L);
+    }
+
 }

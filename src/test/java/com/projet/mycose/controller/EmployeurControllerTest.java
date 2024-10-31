@@ -198,4 +198,26 @@ public class EmployeurControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
     }
+
+    @Test
+    public void testGetAmountOfPagesContratsNonSignees_Success() throws Exception {
+        //Arrange
+        when(employeurService.getAmountOfPagesOfContractNonSignees()).thenReturn(2);
+
+        //Act & Assert
+        mockMvc.perform(get("/entreprise/pagesContrats"))
+                .andExpect(status().isAccepted())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().string("2"));
+    }
+
+    @Test
+    public void testGetAmountOfPagesContratsNonSignees_Error() throws Exception {
+        //Arrange
+        when(employeurService.getAmountOfPagesOfContractNonSignees()).thenThrow(new RuntimeException());
+
+        //Act & Assert
+        mockMvc.perform(get("/entreprise/pagesContrats"))
+                .andExpect(status().isNoContent());
+    }
 }
