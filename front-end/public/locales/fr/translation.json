@@ -229,5 +229,8 @@
     "signerContrats": "Signer contrats",
     "validate": "Valider",
     "noContratToSign" : "Aucun contrat a signer", 
-    "signContract": "Signer contrat"
+    "signContract": "Signer contrat",
+    "signContractOf": "Signer le contrat de",
+    "signature": "Signature",
+    "envoyerSignature": "Envoyer la signature"
 }

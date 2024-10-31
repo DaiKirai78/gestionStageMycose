@@ -35,7 +35,11 @@ const SignerContratEmployeur = ({ setSelectedContract }) => {
                     <>
                         {
                             fakeData.map((contrat, index) => 
-                                <SignerContratCard contrat={contrat} index={index} setSelectedContract={setSelectedContract} />
+                                <SignerContratCard 
+                                    contrat={contrat} 
+                                    index={index} 
+                                    setSelectedContract={setSelectedContract}
+                                    key={"contrat" + index} />
                             )
                         }
 
