@@ -1,8 +1,11 @@
 package com.projet.mycose.dto;
 
+import com.projet.mycose.modele.Contrat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
+
+import java.util.Base64;
 
 @Getter
 @Setter
@@ -35,4 +38,17 @@ public class ContratDTO {
     private Long etudiantId;
 
     private Long employeurId;
+
+    public static ContratDTO toDTO(Contrat contrat) {
+        return new ContratDTO(
+                contrat.getId(),
+                contrat.getPdf() != null ? Base64.getEncoder().encodeToString(contrat.getPdf()) : null,
+                contrat.getSignatureGestionnaire() != null ? Base64.getEncoder().encodeToString(contrat.getSignatureGestionnaire()) : null,
+                contrat.getSignatureEtudiant() != null ? Base64.getEncoder().encodeToString(contrat.getSignatureEtudiant()) : null,
+                contrat.getSignatureEmployeur() != null ? Base64.getEncoder().encodeToString(contrat.getSignatureEmployeur()) : null,
+                contrat.getEtudiant() != null ? contrat.getEtudiant().getId() : null,
+                contrat.getEmployeur() != null ? contrat.getEmployeur().getId() : null
+        );
+    }
+
 }

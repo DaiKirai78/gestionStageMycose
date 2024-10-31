@@ -1,5 +1,6 @@
 package com.projet.mycose.controller;
 
+import com.projet.mycose.dto.ContratDTO;
 import com.projet.mycose.service.EmployeurService;
 import com.projet.mycose.dto.EmployeurDTO;
 import com.projet.mycose.dto.OffreStageDTO;
@@ -47,6 +48,16 @@ public class EmployeurController {
             return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
                     employeurService.getAmountOfPages());
         } catch(Exception e) {
+            return ResponseEntity.noContent().build();
+        }
+    }
+
+    @PostMapping("/getContratsNonSignees")
+    public ResponseEntity<List<ContratDTO>> getContrats(@RequestParam int pageNumber) {
+        try {
+            return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
+                    employeurService.getAllContratsNonSignes(pageNumber));
+        } catch (Exception e) {
             return ResponseEntity.noContent().build();
         }
     }
