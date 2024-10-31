@@ -233,5 +233,17 @@
     "signContract": "Sign contract",
     "signContractOf": "Signing the contract of",
     "signature": "Signature",
-    "envoyerSignature": "Send signature"
+    "envoyerSignature": "Send signature",
+    "convocationsList": "List of summonses",
+    "infos": "Infos",
+    "message": "Message",
+    "acceptInternshipOffer": "Accept internship offer",
+    "refuseInternshipOffer": "Refuse internship offer",
+    "messageAcceptOffer": "You can enter a message regarding acceptance of the following offer",
+    "messageRefuseOffer": "You can enter a message regarding refusal of the following offer",
+    "messageAcceptation": "Message of acceptance",
+    "messageRefus": "Reason of refusal",
+    "cancel": "Cancel",
+    "place": "Location",
+    "dateAndTime": "Date and time"
 }

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ModalConvocation from "./ModalConvocation";
+import { useTranslation } from "react-i18next"
 
 function ListeConvocations() {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -8,6 +9,8 @@ function ListeConvocations() {
     const [isAcceptanceModalOpen, setIsAcceptanceModalOpen] = useState(false);
     const [responseMessage, setResponseMessage] = useState("");
     const [convocations, setConvocations] = useState([]);
+
+    const { t } = useTranslation()
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -83,7 +86,7 @@ function ListeConvocations() {
     return (
         <div className="flex items-start justify-center min-h-full p-8">
             <div className="bg-[#FFF8F2] rounded-lg shadow-lg p-8 w-screen max-w-3xl">
-                <h1 className="text-4xl font-bold mb-6 mt-6 text-center">Liste des Convocations</h1>
+                <h1 className="text-4xl font-bold mb-6 mt-6 text-center">{t("convocationsList")}</h1>
                 <ul className="space-y-4">
                     {convocations.map((convocation) => (
                         <li key={convocation.id} className="p-6 border border-gray-300 rounded-lg shadow-md">
@@ -97,25 +100,25 @@ function ListeConvocations() {
                                         onClick={() => openModal(convocation)}
                                         className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
                                     >
-                                        Infos
+                                        {t("infos")}
                                     </button>
                                     <button
                                         onClick={() => openAcceptanceModal(convocation)}
                                         className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
                                     >
-                                        Accepter
+                                        {t("accept")}
                                     </button>
                                     <button
                                         onClick={() => openRefusalModal(convocation)}
                                         className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
                                     >
-                                        Refuser
+                                        {t("refuse")}
                                     </button>
                                 </div>
                             </div>
-                            <p className="text-gray-600 mt-4">Lieu : {convocation.locationConvocation}</p>
+                            <p className="text-gray-600 mt-4">{t("place")} : {convocation.locationConvocation}</p>
                             <p className="text-gray-600">
-                                Date et heure : {new Date(convocation.scheduledAt).toLocaleString('fr-FR', {
+                                {t("dateAndTime")} : {new Date(convocation.scheduledAt).toLocaleString('fr-FR', {
                                 day: '2-digit',
                                 month: '2-digit',
                                 year: 'numeric',
@@ -124,7 +127,7 @@ function ListeConvocations() {
                                 hour12: false
                             })}
                             </p>
-                            <p className="text-gray-600">Message : {convocation.messageConvocation}</p>
+                            <p className="text-gray-600">{t("message")} : {convocation.messageConvocation}</p>
                         </li>
                     ))}
                 </ul>
@@ -142,12 +145,12 @@ function ListeConvocations() {
                                 ×
                             </button>
                             <h2 className="text-2xl font-bold mb-4">
-                                {isAcceptanceModalOpen ? "Accepter l'Offre de stage" : "Refuser l'Offre de stage"}
+                                {isAcceptanceModalOpen ? t("acceptInternshipOffer") : t("refuseInternshipOffer")}
                             </h2>
                             <p className="mb-4">
                                 {isAcceptanceModalOpen
-                                    ? "Vous pouvez saisir un message concernant l'acceptation de l'offre suivante : "
-                                    : "Vous pouvez saisir un message concernant le refus de l'offre suivante : "}
+                                    ? t("messageAcceptOffer") + " : "
+                                    : t("messageRefuseOffer") + " : "}
                                 <strong>{selectedOffer?.title}</strong>
                             </p>
                             <textarea
@@ -159,7 +162,7 @@ function ListeConvocations() {
                             ></textarea>
                             <div className="flex justify-end mt-4 space-x-2">
                                 <button
-                                    onClick={() => handleResponseSubmit(isAcceptanceModalOpen ? "Acceptation" : "Refus")}
+                                    onClick={() => handleResponseSubmit(isAcceptanceModalOpen ? t("messageAcceptation") : t("messageRefus"))}
                                     className={`px-4 py-2 ${isAcceptanceModalOpen ? "bg-green-500" : "bg-red-500"} text-white rounded hover:${
                                         isAcceptanceModalOpen ? "bg-green-600" : "bg-red-600"
                                     }`}
@@ -170,7 +173,7 @@ function ListeConvocations() {
                                     onClick={closeResponseModal}
                                     className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
                                 >
-                                    Annuler
+                                    {t("cancel")}
                                 </button>
                             </div>
                         </div>
