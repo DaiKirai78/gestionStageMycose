@@ -1,16 +1,14 @@
 package com.projet.mycose.controller;
 
-import com.projet.mycose.dto.ContratDTO;
+import com.projet.mycose.dto.*;
 import com.projet.mycose.service.EmployeurService;
-import com.projet.mycose.dto.EmployeurDTO;
-import com.projet.mycose.dto.OffreStageDTO;
-import com.projet.mycose.dto.RegisterEmployeurDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -58,6 +56,30 @@ public class EmployeurController {
             return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
                     employeurService.getAllContratsNonSignes(pageNumber));
         } catch (Exception e) {
+            return ResponseEntity.noContent().build();
+        }
+    }
+
+    @PostMapping(value = "/enregistrerSignature")
+    public ResponseEntity<String> enregistrerSignature(
+            @RequestParam("signature") MultipartFile signature,
+            @RequestParam Long contratId,
+            @RequestParam String password
+    ) {
+        try {
+            return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
+                    employeurService.enregistrerSignature(signature, password, contratId));
+        } catch (Exception e) {
+            return ResponseEntity.noContent().build();
+        }
+    }
+
+    @GetMapping("/pagesContrats")
+    public ResponseEntity<Integer> getAmountOfPagesOfCandidaturesNonSignees() {
+        try{
+            return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
+                    employeurService.getAmountOfPagesOfContractNonSignees());
+        } catch(Exception e) {
             return ResponseEntity.noContent().build();
         }
     }

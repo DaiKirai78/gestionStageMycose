@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { ReactSketchCanvas } from "react-sketch-canvas";
 
-const SignerContratCanvas = ({ canvasRef }) => {
+const SignerContratCanvas = ({ canvasRef, setDrewSomething, errorKeySignature, setErrorKeySignature }) => {
 
   return (
     <div className="w-full">
@@ -9,6 +9,11 @@ const SignerContratCanvas = ({ canvasRef }) => {
             ref={canvasRef}
             strokeWidth={5}
             strokeColor="black"
+            onStroke={() => {
+                setDrewSomething(true)
+                setErrorKeySignature("");
+            }}
+            style={{border: `0.0625rem solid ${errorKeySignature.length > 0 ? "red" : "rgb(156, 156, 156)"}`}}
         />
     </div>
   );
