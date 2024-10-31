@@ -5,11 +5,13 @@ import com.projet.mycose.dto.LoginDTO;
 import com.projet.mycose.modele.Contrat;
 import com.projet.mycose.modele.Employeur;
 import com.projet.mycose.modele.OffreStage;
+import com.projet.mycose.modele.Utilisateur;
 import com.projet.mycose.repository.ContratRepository;
 import com.projet.mycose.repository.EmployeurRepository;
 import com.projet.mycose.repository.OffreStageRepository;
 import com.projet.mycose.dto.EmployeurDTO;
 import com.projet.mycose.dto.OffreStageDTO;
+import com.projet.mycose.repository.UtilisateurRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,6 +31,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class EmployeurService {
     private final EmployeurRepository employeurRepository;
+    private final UtilisateurRepository utilisateurRepository;
     private final PasswordEncoder passwordEncoder;
     private final UtilisateurService utilisateurService;
     private final OffreStageRepository offreStageRepository;
@@ -78,11 +81,17 @@ public class EmployeurService {
     }
 
     @Transactional
-    public String enregistrerSignature(MultipartFile signature, LoginDTO loginDTO, Long contratId) throws Exception{
+    public String enregistrerSignature(MultipartFile signature, String password, Long contratId) throws Exception{
         Long employeurId = utilisateurService.getMyUserId();
+        Optional<Utilisateur> utilisateurOpt = utilisateurRepository.findUtilisateurById(employeurId);
+
+        if (utilisateurOpt.isEmpty())
+            return "L'utilisateur n'existe pas";
+
+        Utilisateur utilisateur = utilisateurOpt.get();
 
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginDTO.getCourriel(), loginDTO.getMotDePasse())
+                new UsernamePasswordAuthenticationToken(utilisateur.getCourriel(), password)
         );
         if(!authentication.isAuthenticated())
             return "Mauvais mot de passe";

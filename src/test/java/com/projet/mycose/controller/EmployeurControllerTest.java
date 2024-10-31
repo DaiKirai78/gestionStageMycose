@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -228,13 +229,13 @@ public class EmployeurControllerTest {
         LoginDTO loginDTOMock = new LoginDTO("username", "password");
         MockMultipartFile signatureFile = new MockMultipartFile("signature", "signature.png", "image/png", "test signature content".getBytes());
 
-        when(employeurService.enregistrerSignature(any(MultipartFile.class), any(LoginDTO.class), any(Long.class))).thenReturn("Signature enregistree avec succes");
+        when(employeurService.enregistrerSignature(any(MultipartFile.class), anyString(), any(Long.class))).thenReturn("Signature enregistree avec succes");
 
         // Act & Assert
         mockMvc.perform(multipart("/entreprise/enregistrerSignature")
                         .file(signatureFile)
                         .param("contratId", "1")
-                        .content("{\"username\":\"username\", \"password\":\"password\"}")
+                        .param("password", "Passw0rd")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isAccepted())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -247,13 +248,13 @@ public class EmployeurControllerTest {
         // Arrange
         MockMultipartFile signatureFile = new MockMultipartFile("signature", "signature.png", "image/png", "test signature content".getBytes());
 
-        when(employeurService.enregistrerSignature(any(MultipartFile.class), any(LoginDTO.class), any(Long.class))).thenThrow(new RuntimeException());
+        when(employeurService.enregistrerSignature(any(MultipartFile.class), anyString(), any(Long.class))).thenThrow(new RuntimeException());
 
         // Act & Assert
         mockMvc.perform(multipart("/entreprise/enregistrerSignature")
                         .file(signatureFile)
                         .param("contratId", "1")
-                        .content("{\"username\":\"username\", \"password\":\"password\"}")
+                        .param("password", "Passw0rd")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
     }

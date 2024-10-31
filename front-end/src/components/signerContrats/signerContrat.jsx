@@ -7,7 +7,7 @@ import { Input } from '@material-tailwind/react';
 import InputErrorMessage from '../inputErrorMesssage';
 import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa';
 
-const SignerContrat = ({ selectedContract }) => {
+const SignerContrat = ({ selectedContract, setSelectedContract }) => {
     const navigate = useNavigate();
     const { t } = useTranslation();
     const canvasRef = useRef();
@@ -30,45 +30,56 @@ const SignerContrat = ({ selectedContract }) => {
 
     async function sendSignature() {
         if (!drewSomething) {
-            setErrorKeySignature("erreurNoSignature")
+            setErrorKeySignature("erreurNoSignature");
             return;
         }
-
+    
         if (!validPassword.test(password)) {
-            setErrorKeyMdp("errorMessagePassword")
+            setErrorKeyMdp("errorMessagePassword");
             return;
         }
-        
+    
         const token = localStorage.getItem("token");
+    
+        try {            
+            let formData = new FormData();
+            const signaturePngbase64 = await getBase64CanvasPng();            
 
-        try {
+            formData.append("signature", dataURLtoFile(signaturePngbase64, "signature.png"));
+    
             const response = await fetch(
-                `http://localhost:8080/entreprise/enregistrerSignature?signature=${await getBase64CanvasPng()}&contratId=${selectedContract.id}`, {
+                `http://localhost:8080/entreprise/enregistrerSignature?contratId=${selectedContract.id}&password=${password}`, {
                 method: 'POST',
-                headers: { Authorization: `Bearer ${token}` },
-                body: {
-                    courriel: "",
-                    motDePasse: ""
-                }
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                body: formData
             });
-
+    
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-
+    
             const data = await response.text();
-
+    
             if (!data) {
+                setErrorKeyMdp("wrongPassword")
                 throw new Error('No data');
-            }            
-
-            setPages(prevPages => ({
-                ...prevPages,
-                maxPages: data
-            }));
+            }
+            setSelectedContract(null);
+            navigate("/contrats");
         } catch (e) {
             console.log("Une erreur est survenue " + e);
         }
+    }
+
+    function dataURLtoFile(dataurl, filename) {
+        var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+            bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+        while(n--){
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+        return new File([u8arr], filename, {type:mime});
     }
 
     function getBase64CanvasPng() {
