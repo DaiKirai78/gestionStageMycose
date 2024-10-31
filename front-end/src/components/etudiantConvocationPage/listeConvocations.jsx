@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import ModalConvocation from "./ModalConvocation";
 
 function ListeConvocations() {
@@ -6,29 +6,20 @@ function ListeConvocations() {
     const [selectedOffer, setSelectedOffer] = useState(null);
     const [isRefusalModalOpen, setIsRefusalModalOpen] = useState(false);
     const [refusalMessage, setRefusalMessage] = useState("");
+    const [convocations, setConvocations] = useState([]);
 
-    const convocations = [
-        {
-            id: 1,
-            jobTitle: "Développeur Full-Stack",
-            companyName: "Tech Solutions Inc.",
-            description: "Développer et maintenir des applications web.",
-            location: "123 Rue Principale, Ville",
-            locationConvocation: "Entrevue en ligne",
-            salary: "22",
-            website: "https://techsolutions.com",
-            time: "10h00, 15 Novembre 2024",
-            pdfUrl: null,
-        },
-        {
-            id: 2,
-            jobTitle: "Analyste de Données",
-            companyName: "DataCorp",
-            locationConvocation: "456 Avenue Centrale, Ville",
-            time: "14h00, 17 Novembre 2024",
-            pdfUrl: "fake_CV.pdf",
-        },
-    ];
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        fetch(`/api/application-stage/my-applications/status/SUMMONED`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+        })
+            .then(response => response.json())
+            .then(data => setConvocations(data))
+            .catch(error => console.error("Erreur lors de la récupération des convocations:", error));
+    }, []);
 
     const openModal = (offer) => {
         setSelectedOffer(offer);
@@ -51,7 +42,7 @@ function ListeConvocations() {
     };
 
     const handleRefusalSubmit = () => {
-        console.log(`Message de refus pour ${selectedOffer.jobTitle}:`, refusalMessage);
+        console.log(`Message de refus pour ${selectedOffer.title}:`, refusalMessage);
         closeRefusalModal();
     };
 
@@ -64,8 +55,8 @@ function ListeConvocations() {
                         <li key={convocation.id} className="p-6 border border-gray-300 rounded-lg shadow-md">
                             <div className="flex justify-between items-center">
                                 <div>
-                                    <h2 className="text-2xl font-semibold">{convocation.jobTitle}</h2>
-                                    <p className="text-gray-700">{convocation.companyName}</p>
+                                    <h2 className="text-2xl font-semibold">{convocation.title}</h2>
+                                    <p className="text-gray-700">{convocation.entrepriseName}</p>
                                 </div>
                                 <div className="flex space-x-4">
                                     <button
@@ -84,7 +75,7 @@ function ListeConvocations() {
                                 </div>
                             </div>
                             <p className="text-gray-600 mt-4">Lieu : {convocation.locationConvocation}</p>
-                            <p className="text-gray-600">Heure : {convocation.time}</p>
+                            <p className="text-gray-600">Heure : {convocation.summonedAt}</p>
                         </li>
                     ))}
                 </ul>
