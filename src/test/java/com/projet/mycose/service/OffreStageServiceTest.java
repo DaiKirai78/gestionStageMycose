@@ -759,11 +759,6 @@ public class OffreStageServiceTest {
         verify(modelMapper, times(1)).map(formulaireOffreStage, FormulaireOffreStageDTO.class);
     }
 
-
-
-
-
-
     @Test
     public void shouldConvertFichierOffreStageToDTO() {
         // Arrange

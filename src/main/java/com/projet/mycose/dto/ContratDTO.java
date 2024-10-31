@@ -39,6 +39,8 @@ public class ContratDTO {
 
     private Long employeurId;
 
+    private Contrat.Status status;
+
     public static ContratDTO toDTO(Contrat contrat) {
         return new ContratDTO(
                 contrat.getId(),
@@ -50,5 +52,4 @@ public class ContratDTO {
                 contrat.getEmployeur() != null ? contrat.getEmployeur().getId() : null
         );
     }
-
 }

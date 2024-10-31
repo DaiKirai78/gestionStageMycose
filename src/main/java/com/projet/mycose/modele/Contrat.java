@@ -50,6 +50,22 @@ public class Contrat {
     @JoinColumn(name = "employeur_id")
     private Employeur employeur;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Status status;
+
+    public enum Status {
+        ACTIVE,
+        INACTIVE
+    }
+
+    @PrePersist
+    public void prePersist() {
+        if (status == null) {
+            status = Status.ACTIVE;
+        }
+    }
+
     @Override
     public String toString() {
         return "Contrat{" +
@@ -57,6 +73,7 @@ public class Contrat {
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 ", etudiant=" + etudiant +
+                ", status=" + status +
                 '}';
     }
 }
