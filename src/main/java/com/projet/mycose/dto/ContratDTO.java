@@ -49,7 +49,8 @@ public class ContratDTO {
                 contrat.getSignatureEtudiant() != null ? Base64.getEncoder().encodeToString(contrat.getSignatureEtudiant()) : null,
                 contrat.getSignatureEmployeur() != null ? Base64.getEncoder().encodeToString(contrat.getSignatureEmployeur()) : null,
                 contrat.getEtudiant() != null ? contrat.getEtudiant().getId() : null,
-                contrat.getEmployeur() != null ? contrat.getEmployeur().getId() : null
+                contrat.getEmployeur() != null ? contrat.getEmployeur().getId() : null,
+                contrat.getStatus() != null ? contrat.getStatus() : null
         );
     }
 }
