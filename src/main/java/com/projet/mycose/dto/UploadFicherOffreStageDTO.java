@@ -1,6 +1,7 @@
 package com.projet.mycose.dto;
 
 import com.projet.mycose.modele.Programme;
+import com.projet.mycose.modele.SessionEcole;
 import jakarta.persistence.PreUpdate;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -26,6 +27,10 @@ public class UploadFicherOffreStageDTO {
     private Programme programme;
 
     private List<Long> etudiantsPrives;
+
+    private SessionEcole session;
+
+    private int annee;
 
     @PreUpdate
     public void preUpdate() {

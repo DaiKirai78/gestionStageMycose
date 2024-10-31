@@ -3,6 +3,7 @@ package com.projet.mycose.dto;
 import com.projet.mycose.modele.FichierOffreStage;
 import com.projet.mycose.modele.OffreStage;
 import com.projet.mycose.modele.Programme;
+import com.projet.mycose.modele.SessionEcole;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -13,6 +14,7 @@ import lombok.Setter;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.Year;
 import java.util.Base64;
 
 
@@ -33,7 +35,7 @@ public class FichierOffreStageDTO extends OffreStageDTO{
     private String fileData;
 
     @Builder
-    public FichierOffreStageDTO(long id, String filename, String fileData, String title, String entrepriseName, LocalDateTime createdAt, LocalDateTime updateAt, Long createur_id, OffreStage.Status status, OffreStage.Visibility visibility, Programme programme) {
+    public FichierOffreStageDTO(long id, String filename, String fileData, String title, String entrepriseName, LocalDateTime createdAt, LocalDateTime updateAt, Long createur_id, OffreStage.Status status, OffreStage.Visibility visibility, Programme programme, SessionEcole session, int annee) {
         super(id);
         this.filename = filename;
         this.fileData = fileData;
@@ -45,6 +47,8 @@ public class FichierOffreStageDTO extends OffreStageDTO{
         this.setStatus(status);
         this.setVisibility(visibility);
         this.setProgramme(programme);
+        this.setSession(session);
+        this.setAnnee(annee);
     }
 
 
@@ -57,6 +61,8 @@ public class FichierOffreStageDTO extends OffreStageDTO{
                 .entrepriseName(fichierOffreStage.getEntrepriseName())
                 .createur_id(fichierOffreStage.getCreateur().getId())
                 .createdAt(fichierOffreStage.getCreatedAt())
+                .session(fichierOffreStage.getSession())
+                .annee(fichierOffreStage.getAnnee().getValue())
                 .build();
     }
 
@@ -72,7 +78,9 @@ public class FichierOffreStageDTO extends OffreStageDTO{
                 fichierOffreStage.getCreateur().getId(),
                 fichierOffreStage.getStatus(),
                 fichierOffreStage.getVisibility(),
-                fichierOffreStage.getProgramme()
+                fichierOffreStage.getProgramme(),
+                fichierOffreStage.getSession(),
+                fichierOffreStage.getAnnee().getValue()
         );
     }
 
@@ -82,6 +90,8 @@ public class FichierOffreStageDTO extends OffreStageDTO{
         this.setTitle(uploadFicherOffreStageDTO.getTitle());
         this.setEntrepriseName(uploadFicherOffreStageDTO.getEntrepriseName());
         this.setCreateur_id(createur_id);
+        this.setSession(uploadFicherOffreStageDTO.getSession());
+        this.setAnnee(uploadFicherOffreStageDTO.getAnnee());
     }
 
     @Override
@@ -97,6 +107,8 @@ public class FichierOffreStageDTO extends OffreStageDTO{
                 ", status=" + getStatus() +
                 ", visibility=" + getVisibility() +
                 ", programme=" + getProgramme() +
+                ", session='" + getSession() + '\'' +
+                ", annee=" + getAnnee() +
                 '}';
     }
 }

@@ -9,6 +9,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.time.Year;
 import java.util.List;
 import java.util.Set;
 
@@ -57,6 +58,13 @@ public abstract class OffreStage {
 
     @OneToMany(mappedBy = "offreStage", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ApplicationStage> applicationStages;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private SessionEcole session;
+
+    @Column(nullable = false)
+    private Year annee;
 
     @PrePersist
     public void prePersist() {

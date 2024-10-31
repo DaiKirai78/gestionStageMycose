@@ -3,6 +3,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.time.Year;
 import java.util.List;
 
 @Entity
@@ -20,7 +22,7 @@ public class FichierOffreStage extends OffreStage{
     @OneToMany(mappedBy = "offreStage", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ApplicationStage> applications;
 
-    public FichierOffreStage(String title, String entrepriseName, String filename, byte[] data, Utilisateur createur, OffreStage.Visibility visibility, Programme programme, OffreStage.Status status) {
+    public FichierOffreStage(String title, String entrepriseName, String filename, byte[] data, Utilisateur createur, OffreStage.Visibility visibility, Programme programme, OffreStage.Status status, SessionEcole session, Year annee) {
         super();
         this.setTitle(title);
         this.setEntrepriseName(entrepriseName);
@@ -30,6 +32,8 @@ public class FichierOffreStage extends OffreStage{
         this.setVisibility(visibility);
         this.setProgramme(programme);
         this.setStatus(status);
+        this.setSession(session);
+        this.setAnnee(annee);
     }
 
 }
