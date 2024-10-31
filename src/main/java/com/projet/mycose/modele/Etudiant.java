@@ -42,7 +42,8 @@ public class Etudiant extends Utilisateur {
     public enum ContractStatus {
         ACTIVE,
         NO_CONTRACT,
-        PENDING
+        PENDING,
+        SIGNING
     }
 
     @PrePersist
@@ -69,5 +70,13 @@ public class Etudiant extends Utilisateur {
                 numeroDeTelephone,
                 Credentials.builder().email(courriel).password(motDePasse).role(Role.ETUDIANT).build());
         this.programme = programme;
+    }
+
+    public void addApplication(ApplicationStage application) {
+        if (applications == null) {
+            applications = new ArrayList<>();
+        }
+        applications.add(application);
+        application.setEtudiant(this);
     }
 }

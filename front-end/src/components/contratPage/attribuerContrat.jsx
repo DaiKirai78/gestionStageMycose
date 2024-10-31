@@ -7,7 +7,7 @@ import axios from "axios";
 import LoadingSpinner from "../loadingSpinner.jsx";
 import {useNavigate} from "react-router-dom";
 
-const AttribuerContrat = ({etudiant}) => {
+const AttribuerContrat = () => {
     const {t} = useTranslation();
 
     const [file, setFile] = useState(null);
@@ -16,14 +16,96 @@ const AttribuerContrat = ({etudiant}) => {
     const [uploadError, setUploadError] = useState("");
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
+    const [applications, setApplications] = useState([]);
+    const [etudiant, setEtudiant] = useState(null);
+    const [offresStage, setOffreStage] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [applicationsLoaded, setApplicationsLoaded] = useState(false);
 
     const localhost = "http://localhost:8080/";
+    const apiUrlGetEtudiantFromApplicationId = "api/application-stage/getEtudiant/";
+    const apiUrlGetOffreStageFromApplicationId = "api/application-stage/getOffreStage/";
+    const apiUrlGetApplicationsAccepted = "api/application-stage/status/ACCEPTED";
     const apiUrlUploadContract = "contrat/upload"
     const token = localStorage.getItem("token");
 
     useEffect(() => {
         isLoading();
+        fetchApplicationsAccepted();
     }, []);
+
+    const fetchApplicationsAccepted = async () => {
+        try {
+            setLoading(true);
+            const response = await axios.get(localhost + apiUrlGetApplicationsAccepted, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            console.log("Mes applications : " + JSON.stringify(response.data));
+            setApplications(response.data);
+            setApplicationsLoaded(true);
+            setLoading(false);
+        } catch (e) {
+            console.error("Erreur lors de la récupération des applications acceptées : " + e);
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        console.log("Applications Loaded:", applicationsLoaded, "Applications Length:", applications.length);
+        if (applicationsLoaded && applications.length > 0) {
+            const applicationId = applications[currentPage - 1]?.id;
+            if (applicationId) {
+                fetchEtudiant(applicationId);
+                fetchOffresStage(applicationId);
+            }
+        }
+    }, [applications, applicationsLoaded, currentPage]);
+
+    useEffect(() => {
+        setTotalPages(applications.length);
+    }, [applications]);
+
+    console.log("Final Applications Length:", applications.length, "Applications Loaded:", applicationsLoaded);
+
+    const fetchEtudiant = async (applicationId) => {
+        try {
+            setLoading(true);
+            const response = await axios.get(localhost + apiUrlGetEtudiantFromApplicationId + applicationId, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            console.log("Mes étudiants : ", response.data);
+            setEtudiant(response.data);
+            setLoading(false);
+        } catch (e) {
+            setLoading(false);
+            console.error(`Erreur lors de la récupération de l'étudiant associé à l'application ${applicationId} : `, e);
+        }
+    };
+
+    const fetchOffresStage = async (applicationId) => {
+        try {
+            setLoading(true);
+            const response = await axios.get(localhost + apiUrlGetOffreStageFromApplicationId + applicationId, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            console.log("Mes offres de stage : ", response.data);
+            setOffreStage(response.data);
+            setLoading(false);
+        } catch (e) {
+            setLoading(false);
+            console.error(`Erreur lors de la récupération de l'offre de stage associé à l'application ${applicationId} : `, e);
+        }
+    };
 
     function isLoading() {
         if (etudiant !== null)
@@ -164,6 +246,23 @@ const AttribuerContrat = ({etudiant}) => {
                         {t("submit")}
                     </button>
                 </form>
+                <div className="flex justify-center mt-8">
+                    <button
+                        className={`px-4 py-2 ${currentPage === 1 ? "bg-gray-200 text-gray-700" : "bg-gray-400 text-gray-900"} rounded-l`}
+                        onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                        disabled={currentPage === 1}>
+                        {t("previous")}
+                    </button>
+                    <span className="px-4 py-2">
+                        {t("page")} {currentPage} / {Math.max(totalPages, 1)}
+                    </span>
+                    <button
+                        className={`px-4 py-2 ${currentPage === totalPages || applications.length === 0 ? "bg-gray-200 text-gray-700" : "bg-gray-400 text-gray-900"} rounded-r`}
+                        onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                        disabled={currentPage === totalPages || applications.length === 0}>
+                        {t("next")}
+                    </button>
+                </div>
             </div>
         </div>
     )

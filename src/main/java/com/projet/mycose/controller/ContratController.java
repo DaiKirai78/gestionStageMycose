@@ -1,11 +1,13 @@
 package com.projet.mycose.controller;
 
 
+import com.projet.mycose.dto.ContratDTO;
 import com.projet.mycose.service.ContratService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
@@ -13,4 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("contrat")
 public class ContratController {
     private final ContratService contratService;
+
+//    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    public ResponseEntity<?> upload(@RequestParam MultipartFile contratPDF) {
+//        try {
+//
+//        }
+//    }
 }

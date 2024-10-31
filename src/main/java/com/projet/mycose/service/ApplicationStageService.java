@@ -1,6 +1,7 @@
 package com.projet.mycose.service;
 
 import com.projet.mycose.dto.EtudiantDTO;
+import com.projet.mycose.dto.OffreStageDTO;
 import com.projet.mycose.modele.*;
 import com.projet.mycose.repository.ApplicationStageRepository;
 import com.projet.mycose.repository.EtudiantOffreStagePriveeRepository;
@@ -9,6 +10,7 @@ import com.projet.mycose.repository.OffreStageRepository;
 import com.projet.mycose.dto.ApplicationStageAvecInfosDTO;
 import com.projet.mycose.dto.ApplicationStageDTO;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Hibernate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -97,6 +99,10 @@ public class ApplicationStageService {
         return applicationStageRepository.findByEtudiantIdAndStatusEquals(etudiantId, status).stream().map(this::convertToDTOAvecInfos).toList();
     }
 
+    public List<ApplicationStageAvecInfosDTO> getApplicationsWithStatus(ApplicationStage.ApplicationStatus status) {
+        return applicationStageRepository.findByStatusEquals(status).stream().map(this::convertToDTOAvecInfos).toList();
+    }
+
     public ApplicationStageAvecInfosDTO getApplicationById(Long applicationId) {
         Long etudiantId = utilisateurService.getMyUserId();
         return applicationStageRepository.findByEtudiantIdAndOffreStageId(etudiantId, applicationId)
@@ -137,9 +143,9 @@ public class ApplicationStageService {
     }
 
     protected ApplicationStage mettreAJourApplication(ApplicationStageAvecInfosDTO applicationStageAvecInfosDTO,
-                                            Etudiant etudiant,
-                                            OffreStage offreStage,
-                                            ApplicationStage.ApplicationStatus status) {
+                                                      Etudiant etudiant,
+                                                      OffreStage offreStage,
+                                                      ApplicationStage.ApplicationStatus status) {
         ApplicationStage applicationStage = new ApplicationStage();
         applicationStage.setId(applicationStageAvecInfosDTO.getId());
         applicationStage.setOffreStage(offreStage);
@@ -175,5 +181,17 @@ public class ApplicationStageService {
         }
         applicationStage.setStatus(ApplicationStage.ApplicationStatus.SUMMONED);
         return convertToDTOAvecInfos(applicationStageRepository.save(applicationStage));
+    }
+
+    public EtudiantDTO getEtudiantFromApplicationId(Long applicationId) {
+        ApplicationStage application = applicationStageRepository.findById(applicationId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Application non trouvée"));
+        return EtudiantDTO.toDTO(application.getEtudiant());
+    }
+
+    public OffreStageDTO getOffreStageFromApplicationId(Long applicationId) {
+        ApplicationStage application = applicationStageRepository.findById(applicationId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Application non trouvée"));
+        return OffreStageDTO.toOffreStageInstaceDTO(application.getOffreStage());
     }
 }

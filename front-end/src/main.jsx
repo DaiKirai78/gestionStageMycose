@@ -44,7 +44,7 @@ const router = createBrowserRouter([
       { path: "/profil", element: <ProfilPage /> },
       { path: "/appliquer", element: <AppliquerStagePage/> },
       { path: "/attribuerContrat", element: <ContratPage/> },
-      { path: "/attribuerContrat/:id", element: <AttribuerContratPage/> },
+      // { path: "/attribuerContrat/:id", element: <AttribuerContratPage/> },
 
       {
         path: "/attribuer", 

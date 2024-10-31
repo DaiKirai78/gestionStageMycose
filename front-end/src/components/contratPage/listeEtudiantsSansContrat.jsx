@@ -7,13 +7,15 @@ import LoadingSpinner from "../loadingSpinner.jsx";
 const ListeEtudiantsSansContrat = () => {
 
     const localhost = "http://localhost:8080/";
-    const apiUrlGetEtudiantsSansContrat = "gestionnaire/getEtudiantsContratEnDemande";
+    const apiUrlGetApplicationsAccepted = "/api/application-stage/my-applications/status/ACCEPTED";
+    // const apiUrlGetEtudiantsSansContrat = "gestionnaire/getEtudiantsContratEnDemande";
     const apiUrlGetNombreDePages = "gestionnaire/getEtudiantsSansContratPages";
     const token = localStorage.getItem("token");
     const {t} = useTranslation();
     const navigate = useNavigate();
 
     const [loading, setLoading] = useState(true);
+    const [applications, setApplications] = useState([]);
     const [etudiants, setEtudiants] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
@@ -41,25 +43,42 @@ const ListeEtudiantsSansContrat = () => {
 
 
     useEffect(() => {
-        fetchEtudiants();
+        fetchApplicationsAccepted();
         fetchTotalPages();
-        setEtudiants(etudiantsBootstrap);
     }, []);
 
-    const fetchEtudiants = async () => {
+    const fetchApplicationsAccepted = async () => {
          try {
              setLoading(true);
-             const response = await axios.get(localhost + apiUrlGetEtudiantsSansContrat,
+             const response = await axios.get(localhost + apiUrlGetApplicationsAccepted,
                  {
                     headers: {
                         Authorization: `Bearer ${token}`,
                         'Content-Type': 'application/json'
                     }
                 });
-            setEtudiants(response.data);
+            setApplications(response.data);
             setLoading(false);
         } catch (e) {
-            console.error("Erreur lors de la récupération des étudiants sans contrat : " + e);
+            console.error("Erreur lors de la récupération des applications acceptées : " + e);
+            setLoading(false);
+        }
+    }
+
+    const fetchEtudiants = async () => {
+        try {
+            setLoading(true);
+            const response = await axios.get(localhost + apiUrlGetApplicationsAccepted,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+            setApplications(response.data);
+            setLoading(false);
+        } catch (e) {
+            console.error("Erreur lors de la récupération des applications acceptées : " + e);
             setLoading(false);
         }
     }
@@ -67,13 +86,12 @@ const ListeEtudiantsSansContrat = () => {
     const fetchTotalPages = async () => {
         try {
             setLoading(true);
-            const response = await fetch(localhost + apiUrlGetNombreDePages, {
-                headers: { Authorization: `Bearer ${token}` },
+            const response = await axios.get(localhost + apiUrlGetNombreDePages, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
             });
-            if (!response.ok) {
-                throw new Error(t("errorRetrievingNbPages"));
-            }
-            const pages = await response.json();
+            const pages = response.data;
             setTotalPages(pages);
             setLoading(false);
         } catch (error) {
