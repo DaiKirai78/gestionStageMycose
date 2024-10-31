@@ -1,7 +1,10 @@
 package com.projet.mycose.service;
 
+import com.projet.mycose.dto.ContratDTO;
+import com.projet.mycose.modele.Contrat;
 import com.projet.mycose.modele.Employeur;
 import com.projet.mycose.modele.OffreStage;
+import com.projet.mycose.repository.ContratRepository;
 import com.projet.mycose.repository.EmployeurRepository;
 import com.projet.mycose.repository.OffreStageRepository;
 import com.projet.mycose.dto.EmployeurDTO;
@@ -22,6 +25,7 @@ public class EmployeurService {
     private final PasswordEncoder passwordEncoder;
     private final UtilisateurService utilisateurService;
     private final OffreStageRepository offreStageRepository;
+    private final ContratRepository contratRepository;
     private final int LIMIT_PER_PAGE = 10;
 
     public EmployeurDTO creationDeCompte(String prenom, String nom, String numeroTelephone, String courriel, String motDePasse, String nomOrganisation) {
@@ -50,6 +54,19 @@ public class EmployeurService {
         }
 
         return listeOffreStageToDTO(offresRetourneesEnPages.getContent());
+    }
+
+    public List<ContratDTO> getAllContratsNonSignes(int page) {
+        Long employeurId = utilisateurService.getMyUserId();
+        PageRequest pageRequest = PageRequest.of(page, LIMIT_PER_PAGE);
+
+        Page<Contrat> contratsRetournessEnPages = contratRepository.findContratsBySignatureEmployeurIsNullAndEmployeur_Id(employeurId, pageRequest);
+        if(contratsRetournessEnPages.isEmpty()) {
+            return null;
+        }
+
+        return contratsRetournessEnPages.stream().map(ContratDTO::toDTO).toList();
+
     }
 
     public Integer getAmountOfPages() {
