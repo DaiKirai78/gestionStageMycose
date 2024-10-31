@@ -111,6 +111,8 @@ public class OffreStageService {
 
         FichierOffreStageDTO fichierOffreStageDTO = new FichierOffreStageDTO(uploadFicherOffreStageDTO, createur_id);
 
+        checkYear(fichierOffreStageDTO);
+
         // Si l'utilisateur est un employeur, on prend directement le champ entrepriseName de son entité
         // Sinon, s'il s'agit d'un gestionnaire de stage, on prend le champ entrepriseName du formulaire
         // Sinon, on renvoit une erreur
@@ -158,6 +160,8 @@ public class OffreStageService {
         UtilisateurDTO utilisateurDTO = utilisateurService.getMe();
         Long createur_id = utilisateurDTO.getId();
 
+        checkYear(formulaireOffreStageDTO);
+
         if (utilisateurDTO.getRole() != Role.EMPLOYEUR && utilisateurDTO.getRole() != Role.GESTIONNAIRE_STAGE) {
             throw new AccessDeniedException("Utilisateur n'est pas un employeur");
         }
@@ -188,6 +192,12 @@ public class OffreStageService {
         }
 
         return convertToDTO(savedForm);
+    }
+
+    private void checkYear(OffreStageDTO offreStageDTO) {
+        if (!getFutureYears().contains(offreStageDTO.getAnnee())) {
+            throw new IllegalArgumentException("Annee must be in the future");
+        }
     }
 
     private OffreStage associateEtudiantsPrives(OffreStage offreStage, List<Long> etudiantsPrives) {
