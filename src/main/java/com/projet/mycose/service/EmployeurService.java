@@ -1,6 +1,7 @@
 package com.projet.mycose.service;
 
 import com.projet.mycose.dto.ContratDTO;
+import com.projet.mycose.dto.LoginDTO;
 import com.projet.mycose.modele.Contrat;
 import com.projet.mycose.modele.Employeur;
 import com.projet.mycose.modele.OffreStage;
@@ -12,11 +13,17 @@ import com.projet.mycose.dto.OffreStageDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +33,7 @@ public class EmployeurService {
     private final UtilisateurService utilisateurService;
     private final OffreStageRepository offreStageRepository;
     private final ContratRepository contratRepository;
+    private final AuthenticationManager authenticationManager;
     private final int LIMIT_PER_PAGE = 10;
 
     public EmployeurDTO creationDeCompte(String prenom, String nom, String numeroTelephone, String courriel, String motDePasse, String nomOrganisation) {
@@ -67,6 +75,26 @@ public class EmployeurService {
 
         return contratsRetournessEnPages.stream().map(ContratDTO::toDTO).toList();
 
+    }
+
+    @Transactional
+    public String enregistrerSignature(MultipartFile signature, LoginDTO loginDTO, Long contratId) throws Exception{
+        Long employeurId = utilisateurService.getMyUserId();
+
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginDTO.getCourriel(), loginDTO.getMotDePasse())
+        );
+        if(!authentication.isAuthenticated())
+            return "Mauvais mot de passe";
+
+        Optional<Contrat> contrat = contratRepository.findById(contratId);
+        if(contrat.isEmpty())
+            return "Aucun contrat trouvé";
+
+        Contrat contratDispo = contrat.get();
+        contratDispo.setSignatureEmployeur(signature.getBytes());
+        contratRepository.save(contratDispo);
+        return "Signature sauvegardé";
     }
 
     public Integer getAmountOfPages() {
