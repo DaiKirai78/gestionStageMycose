@@ -1,18 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import TokenPageContainer from './tokenPageContainer';
 import { useNavigate } from 'react-router-dom';
-import AccueilEtudiant from '../components/accueil/accueilEtudiant.jsx';
-import AccueilEmployeur from '../components/accueil/accueilEmployeur.jsx';
 import { useOutletContext } from "react-router-dom";
-import UploadCvPage from '../pages/UploadCvPage';
-import VoirMonCVPage from "./voirMonCVPage.jsx";
 import PageIsLoading from '../components/pageIsLoading.jsx';
-import AccueilGestionnaire from "../components/accueil/accueilGestionnaire.jsx";
+import SignerContratEmployeur from '../components/signerContrats/signerContratEmployeur.jsx';
 
 const AccueilPage = () => {
     const [cvStatus, setCvStatus] = useState(null);
     const navigate = useNavigate();
-    const [userInfo, setUserInfo] = useOutletContext();
+    const {userInfo, setUserInfo, setSelectedContract, selectedContract } = useOutletContext();
     const [isFetching, setIsFetching] = useState(true);
 
     useEffect(() => {
@@ -32,7 +28,7 @@ const AccueilPage = () => {
             const res = await fetch('http://localhost:8080/api/cv/current', {
                 method: "POST",
                 headers: { Authorization: `Bearer ${token}` }
-            });
+            });            
 
             if (res.ok) {
                 const cvData = await res.json();
@@ -53,37 +49,33 @@ const AccueilPage = () => {
     function getEtudiantPage() {
         
         if (cvStatus === "ACCEPTED") {
-            return <AccueilEtudiant />;
-        }
-        else if (cvStatus === "WAITING") {
-            return <VoirMonCVPage />;
+            return <p>Contrat etudiant</p>;
         }
         else {
-            return <UploadCvPage />;
+            navigate("/accueil")
+            return;
         }
     }
 
-    function getAccueil() {
+    function getPageContrat() {
         if (!userInfo || (userInfo.role === "ETUDIANT" && isFetching)) return <PageIsLoading/>;
         
         switch (userInfo.role) {
             case "ETUDIANT":
-                return getEtudiantPage()
+                return getEtudiantPage();
             case "EMPLOYEUR":
-                return <AccueilEmployeur />;
+                return <SignerContratEmployeur setSelectedContract={setSelectedContract} />;
             case "GESTIONNAIRE_STAGE":
-                return <AccueilGestionnaire />;
-            case "ENSEIGNANT":
-                return <p>Enseignant</p>;
+                return <p>Contrat Gestionnaire</p>;
             default:
-                navigate("/");
+                navigate("/accueil");
                 break;
         }
     }
 
     return (
-        <TokenPageContainer role={["ETUDIANT", "EMPLOYEUR", "GESTIONNAIRE_STAGE", "ENSEIGNANT"]} setUserInfo={setUserInfo}>
-            {getAccueil()}
+        <TokenPageContainer role={["ETUDIANT", "EMPLOYEUR", "GESTIONNAIRE_STAGE"]} setUserInfo={setUserInfo}>
+            {getPageContrat()}
         </TokenPageContainer>
     );
 };

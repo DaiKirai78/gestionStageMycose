@@ -1,5 +1,7 @@
 package com.projet.mycose.controller;
 
+import com.projet.mycose.dto.AnswerSummonDTO;
+import com.projet.mycose.dto.SummonEtudiantDTO;
 import com.projet.mycose.modele.*;
 import com.projet.mycose.modele.auth.Credentials;
 import com.projet.mycose.modele.auth.Role;
@@ -16,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -38,6 +41,8 @@ public class ApplicationStageControllerTest {
     private ApplicationStage applicationStage;
     private ApplicationStageAvecInfosDTO applicationStageAvecInfosDTO;
     private List<ApplicationStageAvecInfosDTO> applicationStageAvecInfosDTOList;
+    private AnswerSummonDTO answerSummonDTO;
+
 
     @BeforeEach
     void setup() {
@@ -76,6 +81,8 @@ public class ApplicationStageControllerTest {
         applicationStage.setStatus(ApplicationStage.ApplicationStatus.PENDING);
 
         applicationStageAvecInfosDTOList = List.of(applicationStageAvecInfosDTO);
+
+        answerSummonDTO = new AnswerSummonDTO("I accept the summon.", Convocation.ConvocationStatus.ACCEPTED);
     }
 
     @Test
@@ -163,14 +170,18 @@ public class ApplicationStageControllerTest {
 
     @Test
     void summonEtudiant_Success() {
-        when(applicationStageService.summonEtudiant(id)).thenReturn(applicationStageAvecInfosDTO);
+        SummonEtudiantDTO summonEtudiantDTO = new SummonEtudiantDTO();
+        summonEtudiantDTO.setScheduledAt(LocalDateTime.now().plusDays(1));
+        summonEtudiantDTO.setLocation("Tech Corp");
+        summonEtudiantDTO.setMessageConvocation("You have been summoned for an interview.");
+        when(applicationStageService.summonEtudiant(id, summonEtudiantDTO)).thenReturn(applicationStageAvecInfosDTO);
 
-        ResponseEntity<ApplicationStageAvecInfosDTO> response = applicationStageController.summonEtudiant(id);
+        ResponseEntity<ApplicationStageAvecInfosDTO> response = applicationStageController.summonEtudiant(id, summonEtudiantDTO);
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(applicationStageAvecInfosDTO, response.getBody());
-        verify(applicationStageService, times(1)).summonEtudiant(id);
+        verify(applicationStageService, times(1)).summonEtudiant(id, summonEtudiantDTO);
     }
 
     @Test
@@ -219,7 +230,7 @@ public class ApplicationStageControllerTest {
     @Test
     void testRefuserApplication_Echec() {
         // Arrange
-        when(applicationStageService.accepterOuRefuserApplication(20L, ApplicationStage.ApplicationStatus.ACCEPTED))
+        when(applicationStageService.accepterOuRefuserApplication(20L, ApplicationStage.ApplicationStatus.REJECTED))
                 .thenThrow(new ResponseStatusException(HttpStatus.UNAUTHORIZED));
 
         // Act
@@ -227,5 +238,98 @@ public class ApplicationStageControllerTest {
 
         // Assert
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    }
+
+    @Test
+    void answerSummon_Success() {
+        // Arrange
+        when(applicationStageService.answerSummon(id, answerSummonDTO)).thenReturn(applicationStageAvecInfosDTO);
+
+        // Act
+        ResponseEntity<ApplicationStageAvecInfosDTO> response = applicationStageController.answerSummon(id, answerSummonDTO);
+
+        // Assert
+        assertNotNull(response, "Response should not be null.");
+        assertEquals(HttpStatus.OK, response.getStatusCode(), "HTTP Status should be OK.");
+        assertEquals(applicationStageAvecInfosDTO, response.getBody(), "Response body should match the expected DTO.");
+        verify(applicationStageService, times(1)).answerSummon(id, answerSummonDTO);
+    }
+
+    @Test
+    void answerSummon_ApplicationStageNotFound() {
+        // Arrange
+        when(applicationStageService.answerSummon(id, answerSummonDTO))
+                .thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Application not found"));
+
+        // Act & Assert
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            applicationStageController.answerSummon(id, answerSummonDTO);
+        }, "Expected a ResponseStatusException to be thrown.");
+
+        assertEquals("404 NOT_FOUND \"Application not found\"", exception.getMessage());
+        verify(applicationStageService, times(1)).answerSummon(id, answerSummonDTO);
+    }
+
+    @Test
+    void answerSummon_UserNotAuthorized() {
+        // Arrange
+        when(applicationStageService.answerSummon(id, answerSummonDTO))
+                .thenThrow(new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to answer this summon"));
+
+        // Act & Assert
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            applicationStageController.answerSummon(id, answerSummonDTO);
+        }, "Expected a ResponseStatusException to be thrown.");
+
+        assertEquals("403 FORBIDDEN \"You are not allowed to answer this summon\"", exception.getMessage());
+        verify(applicationStageService, times(1)).answerSummon(id, answerSummonDTO);
+    }
+
+    @Test
+    void answerSummon_ApplicationNotSummoned() {
+        // Arrange
+        when(applicationStageService.answerSummon(id, answerSummonDTO))
+                .thenThrow(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Application is not summoned"));
+
+        // Act & Assert
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            applicationStageController.answerSummon(id, answerSummonDTO);
+        }, "Expected a ResponseStatusException to be thrown.");
+
+        assertEquals("400 BAD_REQUEST \"Application is not summoned\"", exception.getMessage());
+        verify(applicationStageService, times(1)).answerSummon(id, answerSummonDTO);
+    }
+
+    @Test
+    void answerSummon_ConvocationNotPending() {
+        // Arrange
+        when(applicationStageService.answerSummon(id, answerSummonDTO))
+                .thenThrow(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Convocation is not pending"));
+
+        // Act & Assert
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            applicationStageController.answerSummon(id, answerSummonDTO);
+        }, "Expected a ResponseStatusException to be thrown.");
+
+        assertEquals("400 BAD_REQUEST \"Convocation is not pending\"", exception.getMessage());
+        verify(applicationStageService, times(1)).answerSummon(id, answerSummonDTO);
+    }
+
+    @Test
+    void answerSummon_InvalidConvocationStatus() {
+        // Arrange
+        // Assuming ConvocationStatus.PENDING is invalid for answering a summon
+        answerSummonDTO = new AnswerSummonDTO("Invalid status.", Convocation.ConvocationStatus.PENDING);
+
+        when(applicationStageService.answerSummon(id, answerSummonDTO))
+                .thenThrow(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid status"));
+
+        // Act & Assert
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            applicationStageController.answerSummon(id, answerSummonDTO);
+        }, "Expected a ResponseStatusException to be thrown.");
+
+        assertEquals("400 BAD_REQUEST \"Invalid status\"", exception.getMessage());
+        verify(applicationStageService, times(1)).answerSummon(id, answerSummonDTO);
     }
 }

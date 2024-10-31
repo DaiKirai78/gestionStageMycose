@@ -25,6 +25,10 @@ import AttributionProf from './components/attribution/attributionProf.jsx';
 import AppliquerStagePage from './pages/appliquerStagePage.jsx';
 import ContratPage from "./pages/contratPage.jsx";
 import AttribuerContratPage from "./pages/attribuerContratPage.jsx";
+import EtudiantConvocationPage from "./pages/etudiantConvocationPage.jsx";
+import SignerContratPage from './pages/SignerContratPage.jsx';
+import SignerContratPageLayout from './pages/signerContratPageLayout.jsx';
+import SignerUnContratPage from './pages/SignerUnContratPage.jsx';
 
 const router = createBrowserRouter([
   { path: "/", element: <ConnectionPage /> },
@@ -45,7 +49,21 @@ const router = createBrowserRouter([
       { path: "/appliquer", element: <AppliquerStagePage/> },
       { path: "/attribuerContrat", element: <ContratPage/> },
       // { path: "/attribuerContrat/:id", element: <AttribuerContratPage/> },
+      { path: "/attribuerContrat/:id", element: <AttribuerContratPage/> },
+      { path: "/convocations", element: <EtudiantConvocationPage /> },
 
+      {
+        path: "/contrats",
+        element: <SignerContratPageLayout/>,
+        children: [
+          {
+            path: "signer", element: <SignerUnContratPage />
+          },
+          {
+            path: "", element: <SignerContratPage />
+          }
+        ],
+      },
       {
         path: "/attribuer", 
         element: <AttributionPage />, 

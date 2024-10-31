@@ -223,5 +223,15 @@
     "hiver": "Winter",
     "automne": "Autumn",
     "selectSession" : "Select session",
-    "annee" : "Year"
+    "PENDING" : "Pending",
+    "REJECTED" : "Rejected",
+    "SUMMONED" : "Summoned",
+    "annee" : "Year",
+    "signerContrats": "Sign contracts",
+    "validate": "Validate",
+    "noContratToSign" : "No contrat to sign",
+    "signContract": "Sign contract",
+    "signContractOf": "Signing the contract of",
+    "signature": "Signature",
+    "envoyerSignature": "Send signature"
 }

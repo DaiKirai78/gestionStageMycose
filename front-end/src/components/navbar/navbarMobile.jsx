@@ -15,22 +15,27 @@ const NavbarMobile = ({ lienEqual, mobileMenuRef, userInfo, navLinks, toggleNoti
                 <button
                     onClick={() => {
                         navigate("/accueil");
-                    } }
+                    }}
                     className={`w-full text-left hover:bg-orange hover:bg-opacity-20 px-3 py-2 rounded-md font-medium ${location.pathname === "/accueil" ? "cursor-default ring-1 ring-orange text-orange hover:bg-transparent" : ""}`}>
                     {t("accueil")}
                 </button>
-                {userInfo ? navLinks[userInfo.role].map((infoBtn, index) => {
-                    return (
-                        <button
-                            key={"nav" + index}
-                            onClick={() => {
-                                navigate(infoBtn["lien"]);
-                            } }
+                {userInfo && navLinks[userInfo.role].map((infoBtn, index) => (
+                    <div key={"nav" + index} className="space-y-1">
+                        {!infoBtn.sousLiens && <button
+                            onClick={() => navigate(infoBtn["lien"])}
                             className={`w-full text-left hover:bg-orange hover:bg-opacity-20 px-3 py-2 rounded-md font-medium ${lienEqual(infoBtn) ? "cursor-default ring-1 ring-orange text-orange hover:bg-transparent" : ""}`}>
                             {t(infoBtn["titre"])}
-                        </button>
-                    );
-                }) : ""}
+                        </button>}
+                        {infoBtn.sousLiens && infoBtn.sousLiens.map((sousLien, subIndex) => (
+                            <button
+                                key={"sousNav" + subIndex}
+                                onClick={() => navigate(sousLien["lien"])}
+                                className={`w-full text-left hover:bg-orange hover:bg-opacity-20 px-3 py-2 rounded-md font-medium ${location.pathname === sousLien["lien"] ? "cursor-default ring-1 ring-orange text-orange hover:bg-transparent" : ""}`}>
+                                {t(sousLien["titre"])}
+                            </button>
+                        ))}
+                    </div>
+                ))}
             </div>
             <hr className="w-[98%] mx-auto" />
             <div className="pt-4 pb-3">
@@ -40,16 +45,16 @@ const NavbarMobile = ({ lienEqual, mobileMenuRef, userInfo, navLinks, toggleNoti
                         <div className="font-medium leading-none text-gray-600">{userInfo ? userInfo.courriel : "Attente"}</div>
                     </div>
                     <div className="relative ml-auto" ref={notificationMenuRefMobile}>
-                    <button
-                        onClick={toggleNotificationMenu}
-                        className="flex-shrink-0 p-2 rounded-full text-orange hover:text-orange-light hover:bg-orange">
-                        <BsBellFill className="h-6 w-6" />
-                    </button>
-                    {isNotificationMenuOpen && (
-                        <div className="origin-top-right absolute text-left right-0 top-11 w-48 rounded-md shadow-lg p-1 bg-orange-light ring-1 ring-orange ring-opacity-40">
-                            <p className="px-4 py-2 text-black">{t("noNotification")}</p>
-                        </div>
-                    )}
+                        <button
+                            onClick={toggleNotificationMenu}
+                            className="flex-shrink-0 p-2 rounded-full text-orange hover:text-orange-light hover:bg-orange">
+                            <BsBellFill className="h-6 w-6" />
+                        </button>
+                        {isNotificationMenuOpen && (
+                            <div className="origin-top-right absolute text-left right-0 top-11 w-48 rounded-md shadow-lg p-1 bg-orange-light ring-1 ring-orange ring-opacity-40">
+                                <p className="px-4 py-2 text-black">{t("noNotification")}</p>
+                            </div>
+                        )}
                     </div>
                 </div>
                 <div className="mt-3 px-2 space-y-1">
@@ -57,7 +62,7 @@ const NavbarMobile = ({ lienEqual, mobileMenuRef, userInfo, navLinks, toggleNoti
                         onClick={e => {
                             handleProfileItemClick(e);
                             navigate("/profil");
-                        } }
+                        }}
                         className={`w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-orange hover:bg-opacity-20 ${location.pathname === "/profil" ? "cursor-default ring-1 ring-orange text-orange hover:bg-transparent" : ""}`}>
                         {t("profil")}
                     </button>
@@ -79,7 +84,7 @@ const NavbarMobile = ({ lienEqual, mobileMenuRef, userInfo, navLinks, toggleNoti
                 </div>
             </div>
         </div>
-    )
+    );
 }
 
 export default NavbarMobile;

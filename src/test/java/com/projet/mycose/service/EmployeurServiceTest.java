@@ -1,10 +1,9 @@
 package com.projet.mycose.service;
 
-import com.projet.mycose.modele.Employeur;
-import com.projet.mycose.modele.FichierOffreStage;
-import com.projet.mycose.modele.FormulaireOffreStage;
-import com.projet.mycose.modele.OffreStage;
+import com.projet.mycose.dto.ContratDTO;
+import com.projet.mycose.modele.*;
 import com.projet.mycose.modele.auth.Role;
+import com.projet.mycose.repository.ContratRepository;
 import com.projet.mycose.repository.EmployeurRepository;
 import com.projet.mycose.repository.OffreStageRepository;
 import com.projet.mycose.dto.EmployeurDTO;
@@ -20,6 +19,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +42,10 @@ public class EmployeurServiceTest {
 
     @Mock
     private OffreStageRepository offreStageRepositoryMock;
+
+    @Mock
+    private ContratRepository contratRepositoryMock;
+
     @InjectMocks
     private EmployeurService employeurService;
 
@@ -234,6 +238,64 @@ public class EmployeurServiceTest {
         //Assert
         assertEquals(nombrePage, 5);
         verify(offreStageRepositoryMock, times(1)).countByCreateurId(1L);
+    }
+
+    @Test
+    public void testGetAllContratsNonSignees_Success() {
+        String token = "unTokenValide";
+        Long employeurId = 1L;
+        int page = 0;
+        PageRequest pageRequest = PageRequest.of(page, 10);
+        Employeur employeur = new Employeur(2L,
+                "unPrenom",
+                "unNom",
+                "514-222-0385",
+                "courriel@courriel.com",
+                "123123123",
+                "uneEntreprise"
+        );
+
+        Contrat contratMock = new Contrat();
+        contratMock.setId(2L);
+        List<Contrat> contratListeMock = new ArrayList<>();
+        contratListeMock.add(contratMock);
+
+        Page<Contrat> contratsPage = new PageImpl<>(contratListeMock, pageRequest, 1);
+
+        when(utilisateurService.getMyUserId()).thenReturn(employeurId);
+        when(contratRepositoryMock.findContratsBySignatureEmployeurIsNullAndEmployeur_Id(employeurId, pageRequest)).thenReturn(contratsPage);
+
+        // Act
+        List<ContratDTO> resultat = employeurService.getAllContratsNonSignes(page);
+
+        // Assert
+        assertNotNull(resultat);
+        assertEquals(1, resultat.size());
+
+        verify(utilisateurService, times(1)).getMyUserId();
+        verify(contratRepositoryMock, times(1)).findContratsBySignatureEmployeurIsNullAndEmployeur_Id(employeurId, pageRequest);
+    }
+
+    @Test
+    public void testGetAllContratsNonSignees_Null() {
+        // Arrange
+        String token = "unTokenValide";
+        Long employeurId = 1L;
+        int page = 0;
+        PageRequest pageRequest = PageRequest.of(page, 10);
+        Page<Contrat> contratsPage = new PageImpl<>(List.of(), pageRequest, 0);
+
+        when(utilisateurService.getMyUserId()).thenReturn(employeurId);
+        when(contratRepositoryMock.findContratsBySignatureEmployeurIsNullAndEmployeur_Id(employeurId, pageRequest)).thenReturn(contratsPage);
+
+        // Act
+        List<ContratDTO> resultat = employeurService.getAllContratsNonSignes(page);
+
+        // Assert
+        assertNull(resultat);
+
+        verify(utilisateurService, times(1)).getMyUserId();
+        verify(contratRepositoryMock, times(1)).findContratsBySignatureEmployeurIsNullAndEmployeur_Id(employeurId, pageRequest);
     }
 
 }

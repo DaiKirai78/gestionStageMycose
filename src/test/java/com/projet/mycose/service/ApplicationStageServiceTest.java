@@ -1,6 +1,6 @@
 package com.projet.mycose.service;
 
-import com.projet.mycose.dto.EtudiantDTO;
+import com.projet.mycose.dto.*;
 
 import com.projet.mycose.modele.*;
 import com.projet.mycose.modele.auth.Credentials;
@@ -9,8 +9,6 @@ import com.projet.mycose.repository.ApplicationStageRepository;
 import com.projet.mycose.repository.EtudiantOffreStagePriveeRepository;
 import com.projet.mycose.repository.EtudiantRepository;
 import com.projet.mycose.repository.OffreStageRepository;
-import com.projet.mycose.dto.ApplicationStageAvecInfosDTO;
-import com.projet.mycose.dto.ApplicationStageDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -53,6 +52,8 @@ public class ApplicationStageServiceTest {
     private ApplicationStage applicationStage;
     private ApplicationStageDTO applicationStageDTO;
     private ApplicationStageAvecInfosDTO applicationStageAvecInfosDTO;
+
+    private SummonEtudiantDTO summonEtudiantDTO;
 
     @BeforeEach
     void setup() {
@@ -95,6 +96,11 @@ public class ApplicationStageServiceTest {
         applicationStageAvecInfosDTO.setTitle(fichierOffreStage.getTitle());
         applicationStageAvecInfosDTO.setEntrepriseName(fichierOffreStage.getEntrepriseName());
         applicationStageAvecInfosDTO.setStatus(applicationStage.getStatus());
+
+        summonEtudiantDTO = new SummonEtudiantDTO();
+        summonEtudiantDTO.setScheduledAt(LocalDateTime.now().plusDays(1));
+        summonEtudiantDTO.setLocation("Tech Corp");
+        summonEtudiantDTO.setMessageConvocation("You have been summoned for an interview.");
     }
 
     @Test
@@ -443,7 +449,7 @@ public class ApplicationStageServiceTest {
         applicationStageAvecInfosDTO.setStatus(ApplicationStage.ApplicationStatus.SUMMONED);
 
         // Act
-        ApplicationStageAvecInfosDTO result = applicationStageService.summonEtudiant(1L);
+        ApplicationStageAvecInfosDTO result = applicationStageService.summonEtudiant(1L, summonEtudiantDTO);
 
         // Assert
         assertNotNull(result);
@@ -464,7 +470,7 @@ public class ApplicationStageServiceTest {
 
         // Act
         ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
-            applicationStageService.summonEtudiant(1L);
+            applicationStageService.summonEtudiant(1L, summonEtudiantDTO);
         });
 
         // Assert
@@ -484,7 +490,7 @@ public class ApplicationStageServiceTest {
 
         // Act
         ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
-            applicationStageService.summonEtudiant(1L);
+            applicationStageService.summonEtudiant(1L, summonEtudiantDTO);
         });
 
         // Assert
@@ -505,7 +511,7 @@ public class ApplicationStageServiceTest {
 
         // Act
         ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
-            applicationStageService.summonEtudiant(1L);
+            applicationStageService.summonEtudiant(1L, summonEtudiantDTO);
         });
 
         // Assert
@@ -559,5 +565,140 @@ public class ApplicationStageServiceTest {
         });
 
         assertEquals("409 CONFLICT \"L'étudiant a déjà un stage actif ou une demande de stage active\"", exception.getMessage());
+    }
+
+    @Test
+    void answerSummon_Success() {
+        // Arrange
+        Long applicationStageId = 1L;
+        AnswerSummonDTO answerSummonDTO = new AnswerSummonDTO("I accept the summon.", Convocation.ConvocationStatus.ACCEPTED);
+
+        when(applicationStageRepository.findById(applicationStageId)).thenReturn(Optional.of(applicationStage));
+        when(utilisateurService.getMyUserId()).thenReturn(etudiant.getId());
+        when(applicationStageRepository.save(any(ApplicationStage.class))).thenReturn(applicationStage);
+
+        applicationStage.setStatus(ApplicationStage.ApplicationStatus.SUMMONED);
+        applicationStage.setConvocation(new Convocation(applicationStage, summonEtudiantDTO));
+        System.out.println(applicationStage.getConvocation().getStatus());
+
+        // Act
+        ApplicationStageAvecInfosDTO result = applicationStageService.answerSummon(applicationStageId, answerSummonDTO);
+
+        // Assert
+        assertNotNull(result, "The result should not be null.");
+        verify(applicationStageRepository, times(1)).findById(applicationStageId);
+        verify(utilisateurService, times(1)).getMyUserId();
+        verify(applicationStageRepository, times(1)).save(applicationStage);
+    }
+
+    @Test
+    void answerSummon_ApplicationStageNotFound() {
+        // Arrange
+        Long applicationStageId = 1L;
+        AnswerSummonDTO answerSummonDTO = new AnswerSummonDTO("I accept the summon.", Convocation.ConvocationStatus.ACCEPTED);
+
+        when(applicationStageRepository.findById(applicationStageId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            applicationStageService.answerSummon(applicationStageId, answerSummonDTO);
+        });
+
+        assertEquals("404 NOT_FOUND \"Application not found\"", exception.getMessage());
+        verify(applicationStageRepository, times(1)).findById(applicationStageId);
+        verify(utilisateurService, times(0)).getMyUserId();
+        verify(applicationStageRepository, times(0)).save(any(ApplicationStage.class));
+    }
+
+    @Test
+    void answerSummon_UserNotAuthorized() {
+        // Arrange
+        Long applicationStageId = 1L;
+        AnswerSummonDTO answerSummonDTO = new AnswerSummonDTO("I accept the summon.", Convocation.ConvocationStatus.ACCEPTED);
+
+        when(applicationStageRepository.findById(applicationStageId)).thenReturn(Optional.of(applicationStage));
+        when(utilisateurService.getMyUserId()).thenReturn(etudiant2.getId()); // Different user
+
+        // Act & Assert
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            applicationStageService.answerSummon(applicationStageId, answerSummonDTO);
+        });
+
+        assertEquals("403 FORBIDDEN \"You are not allowed to answer this summon\"", exception.getMessage());
+        verify(applicationStageRepository, times(1)).findById(applicationStageId);
+        verify(utilisateurService, times(1)).getMyUserId();
+        verify(applicationStageRepository, times(0)).save(any(ApplicationStage.class));
+    }
+
+    @Test
+    void answerSummon_ApplicationNotSummoned() {
+        // Arrange
+        Long applicationStageId = 1L;
+        AnswerSummonDTO answerSummonDTO = new AnswerSummonDTO("I accept the summon.", Convocation.ConvocationStatus.ACCEPTED);
+
+
+        // Set status to PENDING instead of SUMMONED
+        applicationStage.setStatus(ApplicationStage.ApplicationStatus.PENDING);
+
+        when(applicationStageRepository.findById(applicationStageId)).thenReturn(Optional.of(applicationStage));
+        when(utilisateurService.getMyUserId()).thenReturn(etudiant.getId());
+
+        // Act & Assert
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            applicationStageService.answerSummon(applicationStageId, answerSummonDTO);
+        });
+
+        assertEquals("400 BAD_REQUEST \"Application is not summoned\"", exception.getMessage());
+        verify(applicationStageRepository, times(1)).findById(applicationStageId);
+        verify(utilisateurService, times(1)).getMyUserId();
+        verify(applicationStageRepository, times(0)).save(any(ApplicationStage.class));
+    }
+
+    @Test
+    void answerSummon_ConvocationNotPending() {
+        // Arrange
+        Long applicationStageId = 1L;
+        AnswerSummonDTO answerSummonDTO = new AnswerSummonDTO("I accept the summon.", Convocation.ConvocationStatus.ACCEPTED);
+
+        // Set convocation status to ACCEPTED instead of PENDING
+        applicationStage.setStatus(ApplicationStage.ApplicationStatus.SUMMONED);
+        applicationStage.setConvocation(new Convocation(applicationStage, summonEtudiantDTO));
+        applicationStage.getConvocation().setStatus(Convocation.ConvocationStatus.ACCEPTED);
+
+        when(applicationStageRepository.findById(applicationStageId)).thenReturn(Optional.of(applicationStage));
+        when(utilisateurService.getMyUserId()).thenReturn(etudiant.getId());
+
+        // Act & Assert
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            applicationStageService.answerSummon(applicationStageId, answerSummonDTO);
+        });
+
+        assertEquals("400 BAD_REQUEST \"Convocation is not pending\"", exception.getMessage());
+        verify(applicationStageRepository, times(1)).findById(applicationStageId);
+        verify(utilisateurService, times(1)).getMyUserId();
+        verify(applicationStageRepository, times(0)).save(any(ApplicationStage.class));
+    }
+
+    @Test
+    void answerSummon_InvalidConvocationStatus() {
+        // Arrange
+        Long applicationStageId = 1L;
+        AnswerSummonDTO answerSummonDTO = new AnswerSummonDTO("Invalid status.", Convocation.ConvocationStatus.PENDING);
+
+        applicationStage.setStatus(ApplicationStage.ApplicationStatus.SUMMONED);
+        applicationStage.setConvocation(new Convocation(applicationStage, summonEtudiantDTO));
+
+        when(applicationStageRepository.findById(applicationStageId)).thenReturn(Optional.of(applicationStage));
+        when(utilisateurService.getMyUserId()).thenReturn(etudiant.getId());
+
+        // Act & Assert
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            applicationStageService.answerSummon(applicationStageId, answerSummonDTO);
+        });
+
+        assertEquals("400 BAD_REQUEST \"Invalid status\"", exception.getMessage());
+        verify(applicationStageRepository, times(1)).findById(applicationStageId);
+        verify(utilisateurService, times(1)).getMyUserId();
+        verify(applicationStageRepository, times(0)).save(any(ApplicationStage.class));
     }
 }

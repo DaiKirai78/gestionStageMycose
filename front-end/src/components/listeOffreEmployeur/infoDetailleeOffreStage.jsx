@@ -13,6 +13,7 @@ const InfoDetailleeOffreStage = ({ setActiveOffer, activeOffer, getColorOffreSta
     const [studentInfo, setStudentInfo] = useState(null);
     const [isFetching, setIsFetching] = useState(false);
     const [isFetchingStatus, setIsFetchingStatus] = useState(false);
+    const [etudiantsStatus, setEtudiantsStatus] = useState({});
     const { t } = useTranslation();
 
     const format = getFormat();
@@ -39,6 +40,8 @@ const InfoDetailleeOffreStage = ({ setActiveOffer, activeOffer, getColorOffreSta
             let fetchedData = await response.text();
             if (fetchedData) {
                 setListeEtudiantsAppliques(JSON.parse(fetchedData));
+                //console.log(fetchedData);
+                await assignerStatusEtudiants(JSON.parse(fetchedData))
             }
             else {
                 setListeEtudiantsAppliques([]);
@@ -48,6 +51,30 @@ const InfoDetailleeOffreStage = ({ setActiveOffer, activeOffer, getColorOffreSta
         } finally {
             setIsFetching(false);
         }
+    }
+
+    async function assignerStatusEtudiants(candidats) {
+        const token = localStorage.getItem("token");
+        const newStatus = {};
+
+        for (const etudiant of candidats) {
+            try {
+                const response = await axios.get(`http://localhost:8080/api/application-stage/get/${etudiant.id}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+
+                if (response.status === 200) {
+                    const applications = response.data;
+                    const studentApplication = applications.find(app => app.etudiant_id === etudiant.id && app.offreStage_id === activeOffer.id);
+                    newStatus[etudiant.id] = studentApplication ? studentApplication.status : "N/A";
+                }
+            } catch (error) {
+                console.error('Erreur lors de la vérification du statut de convocation:', error);
+                newStatus[etudiant.id] = "Erreur";
+            }
+        }
+
+        setEtudiantsStatus(newStatus);
     }
 
     function getFormat() {
@@ -76,39 +103,42 @@ const InfoDetailleeOffreStage = ({ setActiveOffer, activeOffer, getColorOffreSta
 
     useEffect(() => {
         // Fonction pour vérifier si l'étudiant est convoqué
-        async function checkSummonStatus() {
-            const token = localStorage.getItem("token");
+        //checkSummonStatus();
+
+        if (selectedEtudiant && activeOffer) {
+            checkSummonStatus();
+        }
+
+    }, [selectedEtudiant, activeOffer]);
+
+    async function checkSummonStatus() {
+        const token = localStorage.getItem("token");
 
             try {
                 const response = await axios.get(`http://localhost:8080/api/application-stage/get/etudiant/${selectedEtudiant.id}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 
-                if (response.status === 200) {
-                    const applications = response.data;
-                    console.log("applications", applications);
-                    // On vérifie l'application avec le bon etudiantId et l'offreStageId
-                    const studentApplication = applications.find(app => app.etudiant_id === selectedEtudiant.id && app.offreStage_id === activeOffer.id);
+            if (response.status === 200) {
+                const applications = response.data;
+                console.log("applications", applications);
 
-                    setStudentInfo(studentApplication);
-                }
-            } catch (error) {
-                console.error('Erreur lors de la vérification du statut de convocation:', error);
+                // On vérifie l'application avec le bon etudiantId et l'offreStageId
+                const studentApplication = applications.find(app => app.etudiant_id === selectedEtudiant.id && app.offreStage_id === activeOffer.id);
+                setStudentInfo(studentApplication);
             }
+        } catch (error) {
+            console.error('Erreur lors de la vérification du statut de convocation:', error);
         }
-
-        if (selectedEtudiant && activeOffer) {
-            checkSummonStatus();
-        }
-    }, [selectedEtudiant, activeOffer]);
+    }
 
     // Fonction pour convoquer l'étudiant
-    async function summonEtudiant() {
+    async function summonEtudiant(summonDetails) {
         const token = localStorage.getItem("token");
         setIsFetchingStatus(true);
 
         try {
-            const response = await axios.patch(`http://localhost:8080/api/application-stage/summon/${studentInfo.id}`, {}, {
+            const response = await axios.patch(`http://localhost:8080/api/application-stage/summon/${studentInfo.id}`, summonDetails, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -117,10 +147,7 @@ const InfoDetailleeOffreStage = ({ setActiveOffer, activeOffer, getColorOffreSta
 
             if (response.status === 200) {
                 setSummonMessage(t("studentSummoned"));
-                setStudentInfo({
-                    ...studentInfo,
-                    status: 'SUMMONED'
-                })
+                setStudentInfo({ ...studentInfo, status: 'SUMMONED' });
             }
         } catch (error) {
             console.error("Erreur lors de la convocation de l'étudiant:", error);
@@ -129,6 +156,7 @@ const InfoDetailleeOffreStage = ({ setActiveOffer, activeOffer, getColorOffreSta
             setIsFetchingStatus(false);
         }
     }
+
     async function accepterEtudiant() {
         const token = localStorage.getItem("token");
         setIsFetchingStatus(true);
@@ -180,6 +208,18 @@ const InfoDetailleeOffreStage = ({ setActiveOffer, activeOffer, getColorOffreSta
         } finally {
             setIsFetchingStatus(false);
         }
+    }
+
+    function getEtudiantInfoStatus(etudiant) {
+        //etudiantInfosApplication = await checkSummonStatus();
+        setSelectedEtudiant(etudiant)
+
+        //console.log(etudiantInfosApplication);
+        console.log(studentInfo);
+        if(studentInfo)
+            return studentInfo.status
+        else
+            return "Chargement"
     }
 
     const closeModal = () => {
@@ -240,7 +280,7 @@ const InfoDetailleeOffreStage = ({ setActiveOffer, activeOffer, getColorOffreSta
                                 </option>
                                 {listeEtudiantsAppliques.map((etudiant) => (
                                     <option key={etudiant.id} value={etudiant.id}>
-                                        {etudiant.prenom} {etudiant.nom}
+                                        {etudiant.prenom} {etudiant.nom} | {t(etudiantsStatus[etudiant.id]) || "Chargement..."}
                                     </option>
                                 ))}
                             </select>
