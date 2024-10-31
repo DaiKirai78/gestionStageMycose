@@ -43,7 +43,7 @@ function ConvoquerModal({ isOpen, onClose, onSummon }) {
                         />
                     </div>
                     <div className="mb-4">
-                        <label className="block text-sm font-medium mb-1">{t("location")}</label>
+                        <label className="block text-sm font-medium mb-1">{t("summonLocation")}</label>
                         <input
                             type="text"
                             value={location}
