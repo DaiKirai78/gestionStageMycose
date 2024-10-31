@@ -132,15 +132,13 @@ const InfoDetailleeOffreStage = ({ setActiveOffer, activeOffer, getColorOffreSta
         }
     }
 
-
-
     // Fonction pour convoquer l'étudiant
-    async function summonEtudiant() {
+    async function summonEtudiant(summonDetails) {
         const token = localStorage.getItem("token");
         setIsFetchingStatus(true);
 
         try {
-            const response = await axios.patch(`http://localhost:8080/api/application-stage/summon/${studentInfo.id}`, {}, {
+            const response = await axios.patch(`http://localhost:8080/api/application-stage/summon/${studentInfo.id}`, summonDetails, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -149,10 +147,7 @@ const InfoDetailleeOffreStage = ({ setActiveOffer, activeOffer, getColorOffreSta
 
             if (response.status === 200) {
                 setSummonMessage(t("studentSummoned"));
-                setStudentInfo({
-                    ...studentInfo,
-                    status: 'SUMMONED'
-                })
+                setStudentInfo({ ...studentInfo, status: 'SUMMONED' });
             }
         } catch (error) {
             console.error("Erreur lors de la convocation de l'étudiant:", error);
@@ -161,6 +156,7 @@ const InfoDetailleeOffreStage = ({ setActiveOffer, activeOffer, getColorOffreSta
             setIsFetchingStatus(false);
         }
     }
+
     async function accepterEtudiant() {
         const token = localStorage.getItem("token");
         setIsFetchingStatus(true);
