@@ -1,10 +1,7 @@
 package com.projet.mycose.controller;
 
+import com.projet.mycose.dto.*;
 import com.projet.mycose.service.UtilisateurService;
-import com.projet.mycose.dto.CourrielTelephoneDTO;
-import com.projet.mycose.dto.JWTAuthResponse;
-import com.projet.mycose.dto.LoginDTO;
-import com.projet.mycose.dto.UtilisateurDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -51,5 +48,17 @@ public class UtilisateurController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("L'utilisateur existe déjà ou les credentials sont invalides");
         else
             return ResponseEntity.status(HttpStatus.OK).body(courrielTelephoneDTO);
+    }
+
+    @GetMapping("/getPrenomNomEtudiant")
+    public ResponseEntity<String> getNomEtudiantSelonId(@RequestParam long id) {
+        try {
+
+            EtudiantDTO etudiantDTO = utilisateurService.getEtudiantDTO(id);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
+                    etudiantDTO.getPrenom() + " " + etudiantDTO.getNom());
+        } catch (Exception e) {
+            return ResponseEntity.noContent().build();
+        }
     }
 }

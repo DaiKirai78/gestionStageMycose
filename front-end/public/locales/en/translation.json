@@ -253,5 +253,7 @@
     "summonStudent": "Summon student",
     "date": "Date",
     "time": "Time",
-    "summonLocation": "Summon location"
+    "summonLocation": "Summon location",
+    "erreurNoSignature": "No signature written",
+    "wrongPassword": "Wrong password"
 }

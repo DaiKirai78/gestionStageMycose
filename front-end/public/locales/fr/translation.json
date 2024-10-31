@@ -235,6 +235,8 @@
     "signContract": "Signer contrat",
     "signContractOf": "Signer le contrat de",
     "signature": "Signature",
+    "erreurNoSignature": "Aucune signature écrite",
+    "wrongPassword": "Mauvais mot de passe",
     "envoyerSignature": "Envoyer la signature",
     "convocationsList": "Liste des convocations",
     "infos": "Infos",

@@ -14,19 +14,21 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -109,7 +111,9 @@ public class EmployeurControllerTest {
                 OffreStage.Status.WAITING,
                 Programme.TECHNIQUE_INFORMATIQUE,
                 OffreStage.Visibility.PUBLIC,
-                null
+                null,
+                OffreStage.SessionEcole.AUTOMNE,
+                2022
         );
 
         List<OffreStageDTO> mockListeOffres = new ArrayList<>();
@@ -200,4 +204,63 @@ public class EmployeurControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
     }
+
+    @Test
+    public void testGetAmountOfPagesContratsNonSignees_Success() throws Exception {
+        //Arrange
+        when(employeurService.getAmountOfPagesOfContractNonSignees()).thenReturn(2);
+
+        //Act & Assert
+        mockMvc.perform(get("/entreprise/pagesContrats"))
+                .andExpect(status().isAccepted())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().string("2"));
+    }
+
+    @Test
+    public void testGetAmountOfPagesContratsNonSignees_Error() throws Exception {
+        //Arrange
+        when(employeurService.getAmountOfPagesOfContractNonSignees()).thenThrow(new RuntimeException());
+
+        //Act & Assert
+        mockMvc.perform(get("/entreprise/pagesContrats"))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void testEnregistrerSignature_Success() throws Exception {
+        // Arrange
+        LoginDTO loginDTOMock = new LoginDTO("username", "password");
+        MockMultipartFile signatureFile = new MockMultipartFile("signature", "signature.png", "image/png", "test signature content".getBytes());
+
+        when(employeurService.enregistrerSignature(any(MultipartFile.class), anyString(), any(Long.class))).thenReturn("Signature enregistree avec succes");
+
+        // Act & Assert
+        mockMvc.perform(multipart("/entreprise/enregistrerSignature")
+                        .file(signatureFile)
+                        .param("contratId", "1")
+                        .param("password", "Passw0rd")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isAccepted())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().string("Signature enregistree avec succes"));
+    }
+
+
+    @Test
+    public void testEnregistrerSignature_Error() throws Exception {
+        // Arrange
+        MockMultipartFile signatureFile = new MockMultipartFile("signature", "signature.png", "image/png", "test signature content".getBytes());
+
+        when(employeurService.enregistrerSignature(any(MultipartFile.class), anyString(), any(Long.class))).thenThrow(new RuntimeException());
+
+        // Act & Assert
+        mockMvc.perform(multipart("/entreprise/enregistrerSignature")
+                        .file(signatureFile)
+                        .param("contratId", "1")
+                        .param("password", "Passw0rd")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+    }
+
 }

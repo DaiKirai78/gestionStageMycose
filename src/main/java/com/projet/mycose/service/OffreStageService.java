@@ -22,7 +22,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
+import java.time.Year;
 import java.util.*;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -111,6 +113,8 @@ public class OffreStageService {
 
         FichierOffreStageDTO fichierOffreStageDTO = new FichierOffreStageDTO(uploadFicherOffreStageDTO, createur_id);
 
+        checkYear(fichierOffreStageDTO);
+
         // Si l'utilisateur est un employeur, on prend directement le champ entrepriseName de son entité
         // Sinon, s'il s'agit d'un gestionnaire de stage, on prend le champ entrepriseName du formulaire
         // Sinon, on renvoit une erreur
@@ -158,6 +162,8 @@ public class OffreStageService {
         UtilisateurDTO utilisateurDTO = utilisateurService.getMe();
         Long createur_id = utilisateurDTO.getId();
 
+        checkYear(formulaireOffreStageDTO);
+
         if (utilisateurDTO.getRole() != Role.EMPLOYEUR && utilisateurDTO.getRole() != Role.GESTIONNAIRE_STAGE) {
             throw new AccessDeniedException("Utilisateur n'est pas un employeur");
         }
@@ -188,6 +194,12 @@ public class OffreStageService {
         }
 
         return convertToDTO(savedForm);
+    }
+
+    private void checkYear(OffreStageDTO offreStageDTO) {
+        if (!getFutureYears().contains(offreStageDTO.getAnnee())) {
+            throw new IllegalArgumentException("Annee must be in the future");
+        }
     }
 
     private OffreStage associateEtudiantsPrives(OffreStage offreStage, List<Long> etudiantsPrives) {
@@ -229,6 +241,12 @@ public class OffreStageService {
         EtudiantDTO etudiantDTO = (EtudiantDTO) utilisateurService.getMe();
         return offreStageRepository.findAllByEtudiantNotApplied(etudiantDTO.getId(), etudiantDTO.getProgramme()).stream().map(this::convertToDTO).toList();
     }
+
+    public List<OffreStageDTO> getAvailableOffreStagesForEtudiantFiltered(Integer annee, OffreStage.SessionEcole session) throws AccessDeniedException {
+        EtudiantDTO etudiantDTO = (EtudiantDTO) utilisateurService.getMe();
+        return offreStageRepository.findAllByEtudiantNotAppliedFiltered(etudiantDTO.getId(), etudiantDTO.getProgramme(), annee, session).stream().map(this::convertToDTO).toList();
+    }
+
     public long getTotalWaitingOffreStages() {
         return offreStageRepository.countByStatus(OffreStage.Status.WAITING);
     }
@@ -280,5 +298,17 @@ public class OffreStageService {
         } else
             return null;
         return etudiantDTOList;
+    }
+
+    public List<String> getSessions() {
+        return new ArrayList<>(Arrays.stream(OffreStage.SessionEcole.values())
+                .map(OffreStage.SessionEcole::toString)
+                .toList());
+    }
+
+    public List<Integer> getFutureYears() {
+        return Stream.of(Year.now(), Year.now().plusYears(1), Year.now().plusYears(2), Year.now().plusYears(3), Year.now().plusYears(4))
+                .map(Year::getValue)
+                .toList();
     }
 }

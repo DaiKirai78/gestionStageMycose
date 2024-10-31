@@ -4,10 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.LocalDateTime;
+import java.time.Year;
 
 @Entity
 @Getter
@@ -24,7 +22,7 @@ public class FormulaireOffreStage extends OffreStage{
     private String salary;
     private String description;
 
-    public FormulaireOffreStage(String title, String entrepriseName, String employerName, String email, String website, String location, String salary, String description, Utilisateur createur, OffreStage.Visibility visibility, Programme programme, OffreStage.Status status) {
+    public FormulaireOffreStage(String title, String entrepriseName, String employerName, String email, String website, String location, String salary, String description, Utilisateur createur, OffreStage.Visibility visibility, Programme programme, OffreStage.Status status, SessionEcole session, Year annee) {
         super();
         this.setTitle(title);
         this.setEntrepriseName(entrepriseName);
@@ -38,5 +36,7 @@ public class FormulaireOffreStage extends OffreStage{
         this.setVisibility(visibility);
         this.setProgramme(programme);
         this.setStatus(status);
+        this.setSession(session);
+        this.setAnnee(annee);
     }
 }

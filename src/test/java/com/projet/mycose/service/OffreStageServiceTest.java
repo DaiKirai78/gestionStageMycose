@@ -100,11 +100,15 @@ public class OffreStageServiceTest {
         uploadFicherOffreStageDTO = new UploadFicherOffreStageDTO();
         uploadFicherOffreStageDTO.setFile(file);
         uploadFicherOffreStageDTO.setEntrepriseName("Sample Entreprise");
+        uploadFicherOffreStageDTO.setSession(OffreStage.SessionEcole.AUTOMNE);
+        uploadFicherOffreStageDTO.setAnnee(2024);
 
         fichierOffreStageDTO = new FichierOffreStageDTO();
         fichierOffreStageDTO.setFileData(BASE64_SAMPLE_DATA); // Base64 for "sampleData"
         fichierOffreStageDTO.setCreateur_id(1L);
         fichierOffreStageDTO.setEntrepriseName("Sample Entreprise");
+        fichierOffreStageDTO.setSession(OffreStage.SessionEcole.AUTOMNE);
+        fichierOffreStageDTO.setAnnee(2024);
 
         fichierOffreStage = new FichierOffreStage();
         fichierOffreStage.setId(1L);
@@ -113,6 +117,8 @@ public class OffreStageServiceTest {
 
         formulaireOffreStageDTO = new FormulaireOffreStageDTO();
         formulaireOffreStageDTO.setCreateur_id(1L);
+        formulaireOffreStageDTO.setSession(OffreStage.SessionEcole.AUTOMNE);
+        formulaireOffreStageDTO.setAnnee(2024);
 
         formulaireOffreStage = new FormulaireOffreStage();
         formulaireOffreStage.setId(2L);

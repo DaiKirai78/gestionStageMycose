@@ -3,12 +3,14 @@ package com.projet.mycose.repository;
 import com.projet.mycose.modele.OffreStage;
 import com.projet.mycose.modele.Programme;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,4 +48,33 @@ public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
     Page<OffreStage> findOffreStageByCreateurId(@Param("employeurId") Long employeurId, Pageable pageable);
 
     int countByCreateurId(Long employeurId);
+
+    @Query("SELECT o FROM OffreStage o " +
+            "LEFT JOIN EtudiantOffreStagePrivee eop ON o.id = eop.offreStage.id " +
+            "LEFT JOIN o.applicationStages a ON a.etudiant.id = :etudiantId " +
+            "WHERE a.id IS NULL " +
+            "AND o.annee = :annee " +
+            "AND o.session = :session " +
+            "AND (" +
+            "(o.visibility = 'PUBLIC' AND o.programme = :programme) " +
+            "OR " +
+            "(o.visibility = 'PRIVATE' AND eop.etudiant.id = :etudiantId)" +
+            ")")
+    List<OffreStage> findAllByEtudiantNotAppliedFiltered(
+            @Param("etudiantId") Long id,
+            @Param("programme") Programme programme,
+            @Param("annee") Integer annee,
+            @Param("session") OffreStage.SessionEcole session
+    );
+
+    @Query("SELECT o FROM OffreStage o " +
+            "WHERE o.createur.id = :idEmployeur " +
+            "AND o.annee = :annee " +
+            "AND o.session = :sessionEcole")
+    Page<OffreStage> findOffreStageByCreateurIdFiltered(
+            @Param("idEmployeur") Long idEmployeur,
+            @Param("annee") Integer annee,
+            @Param("sessionEcole") OffreStage.SessionEcole sessionEcole,
+            Pageable pageable
+    );
 }

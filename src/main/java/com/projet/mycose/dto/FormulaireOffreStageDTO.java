@@ -53,7 +53,7 @@ public class FormulaireOffreStageDTO extends OffreStageDTO {
 
     //Avec étudiants privées
     @Builder
-    public FormulaireOffreStageDTO(Long id, String entrepriseName, String employerName, String email, String website, String title, String location, String salary, String description, LocalDateTime createdAt, LocalDateTime updatedAt, Long createur_id, OffreStage.Status status, Programme programme, OffreStage.Visibility visibility, List<Long> etudiantsPrives) {
+    public FormulaireOffreStageDTO(Long id, String entrepriseName, String employerName, String email, String website, String title, String location, String salary, String description, LocalDateTime createdAt, LocalDateTime updatedAt, Long createur_id, OffreStage.Status status, Programme programme, OffreStage.Visibility visibility, List<Long> etudiantsPrives, OffreStage.SessionEcole session, int annee) {
         super(id);
         this.employerName = employerName;
         this.email = email;
@@ -70,10 +70,12 @@ public class FormulaireOffreStageDTO extends OffreStageDTO {
         this.setStatus(status);
         this.setEntrepriseName(entrepriseName);
         this.setTitle(title);
+        this.setSession(session);
+        this.setAnnee(annee);
     }
 
     @Builder
-    public FormulaireOffreStageDTO(Long id, String entrepriseName, String employerName, String email, String website, String title, String location, String salary, String description, LocalDateTime createdAt, LocalDateTime updatedAt, Long createur_id, OffreStage.Status status, Programme programme, OffreStage.Visibility visibility) {
+    public FormulaireOffreStageDTO(Long id, String entrepriseName, String employerName, String email, String website, String title, String location, String salary, String description, LocalDateTime createdAt, LocalDateTime updatedAt, Long createur_id, OffreStage.Status status, Programme programme, OffreStage.Visibility visibility, OffreStage.SessionEcole session, int annee) {
         super(id);
         this.employerName = employerName;
         this.email = email;
@@ -89,6 +91,8 @@ public class FormulaireOffreStageDTO extends OffreStageDTO {
         this.setStatus(status);
         this.setEntrepriseName(entrepriseName);
         this.setTitle(title);
+        this.setSession(session);
+        this.setAnnee(annee);
     }
 
     public static FormulaireOffreStageDTO toDTO(FormulaireOffreStage formulaireOffreStage) {
@@ -108,8 +112,9 @@ public class FormulaireOffreStageDTO extends OffreStageDTO {
                 formulaireOffreStage.getStatus(),
                 formulaireOffreStage.getProgramme(),
                 formulaireOffreStage.getVisibility(),
-                Collections.emptyList()
+                Collections.emptyList(),
+                formulaireOffreStage.getSession(),
+                formulaireOffreStage.getAnnee().getValue()
         );
-
     }
 }

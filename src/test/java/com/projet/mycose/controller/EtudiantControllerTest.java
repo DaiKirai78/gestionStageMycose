@@ -114,7 +114,9 @@ public class EtudiantControllerTest {
                 OffreStage.Status.WAITING,
                 Programme.TECHNIQUE_INFORMATIQUE,
                 OffreStage.Visibility.PUBLIC,
-                null
+                null,
+                OffreStage.SessionEcole.AUTOMNE,
+                2021
                 );
 
         List<OffreStageDTO> mockListeOffres = new ArrayList<>();
@@ -189,7 +191,9 @@ public class EtudiantControllerTest {
                 OffreStage.Status.WAITING,
                 Programme.TECHNIQUE_INFORMATIQUE,
                 OffreStage.Visibility.PUBLIC,
-                null
+                null,
+                OffreStage.SessionEcole.AUTOMNE,
+                2021
         );
 
         List<OffreStageDTO> mockListeOffres = new ArrayList<>();

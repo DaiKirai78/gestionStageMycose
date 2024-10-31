@@ -1,13 +1,16 @@
 package com.projet.mycose.service;
 
 import com.projet.mycose.dto.ContratDTO;
+import com.projet.mycose.dto.LoginDTO;
 import com.projet.mycose.modele.*;
+import com.projet.mycose.modele.auth.Credentials;
 import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.repository.ContratRepository;
 import com.projet.mycose.repository.EmployeurRepository;
 import com.projet.mycose.repository.OffreStageRepository;
 import com.projet.mycose.dto.EmployeurDTO;
 import com.projet.mycose.dto.OffreStageDTO;
+import com.projet.mycose.repository.UtilisateurRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,11 +20,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.time.LocalDateTime;
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -46,6 +54,11 @@ public class EmployeurServiceTest {
     @Mock
     private ContratRepository contratRepositoryMock;
 
+    @Mock
+    private UtilisateurRepository utilisateurRepository;
+
+    @Mock
+    AuthenticationManager authenticationManager;
     @InjectMocks
     private EmployeurService employeurService;
 
@@ -166,8 +179,8 @@ public class EmployeurServiceTest {
         PageRequest pageRequest = PageRequest.of(page, 10);
         Employeur createur = new Employeur(2L, "unPrenom", "unNom", "514-222-0385", "courriel@courriel.com", "123123123", "uneEntreprise");
 
-        FormulaireOffreStage mockFormulaireOffreStage = new FormulaireOffreStage("unTitreForm", "uneEntreprise", "unEmployeur", "unEmail@mail.com", "unsite.com", "uneLocalisation", "1000", "uneDescription", createur, OffreStage.Visibility.PUBLIC, null, OffreStage.Status.ACCEPTED);
-        FichierOffreStage mockFichierOffreStage = new FichierOffreStage("unTitreFichier", "uneEntreprise", "nom.pdf", "data".getBytes(), createur, OffreStage.Visibility.PUBLIC, null, OffreStage.Status.ACCEPTED);
+        FormulaireOffreStage mockFormulaireOffreStage = new FormulaireOffreStage("unTitreForm", "uneEntreprise", "unEmployeur", "unEmail@mail.com", "unsite.com", "uneLocalisation", "1000", "uneDescription", createur, OffreStage.Visibility.PUBLIC, null, OffreStage.Status.ACCEPTED, OffreStage.SessionEcole.AUTOMNE, Year.of(2021));
+        FichierOffreStage mockFichierOffreStage = new FichierOffreStage("unTitreFichier", "uneEntreprise", "nom.pdf", "data".getBytes(), createur, OffreStage.Visibility.PUBLIC, null, OffreStage.Status.ACCEPTED, OffreStage.SessionEcole.AUTOMNE, Year.of(2021));
         List<OffreStage> mockOffresListe = new ArrayList<>();
         mockOffresListe.add(mockFormulaireOffreStage);
         mockOffresListe.add(mockFichierOffreStage);
@@ -297,5 +310,136 @@ public class EmployeurServiceTest {
         verify(utilisateurService, times(1)).getMyUserId();
         verify(contratRepositoryMock, times(1)).findContratsBySignatureEmployeurIsNullAndEmployeur_Id(employeurId, pageRequest);
     }
+
+    @Test
+    public void testGetAmountOfPageContratsNonSignees_NumberEndWithZero() {
+        //Arrange
+        when(utilisateurService.getMyUserId()).thenReturn(1L);
+        when(contratRepositoryMock.countBySignatureEmployeurIsNullAndEmployeurId(1L)).thenReturn(30);
+
+        //Act
+        int nombrePages = employeurService.getAmountOfPagesOfContractNonSignees();
+
+        //Assert
+        assertEquals(nombrePages, 3);
+        verify(contratRepositoryMock, times(1)).countBySignatureEmployeurIsNullAndEmployeurId(1L);
+    }
+
+    @Test
+    public void testGetAmountOfPageContratsNonSignees_NumberNotEndWithZero() {
+        //Arrange
+        when(utilisateurService.getMyUserId()).thenReturn(1L);
+        when(contratRepositoryMock.countBySignatureEmployeurIsNullAndEmployeurId(1L)).thenReturn(43);
+
+        //Act
+        int nombrePages = employeurService.getAmountOfPagesOfContractNonSignees();
+
+        //Assert
+        assertEquals(nombrePages, 5);
+        verify(contratRepositoryMock, times(1)).countBySignatureEmployeurIsNullAndEmployeurId(1L);
+    }
+
+    @Test
+    public void testEnregistrerSignature_Success() throws Exception {
+        // Arrange
+        Long employeurId = 1L;
+        Long contratId = 1L;
+        String password = "motDePasse";
+        Employeur employeur = new Employeur();
+        employeur.setCredentials(new Credentials("unEmail@mail.com", password, Role.EMPLOYEUR));
+        Contrat contrat = new Contrat();
+        contrat.setId(contratId);
+        byte[] signatureBytes = "dummySignature".getBytes();
+        MockMultipartFile signature = new MockMultipartFile("signature", "signature.jpg", "image/jpeg", signatureBytes);
+
+        Authentication authentication = mock(Authentication.class);
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenReturn(authentication);
+        when(authentication.isAuthenticated()).thenReturn(true);
+        when(utilisateurService.getMyUserId()).thenReturn(employeurId);
+        when(utilisateurRepository.findUtilisateurById(employeurId)).thenReturn(Optional.of(employeur));
+        when(contratRepositoryMock.findById(contratId)).thenReturn(Optional.of(contrat));
+
+        // Act
+        String result = employeurService.enregistrerSignature(signature, password, contratId);
+
+        // Assert
+        assertEquals("Signature sauvegardé", result);
+        verify(contratRepositoryMock, times(1)).save(contrat);
+        assertArrayEquals(signatureBytes, contrat.getSignatureEmployeur());
+    }
+
+    @Test
+    public void testEnregistrerSignature_WrongPassword() throws Exception {
+        // Arrange
+        Long contratId = 1L;
+        String password = "motDePasse";
+        byte[] signatureBytes = "dummySignature".getBytes();
+        MockMultipartFile signature = new MockMultipartFile("signature", signatureBytes);
+
+        Employeur employeur = new Employeur();
+        employeur.setCredentials(new Credentials("unEmail@mail.com", password, Role.EMPLOYEUR));
+
+        Authentication authentication = mock(Authentication.class);
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenReturn(authentication);
+        when(authentication.isAuthenticated()).thenReturn(false);
+        when(utilisateurService.getMyUserId()).thenReturn(1L);
+        when(utilisateurRepository.findUtilisateurById(1L)).thenReturn(Optional.of(employeur));
+
+        // Act
+        String result = employeurService.enregistrerSignature(signature, password, contratId);
+
+        // Assert
+        assertEquals("Mauvais mot de passe", result);
+        verify(contratRepositoryMock, never()).save(any(Contrat.class));
+    }
+
+    @Test
+    public void testEnregistrerSignature_ContratNotFound() throws Exception {
+        // Arrange
+        Long contratId = 1L;
+        String password = "motDePasse";
+        byte[] signatureBytes = "dummySignature".getBytes();
+        MockMultipartFile signature = new MockMultipartFile("signature", signatureBytes);
+
+        Employeur employeur = new Employeur();
+        employeur.setCredentials(new Credentials("unEmail@mail.com", password, Role.EMPLOYEUR));
+
+        Authentication authentication = mock(Authentication.class);
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenReturn(authentication);
+        when(authentication.isAuthenticated()).thenReturn(true);
+        when(utilisateurService.getMyUserId()).thenReturn(1L);
+        when(utilisateurRepository.findUtilisateurById(1L)).thenReturn(Optional.of(employeur));
+        when(contratRepositoryMock.findById(contratId)).thenReturn(Optional.empty());
+
+        // Act
+        String result = employeurService.enregistrerSignature(signature, password, contratId);
+
+        // Assert
+        assertEquals("Aucun contrat trouvé", result);
+        verify(contratRepositoryMock, never()).save(any(Contrat.class));
+    }
+
+    @Test
+    public void testEnregistrerSignature_UtilisateurNotFound() throws Exception {
+        // Arrange
+        Long contratId = 1L;
+        String password = "motDePasse";
+        byte[] signatureBytes = "dummySignature".getBytes();
+        MockMultipartFile signature = new MockMultipartFile("signature", signatureBytes);
+
+        when(utilisateurService.getMyUserId()).thenReturn(1L);
+        when(utilisateurRepository.findUtilisateurById(1L)).thenReturn(Optional.empty());
+
+        // Act
+        String result = employeurService.enregistrerSignature(signature, password, contratId);
+
+        // Assert
+        assertEquals("L'utilisateur n'existe pas", result);
+        verify(contratRepositoryMock, never()).save(any(Contrat.class));
+    }
+
 
 }

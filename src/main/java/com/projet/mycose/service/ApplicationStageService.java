@@ -128,7 +128,7 @@ public class ApplicationStageService {
         ApplicationStage applicationStage = applicationStageRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Application not found"));
 
-        if (applicationStage.getStatus() == ApplicationStage.ApplicationStatus.ACCEPTED || applicationStage.getStatus() == ApplicationStage.ApplicationStatus.REJECTED)
+        if (applicationStage.getStatus() != ApplicationStage.ApplicationStatus.PENDING && applicationStage.getStatus() != ApplicationStage.ApplicationStatus.SUMMONED)
             throw new ResponseStatusException(HttpStatus.CONFLICT, "La candidature a déjà été acceptée ou refusée et ne peut pas être modifiée.");
 
         ApplicationStageAvecInfosDTO applicationStageAvecInfosDTO = convertToDTOAvecInfos(applicationStage);
