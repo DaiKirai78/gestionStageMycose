@@ -46,6 +46,7 @@ public class Convocation {
         this.location = summonEtudiantDTO.getLocation();
         this.messageConvocation = summonEtudiantDTO.getMessageConvocation();
         this.status = ConvocationStatus.PENDING;
+        this.messageEtudiant = "";
     }
 
     public enum ConvocationStatus {
