@@ -138,6 +138,7 @@ const InfoDetailleeOffreStage = ({ setActiveOffer, activeOffer, getColorOffreSta
         setIsFetchingStatus(true);
 
         try {
+            console.log(summonDetails);
             const response = await axios.patch(`http://localhost:8080/api/application-stage/summon/${studentInfo.id}`, summonDetails, {
                 headers: {
                     Authorization: `Bearer ${token}`,

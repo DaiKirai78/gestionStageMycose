@@ -1,16 +1,17 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import ModalConvocation from "./ModalConvocation";
 
 function ListeConvocations() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedOffer, setSelectedOffer] = useState(null);
     const [isRefusalModalOpen, setIsRefusalModalOpen] = useState(false);
-    const [refusalMessage, setRefusalMessage] = useState("");
+    const [isAcceptanceModalOpen, setIsAcceptanceModalOpen] = useState(false);
+    const [responseMessage, setResponseMessage] = useState("");
     const [convocations, setConvocations] = useState([]);
 
     useEffect(() => {
         const token = localStorage.getItem("token");
-        fetch(`/api/application-stage/my-applications/status/SUMMONED`, {
+        fetch(`http://localhost:8080/api/application-stage/my-applications/status/SUMMONED`, {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
@@ -34,16 +35,49 @@ function ListeConvocations() {
     const openRefusalModal = (offer) => {
         setSelectedOffer(offer);
         setIsRefusalModalOpen(true);
+        setResponseMessage("");
     };
 
-    const closeRefusalModal = () => {
+    const openAcceptanceModal = (offer) => {
+        setSelectedOffer(offer);
+        setIsAcceptanceModalOpen(true);
+        setResponseMessage("");
+    };
+
+    const closeResponseModal = () => {
         setIsRefusalModalOpen(false);
-        setRefusalMessage("");
+        setIsAcceptanceModalOpen(false);
+        setResponseMessage("");
     };
 
-    const handleRefusalSubmit = () => {
-        console.log(`Message de refus pour ${selectedOffer.title}:`, refusalMessage);
-        closeRefusalModal();
+    const handleResponseSubmit = () => {
+        const token = localStorage.getItem("token");
+        const status = isAcceptanceModalOpen ? "ACCEPTED" : "REJECTED";
+        const requestBody = {
+            messageEtudiant: responseMessage,
+            status: status
+        };
+
+        fetch(`http://localhost:8080/api/application-stage/answer-summon/${selectedOffer.id}`, {
+            method: "PATCH",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(requestBody),
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erreur lors de la mise à jour de la convocation');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Réponse du serveur:", data);
+                setConvocations(prevConvocations => prevConvocations.filter(convocation => convocation.id !== selectedOffer.id));
+                closeResponseModal();
+            })
+            .catch(error => console.error("Erreur:", error));
     };
 
     return (
@@ -65,7 +99,12 @@ function ListeConvocations() {
                                     >
                                         Infos
                                     </button>
-                                    <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">Accepter</button>
+                                    <button
+                                        onClick={() => openAcceptanceModal(convocation)}
+                                        className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                                    >
+                                        Accepter
+                                    </button>
                                     <button
                                         onClick={() => openRefusalModal(convocation)}
                                         className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
@@ -75,44 +114,60 @@ function ListeConvocations() {
                                 </div>
                             </div>
                             <p className="text-gray-600 mt-4">Lieu : {convocation.locationConvocation}</p>
-                            <p className="text-gray-600">Heure : {convocation.summonedAt}</p>
+                            <p className="text-gray-600">
+                                Date et heure : {new Date(convocation.scheduledAt).toLocaleString('fr-FR', {
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: false
+                            })}
+                            </p>
+                            <p className="text-gray-600">Message : {convocation.messageConvocation}</p>
                         </li>
                     ))}
                 </ul>
 
                 <ModalConvocation isOpen={isModalOpen} onClose={closeModal} offerDetails={selectedOffer} />
 
-                {/* Modale de refus */}
-                {isRefusalModalOpen && (
+                {/* Modale d'acceptation ou de refus */}
+                {(isRefusalModalOpen || isAcceptanceModalOpen) && (
                     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                         <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
                             <button
-                                onClick={closeRefusalModal}
+                                onClick={closeResponseModal}
                                 className="text-xl absolute top-3 right-4 text-gray-500 hover:text-gray-800"
                             >
                                 ×
                             </button>
-                            <h2 className="text-2xl font-bold mb-4">Refuser l'Offre de stage</h2>
+                            <h2 className="text-2xl font-bold mb-4">
+                                {isAcceptanceModalOpen ? "Accepter l'Offre de stage" : "Refuser l'Offre de stage"}
+                            </h2>
                             <p className="mb-4">
-                                Vous pouvez saisir un message concernant le refus de l'offre:{" "}
-                                <strong>{selectedOffer?.jobTitle}</strong>
+                                {isAcceptanceModalOpen
+                                    ? "Vous pouvez saisir un message concernant l'acceptation de l'offre suivante : "
+                                    : "Vous pouvez saisir un message concernant le refus de l'offre suivante : "}
+                                <strong>{selectedOffer?.title}</strong>
                             </p>
                             <textarea
                                 className="w-full p-2 border border-gray-300 rounded"
                                 rows="4"
-                                placeholder="Raison du refus"
-                                value={refusalMessage}
-                                onChange={(e) => setRefusalMessage(e.target.value)}
+                                placeholder={isAcceptanceModalOpen ? "Message d'acceptation" : "Raison du refus"}
+                                value={responseMessage}
+                                onChange={(e) => setResponseMessage(e.target.value)}
                             ></textarea>
                             <div className="flex justify-end mt-4 space-x-2">
                                 <button
-                                    onClick={handleRefusalSubmit}
-                                    className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                                    onClick={() => handleResponseSubmit(isAcceptanceModalOpen ? "Acceptation" : "Refus")}
+                                    className={`px-4 py-2 ${isAcceptanceModalOpen ? "bg-green-500" : "bg-red-500"} text-white rounded hover:${
+                                        isAcceptanceModalOpen ? "bg-green-600" : "bg-red-600"
+                                    }`}
                                 >
                                     Soumettre
                                 </button>
                                 <button
-                                    onClick={closeRefusalModal}
+                                    onClick={closeResponseModal}
                                     className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
                                 >
                                     Annuler

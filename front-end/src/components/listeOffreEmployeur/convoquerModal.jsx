@@ -10,9 +10,8 @@ function ConvoquerModal({ isOpen, onClose, onSummon }) {
     const [messageConvocation, setMessageConvocation] = useState('');
 
     const handleSummon = () => {
-        const scheduledAt = new Date(`${date}T${time}`).toISOString();
+        const scheduledAt = (`${date}T${time}`);
         const summonDetails = { scheduledAt, location, messageConvocation };
-        console.log("Summon Details:", summonDetails); // Vérifiez ici les valeurs
         onSummon(summonDetails);
         onClose();
     };
