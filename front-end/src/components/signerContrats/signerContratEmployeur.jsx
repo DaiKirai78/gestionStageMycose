@@ -9,10 +9,83 @@ const SignerContratEmployeur = ({ setSelectedContract }) => {
     const [pages, setPages] = useState({minPages: 1, maxPages: null, currentPage: 1});
     const { t } = useTranslation();
     const [contrats, setContrats] = useState([]);
+    const [nomPrenom, setNomPrenom] = useState([]);
     const [isFetching, setIsFetching] = useState(true);
+
+    useEffect(() => {
+        fetchPages()
+    }, [])
+
     useEffect(() => {
         fetchContrats();
     }, [pages.currentPage])
+    
+    useEffect(() => {
+        fetchPrenomNomEtudiants();
+    }, [contrats])
+
+    async function fetchPages() {
+        const token = localStorage.getItem("token");
+
+        try {
+            const response = await fetch('http://localhost:8080/entreprise/pagesContrats', {
+                method: 'GET',
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const data = await response.text();
+
+            if (!data) {
+                throw new Error('No data');
+            }            
+
+            setPages(prevPages => ({
+                ...prevPages,
+                maxPages: data
+            }));
+        } catch (e) {
+            console.log("Une erreur est survenue " + e);
+        }
+    }
+
+    async function fetchPrenomNomEtudiants() {
+        const token = localStorage.getItem("token");
+        
+        const listNomEtudiant= [];
+
+        for (const contrat of contrats) {
+            try {
+                const response = await fetch(`http://localhost:8080/utilisateur/getPrenomNomEtudiant?id=${contrat.etudiantId}`, {
+                    method: 'GET',
+                    headers: {Authorization: `Bearer ${token}`}
+                });
+    
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+    
+                const data = await response.text();
+    
+                if (!data) {
+                    throw new Error('No data');
+                }                
+
+                listNomEtudiant.push({
+                    id: contrat.id,
+                    nom: data
+                })
+            } catch (e) {
+                console.log("Une erreur est survenue " + e);
+            }
+        }
+
+        setNomPrenom(listNomEtudiant);
+        setIsFetching(false);
+    }
 
     async function fetchContrats() {
         const token = localStorage.getItem("token");
@@ -31,14 +104,17 @@ const SignerContratEmployeur = ({ setSelectedContract }) => {
 
             if (!data) {
                 throw new Error('No data');
-            }            
-            
+            }
+
             setContrats(JSON.parse(data));
         } catch (e) {
             console.log("Une erreur est survenue " + e);
-        } finally {
-            setIsFetching(false);
         }
+    }
+
+    function getNomEtudiant(contrat) {
+        const etudiant = nomPrenom.find(nom => nom.id === contrat.id);
+        return etudiant ? etudiant.nom : '';
     }
 
     if (isFetching)
@@ -57,8 +133,9 @@ const SignerContratEmployeur = ({ setSelectedContract }) => {
                     <>
                         {
                             contrats.map((contrat, index) => 
-                                <SignerContratCard 
-                                    contrat={contrat} 
+                                <SignerContratCard
+                                    contrat={contrat}
+                                    nomPrenom={getNomEtudiant(contrat)}
                                     index={index} 
                                     setSelectedContract={setSelectedContract}
                                     key={"contrat" + index} />

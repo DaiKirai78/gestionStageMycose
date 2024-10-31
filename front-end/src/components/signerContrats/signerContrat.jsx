@@ -33,7 +33,7 @@ const SignerContrat = ({ selectedContract }) => {
     return (
         selectedContract ?
         <div className='w-full h-full bg-orange-light flex flex-col items-center p-8'>
-            <h1 className='text-3xl md:text-4xl font-bold text-center mb-5'>{t("signContractOf")} {selectedContract.etudiantNom}</h1>
+            <h1 className='text-3xl md:text-4xl font-bold text-center mb-5'>{t("signContractOf")} {selectedContract.nomPrenom}</h1>
             <h1 className='mb-2'>{t("signature")} :</h1>
             <SignerContratCanvas canvasRef={canvasRef}/>
             <button
