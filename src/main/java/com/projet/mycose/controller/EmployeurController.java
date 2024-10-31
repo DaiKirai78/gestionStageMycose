@@ -61,7 +61,7 @@ public class EmployeurController {
     }
 
     @PostMapping("/enregistrerSignature")
-    public ResponseEntity<String> enregistrerSignature(@RequestParam MultipartFile signature, LoginDTO loginDTO, Long contratId) {
+    public ResponseEntity<String> enregistrerSignature(@RequestParam MultipartFile signature, @RequestBody LoginDTO loginDTO, @RequestParam Long contratId) {
         try {
             return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
                     employeurService.enregistrerSignature(signature, loginDTO, contratId));
