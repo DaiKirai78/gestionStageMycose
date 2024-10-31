@@ -230,5 +230,6 @@
     "signContract": "Sign contract",
     "signContractOf": "Signing the contract of",
     "signature": "Signature",
-    "envoyerSignature": "Send signature"
+    "envoyerSignature": "Send signature",
+    "erreurNoSignature": "No signature written"
 }
