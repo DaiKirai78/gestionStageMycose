@@ -142,7 +142,7 @@ const SignerContratEmployeur = ({ setSelectedContract }) => {
                             )
                         }
 
-                        <BoutonAvancerReculer pages={pages} setPages={setPages} />
+                        <BoutonAvancerReculer pages={pages} setPages={setPages} margins={"my-4"} />
                     </>
                 ) :
                 <p>{t("noContratToSign")}</p>

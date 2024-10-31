@@ -1,7 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-const BoutonAvancerReculer = ({ pages, setPages }) => {
+const BoutonAvancerReculer = ({ pages, setPages, margins: marginsClass }) => {
     const { t } = useTranslation();
 
     function pagesUp(amount = 1) {
@@ -27,7 +27,7 @@ const BoutonAvancerReculer = ({ pages, setPages }) => {
     const nextButtonClass = pages.currentPage >= pages.maxPages ? "bg-gray-200 text-gray-700" : "bg-gray-400 text-gray-900";
 
     return (
-        <div className="flex justify-center mb-28 mt-4">
+        <div className={`flex justify-center ${marginsClass ? marginsClass : "mb-28 mt-4"}`}>
             {/* Previous Page Button */}
             <button
                 className={`px-4 py-2 rounded-l ${previousButtonClass}`}
