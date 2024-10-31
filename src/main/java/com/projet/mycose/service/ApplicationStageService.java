@@ -1,5 +1,7 @@
 package com.projet.mycose.service;
 
+import com.projet.mycose.dto.EtudiantDTO;
+import com.projet.mycose.dto.OffreStageDTO;
 import com.projet.mycose.dto.*;
 import com.projet.mycose.modele.*;
 import com.projet.mycose.repository.ApplicationStageRepository;
@@ -95,6 +97,13 @@ public class ApplicationStageService {
         return applicationStageRepository.findByEtudiantIdAndStatusEquals(etudiantId, status).stream().map(this::convertToDTOAvecInfos).toList();
     }
 
+    public List<ApplicationStageAvecInfosDTO> getApplicationsWithStatus(ApplicationStage.ApplicationStatus status) {
+        return applicationStageRepository.findByStatusAndContractStatus(status, Etudiant.ContractStatus.PENDING)
+                .stream()
+                .map(this::convertToDTOAvecInfos)
+                .toList();
+    }
+
     public ApplicationStageAvecInfosDTO getApplicationById(Long applicationId) {
         Long etudiantId = utilisateurService.getMyUserId();
         return applicationStageRepository.findByEtudiantIdAndOffreStageId(etudiantId, applicationId)
@@ -135,9 +144,9 @@ public class ApplicationStageService {
     }
 
     protected ApplicationStage mettreAJourApplication(ApplicationStageAvecInfosDTO applicationStageAvecInfosDTO,
-                                            Etudiant etudiant,
-                                            OffreStage offreStage,
-                                            ApplicationStage.ApplicationStatus status) {
+                                                      Etudiant etudiant,
+                                                      OffreStage offreStage,
+                                                      ApplicationStage.ApplicationStatus status) {
         ApplicationStage applicationStage = new ApplicationStage();
         applicationStage.setId(applicationStageAvecInfosDTO.getId());
         applicationStage.setOffreStage(offreStage);
@@ -151,7 +160,7 @@ public class ApplicationStageService {
         if (utilisateurService.getEtudiantDTO(etudiantId) == null)
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "L'étudiant avec l'ID " + etudiantId + " est innexistant");
 
-        Etudiant etudiant = EtudiantDTO.toEntity(utilisateurService.getEtudiantDTO(etudiantId));
+        Etudiant etudiant = etudiantRepository.findEtudiantById(etudiantId);
 
         if (etudiant.getContractStatus() == Etudiant.ContractStatus.NO_CONTRACT) {
             etudiant.setContractStatus(Etudiant.ContractStatus.PENDING);
@@ -206,5 +215,17 @@ public class ApplicationStageService {
         applicationStage.getConvocation().setMessageEtudiant(answer.getMessageEtudiant());
         applicationStage.getConvocation().setStatus(answer.getStatus());
         return convertToDTOAvecInfos(applicationStageRepository.save(applicationStage));
+    }
+
+    public EtudiantDTO getEtudiantFromApplicationId(Long applicationId) {
+        ApplicationStage application = applicationStageRepository.findById(applicationId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Application non trouvée"));
+        return EtudiantDTO.toDTO(application.getEtudiant());
+    }
+
+    public OffreStageDTO getOffreStageFromApplicationId(Long applicationId) {
+        ApplicationStage application = applicationStageRepository.findById(applicationId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Application non trouvée"));
+        return OffreStageDTO.toOffreStageInstaceDTO(application.getOffreStage());
     }
 }

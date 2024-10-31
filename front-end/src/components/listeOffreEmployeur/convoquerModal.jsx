@@ -10,9 +10,8 @@ function ConvoquerModal({ isOpen, onClose, onSummon }) {
     const [messageConvocation, setMessageConvocation] = useState('');
 
     const handleSummon = () => {
-        const scheduledAt = new Date(`${date}T${time}`).toISOString();
+        const scheduledAt = (`${date}T${time}`);
         const summonDetails = { scheduledAt, location, messageConvocation };
-        console.log("Summon Details:", summonDetails); // Vérifiez ici les valeurs
         onSummon(summonDetails);
         onClose();
     };
@@ -44,7 +43,7 @@ function ConvoquerModal({ isOpen, onClose, onSummon }) {
                         />
                     </div>
                     <div className="mb-4">
-                        <label className="block text-sm font-medium mb-1">{t("location")}</label>
+                        <label className="block text-sm font-medium mb-1">{t("summonLocation")}</label>
                         <input
                             type="text"
                             value={location}

@@ -93,9 +93,6 @@ public class GestionnaireStageService {
             } else {
                 throw new RuntimeException();
             }
-
         }
-
     }
-
 }

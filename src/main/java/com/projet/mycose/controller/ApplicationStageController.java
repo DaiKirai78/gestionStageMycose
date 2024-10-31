@@ -1,14 +1,12 @@
 package com.projet.mycose.controller;
 
+import com.projet.mycose.dto.EtudiantDTO;
+import com.projet.mycose.dto.OffreStageDTO;
 import com.projet.mycose.dto.*;
 import com.projet.mycose.modele.ApplicationStage;
-import com.projet.mycose.modele.Etudiant;
-import com.projet.mycose.security.exception.AuthenticationException;
 import com.projet.mycose.service.ApplicationStageService;
-import com.projet.mycose.service.EtudiantService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +19,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ApplicationStageController {
     private final ApplicationStageService applicationStageService;
-    private final EtudiantService etudiantService;
 
     @PostMapping("/apply")
     public ResponseEntity<ApplicationStageDTO> applyForStage(@RequestParam Long id) throws AccessDeniedException {
@@ -39,15 +36,25 @@ public class ApplicationStageController {
         return new ResponseEntity<>(applicationStageService.getApplicationsByEtudiantWithStatus(status), HttpStatus.OK);
     }
 
+    @GetMapping("/status/{status}")
+    public ResponseEntity<List<ApplicationStageAvecInfosDTO>> getApplicationsWithStatus(@PathVariable("status") ApplicationStage.ApplicationStatus status) {
+        return new ResponseEntity<>(applicationStageService.getApplicationsWithStatus(status), HttpStatus.OK);
+    }
+
     @GetMapping("/my-applications/{id}")
     public ResponseEntity<ApplicationStageAvecInfosDTO> getMyApplication(@PathVariable Long id) {
         return new ResponseEntity<>(applicationStageService.getApplicationById(id), HttpStatus.OK);
     }
 
-    @GetMapping("/get/{id}")
+    @GetMapping("/get/etudiant/{id}")
     public ResponseEntity
-            <List<ApplicationStageAvecInfosDTO>> getApplication(@PathVariable Long id) {
-        return new ResponseEntity<>(applicationStageService.getApplicationsByEtudiant(id), HttpStatus.OK);
+            <List<ApplicationStageAvecInfosDTO>> getApplicationsByEtudiantId(@PathVariable Long id) {
+        try {
+            return new ResponseEntity<>(applicationStageService.getApplicationsByEtudiant(id), HttpStatus.OK);
+        } catch (Exception e) {
+            System.err.println("Une erreur est survenue lors de la tentative de récupération des applications d'un étudiant :" + e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PatchMapping("/application/{id}/accepter")
@@ -56,7 +63,7 @@ public class ApplicationStageController {
             applicationStageService.accepterOuRefuserApplication(id, ApplicationStage.ApplicationStatus.ACCEPTED);
             return ResponseEntity.ok().body("Application acceptée");
         } catch (Exception e) {
-            System.err.println("Une erreur est survenue lors de la tentative de récupération des étudiants qui ont appliqués à une offre: " + e.getMessage());
+            System.err.println("Une erreur est survenue lors de la tentative d'acceptation d'une candidature à une offre : " + e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -67,7 +74,7 @@ public class ApplicationStageController {
             applicationStageService.accepterOuRefuserApplication(id, ApplicationStage.ApplicationStatus.REJECTED);
             return ResponseEntity.ok().body("Application refusée");
         } catch (Exception e) {
-            System.err.println("Une erreur est survenue lors de la tentative de récupération des étudiants qui ont appliqués à une offre: " + e.getMessage());
+            System.err.println("Une erreur est survenue lors de la tentative de refus d'une candidature à une offre : " + e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -80,5 +87,17 @@ public class ApplicationStageController {
     @PatchMapping("/answer-summon/{id}")
     public ResponseEntity<ApplicationStageAvecInfosDTO> answerSummon(@PathVariable Long id, @Valid @RequestBody AnswerSummonDTO answer) {
         return new ResponseEntity<>(applicationStageService.answerSummon(id, answer), HttpStatus.OK);
+    }
+
+    @GetMapping("/getEtudiant/{applicationId}")
+    public ResponseEntity<EtudiantDTO> getEtudiantFromApplication(@PathVariable Long applicationId) {
+        EtudiantDTO etudiantDTO = applicationStageService.getEtudiantFromApplicationId(applicationId);
+        return ResponseEntity.ok(etudiantDTO);
+    }
+
+    @GetMapping("/getOffreStage/{applicationId}")
+    public ResponseEntity<OffreStageDTO> getOffreStageFromApplication(@PathVariable Long applicationId) {
+        OffreStageDTO offreStageDTO = applicationStageService.getOffreStageFromApplicationId(applicationId);
+        return ResponseEntity.ok(offreStageDTO);
     }
 }

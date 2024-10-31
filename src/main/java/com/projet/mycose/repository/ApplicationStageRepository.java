@@ -22,7 +22,12 @@ public interface ApplicationStageRepository extends JpaRepository<ApplicationSta
     Optional<ApplicationStage> findByEtudiantIdAndOffreStageId(Long etudiantId, Long offreStageId);
 
     List<ApplicationStage> findByEtudiantIdAndStatusEquals(Long etudiantId, ApplicationStage.ApplicationStatus status);
-    List<ApplicationStage> findAllByOffreStageIdAndStatusEquals(Long offreStageId, ApplicationStage.ApplicationStatus status);
+    @Query("SELECT a FROM ApplicationStage a JOIN Etudiant e ON a.etudiant.id = e.id " +
+            "WHERE a.status = :status AND e.contractStatus = :contractStatus")
+    List<ApplicationStage> findByStatusAndContractStatus(
+            @Param("status") ApplicationStage.ApplicationStatus status,
+            @Param("contractStatus") Etudiant.ContractStatus contractStatus
+    );
 
     ApplicationStage findFirstById(Long applicationID);
     List<ApplicationStage> findAllByOffreStageIdAndStatusIn(Long offreId, List<ApplicationStage.ApplicationStatus> statuses);

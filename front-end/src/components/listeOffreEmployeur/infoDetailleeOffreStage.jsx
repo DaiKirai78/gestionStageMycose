@@ -101,7 +101,7 @@ const InfoDetailleeOffreStage = ({ setActiveOffer, activeOffer, getColorOffreSta
 
     }
 
-    useEffect(() => {        
+    useEffect(() => {
         // Fonction pour vérifier si l'étudiant est convoqué
         //checkSummonStatus();
 
@@ -114,15 +114,15 @@ const InfoDetailleeOffreStage = ({ setActiveOffer, activeOffer, getColorOffreSta
     async function checkSummonStatus() {
         const token = localStorage.getItem("token");
 
-        try {
-            const response = await axios.get(`http://localhost:8080/api/application-stage/get/${selectedEtudiant.id}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            try {
+                const response = await axios.get(`http://localhost:8080/api/application-stage/get/etudiant/${selectedEtudiant.id}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
 
             if (response.status === 200) {
                 const applications = response.data;
                 console.log("applications", applications);
-                                
+
                 // On vérifie l'application avec le bon etudiantId et l'offreStageId
                 const studentApplication = applications.find(app => app.etudiant_id === selectedEtudiant.id && app.offreStage_id === activeOffer.id);
                 setStudentInfo(studentApplication);
@@ -138,6 +138,7 @@ const InfoDetailleeOffreStage = ({ setActiveOffer, activeOffer, getColorOffreSta
         setIsFetchingStatus(true);
 
         try {
+            console.log(summonDetails);
             const response = await axios.patch(`http://localhost:8080/api/application-stage/summon/${studentInfo.id}`, summonDetails, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -213,12 +214,12 @@ const InfoDetailleeOffreStage = ({ setActiveOffer, activeOffer, getColorOffreSta
     function getEtudiantInfoStatus(etudiant) {
         //etudiantInfosApplication = await checkSummonStatus();
         setSelectedEtudiant(etudiant)
-        
+
         //console.log(etudiantInfosApplication);
         console.log(studentInfo);
         if(studentInfo)
             return studentInfo.status
-        else 
+        else
             return "Chargement"
     }
 
