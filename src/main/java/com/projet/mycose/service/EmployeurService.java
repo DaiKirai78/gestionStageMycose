@@ -46,39 +46,6 @@ public class EmployeurService {
             return null;
     }
 
-    private List<OffreStageDTO> listeOffreStageToDTO(List<OffreStage> listeAMapper) {
-        System.out.println(listeAMapper);
-        List<OffreStageDTO> listeMappee = new ArrayList<>();
-        for(OffreStage offreStage : listeAMapper) {
-            listeMappee.add(OffreStageDTO.toOffreStageInstaceDTOAll(offreStage));
-        }
-        return listeMappee;
-    }
-
-    public List<OffreStageDTO> getStages(int page) {
-        Long idEmployeur = utilisateurService.getMyUserId();
-        PageRequest pageRequest = PageRequest.of(page, LIMIT_PER_PAGE);
-
-        Page<OffreStage> offresRetourneesEnPages = offreStageRepository.findOffreStageByCreateurId(idEmployeur, pageRequest);
-        if(offresRetourneesEnPages.isEmpty()) {
-            return null;
-        }
-
-        return listeOffreStageToDTO(offresRetourneesEnPages.getContent());
-    }
-
-    public List<OffreStageDTO> getStagesFiltered(int page, Integer annee, OffreStage.SessionEcole session) {
-        Long idEmployeur = utilisateurService.getMyUserId();
-        PageRequest pageRequest = PageRequest.of(page, LIMIT_PER_PAGE);
-
-        Page<OffreStage> offresRetourneesEnPages = offreStageRepository.findOffreStageByCreateurIdFiltered(idEmployeur, annee, session, pageRequest);
-        if(offresRetourneesEnPages.isEmpty()) {
-            return null;
-        }
-
-        return listeOffreStageToDTO(offresRetourneesEnPages.getContent());
-    }
-
     public List<ContratDTO> getAllContratsNonSignes(int page) {
         Long employeurId = utilisateurService.getMyUserId();
         PageRequest pageRequest = PageRequest.of(page, LIMIT_PER_PAGE);

@@ -9,6 +9,7 @@ import com.projet.mycose.service.OffreStageService;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -135,5 +136,27 @@ public class OffreStageController {
             @RequestParam OffreStage.SessionEcole sessionEcole) throws AccessDeniedException {
         List<OffreStageDTO> offreStageDTOList = offreStageService.getAvailableOffreStagesForEtudiantFiltered(year, sessionEcole);
         return ResponseEntity.status(HttpStatus.OK).body(offreStageDTOList);
+    }
+
+
+
+    @PostMapping("/getOffresPosted")
+    public ResponseEntity<List<OffreStageDTO>> getOffresStagesPubliees(@RequestParam int pageNumber) {
+        try {
+            return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
+                    offreStageService.getStages(pageNumber));
+        } catch (Exception e) {
+            return ResponseEntity.noContent().build();
+        }
+    }
+
+    @GetMapping("/getOffresPosted")
+    public ResponseEntity<List<OffreStageDTO>> getOffresStagesPublieesFiltre(@RequestParam int pageNumber, @RequestParam Integer annee, @RequestParam OffreStage.SessionEcole session) {
+        try {
+            return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
+                    offreStageService.getStagesFiltered(pageNumber, annee, session));
+        } catch (Exception e) {
+            return ResponseEntity.noContent().build();
+        }
     }
 }
