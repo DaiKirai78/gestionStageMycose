@@ -3,12 +3,14 @@ package com.projet.mycose.service;
 import com.projet.mycose.dto.ContratDTO;
 import com.projet.mycose.dto.LoginDTO;
 import com.projet.mycose.modele.*;
+import com.projet.mycose.modele.auth.Credentials;
 import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.repository.ContratRepository;
 import com.projet.mycose.repository.EmployeurRepository;
 import com.projet.mycose.repository.OffreStageRepository;
 import com.projet.mycose.dto.EmployeurDTO;
 import com.projet.mycose.dto.OffreStageDTO;
+import com.projet.mycose.repository.UtilisateurRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -52,6 +54,9 @@ public class EmployeurServiceTest {
 
     @Mock
     private ContratRepository contratRepositoryMock;
+
+    @Mock
+    private UtilisateurRepository utilisateurRepository;
 
     @Mock
     AuthenticationManager authenticationManager;
@@ -340,9 +345,11 @@ public class EmployeurServiceTest {
         // Arrange
         Long employeurId = 1L;
         Long contratId = 1L;
-        LoginDTO loginDTO = new LoginDTO("courriel@courriel.com", "motDePasse");
+        String password = "motDePasse";
+        Employeur employeur = new Employeur();
+        employeur.setCredentials(new Credentials("unEmail@mail.com", password, Role.EMPLOYEUR));
         Contrat contrat = new Contrat();
-        contrat.setId(1L);
+        contrat.setId(contratId);
         byte[] signatureBytes = "dummySignature".getBytes();
         MockMultipartFile signature = new MockMultipartFile("signature", "signature.jpg", "image/jpeg", signatureBytes);
 
@@ -351,10 +358,11 @@ public class EmployeurServiceTest {
                 .thenReturn(authentication);
         when(authentication.isAuthenticated()).thenReturn(true);
         when(utilisateurService.getMyUserId()).thenReturn(employeurId);
+        when(utilisateurRepository.findUtilisateurById(employeurId)).thenReturn(Optional.of(employeur));
         when(contratRepositoryMock.findById(contratId)).thenReturn(Optional.of(contrat));
 
         // Act
-        String result = employeurService.enregistrerSignature(signature, loginDTO, contratId);
+        String result = employeurService.enregistrerSignature(signature, password, contratId);
 
         // Assert
         assertEquals("Signature sauvegardé", result);
@@ -362,24 +370,26 @@ public class EmployeurServiceTest {
         assertArrayEquals(signatureBytes, contrat.getSignatureEmployeur());
     }
 
-
     @Test
     public void testEnregistrerSignature_WrongPassword() throws Exception {
         // Arrange
         Long contratId = 1L;
-        LoginDTO loginDTO = new LoginDTO("courriel@courriel.com", "motDePasse");
-        Contrat contrat = new Contrat();
-        contrat.setId(1L);
+        String password = "motDePasse";
         byte[] signatureBytes = "dummySignature".getBytes();
         MockMultipartFile signature = new MockMultipartFile("signature", signatureBytes);
+
+        Employeur employeur = new Employeur();
+        employeur.setCredentials(new Credentials("unEmail@mail.com", password, Role.EMPLOYEUR));
 
         Authentication authentication = mock(Authentication.class);
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenReturn(authentication);
         when(authentication.isAuthenticated()).thenReturn(false);
+        when(utilisateurService.getMyUserId()).thenReturn(1L);
+        when(utilisateurRepository.findUtilisateurById(1L)).thenReturn(Optional.of(employeur));
 
         // Act
-        String result = employeurService.enregistrerSignature(signature, loginDTO, contratId);
+        String result = employeurService.enregistrerSignature(signature, password, contratId);
 
         // Assert
         assertEquals("Mauvais mot de passe", result);
@@ -390,25 +400,47 @@ public class EmployeurServiceTest {
     public void testEnregistrerSignature_ContratNotFound() throws Exception {
         // Arrange
         Long contratId = 1L;
-        LoginDTO loginDTO = new LoginDTO("courriel@courriel.com", "motDePasse");
-        Contrat contrat = new Contrat();
-        contrat.setId(1L);
+        String password = "motDePasse";
         byte[] signatureBytes = "dummySignature".getBytes();
         MockMultipartFile signature = new MockMultipartFile("signature", signatureBytes);
+
+        Employeur employeur = new Employeur();
+        employeur.setCredentials(new Credentials("unEmail@mail.com", password, Role.EMPLOYEUR));
 
         Authentication authentication = mock(Authentication.class);
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenReturn(authentication);
         when(authentication.isAuthenticated()).thenReturn(true);
         when(utilisateurService.getMyUserId()).thenReturn(1L);
+        when(utilisateurRepository.findUtilisateurById(1L)).thenReturn(Optional.of(employeur));
         when(contratRepositoryMock.findById(contratId)).thenReturn(Optional.empty());
 
         // Act
-        String result = employeurService.enregistrerSignature(signature, loginDTO, contratId);
+        String result = employeurService.enregistrerSignature(signature, password, contratId);
 
         // Assert
         assertEquals("Aucun contrat trouvé", result);
         verify(contratRepositoryMock, never()).save(any(Contrat.class));
     }
+
+    @Test
+    public void testEnregistrerSignature_UtilisateurNotFound() throws Exception {
+        // Arrange
+        Long contratId = 1L;
+        String password = "motDePasse";
+        byte[] signatureBytes = "dummySignature".getBytes();
+        MockMultipartFile signature = new MockMultipartFile("signature", signatureBytes);
+
+        when(utilisateurService.getMyUserId()).thenReturn(1L);
+        when(utilisateurRepository.findUtilisateurById(1L)).thenReturn(Optional.empty());
+
+        // Act
+        String result = employeurService.enregistrerSignature(signature, password, contratId);
+
+        // Assert
+        assertEquals("L'utilisateur n'existe pas", result);
+        verify(contratRepositoryMock, never()).save(any(Contrat.class));
+    }
+
 
 }
