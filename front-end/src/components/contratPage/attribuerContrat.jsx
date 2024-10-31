@@ -7,7 +7,7 @@ import axios from "axios";
 import LoadingSpinner from "../loadingSpinner.jsx";
 import {useNavigate} from "react-router-dom";
 
-const AttribuerContrat = ({etudiant}) => {
+const AttribuerContrat = () => {
     const {t} = useTranslation();
 
     const [file, setFile] = useState(null);
@@ -15,15 +15,90 @@ const AttribuerContrat = ({etudiant}) => {
     const [successMessage, setSuccessMessage] = useState("");
     const [uploadError, setUploadError] = useState("");
     const [loading, setLoading] = useState(true);
-    const navigate = useNavigate();
+    const [applications, setApplications] = useState([]);
+    const [etudiant, setEtudiant] = useState(null);
+    const [offresStage, setOffreStage] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
 
     const localhost = "http://localhost:8080/";
+    const apiUrlGetEtudiantFromApplicationId = "api/application-stage/getEtudiant/";
+    const apiUrlGetOffreStageFromApplicationId = "api/application-stage/getOffreStage/";
+    const apiUrlGetApplicationsAccepted = "api/application-stage/status/ACCEPTED";
     const apiUrlUploadContract = "contrat/upload"
     const token = localStorage.getItem("token");
 
     useEffect(() => {
         isLoading();
+        fetchApplicationsAccepted();
     }, []);
+
+    const fetchApplicationsAccepted = async () => {
+        try {
+            setLoading(true);
+            const response = await axios.get(localhost + apiUrlGetApplicationsAccepted, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            console.log("app : " + JSON.stringify(response.data));
+            setApplications(response.data);
+            setLoading(false);
+        } catch (e) {
+            console.error("Erreur lors de la récupération des applications acceptées : " + e);
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (applications.length > 0) {
+            const applicationId = applications[currentPage - 1]?.id;
+            if (applicationId) {
+                fetchEtudiant(applicationId);
+                fetchOffresStage(applicationId);
+            }
+        }
+    }, [applications, currentPage]);
+
+    useEffect(() => {
+        setTotalPages(applications.length);
+        if (currentPage > 1)
+            setCurrentPage(currentPage-1);
+    }, [applications]);
+
+
+    const fetchEtudiant = async (applicationId) => {
+        try {
+            setLoading(true);
+            const response = await axios.get(localhost + apiUrlGetEtudiantFromApplicationId + applicationId, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            console.log("Étudiant : " + response.data);
+            setEtudiant(response.data);
+            setLoading(false);
+        } catch (e) {
+            setLoading(false);
+            console.error(`Erreur lors de la récupération de l'étudiant associé à l'application ${applicationId} : `, e);
+        }
+    };
+
+    const fetchOffresStage = async (applicationId) => {
+        try {
+            const response = await axios.get(localhost + apiUrlGetOffreStageFromApplicationId + applicationId, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            setOffreStage(response.data);
+        } catch (e) {
+            console.error(`Erreur lors de la récupération de l'offre de stage associé à l'application ${applicationId} : `, e);
+        }
+    };
 
     function isLoading() {
         if (etudiant !== null)
@@ -48,7 +123,9 @@ const AttribuerContrat = ({etudiant}) => {
 
     const handleFileUpload = async () => {
         const formData = new FormData();
-        formData.append("file", file);
+        formData.append("contratPDF", file);
+        formData.append("etudiantId", applications[currentPage - 1].etudiant_id);
+        formData.append("employeurId", offresStage.createur_id);
 
         try {
             setLoading(true);
@@ -64,7 +141,7 @@ const AttribuerContrat = ({etudiant}) => {
             setUploadError("");
             setFile(null);
             setLoading(false);
-            navigate(`/attribuerContrat`);
+            fetchApplicationsAccepted();
         } catch (error) {
             console.error("Erreur lors de l'envoi du fichier :", error);
             setUploadError(t("fileUploadError"));
@@ -117,16 +194,34 @@ const AttribuerContrat = ({etudiant}) => {
                 <h2 className="text-lg text-gray-600 mb-8 text-center">
                     {t("uploadContractFilePDF")}
                 </h2>
-                <div className="bg-[#f9fafb] rounded-lg py-6 px-5 mb-8 border-l-4 border-orange shadow-sm">
-                    <h3 className="text-xl font-semibold text-gray-700">{t("etudiant")} :</h3>
-                    <p className="text-lg font-medium text-gray-800">
-                        {etudiant.prenom + " " + etudiant.nom}
-                    </p>
-                    <h3 className="text-xl font-semibold text-gray-700 mt-3">{t("program")} :</h3>
-                    <p className="text-lg font-medium text-gray-800">
-                        {etudiant.programme}
-                    </p>
-                </div>
+                {
+                    etudiant ?
+                    <div className="bg-[#f9fafb] rounded-lg py-6 px-5 mb-8 border-l-4 border-orange shadow-sm">
+                        <h3 className="text-xl font-semibold text-gray-700">{t("etudiant")} :</h3>
+                        <p className="text-lg font-medium text-gray-800">
+                            {etudiant.prenom + " " + etudiant.nom}
+                        </p>
+                        <h3 className="text-xl font-semibold text-gray-700 mt-3">{t("program")} :</h3>
+                        <p className="text-lg font-medium text-gray-800">
+                            {t(etudiant.programme)}
+                        </p>
+                    </div>
+                    : <div></div>
+                }
+                {
+                    applications[currentPage-1] ?
+                        <div className="bg-[#f9fafb] rounded-lg py-6 px-5 mb-8 border-l-4 border-red-300 shadow-sm">
+                            <h3 className="text-xl font-semibold text-gray-700">Stage :</h3>
+                            <p className="text-lg font-medium text-gray-800">
+                                {applications[currentPage-1].title}
+                            </p>
+                            <h3 className="text-xl font-semibold text-gray-700 mt-3">Entreprise :</h3>
+                            <p className="text-lg font-medium text-gray-800">
+                                {applications[currentPage-1].entrepriseName}
+                            </p>
+                        </div>
+                        : <div></div>
+                }
                 <form onSubmit={handleSubmitFile} className="space-y-6">
                     <div className="relative">
                         <label
@@ -164,6 +259,23 @@ const AttribuerContrat = ({etudiant}) => {
                         {t("submit")}
                     </button>
                 </form>
+                <div className="flex justify-center mt-8">
+                    <button
+                        className={`px-4 py-2 ${currentPage === 1 ? "bg-gray-200 text-gray-700" : "bg-gray-400 text-gray-900"} rounded-l`}
+                        onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                        disabled={currentPage === 1}>
+                        {t("previous")}
+                    </button>
+                    <span className="px-4 py-2">
+                        {t("page")} {currentPage} / {Math.max(totalPages, 1)}
+                    </span>
+                    <button
+                        className={`px-4 py-2 ${currentPage === totalPages || applications.length === 0 ? "bg-gray-200 text-gray-700" : "bg-gray-400 text-gray-900"} rounded-r`}
+                        onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                        disabled={currentPage === totalPages || applications.length === 0}>
+                        {t("next")}
+                    </button>
+                </div>
             </div>
         </div>
     )

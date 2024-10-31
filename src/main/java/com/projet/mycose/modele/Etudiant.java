@@ -42,7 +42,8 @@ public class Etudiant extends Utilisateur {
     public enum ContractStatus {
         ACTIVE,
         NO_CONTRACT,
-        PENDING
+        PENDING,
+        SIGNING
     }
 
     @PrePersist
