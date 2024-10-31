@@ -27,6 +27,7 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -386,5 +387,27 @@ public class OffreStageControllerTest {
                         .param("pageNumber", String.valueOf(0))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void testGetAmountOfPagesForCreateur_Error() throws Exception {
+        //Arrange
+        when(offreStageService.getAmountOfPagesForCreateur()).thenThrow(new RuntimeException());
+
+        //Act & Assert
+        mockMvc.perform(get("/api/offres-stages/pagesForCreateur"))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void testGetAmountOfPagesForCreateur_Success() throws Exception {
+        //Arrange
+        when(offreStageService.getAmountOfPagesForCreateur()).thenReturn(2);
+
+        //Act & Assert
+        mockMvc.perform(get("/api/offres-stages/pagesForCreateur"))
+                .andExpect(status().isAccepted())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().string("2"));
     }
 }

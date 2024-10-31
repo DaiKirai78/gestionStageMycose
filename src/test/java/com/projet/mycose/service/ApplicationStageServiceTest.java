@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.time.Year;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -81,6 +82,8 @@ public class ApplicationStageServiceTest {
         fichierOffreStage.setFilename("internship_offer.pdf");
         fichierOffreStage.setData(new byte[]{1, 2, 3});
         fichierOffreStage.setProgramme(Programme.GENIE_LOGICIEL);
+        fichierOffreStage.setAnnee(Year.of(2024));
+        fichierOffreStage.setSession(OffreStage.SessionEcole.AUTOMNE);
 
         applicationStage = new ApplicationStage();
         applicationStage.setId(1L);

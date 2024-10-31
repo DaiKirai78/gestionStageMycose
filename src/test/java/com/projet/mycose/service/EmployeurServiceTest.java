@@ -171,34 +171,6 @@ public class EmployeurServiceTest {
     }
 
     @Test
-    public void testGetAmountOfPage_NumberEndWithZero() {
-        //Arrange
-        when(utilisateurService.getMyUserId()).thenReturn(1L);
-        when(offreStageRepositoryMock.countByCreateurId(1L)).thenReturn(30);
-
-        //Act
-        int nombrePage = employeurService.getAmountOfPages();
-
-        //Assert
-        assertEquals(nombrePage, 3);
-        verify(offreStageRepositoryMock, times(1)).countByCreateurId(1L);
-    }
-
-    @Test
-    public void testGetAmountOfPage_NumberNotEndWithZero() {
-        //Arrange
-        when(utilisateurService.getMyUserId()).thenReturn(1L);
-        when(offreStageRepositoryMock.countByCreateurId(1L)).thenReturn(43);
-
-        //Act
-        int nombrePage = employeurService.getAmountOfPages();
-
-        //Assert
-        assertEquals(nombrePage, 5);
-        verify(offreStageRepositoryMock, times(1)).countByCreateurId(1L);
-    }
-
-    @Test
     public void testGetAllContratsNonSignees_Success() {
         String token = "unTokenValide";
         Long employeurId = 1L;

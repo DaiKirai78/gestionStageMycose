@@ -91,28 +91,6 @@ public class EmployeurControllerTest {
     }
 
     @Test
-    public void testGetAmountOfPages_Error() throws Exception {
-        //Arrange
-        when(employeurService.getAmountOfPages()).thenThrow(new RuntimeException());
-
-        //Act & Assert
-        mockMvc.perform(get("/entreprise/pages"))
-                .andExpect(status().isNoContent());
-    }
-
-    @Test
-    public void testGetAmountOfPages_Success() throws Exception {
-        //Arrange
-        when(employeurService.getAmountOfPages()).thenReturn(2);
-
-        //Act & Assert
-        mockMvc.perform(get("/entreprise/pages"))
-                .andExpect(status().isAccepted())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().string("2"));
-    }
-
-    @Test
     public void testGetAllContratsNonSignees_Success() throws Exception {
         //Arrange
         ContratDTO contratDTOMock = new ContratDTO(

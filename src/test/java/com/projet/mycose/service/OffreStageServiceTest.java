@@ -18,6 +18,7 @@ import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -27,6 +28,9 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 public class OffreStageServiceTest {
@@ -1150,5 +1154,33 @@ public class OffreStageServiceTest {
 
         verify(utilisateurService, times(1)).getMyUserId();
         verify(offreStageRepository, times(1)).findOffreStageByCreateurId(createurId, pageRequest);
+    }
+
+    @Test
+    public void testGetAmountOfPageForCreateur_NumberEndWithZero() {
+        //Arrange
+        when(utilisateurService.getMyUserId()).thenReturn(1L);
+        when(offreStageRepository.countByCreateurId(1L)).thenReturn(30);
+
+        //Act
+        int nombrePage = offreStageService.getAmountOfPagesForCreateur();
+
+        //Assert
+        assertEquals(nombrePage, 3);
+        verify(offreStageRepository, times(1)).countByCreateurId(1L);
+    }
+
+    @Test
+    public void testGetAmountOfPageForCreateur_NumberNotEndWithZero() {
+        //Arrange
+        when(utilisateurService.getMyUserId()).thenReturn(1L);
+        when(offreStageRepository.countByCreateurId(1L)).thenReturn(43);
+
+        //Act
+        int nombrePage = offreStageService.getAmountOfPagesForCreateur();
+
+        //Assert
+        assertEquals(nombrePage, 5);
+        verify(offreStageRepository, times(1)).countByCreateurId(1L);
     }
 }
