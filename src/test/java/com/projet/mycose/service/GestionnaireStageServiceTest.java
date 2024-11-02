@@ -368,4 +368,64 @@ class GestionnaireStageServiceTest {
 
         assertEquals(2, pages);
     }
+
+    @Test
+    void testGetAllContratsSignes_Success() throws ChangeSetPersister.NotFoundException {
+        int page = 0;
+        int annee = 2024;
+
+        Contrat contrat1 = new Contrat();
+        Contrat contrat2 = new Contrat();
+
+        List<Contrat> contrats = List.of(contrat1, contrat2);
+        Page<Contrat> contratPage = new PageImpl<>(contrats, PageRequest.of(page, 10), contrats.size());
+
+        when(contratRepository.findContratsBySignatureGestionnaireIsNotNullAndCreatedAt_Year(annee, PageRequest.of(page, 10)))
+                .thenReturn(contratPage);
+
+        List<ContratDTO> result = gestionnaireStageService.getAllContratsSignes(page, annee);
+
+        assertEquals(2, result.size());
+        verify(contratRepository).findContratsBySignatureGestionnaireIsNotNullAndCreatedAt_Year(annee, PageRequest.of(page, 10));
+    }
+
+    @Test
+    void testGetAllContratsSignes_NoContractsFound() {
+        int page = 0;
+        int annee = 2024;
+
+        Page<Contrat> emptyPage = new PageImpl<>(List.of());
+
+        when(contratRepository.findContratsBySignatureGestionnaireIsNotNullAndCreatedAt_Year(annee, PageRequest.of(page, 10)))
+                .thenReturn(emptyPage);
+
+        assertThrows(ChangeSetPersister.NotFoundException.class, () -> {
+            gestionnaireStageService.getAllContratsSignes(page, annee);
+        });
+    }
+
+    @Test
+    void testGetAmountOfPagesOfContractSignees_WithContracts() {
+        int annee = 2024;
+        int amountOfRows = 25;
+
+        when(contratRepository.countBySignatureGestionnaireIsNotNullAndCreatedAt_Year(annee))
+                .thenReturn(amountOfRows);
+
+        int result = gestionnaireStageService.getAmountOfPagesOfContractSignees(annee);
+
+        assertEquals(3, result);
+    }
+
+    @Test
+    void testGetAmountOfPagesOfContractSignees_NoContracts() {
+        int annee = 2024;
+
+        when(contratRepository.countBySignatureGestionnaireIsNotNullAndCreatedAt_Year(annee))
+                .thenReturn(0);
+
+        int result = gestionnaireStageService.getAmountOfPagesOfContractSignees(annee);
+
+        assertEquals(0, result);
+    }
 }

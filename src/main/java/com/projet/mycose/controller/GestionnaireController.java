@@ -114,4 +114,20 @@ public class GestionnaireController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
                 gestionnaireStageService.getAmountOfPagesOfContractNonSignees());
     }
+
+    @GetMapping("/contrats/signes")
+    public ResponseEntity<List<ContratDTO>> getAllContratsSignes(@RequestParam int page, @RequestParam int annee) {
+        try {
+            List<ContratDTO> contrats = gestionnaireStageService.getAllContratsSignes(page, annee);
+            return ResponseEntity.ok(contrats);
+        } catch (ChangeSetPersister.NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    @GetMapping("/contrats/signes/pages")
+    public ResponseEntity<Integer> getAmountOfPagesOfContratSignee(@RequestParam int annee) {
+        return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
+                gestionnaireStageService.getAmountOfPagesOfContractSignees(annee));
+    }
 }
