@@ -146,4 +146,21 @@ public class GestionnaireStageService {
 
         return contratsRetournessEnPages.stream().map(ContratDTO::toDTO).toList();
     }
+
+    public Integer getAmountOfPagesOfContractSignees(int annee) {
+        long amountOfRows = contratRepository.countBySignatureGestionnaireIsNotNullAndCreatedAt_Year(annee);
+
+        if (amountOfRows == 0)
+            return 0;
+
+        int nombrePages = (int) Math.floor((double) amountOfRows / LIMIT_PER_PAGE);
+
+        if (amountOfRows % 10 > 0) {
+            // Return ++ (équivalent -> nombrePage + 1) parce que
+            // floor(13/10) = 1 mais il y a 2 page et pas 1
+            nombrePages++;
+        }
+
+        return nombrePages;
+    }
 }

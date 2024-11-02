@@ -124,4 +124,10 @@ public class GestionnaireController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
+
+    @GetMapping("/contrats/signes/pages")
+    public ResponseEntity<Integer> getAmountOfPagesOfContratSignee(@RequestParam int annee) {
+        return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
+                gestionnaireStageService.getAmountOfPagesOfContractSignees(annee));
+    }
 }

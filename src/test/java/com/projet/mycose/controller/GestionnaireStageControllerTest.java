@@ -422,4 +422,30 @@ public class GestionnaireStageControllerTest {
                 .andExpect(status().isNotFound());
     }
 
+    @Test
+    void testGetAmountOfPagesOfContratSignee_Success() throws Exception {
+        int annee = 2024;
+
+        when(gestionnaireStageService.getAmountOfPagesOfContractSignees(annee)).thenReturn(3);
+
+        mockMvc.perform(get("/gestionnaire/contrats/signes/pages")
+                        .param("annee", String.valueOf(annee)))
+                .andExpect(status().isAccepted())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().string("3"));
+    }
+
+    @Test
+    void testGetAmountOfPagesOfContratSignee_NoContracts() throws Exception {
+        int annee = 2024;
+
+        when(gestionnaireStageService.getAmountOfPagesOfContractSignees(annee)).thenReturn(0);
+
+        mockMvc.perform(get("/gestionnaire/contrats/signes/pages")
+                        .param("annee", String.valueOf(annee)))
+                .andExpect(status().isAccepted())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().string("0"));
+    }
+
 }

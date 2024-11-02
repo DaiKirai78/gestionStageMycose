@@ -374,7 +374,7 @@ class GestionnaireStageServiceTest {
         int page = 0;
         int annee = 2024;
 
-        Contrat contrat1 = new Contrat(); // Remplissez avec les données nécessaires
+        Contrat contrat1 = new Contrat();
         Contrat contrat2 = new Contrat();
 
         List<Contrat> contrats = List.of(contrat1, contrat2);
@@ -402,5 +402,30 @@ class GestionnaireStageServiceTest {
         assertThrows(ChangeSetPersister.NotFoundException.class, () -> {
             gestionnaireStageService.getAllContratsSignes(page, annee);
         });
+    }
+
+    @Test
+    void testGetAmountOfPagesOfContractSignees_WithContracts() {
+        int annee = 2024;
+        int amountOfRows = 25;
+
+        when(contratRepository.countBySignatureGestionnaireIsNotNullAndCreatedAt_Year(annee))
+                .thenReturn(amountOfRows);
+
+        int result = gestionnaireStageService.getAmountOfPagesOfContractSignees(annee);
+
+        assertEquals(3, result);
+    }
+
+    @Test
+    void testGetAmountOfPagesOfContractSignees_NoContracts() {
+        int annee = 2024;
+
+        when(contratRepository.countBySignatureGestionnaireIsNotNullAndCreatedAt_Year(annee))
+                .thenReturn(0);
+
+        int result = gestionnaireStageService.getAmountOfPagesOfContractSignees(annee);
+
+        assertEquals(0, result);
     }
 }
