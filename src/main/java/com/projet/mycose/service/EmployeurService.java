@@ -82,7 +82,7 @@ public class EmployeurService {
         Contrat contratDispo = contrat.get();
         contratDispo.setSignatureEmployeur(signature.getBytes());
         contratRepository.save(contratDispo);
-        return "Signature sauvegardé";
+        return "Signature sauvegardée";
     }
 
     public Integer getAmountOfPagesOfContractNonSignees() {

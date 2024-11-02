@@ -7,6 +7,7 @@ import com.projet.mycose.modele.Etudiant;
 import com.projet.mycose.modele.Programme;
 import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.repository.UtilisateurRepository;
+import com.projet.mycose.security.exception.UserNotFoundException;
 import com.projet.mycose.service.EtudiantService;
 import com.projet.mycose.service.GestionnaireStageService;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,9 +20,13 @@ import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -448,4 +453,112 @@ public class GestionnaireStageControllerTest {
                 .andExpect(content().string("0"));
     }
 
+    @Test
+    public void testEnregistrerSignature_Success() throws Exception {
+        // Arrange
+        MockMultipartFile signatureFile = new MockMultipartFile("signature", "signature.png", "image/png", "test signature content".getBytes());
+
+        when(gestionnaireStageService.enregistrerSignature(any(MultipartFile.class), anyString(), any(Long.class)))
+                .thenReturn("Signature sauvegardees");
+
+        // Act & Assert
+        mockMvc.perform(multipart("/gestionnaire/enregistrerSignature")
+                        .file(signatureFile)
+                        .param("contratId", "1")
+                        .param("password", "motDePasse")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isAccepted())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().string("Signature sauvegardees"));
+    }
+
+    @Test
+    public void testEnregistrerSignature_UserNotFound() throws Exception {
+        // Arrange
+        MockMultipartFile signatureFile = new MockMultipartFile("signature", "signature.png", "image/png", "test signature content".getBytes());
+
+        when(gestionnaireStageService.enregistrerSignature(any(MultipartFile.class), anyString(), any(Long.class)))
+                .thenThrow(new UserNotFoundException());
+
+        // Act & Assert
+        mockMvc.perform(multipart("/gestionnaire/enregistrerSignature")
+                        .file(signatureFile)
+                        .param("contratId", "1")
+                        .param("password", "motDePasse")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Utilisateur non trouvé."));
+    }
+
+    @Test
+    public void testEnregistrerSignature_BadCredentials() throws Exception {
+        // Arrange
+        MockMultipartFile signatureFile = new MockMultipartFile("signature", "signature.png", "image/png", "test signature content".getBytes());
+
+        when(gestionnaireStageService.enregistrerSignature(any(MultipartFile.class), anyString(), any(Long.class)))
+                .thenThrow(new BadCredentialsException("Email ou mot de passe invalide."));
+
+        // Act & Assert
+        mockMvc.perform(multipart("/gestionnaire/enregistrerSignature")
+                        .file(signatureFile)
+                        .param("contratId", "1")
+                        .param("password", "motDePasse")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().string("Email ou mot de passe invalide."));
+    }
+
+    @Test
+    public void testEnregistrerSignature_ContratNotFound() throws Exception {
+        // Arrange
+        MockMultipartFile signatureFile = new MockMultipartFile("signature", "signature.png", "image/png", "test signature content".getBytes());
+
+        when(gestionnaireStageService.enregistrerSignature(any(MultipartFile.class), anyString(), any(Long.class)))
+                .thenThrow(new ChangeSetPersister.NotFoundException());
+
+        // Act & Assert
+        mockMvc.perform(multipart("/gestionnaire/enregistrerSignature")
+                        .file(signatureFile)
+                        .param("contratId", "1")
+                        .param("password", "motDePasse")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Contrat non trouvé."));
+    }
+
+    @Test
+    public void testEnregistrerSignature_ErrorDuringSignature() throws Exception {
+        // Arrange
+        MockMultipartFile signatureFile = new MockMultipartFile("signature", "signature.png", "image/png", "test signature content".getBytes());
+
+        when(gestionnaireStageService.enregistrerSignature(any(MultipartFile.class), anyString(), any(Long.class)))
+                .thenThrow(new IOException("Erreur lors de la sauvegarde de la signature."));
+
+        // Act & Assert
+        mockMvc.perform(multipart("/gestionnaire/enregistrerSignature")
+                        .file(signatureFile)
+                        .param("contratId", "1")
+                        .param("password", "motDePasse")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().string("Erreur lors de la sauvegarde de la signature."));
+    }
+
+    @Test
+    public void testEnregistrerSignature_OtherError() throws Exception {
+        // Arrange
+        MockMultipartFile signatureFile = new MockMultipartFile("signature", "signature.png", "image/png", "test signature content".getBytes());
+
+        when(gestionnaireStageService.enregistrerSignature(any(MultipartFile.class), anyString(), any(Long.class)))
+                .thenThrow(new RuntimeException());
+
+        // Act & Assert
+        mockMvc.perform(multipart("/gestionnaire/enregistrerSignature")
+                        .file(signatureFile)
+                        .param("contratId", "1")
+                        .param("password", "motDePasse")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().string("Une erreur inattendue s'est produite."));
+    }
 }

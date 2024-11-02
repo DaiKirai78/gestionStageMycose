@@ -163,4 +163,33 @@ public class GestionnaireStageService {
 
         return nombrePages;
     }
+
+    @Transactional
+    public String enregistrerSignature(MultipartFile signature, String password, Long contratId)
+            throws UserNotFoundException, BadCredentialsException,
+            ChangeSetPersister.NotFoundException, IOException {
+        Long gestionnaireId = utilisateurService.getMyUserId();
+        Optional<Utilisateur> utilisateurOpt = utilisateurRepository.findUtilisateurById(gestionnaireId);
+
+        if (utilisateurOpt.isEmpty())
+            throw new UserNotFoundException();
+
+        Utilisateur utilisateur = utilisateurOpt.get();
+
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(utilisateur.getCourriel(), password)
+        );
+
+        if(!authentication.isAuthenticated())
+            throw new BadCredentialsException("Email ou mot de passe invalide.");
+
+        Optional<Contrat> contrat = contratRepository.findById(contratId);
+        if(contrat.isEmpty())
+            throw new ChangeSetPersister.NotFoundException();
+
+        Contrat contratDispo = contrat.get();
+        contratDispo.setSignatureEmployeur(signature.getBytes());
+        contratRepository.save(contratDispo);
+        return "Signature sauvegardée";
+    }
 }

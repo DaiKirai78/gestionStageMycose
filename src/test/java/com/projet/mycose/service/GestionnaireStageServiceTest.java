@@ -4,9 +4,12 @@ import com.projet.mycose.dto.ContratDTO;
 import com.projet.mycose.dto.EnseignantDTO;
 import com.projet.mycose.dto.EtudiantDTO;
 import com.projet.mycose.modele.*;
+import com.projet.mycose.modele.auth.Credentials;
+import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.repository.ContratRepository;
 import com.projet.mycose.repository.GestionnaireStageRepository;
 import com.projet.mycose.repository.UtilisateurRepository;
+import com.projet.mycose.security.exception.UserNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,6 +22,11 @@ import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
@@ -48,6 +56,9 @@ class GestionnaireStageServiceTest {
 
     @InjectMocks
     private GestionnaireStageService gestionnaireStageService;
+
+    @Mock
+    AuthenticationManager authenticationManager;
 
     @BeforeEach
     void setUp() {
@@ -427,5 +438,109 @@ class GestionnaireStageServiceTest {
         int result = gestionnaireStageService.getAmountOfPagesOfContractSignees(annee);
 
         assertEquals(0, result);
+    }
+
+    @Test
+    public void testEnregistrerSignature_Success() throws Exception {
+        // Arrange
+        Long gestionnaireId = 1L;
+        Long contratId = 1L;
+        String password = "motDePasse";
+        GestionnaireStage utilisateur = new GestionnaireStage();
+        utilisateur.setCredentials(new Credentials("unEmail@mail.com", password, Role.EMPLOYEUR));
+
+        Contrat contrat = new Contrat();
+        contrat.setId(contratId);
+        byte[] signatureBytes = "dummySignature".getBytes();
+        MockMultipartFile signature = new MockMultipartFile("signature", "signature.jpg", "image/jpeg", signatureBytes);
+
+        Authentication authentication = mock(Authentication.class);
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenReturn(authentication);
+        when(authentication.isAuthenticated()).thenReturn(true);
+        when(utilisateurService.getMyUserId()).thenReturn(gestionnaireId);
+        when(utilisateurRepository.findUtilisateurById(gestionnaireId)).thenReturn(Optional.of(utilisateur));
+        when(contratRepository.findById(contratId)).thenReturn(Optional.of(contrat));
+
+        // Act
+        String result = gestionnaireStageService.enregistrerSignature(signature, password, contratId);
+
+        // Assert
+        assertEquals("Signature sauvegardée", result);
+        verify(contratRepository, times(1)).save(contrat);
+        assertArrayEquals(signatureBytes, contrat.getSignatureEmployeur());
+    }
+
+    @Test
+    public void testEnregistrerSignature_WrongPassword() {
+        // Arrange
+        Long contratId = 1L;
+        String password = "wrongPassword";
+        MockMultipartFile signature = new MockMultipartFile("signature", "signature.jpg", "image/jpeg", "dummy".getBytes());
+
+        GestionnaireStage utilisateur = new GestionnaireStage();
+        utilisateur.setCredentials(new Credentials("unEmail@mail.com", password, Role.EMPLOYEUR));
+
+        Authentication authentication = mock(Authentication.class);
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenReturn(authentication);
+        when(authentication.isAuthenticated()).thenReturn(false);
+        when(utilisateurService.getMyUserId()).thenReturn(utilisateur.getId());
+        when(utilisateurRepository.findUtilisateurById(utilisateur.getId())).thenReturn(Optional.of(utilisateur));
+
+        // Act & Assert
+        assertThrows(BadCredentialsException.class, () -> {
+            gestionnaireStageService.enregistrerSignature(signature, password, contratId);
+        });
+        verify(contratRepository, never()).save(any(Contrat.class));
+    }
+
+    @Test
+    public void testEnregistrerSignature_NoUserFound() {
+        // Arrange
+        Long contratId = 1L;
+        String password = "wrongPassword";
+        MockMultipartFile signature = new MockMultipartFile("signature", "signature.jpg", "image/jpeg", "dummy".getBytes());
+
+        GestionnaireStage utilisateur = new GestionnaireStage();
+        utilisateur.setCredentials(new Credentials("unEmail@mail.com", password, Role.EMPLOYEUR));
+
+        when(utilisateurService.getMyUserId()).thenReturn(utilisateur.getId());
+        when(utilisateurRepository.findUtilisateurById(utilisateur.getId())).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(UserNotFoundException.class, () -> {
+            gestionnaireStageService.enregistrerSignature(signature, password, contratId);
+        });
+        verify(contratRepository, never()).save(any(Contrat.class));
+    }
+
+    @Test
+    public void testEnregistrerSignature_NoContractFound() {
+        // Arrange
+        Long gestionnaireId = 1L;
+        Long contratId = 1L;
+        String password = "motDePasse";
+        GestionnaireStage utilisateur = new GestionnaireStage();
+        utilisateur.setCredentials(new Credentials("unEmail@mail.com", password, Role.EMPLOYEUR));
+
+        Contrat contrat = new Contrat();
+        contrat.setId(contratId);
+        byte[] signatureBytes = "dummySignature".getBytes();
+        MockMultipartFile signature = new MockMultipartFile("signature", "signature.jpg", "image/jpeg", signatureBytes);
+
+        Authentication authentication = mock(Authentication.class);
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenReturn(authentication);
+        when(authentication.isAuthenticated()).thenReturn(true);
+        when(utilisateurService.getMyUserId()).thenReturn(gestionnaireId);
+        when(utilisateurRepository.findUtilisateurById(gestionnaireId)).thenReturn(Optional.of(utilisateur));
+        when(contratRepository.findById(contratId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(ChangeSetPersister.NotFoundException.class, () -> {
+            gestionnaireStageService.enregistrerSignature(signature, password, contratId);
+        });
+        verify(contratRepository, never()).save(any(Contrat.class));
     }
 }

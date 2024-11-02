@@ -281,7 +281,7 @@ public class EmployeurServiceTest {
         String result = employeurService.enregistrerSignature(signature, password, contratId);
 
         // Assert
-        assertEquals("Signature sauvegardé", result);
+        assertEquals("Signature sauvegardée", result);
         verify(contratRepositoryMock, times(1)).save(contrat);
         assertArrayEquals(signatureBytes, contrat.getSignatureEmployeur());
     }
