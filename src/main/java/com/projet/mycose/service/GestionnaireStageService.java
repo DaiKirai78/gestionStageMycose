@@ -1,18 +1,27 @@
 package com.projet.mycose.service;
 
+import com.projet.mycose.dto.ContratDTO;
 import com.projet.mycose.dto.EnseignantDTO;
 import com.projet.mycose.dto.EtudiantDTO;
 import com.projet.mycose.modele.*;
+import com.projet.mycose.repository.ContratRepository;
 import com.projet.mycose.repository.GestionnaireStageRepository;
 import com.projet.mycose.repository.UtilisateurRepository;
+import com.projet.mycose.security.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -24,7 +33,9 @@ public class GestionnaireStageService {
     private final UtilisateurService utilisateurService;
     private final PasswordEncoder passwordEncoder;
     private final GestionnaireStageRepository gestionnaireStageRepository;
+    private final ContratRepository contratRepository;
     private final UtilisateurRepository utilisateurRepository;
+    private final AuthenticationManager authenticationManager;
 
     private final int LIMIT_PER_PAGE = 10;
 
@@ -94,5 +105,17 @@ public class GestionnaireStageService {
                 throw new RuntimeException();
             }
         }
+    }
+
+
+    public List<ContratDTO> getAllContratsNonSignes(int page) throws ChangeSetPersister.NotFoundException {
+        PageRequest pageRequest = PageRequest.of(page, LIMIT_PER_PAGE);
+
+        Page<Contrat> contratsRetournessEnPages = contratRepository.findContratsBySignatureGestionnaireIsNull(pageRequest);
+        if(contratsRetournessEnPages.isEmpty()) {
+            throw new ChangeSetPersister.NotFoundException();
+        }
+
+        return contratsRetournessEnPages.stream().map(ContratDTO::toDTO).toList();
     }
 }

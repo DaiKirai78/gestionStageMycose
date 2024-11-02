@@ -1,11 +1,10 @@
 package com.projet.mycose.service;
 
+import com.projet.mycose.dto.ContratDTO;
 import com.projet.mycose.dto.EnseignantDTO;
 import com.projet.mycose.dto.EtudiantDTO;
-import com.projet.mycose.modele.Enseignant;
-import com.projet.mycose.modele.Etudiant;
-import com.projet.mycose.modele.GestionnaireStage;
-import com.projet.mycose.modele.Programme;
+import com.projet.mycose.modele.*;
+import com.projet.mycose.repository.ContratRepository;
 import com.projet.mycose.repository.GestionnaireStageRepository;
 import com.projet.mycose.repository.UtilisateurRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,12 +15,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,6 +40,8 @@ class GestionnaireStageServiceTest {
 
     @Mock
     private GestionnaireStageRepository gestionnaireStageRepository;
+    @Mock
+    private ContratRepository contratRepository;
 
     @Mock
     private UtilisateurRepository utilisateurRepository;
@@ -316,4 +319,26 @@ class GestionnaireStageServiceTest {
         assertEquals("ID Enseignant ne peut pas être NULL", exception.getMessage());
     }
 
+    @Test
+    public void testGetAllContratsNonSignes_Success() throws Exception {
+        List<Contrat> contrats = List.of(new Contrat());
+        Page<Contrat> pageContrats = new PageImpl<>(contrats, PageRequest.of(0, 10), contrats.size());
+
+        when(contratRepository.findContratsBySignatureGestionnaireIsNull(PageRequest.of(0, 10)))
+                .thenReturn(pageContrats);
+
+        List<ContratDTO> result = gestionnaireStageService.getAllContratsNonSignes(0);
+
+        assertEquals(contrats.size(), result.size());
+    }
+
+    @Test
+    public void testGetAllContratsNonSignes_NotFound() {
+        Page<Contrat> emptyPage = new PageImpl<>(Collections.emptyList(), PageRequest.of(0, 10), 0);
+
+        when(contratRepository.findContratsBySignatureGestionnaireIsNull(PageRequest.of(0, 10)))
+                .thenReturn(emptyPage);
+
+        assertThrows(ChangeSetPersister.NotFoundException.class, () -> gestionnaireStageService.getAllContratsNonSignes(0));
+    }
 }

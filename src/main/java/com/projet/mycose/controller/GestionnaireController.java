@@ -1,17 +1,20 @@
 package com.projet.mycose.controller;
 
 import com.projet.mycose.dto.ApplicationStageDTO;
+import com.projet.mycose.dto.ContratDTO;
 import com.projet.mycose.dto.EnseignantDTO;
 import com.projet.mycose.dto.EtudiantDTO;
 import com.projet.mycose.modele.Employeur;
 import com.projet.mycose.modele.Programme;
 import com.projet.mycose.service.EtudiantService;
 import com.projet.mycose.service.GestionnaireStageService;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -93,6 +96,16 @@ public class GestionnaireController {
                     etudiantService.getEtudiantsSansContratPages());
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @GetMapping("/contrats/non-signes")
+    public ResponseEntity<List<ContratDTO>> getAllContratsNonSignes(@RequestParam int page) {
+        try {
+            List<ContratDTO> contrats = gestionnaireStageService.getAllContratsNonSignes(page);
+            return ResponseEntity.ok(contrats);
+        } catch (ChangeSetPersister.NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 }

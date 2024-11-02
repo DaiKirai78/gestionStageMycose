@@ -1,5 +1,6 @@
 package com.projet.mycose.controller;
 
+import com.projet.mycose.dto.ContratDTO;
 import com.projet.mycose.dto.EnseignantDTO;
 import com.projet.mycose.dto.EtudiantDTO;
 import com.projet.mycose.modele.Etudiant;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -346,4 +348,24 @@ public class GestionnaireStageControllerTest {
                 .andExpect(status().isInternalServerError());
         verify(etudiantService, times(1)).getEtudiantsSansContratPages();
     }
+    @Test
+    public void testGetAllContratsNonSignes_Success() throws Exception {
+        List<ContratDTO> contrats = List.of(new ContratDTO());
+        when(gestionnaireStageService.getAllContratsNonSignes(0)).thenReturn(contrats);
+
+        mockMvc.perform(get("/gestionnaire/contrats/non-signes")
+                        .param("page", "0"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(contrats.size()));
+    }
+
+    @Test
+    public void testGetAllContratsNonSignes_NotFound() throws Exception {
+        when(gestionnaireStageService.getAllContratsNonSignes(0)).thenThrow(new ChangeSetPersister.NotFoundException());
+
+        mockMvc.perform(get("/gestionnaire/contrats/non-signes")
+                        .param("page", "0"))
+                .andExpect(status().isNotFound());
+    }
+
 }
