@@ -14,7 +14,4 @@ public interface ContratRepository extends JpaRepository<Contrat, Long> {
 
     Page<Contrat> findContratsBySignatureGestionnaireIsNull(Pageable pageable);
     int countBySignatureGestionnaireIsNull();
-
-    Page<Contrat> findContratsBySignatureGestionnaireIsNotNullAndCreatedAt_Year(int annee, Pageable pageable);
-    int countBySignatureGestionnaireIsNotNullAndCreatedAt_Year(int annee);
 }

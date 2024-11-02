@@ -108,4 +108,10 @@ public class GestionnaireController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
+
+    @GetMapping("/contrats/non-signes/pages")
+    public ResponseEntity<Integer> getAmountOfPagesOfContratNonSignee() {
+        return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
+                gestionnaireStageService.getAmountOfPagesOfContractNonSignees());
+    }
 }

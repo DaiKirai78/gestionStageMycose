@@ -341,4 +341,31 @@ class GestionnaireStageServiceTest {
 
         assertThrows(ChangeSetPersister.NotFoundException.class, () -> gestionnaireStageService.getAllContratsNonSignes(0));
     }
+
+    @Test
+    void testGetAmountOfPagesOfContractNonSignees_0() {
+        when(contratRepository.countBySignatureGestionnaireIsNull()).thenReturn(0);
+
+        Integer pages = gestionnaireStageService.getAmountOfPagesOfContractNonSignees();
+
+        assertEquals(0, pages);
+    }
+
+    @Test
+    void testGetAmountOfPagesOfContractNonSignees_10() {
+        when(contratRepository.countBySignatureGestionnaireIsNull()).thenReturn(10);
+
+        Integer pages = gestionnaireStageService.getAmountOfPagesOfContractNonSignees();
+
+        assertEquals(1, pages);
+    }
+
+    @Test
+    void testGetAmountOfPagesOfContractNonSignees_13() {
+        when(contratRepository.countBySignatureGestionnaireIsNull()).thenReturn(13);
+
+        Integer pages = gestionnaireStageService.getAmountOfPagesOfContractNonSignees();
+
+        assertEquals(2, pages);
+    }
 }
