@@ -5,10 +5,14 @@ import { useState } from "react";
 import { useTranslation } from 'react-i18next';
 import ButtonConnection from '../connectionPage/buttonConnection.jsx';
 import { useNavigate } from 'react-router-dom';
+import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa';
 
 function FormInscription3({prenom, nom, email, telephone, setStep, role, nomOrganisation, programme}) {
     const [password, setPassword] = useState('');
     const [passwordConf, setPasswordConf] = useState('');
+
+    const [isConfirmPasswordHidden, setIsConfirmPasswordHidden] = useState(true);
+    const [isPasswordHidden, setIsPasswordHidden] = useState(true);
 
     const [errorKeyPassword, setErrorKeyPassword] = useState('');
     const validePassword = new RegExp(String.raw`[a-zA-Z0-9$&+,:;=?@#|'<>.^*()%!-]{8,}`);
@@ -188,6 +192,21 @@ function FormInscription3({prenom, nom, email, telephone, setStep, role, nomOrga
                             error={errorKeyPassword.length > 0}
                             value={password}
                             autoComplete='on'
+                            icon={
+                                <div
+                                  className='p-1 border rounded border-gray-700 text-gray-700 cursor-pointer'
+                                  onClick={(e) => {
+                                      e.preventDefault();
+                                      setIsPasswordHidden(!isPasswordHidden)
+                                  }}>
+                                    {
+                                        isPasswordHidden ? 
+                                        <FaRegEyeSlash />
+                                        :
+                                        <FaRegEye />
+                                    }
+                                </div>
+                            }
                             />
                             <InputErrorMessage messageKey={errorKeyPassword}/>
                         </div>
@@ -200,6 +219,21 @@ function FormInscription3({prenom, nom, email, telephone, setStep, role, nomOrga
                             error={errorKeyPassword.length > 0}
                             value={passwordConf}
                             autoComplete='on'
+                            icon={
+                                <div
+                                  className='p-1 border rounded border-gray-700 text-gray-700 cursor-pointer'
+                                  onClick={(e) => {
+                                      e.preventDefault();
+                                      setIsConfirmPasswordHidden(!isConfirmPasswordHidden)
+                                  }}>
+                                    {
+                                        isConfirmPasswordHidden ? 
+                                        <FaRegEyeSlash />
+                                        :
+                                        <FaRegEye />
+                                    }
+                                </div>
+                            }
                             />
                             <InputErrorMessage messageKey={errorKeyPassword}/>
                         </div>

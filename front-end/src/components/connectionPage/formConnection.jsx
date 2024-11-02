@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Divider from '../divider.jsx';
-import { button, Input } from '@material-tailwind/react';
+import { Input } from '@material-tailwind/react';
 import InputErrorMessage from '../inputErrorMesssage.jsx';
 import { useTranslation } from "react-i18next"
 import { useNavigate } from 'react-router-dom';
@@ -32,7 +32,7 @@ const FormConnection = () => {
     const [isFetching, setIsFetching] = useState(false)
     const [errorKeyResponse, setErrorKeyResponse] = useState(false)
 
-    const [isPasswordHidden, setIsPasswordHidden] = useState();
+    const [isPasswordHidden, setIsPasswordHidden] = useState(true);
 
     function onLogin(e) {
         e.preventDefault();
@@ -166,17 +166,19 @@ const FormConnection = () => {
                                value={password}
                                error={errorKeyPassword.length > 0}
                                icon={
-                                <button onClick={(e) => {
-                                    e.preventDefault();
-                                    setIsPasswordHidden(!isPasswordHidden)
-                                }}>
+                                <div
+                                  className='p-1 border rounded border-gray-700 text-gray-700 cursor-pointer'
+                                  onClick={(e) => {
+                                      e.preventDefault();
+                                      setIsPasswordHidden(!isPasswordHidden)
+                                  }}>
                                     {
                                         isPasswordHidden ? 
                                         <FaRegEyeSlash />
                                         :
                                         <FaRegEye />
                                     }
-                                </button>
+                                </div>
                             }
                         />
                         <InputErrorMessage messageKey={errorKeyPassword}/>
