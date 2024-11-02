@@ -135,4 +135,15 @@ public class GestionnaireStageService {
 
         return nombrePages;
     }
+
+    public List<ContratDTO> getAllContratsSignes(int page, int annee) throws ChangeSetPersister.NotFoundException {
+        PageRequest pageRequest = PageRequest.of(page, LIMIT_PER_PAGE);
+
+        Page<Contrat> contratsRetournessEnPages = contratRepository.findContratsBySignatureGestionnaireIsNotNullAndCreatedAt_Year(annee, pageRequest);
+        if(contratsRetournessEnPages.isEmpty()) {
+            throw new ChangeSetPersister.NotFoundException();
+        }
+
+        return contratsRetournessEnPages.stream().map(ContratDTO::toDTO).toList();
+    }
 }

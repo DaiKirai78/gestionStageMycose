@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -386,6 +387,39 @@ public class GestionnaireStageControllerTest {
                 .andExpect(status().isAccepted())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().string("2"));
+    }
+
+    @Test
+    void testGetAllContratsSignes_Success() throws Exception {
+        int page = 0;
+        int annee = 2024;
+
+        ContratDTO contratDTO1 = new ContratDTO();
+        ContratDTO contratDTO2 = new ContratDTO();
+
+        when(gestionnaireStageService.getAllContratsSignes(page, annee))
+                .thenReturn(List.of(contratDTO1, contratDTO2));
+
+        mockMvc.perform(get("/gestionnaire/contrats/signes")
+                        .param("page", String.valueOf(page))
+                        .param("annee", String.valueOf(annee)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", hasSize(2)));
+    }
+
+    @Test
+    void testGetAllContratsSignes_NotFound() throws Exception {
+        int page = 0;
+        int annee = 2024;
+
+        when(gestionnaireStageService.getAllContratsSignes(page, annee))
+                .thenThrow(new ChangeSetPersister.NotFoundException());
+
+        mockMvc.perform(get("/gestionnaire/contrats/signes")
+                        .param("page", String.valueOf(page))
+                        .param("annee", String.valueOf(annee)))
+                .andExpect(status().isNotFound());
     }
 
 }
