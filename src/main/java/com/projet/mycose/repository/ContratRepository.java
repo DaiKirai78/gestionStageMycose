@@ -13,8 +13,8 @@ public interface ContratRepository extends JpaRepository<Contrat, Long> {
     Page<Contrat> findContratsBySignatureEmployeurIsNullAndEmployeur_Id(Long emprunteurId, Pageable pageable);
     int countBySignatureEmployeurIsNullAndEmployeurId(Long emloyeurId);
 
-    Page<Contrat> findContratsBySignatureEmployeurIsNotNullAndSignatureEtudiantIsNotNull(Pageable pageable);
-    int countContratsBySignatureEmployeurIsNotNullAndSignatureEtudiantIsNotNull();
+    Page<Contrat> findContratsBySignatureEmployeurIsNotNullAndSignatureEtudiantIsNotNullAndSignatureGestionnaireIsNotNull(Pageable pageable);
+    int countContratsBySignatureEmployeurIsNotNullAndSignatureEtudiantIsNotNullAndSignatureGestionnaireIsNotNull();
 
     @Query(value = "SELECT c FROM contrat c WHERE c.signature_gestionnaire IS NOT NULL AND EXTRACT(YEAR FROM c.created_at) = :annee", nativeQuery = true)
     Page<Contrat> findContratSigneeParGestionnaire(int annee, Pageable pageable);

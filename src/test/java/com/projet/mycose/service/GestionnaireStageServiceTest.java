@@ -341,7 +341,7 @@ class GestionnaireStageServiceTest {
         List<Contrat> contrats = List.of(new Contrat());
         Page<Contrat> pageContrats = new PageImpl<>(contrats, PageRequest.of(0, 10), contrats.size());
 
-        when(contratRepository.findContratsBySignatureEmployeurIsNotNullAndSignatureEtudiantIsNotNull(PageRequest.of(0, 10)))
+        when(contratRepository.findContratsBySignatureEmployeurIsNotNullAndSignatureEtudiantIsNotNullAndSignatureGestionnaireIsNotNull(PageRequest.of(0, 10)))
                 .thenReturn(pageContrats);
 
         List<ContratDTO> result = gestionnaireStageService.getAllContratsNonSignes(0);
@@ -353,7 +353,7 @@ class GestionnaireStageServiceTest {
     public void testGetAllContratsNonSignes_NotFound() {
         Page<Contrat> emptyPage = new PageImpl<>(Collections.emptyList(), PageRequest.of(0, 10), 0);
 
-        when(contratRepository.findContratsBySignatureEmployeurIsNotNullAndSignatureEtudiantIsNotNull(PageRequest.of(0, 10)))
+        when(contratRepository.findContratsBySignatureEmployeurIsNotNullAndSignatureEtudiantIsNotNullAndSignatureGestionnaireIsNotNull(PageRequest.of(0, 10)))
                 .thenReturn(emptyPage);
 
         assertThrows(ChangeSetPersister.NotFoundException.class, () -> gestionnaireStageService.getAllContratsNonSignes(0));
@@ -361,7 +361,7 @@ class GestionnaireStageServiceTest {
 
     @Test
     void testGetAmountOfPagesOfContractNonSignees_0() {
-        when(contratRepository.countContratsBySignatureEmployeurIsNotNullAndSignatureEtudiantIsNotNull()).thenReturn(0);
+        when(contratRepository.countContratsBySignatureEmployeurIsNotNullAndSignatureEtudiantIsNotNullAndSignatureGestionnaireIsNotNull()).thenReturn(0);
 
         Integer pages = gestionnaireStageService.getAmountOfPagesOfContractNonSignees();
 
@@ -370,7 +370,7 @@ class GestionnaireStageServiceTest {
 
     @Test
     void testGetAmountOfPagesOfContractNonSignees_10() {
-        when(contratRepository.countContratsBySignatureEmployeurIsNotNullAndSignatureEtudiantIsNotNull()).thenReturn(10);
+        when(contratRepository.countContratsBySignatureEmployeurIsNotNullAndSignatureEtudiantIsNotNullAndSignatureGestionnaireIsNotNull()).thenReturn(10);
 
         Integer pages = gestionnaireStageService.getAmountOfPagesOfContractNonSignees();
 
@@ -379,7 +379,7 @@ class GestionnaireStageServiceTest {
 
     @Test
     void testGetAmountOfPagesOfContractNonSignees_13() {
-        when(contratRepository.countContratsBySignatureEmployeurIsNotNullAndSignatureEtudiantIsNotNull()).thenReturn(13);
+        when(contratRepository.countContratsBySignatureEmployeurIsNotNullAndSignatureEtudiantIsNotNullAndSignatureGestionnaireIsNotNull()).thenReturn(13);
 
         Integer pages = gestionnaireStageService.getAmountOfPagesOfContractNonSignees();
 
