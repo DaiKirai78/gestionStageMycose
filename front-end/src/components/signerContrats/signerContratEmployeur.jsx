@@ -126,7 +126,7 @@ const SignerContratEmployeur = ({ setSelectedContract }) => {
     
 
     return (
-        <div className='w-full h-full bg-orange-light flex flex-col items-center p-8'>
+        <div className='w-full h-full bg-orange-light flex-1 flex flex-col items-center p-8'>
             <h1 className='text-3xl md:text-4xl font-bold text-center mb-5'>{t("signerContrats")}</h1>
             {
                 contrats && contrats.length > 0 ? (

@@ -177,7 +177,7 @@ const AttribuerContrat = () => {
     }
 
     if (loading) return (
-        <div className="flex items-start justify-center min-h-screen p-8">
+        <div className="flex items-start justify-center min-h-full p-8">
             <div className="w-full max-w-3xl bg-white py-14 px-12 rounded-lg shadow-lg border border-gray-200 mt-10">
                 <LoadingSpinner/>
             </div>
@@ -185,7 +185,7 @@ const AttribuerContrat = () => {
     )
 
     return (
-        <div className="flex items-start justify-center min-h-screen p-8">
+        <div className="flex items-start justify-center min-h-full p-8">
             <div className="w-full max-w-3xl bg-white py-14 px-12 rounded-lg shadow-lg border border-gray-200 mt-10">
                 {
                     applications.length > 0 ?
