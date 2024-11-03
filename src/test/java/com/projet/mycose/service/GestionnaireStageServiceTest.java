@@ -1,5 +1,8 @@
 package com.projet.mycose.service;
 
+import com.lowagie.text.Document;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.pdf.PdfWriter;
 import com.projet.mycose.dto.ContratDTO;
 import com.projet.mycose.dto.EnseignantDTO;
 import com.projet.mycose.dto.EtudiantDTO;
@@ -16,7 +19,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.Page;
@@ -29,10 +31,14 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.*;
 import java.util.List;
-import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -335,7 +341,7 @@ class GestionnaireStageServiceTest {
         List<Contrat> contrats = List.of(new Contrat());
         Page<Contrat> pageContrats = new PageImpl<>(contrats, PageRequest.of(0, 10), contrats.size());
 
-        when(contratRepository.findContratsBySignatureGestionnaireIsNull(PageRequest.of(0, 10)))
+        when(contratRepository.findContratsBySignatureEmployeurIsNotNullAndSignatureEtudiantIsNotNull(PageRequest.of(0, 10)))
                 .thenReturn(pageContrats);
 
         List<ContratDTO> result = gestionnaireStageService.getAllContratsNonSignes(0);
@@ -347,7 +353,7 @@ class GestionnaireStageServiceTest {
     public void testGetAllContratsNonSignes_NotFound() {
         Page<Contrat> emptyPage = new PageImpl<>(Collections.emptyList(), PageRequest.of(0, 10), 0);
 
-        when(contratRepository.findContratsBySignatureGestionnaireIsNull(PageRequest.of(0, 10)))
+        when(contratRepository.findContratsBySignatureEmployeurIsNotNullAndSignatureEtudiantIsNotNull(PageRequest.of(0, 10)))
                 .thenReturn(emptyPage);
 
         assertThrows(ChangeSetPersister.NotFoundException.class, () -> gestionnaireStageService.getAllContratsNonSignes(0));
@@ -355,7 +361,7 @@ class GestionnaireStageServiceTest {
 
     @Test
     void testGetAmountOfPagesOfContractNonSignees_0() {
-        when(contratRepository.countBySignatureGestionnaireIsNull()).thenReturn(0);
+        when(contratRepository.countContratsBySignatureEmployeurIsNotNullAndSignatureEtudiantIsNotNull()).thenReturn(0);
 
         Integer pages = gestionnaireStageService.getAmountOfPagesOfContractNonSignees();
 
@@ -364,7 +370,7 @@ class GestionnaireStageServiceTest {
 
     @Test
     void testGetAmountOfPagesOfContractNonSignees_10() {
-        when(contratRepository.countBySignatureGestionnaireIsNull()).thenReturn(10);
+        when(contratRepository.countContratsBySignatureEmployeurIsNotNullAndSignatureEtudiantIsNotNull()).thenReturn(10);
 
         Integer pages = gestionnaireStageService.getAmountOfPagesOfContractNonSignees();
 
@@ -373,7 +379,7 @@ class GestionnaireStageServiceTest {
 
     @Test
     void testGetAmountOfPagesOfContractNonSignees_13() {
-        when(contratRepository.countBySignatureGestionnaireIsNull()).thenReturn(13);
+        when(contratRepository.countContratsBySignatureEmployeurIsNotNullAndSignatureEtudiantIsNotNull()).thenReturn(13);
 
         Integer pages = gestionnaireStageService.getAmountOfPagesOfContractNonSignees();
 
@@ -542,5 +548,88 @@ class GestionnaireStageServiceTest {
             gestionnaireStageService.enregistrerSignature(signature, password, contratId);
         });
         verify(contratRepository, never()).save(any(Contrat.class));
+    }
+
+    @Test
+    void testGetContratSignee_Success() throws IOException {
+        // Arrange
+        Contrat contrat = new Contrat();
+        contrat.setPdf(createTemporaryPdf());
+        contrat.setSignatureGestionnaire(createTemporaryPng());
+        contrat.setSignatureEtudiant(createTemporaryPng());
+        contrat.setSignatureEmployeur(createTemporaryPng());
+        long contratId = 1L;
+        when(contratRepository.findById(contratId)).thenReturn(Optional.of(contrat));
+
+        // Act
+        byte[] result = gestionnaireStageService.getContratSignee(contratId);
+
+        // Asser
+        assertNotNull(result);
+    }
+
+    @Test
+    void testGetContratSignee_ContractNotFound() {
+        // Arrange
+        long contratId = 1L;
+        when(contratRepository.findById(contratId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(NoSuchElementException.class, () -> {
+            gestionnaireStageService.getContratSignee(contratId);
+        });
+    }
+
+    @Test
+    void testGetContratSignee_MissingSignatures() throws IOException {
+        // Arrange
+        Contrat contrat = new Contrat();
+        contrat.setPdf(createTemporaryPdf());
+        contrat.setSignatureGestionnaire(createTemporaryPng());
+        contrat.setSignatureEtudiant(createTemporaryPng());
+        contrat.setSignatureEmployeur(createTemporaryPng());
+
+        long contratId = 1L;
+        contrat.setSignatureGestionnaire(null);
+        when(contratRepository.findById(contratId)).thenReturn(Optional.of(contrat));
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> {
+            gestionnaireStageService.getContratSignee(contratId);
+        });
+    }
+
+    private byte[] createTemporaryPdf() throws IOException {
+        File tempFile = File.createTempFile("test-document-", ".pdf");
+        tempFile.deleteOnExit();
+
+        Document document = new Document();
+
+        try (FileOutputStream fos = new FileOutputStream(tempFile)) {
+            PdfWriter.getInstance(document, fos);
+
+            document.open();
+
+            document.add(new Paragraph("Ceci est un document PDF de test."));
+
+            document.close();
+        }
+
+        return Files.readAllBytes(tempFile.toPath());
+    }
+
+    private byte[] createTemporaryPng() throws IOException {
+        BufferedImage bufferedImage = new BufferedImage(200, 100, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = bufferedImage.createGraphics();
+        g.setPaint(Color.WHITE);
+        g.fillRect(0, 0, bufferedImage.getWidth(), bufferedImage.getHeight());
+        g.setPaint(Color.BLACK);
+        g.drawString("Ceci est une image de test.", 20, 40);
+        g.dispose();
+
+        File tempFile = File.createTempFile("test-signature-", ".png");
+        tempFile.deleteOnExit();
+        javax.imageio.ImageIO.write(bufferedImage, "png", tempFile);
+        return Files.readAllBytes(tempFile.toPath());
     }
 }

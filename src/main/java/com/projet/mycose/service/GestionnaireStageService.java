@@ -118,7 +118,7 @@ public class GestionnaireStageService {
     public List<ContratDTO> getAllContratsNonSignes(int page) throws ChangeSetPersister.NotFoundException {
         PageRequest pageRequest = PageRequest.of(page, LIMIT_PER_PAGE);
 
-        Page<Contrat> contratsRetournessEnPages = contratRepository.findContratsBySignatureGestionnaireIsNull(pageRequest);
+        Page<Contrat> contratsRetournessEnPages = contratRepository.findContratsBySignatureEmployeurIsNotNullAndSignatureEtudiantIsNotNull(pageRequest);
         if(contratsRetournessEnPages.isEmpty()) {
             throw new ChangeSetPersister.NotFoundException();
         }
@@ -127,7 +127,7 @@ public class GestionnaireStageService {
     }
 
     public Integer getAmountOfPagesOfContractNonSignees() {
-        long amountOfRows = contratRepository.countBySignatureGestionnaireIsNull();
+        long amountOfRows = contratRepository.countContratsBySignatureEmployeurIsNotNullAndSignatureEtudiantIsNotNull();
 
         if (amountOfRows == 0)
             return 0;
@@ -198,5 +198,73 @@ public class GestionnaireStageService {
         contratDispo.setSignatureEmployeur(signature.getBytes());
         contratRepository.save(contratDispo);
         return "Signature sauvegardée";
+    }
+
+    public byte[] getContratSignee(long id) throws RuntimeException {
+        Optional<Contrat> contratOpt = contratRepository.findById(id);
+
+        if (contratOpt.isEmpty()) {
+            throw new NoSuchElementException("Aucun contrat trouvé avec ce id " + id);
+        }
+
+        Contrat contrat = contratOpt.get();
+
+        if (!isAllSignatureThere(contrat)) {
+            throw new IllegalArgumentException("Il manque des signature");
+        }
+
+        return getPdfCompletContrat(contrat);
+    }
+
+    private boolean isAllSignatureThere(Contrat contrat) {
+        return contrat.getSignatureGestionnaire() != null &&
+                contrat.getSignatureEtudiant() != null &&
+                contrat.getSignatureEmployeur() != null;
+    }
+
+    private byte[] getPdfCompletContrat(Contrat contrat) throws RuntimeException {
+        try {
+            ByteArrayInputStream pdfInputStream = new ByteArrayInputStream(contrat.getPdf());
+            PdfReader pdfReader = new PdfReader(pdfInputStream);
+
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            PdfStamper stamper = new PdfStamper(pdfReader, outputStream);
+
+            ajouterImagesSurPage(stamper,
+                    pdfReader.getNumberOfPages(),
+                    contrat.getSignatureGestionnaire(),
+                    contrat.getSignatureEtudiant(),
+                    contrat.getSignatureEmployeur());
+
+            stamper.close();
+            pdfReader.close();
+
+            return outputStream.toByteArray();
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur lors de la création du PDF complet du contrat", e);
+        }
+    }
+
+    private void ajouterImagesSurPage(PdfStamper stamper, int pageNumber, byte[]... images) throws RuntimeException {
+        try {
+            PdfContentByte contentByte = stamper.getOverContent(pageNumber);
+
+            float yPosition = 100;
+
+            for (byte[] imageBytes : images) {
+                if (imageBytes != null) {
+                    Image image = Image.getInstance(imageBytes);
+                    image.scaleToFit(500, 700);
+
+                    image.setAbsolutePosition(50, yPosition);
+                    contentByte.addImage(image);
+
+                    yPosition += image.getScaledHeight() + 10;
+                }
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur lors de l'ajout des images au PDF", e);
+        }
     }
 }
