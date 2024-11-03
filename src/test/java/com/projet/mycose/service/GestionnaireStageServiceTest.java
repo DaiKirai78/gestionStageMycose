@@ -2,7 +2,6 @@ package com.projet.mycose.service;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.Paragraph;
-import com.lowagie.text.pdf.PdfDocument;
 import com.lowagie.text.pdf.PdfWriter;
 import com.projet.mycose.dto.ContratDTO;
 import com.projet.mycose.dto.EnseignantDTO;
@@ -20,7 +19,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.Page;
@@ -35,7 +33,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -344,7 +341,7 @@ class GestionnaireStageServiceTest {
         List<Contrat> contrats = List.of(new Contrat());
         Page<Contrat> pageContrats = new PageImpl<>(contrats, PageRequest.of(0, 10), contrats.size());
 
-        when(contratRepository.findContratsBySignatureGestionnaireIsNull(PageRequest.of(0, 10)))
+        when(contratRepository.findContratsBySignatureEmployeurIsNotNullAndSignatureEtudiantIsNotNull(PageRequest.of(0, 10)))
                 .thenReturn(pageContrats);
 
         List<ContratDTO> result = gestionnaireStageService.getAllContratsNonSignes(0);
@@ -356,7 +353,7 @@ class GestionnaireStageServiceTest {
     public void testGetAllContratsNonSignes_NotFound() {
         Page<Contrat> emptyPage = new PageImpl<>(Collections.emptyList(), PageRequest.of(0, 10), 0);
 
-        when(contratRepository.findContratsBySignatureGestionnaireIsNull(PageRequest.of(0, 10)))
+        when(contratRepository.findContratsBySignatureEmployeurIsNotNullAndSignatureEtudiantIsNotNull(PageRequest.of(0, 10)))
                 .thenReturn(emptyPage);
 
         assertThrows(ChangeSetPersister.NotFoundException.class, () -> gestionnaireStageService.getAllContratsNonSignes(0));
@@ -364,7 +361,7 @@ class GestionnaireStageServiceTest {
 
     @Test
     void testGetAmountOfPagesOfContractNonSignees_0() {
-        when(contratRepository.countBySignatureGestionnaireIsNull()).thenReturn(0);
+        when(contratRepository.countContratsBySignatureEmployeurIsNotNullAndSignatureEtudiantIsNotNull()).thenReturn(0);
 
         Integer pages = gestionnaireStageService.getAmountOfPagesOfContractNonSignees();
 
@@ -373,7 +370,7 @@ class GestionnaireStageServiceTest {
 
     @Test
     void testGetAmountOfPagesOfContractNonSignees_10() {
-        when(contratRepository.countBySignatureGestionnaireIsNull()).thenReturn(10);
+        when(contratRepository.countContratsBySignatureEmployeurIsNotNullAndSignatureEtudiantIsNotNull()).thenReturn(10);
 
         Integer pages = gestionnaireStageService.getAmountOfPagesOfContractNonSignees();
 
@@ -382,7 +379,7 @@ class GestionnaireStageServiceTest {
 
     @Test
     void testGetAmountOfPagesOfContractNonSignees_13() {
-        when(contratRepository.countBySignatureGestionnaireIsNull()).thenReturn(13);
+        when(contratRepository.countContratsBySignatureEmployeurIsNotNullAndSignatureEtudiantIsNotNull()).thenReturn(13);
 
         Integer pages = gestionnaireStageService.getAmountOfPagesOfContractNonSignees();
 
