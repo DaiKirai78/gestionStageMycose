@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -161,6 +162,15 @@ public class GestionnaireController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Une erreur inattendue s'est produite.");
+        }
+    }
+
+    @GetMapping("/contrat/print")
+    public ResponseEntity<?> imprimerContrat(@RequestParam long id) {
+        try {
+            return ResponseEntity.ok(gestionnaireStageService.getContratSignee(id));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("");
         }
     }
 
