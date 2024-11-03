@@ -1,5 +1,9 @@
 package com.projet.mycose.service;
 
+import com.lowagie.text.Image;
+import com.lowagie.text.pdf.PdfContentByte;
+import com.lowagie.text.pdf.PdfReader;
+import com.lowagie.text.pdf.PdfStamper;
 import com.projet.mycose.dto.ContratDTO;
 import com.projet.mycose.dto.EnseignantDTO;
 import com.projet.mycose.dto.EtudiantDTO;
@@ -21,8 +25,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -139,7 +146,7 @@ public class GestionnaireStageService {
     public List<ContratDTO> getAllContratsSignes(int page, int annee) throws ChangeSetPersister.NotFoundException {
         PageRequest pageRequest = PageRequest.of(page, LIMIT_PER_PAGE);
 
-        Page<Contrat> contratsRetournessEnPages = contratRepository.findContratsBySignatureGestionnaireIsNotNullAndCreatedAt_Year(annee, pageRequest);
+        Page<Contrat> contratsRetournessEnPages = contratRepository.findContratSigneeParGestionnaire(annee, pageRequest);
         if(contratsRetournessEnPages.isEmpty()) {
             throw new ChangeSetPersister.NotFoundException();
         }
@@ -148,7 +155,7 @@ public class GestionnaireStageService {
     }
 
     public Integer getAmountOfPagesOfContractSignees(int annee) {
-        long amountOfRows = contratRepository.countBySignatureGestionnaireIsNotNullAndCreatedAt_Year(annee);
+        long amountOfRows = contratRepository.countByContratSigneeParGestionnaire(annee);
 
         if (amountOfRows == 0)
             return 0;

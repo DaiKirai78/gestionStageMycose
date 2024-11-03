@@ -391,13 +391,13 @@ class GestionnaireStageServiceTest {
         List<Contrat> contrats = List.of(contrat1, contrat2);
         Page<Contrat> contratPage = new PageImpl<>(contrats, PageRequest.of(page, 10), contrats.size());
 
-        when(contratRepository.findContratsBySignatureGestionnaireIsNotNullAndCreatedAt_Year(annee, PageRequest.of(page, 10)))
+        when(contratRepository.findContratSigneeParGestionnaire(annee, PageRequest.of(page, 10)))
                 .thenReturn(contratPage);
 
         List<ContratDTO> result = gestionnaireStageService.getAllContratsSignes(page, annee);
 
         assertEquals(2, result.size());
-        verify(contratRepository).findContratsBySignatureGestionnaireIsNotNullAndCreatedAt_Year(annee, PageRequest.of(page, 10));
+        verify(contratRepository).findContratSigneeParGestionnaire(annee, PageRequest.of(page, 10));
     }
 
     @Test
@@ -407,7 +407,7 @@ class GestionnaireStageServiceTest {
 
         Page<Contrat> emptyPage = new PageImpl<>(List.of());
 
-        when(contratRepository.findContratsBySignatureGestionnaireIsNotNullAndCreatedAt_Year(annee, PageRequest.of(page, 10)))
+        when(contratRepository.findContratSigneeParGestionnaire(annee, PageRequest.of(page, 10)))
                 .thenReturn(emptyPage);
 
         assertThrows(ChangeSetPersister.NotFoundException.class, () -> {
@@ -420,7 +420,7 @@ class GestionnaireStageServiceTest {
         int annee = 2024;
         int amountOfRows = 25;
 
-        when(contratRepository.countBySignatureGestionnaireIsNotNullAndCreatedAt_Year(annee))
+        when(contratRepository.countByContratSigneeParGestionnaire(annee))
                 .thenReturn(amountOfRows);
 
         int result = gestionnaireStageService.getAmountOfPagesOfContractSignees(annee);
@@ -432,7 +432,7 @@ class GestionnaireStageServiceTest {
     void testGetAmountOfPagesOfContractSignees_NoContracts() {
         int annee = 2024;
 
-        when(contratRepository.countBySignatureGestionnaireIsNotNullAndCreatedAt_Year(annee))
+        when(contratRepository.countByContratSigneeParGestionnaire(annee))
                 .thenReturn(0);
 
         int result = gestionnaireStageService.getAmountOfPagesOfContractSignees(annee);
