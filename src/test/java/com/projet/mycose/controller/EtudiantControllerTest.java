@@ -329,7 +329,7 @@ public class EtudiantControllerTest {
                 .andReturn();
 
         // Assert
-        assertEquals(MissingServletRequestPartException.class, Objects.requireNonNull(result.getResolvedException()).getClass(), "Expected MissingServletRequestParameterException.");
+        assertEquals(MissingServletRequestPartException.class, Objects.requireNonNull(result.getResolvedException()).getClass(), "Expected MissingServletRequestPartException.");
 
         String errorMessage = result.getResponse().getErrorMessage();
         assertEquals("Required part 'signature' is not present.", errorMessage, "Error message does not match.");
