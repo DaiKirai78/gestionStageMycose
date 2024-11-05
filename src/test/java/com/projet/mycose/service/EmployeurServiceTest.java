@@ -1,15 +1,12 @@
 package com.projet.mycose.service;
 
 import com.projet.mycose.dto.ContratDTO;
-import com.projet.mycose.dto.LoginDTO;
 import com.projet.mycose.modele.*;
 import com.projet.mycose.modele.auth.Credentials;
 import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.repository.ContratRepository;
 import com.projet.mycose.repository.EmployeurRepository;
-import com.projet.mycose.repository.OffreStageRepository;
 import com.projet.mycose.dto.EmployeurDTO;
-import com.projet.mycose.dto.OffreStageDTO;
 import com.projet.mycose.repository.UtilisateurRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -25,8 +22,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -47,9 +44,6 @@ public class EmployeurServiceTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
-
-    @Mock
-    private OffreStageRepository offreStageRepositoryMock;
 
     @Mock
     private ContratRepository contratRepositoryMock;
@@ -209,7 +203,6 @@ public class EmployeurServiceTest {
     @Test
     public void testGetAllContratsNonSignees_Null() {
         // Arrange
-        String token = "unTokenValide";
         Long employeurId = 1L;
         int page = 0;
         PageRequest pageRequest = PageRequest.of(page, 10);
@@ -222,7 +215,7 @@ public class EmployeurServiceTest {
         List<ContratDTO> resultat = employeurService.getAllContratsNonSignes(page);
 
         // Assert
-        assertNull(resultat);
+        assertEquals(resultat, List.of());
 
         verify(utilisateurService, times(1)).getMyUserId();
         verify(contratRepositoryMock, times(1)).findContratsBySignatureEmployeurIsNullAndEmployeur_Id(employeurId, pageRequest);
@@ -257,7 +250,7 @@ public class EmployeurServiceTest {
     }
 
     @Test
-    public void testEnregistrerSignature_Success() throws Exception {
+    public void testEnregistrerSignature_Success() {
         // Arrange
         Long employeurId = 1L;
         Long contratId = 1L;
@@ -287,7 +280,7 @@ public class EmployeurServiceTest {
     }
 
     @Test
-    public void testEnregistrerSignature_WrongPassword() throws Exception {
+    public void testEnregistrerSignature_WrongPassword() {
         // Arrange
         Long contratId = 1L;
         String password = "motDePasse";
@@ -305,15 +298,17 @@ public class EmployeurServiceTest {
         when(utilisateurRepository.findUtilisateurById(1L)).thenReturn(Optional.of(employeur));
 
         // Act
-        String result = employeurService.enregistrerSignature(signature, password, contratId);
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () ->
+                employeurService.enregistrerSignature(signature, password, contratId)
+        );
 
         // Assert
-        assertEquals("Mauvais mot de passe", result);
+        assertEquals("401 UNAUTHORIZED \"Email ou mot de passe invalide.\"", exception.getMessage());
         verify(contratRepositoryMock, never()).save(any(Contrat.class));
     }
 
     @Test
-    public void testEnregistrerSignature_ContratNotFound() throws Exception {
+    public void testEnregistrerSignature_ContratNotFound() {
         // Arrange
         Long contratId = 1L;
         String password = "motDePasse";
@@ -332,15 +327,17 @@ public class EmployeurServiceTest {
         when(contratRepositoryMock.findById(contratId)).thenReturn(Optional.empty());
 
         // Act
-        String result = employeurService.enregistrerSignature(signature, password, contratId);
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () ->
+                employeurService.enregistrerSignature(signature, password, contratId)
+        );
 
         // Assert
-        assertEquals("Aucun contrat trouvé", result);
+        assertEquals("404 NOT_FOUND \"Contrat not found\"", exception.getMessage());
         verify(contratRepositoryMock, never()).save(any(Contrat.class));
     }
 
     @Test
-    public void testEnregistrerSignature_UtilisateurNotFound() throws Exception {
+    public void testEnregistrerSignature_UtilisateurNotFound() {
         // Arrange
         Long contratId = 1L;
         String password = "motDePasse";
@@ -351,10 +348,12 @@ public class EmployeurServiceTest {
         when(utilisateurRepository.findUtilisateurById(1L)).thenReturn(Optional.empty());
 
         // Act
-        String result = employeurService.enregistrerSignature(signature, password, contratId);
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () ->
+                employeurService.enregistrerSignature(signature, password, contratId)
+        );
 
         // Assert
-        assertEquals("L'utilisateur n'existe pas", result);
+        assertEquals("404 NOT_FOUND \"Utilisateur not found\"", exception.getMessage());
         verify(contratRepositoryMock, never()).save(any(Contrat.class));
     }
 
