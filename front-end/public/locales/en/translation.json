@@ -261,5 +261,8 @@
     "yearRequired": "The year is required.",
     "sessionRequired": "The session is required.",
     "choisirAnnee": "Choose a year",
-    "choisirSession": "Choose a session"
+    "choisirSession": "Choose a session",
+    "AUTOMNE": "Autumn",
+    "HIVER": "Winter",
+    "ETE": "Summer"
 }

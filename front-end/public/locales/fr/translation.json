@@ -261,5 +261,8 @@
     "yearRequired": "L'année est requise.",
     "sessionRequired": "La session est requise.",
     "choisirAnnee": "Choisir une année",
-    "choisirSession": "Choisir une session"
+    "choisirSession": "Choisir une session",
+    "AUTOMNE": "Automne",
+    "HIVER": "Hiver",
+    "ETE": "Été"
 }
