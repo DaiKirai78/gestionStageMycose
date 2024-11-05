@@ -54,6 +54,8 @@ public class OffreStageService {
     public FichierOffreStageDTO convertToDTO(FichierOffreStage fichierOffreStage) {
         FichierOffreStageDTO fichierOffreStageDTO = modelMapper.map(fichierOffreStage, FichierOffreStageDTO.class);
 
+        fichierOffreStageDTO.setAnnee(fichierOffreStage.getAnnee().getValue());
+
         // Convert byte[] data to Base64 string
         fichierOffreStageDTO.setFileData(Base64.getEncoder().encodeToString(fichierOffreStage.getData()));
 
@@ -71,6 +73,8 @@ public class OffreStageService {
         // Convert Base64 string back to byte[]
         fichierOffreStage.setData(Base64.getDecoder().decode(dto.getFileData()));
 
+        fichierOffreStage.setAnnee(Year.of(dto.getAnnee()));
+
         if (dto.getCreateur_id() != null) {
             Utilisateur createur = utilisateurRepository.findById(dto.getCreateur_id())
                     .orElseThrow(() -> new EntityNotFoundException("Utilisateur not found with ID: " + dto.getCreateur_id()));
@@ -85,6 +89,8 @@ public class OffreStageService {
     public FormulaireOffreStageDTO convertToDTO(FormulaireOffreStage formulaireOffreStage) {
         FormulaireOffreStageDTO formulaireOffreStageDTO = modelMapper.map(formulaireOffreStage, FormulaireOffreStageDTO.class);
 
+        formulaireOffreStageDTO.setAnnee(formulaireOffreStage.getAnnee().getValue());
+
         if (formulaireOffreStage.getCreateur() != null) {
             formulaireOffreStageDTO.setCreateur_id(formulaireOffreStage.getCreateur().getId());
         }
@@ -94,6 +100,8 @@ public class OffreStageService {
 
     public FormulaireOffreStage convertToEntity(FormulaireOffreStageDTO dto) {
         FormulaireOffreStage formulaireOffreStage = modelMapper.map(dto, FormulaireOffreStage.class);
+
+        formulaireOffreStage.setAnnee(Year.of(dto.getAnnee()));
 
         if (dto.getCreateur_id() != null) {
             Utilisateur createur = utilisateurRepository.findById(dto.getCreateur_id())
