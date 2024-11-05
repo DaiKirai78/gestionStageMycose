@@ -1,5 +1,6 @@
 package com.projet.mycose.service;
 
+import com.projet.mycose.dto.ContratDTO;
 import com.projet.mycose.dto.EtudiantDTO;
 import com.projet.mycose.dto.OffreStageDTO;
 import com.projet.mycose.modele.*;
@@ -8,6 +9,7 @@ import com.projet.mycose.repository.EtudiantRepository;
 import com.projet.mycose.repository.OffreStageRepository;
 import com.projet.mycose.repository.UtilisateurRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -22,6 +24,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -142,5 +145,33 @@ public class EtudiantService {
         }
         contratRepository.save(contratDispo);
         return "Signature sauvegardée";
+    }
+
+    public List<ContratDTO> getAllContratsNonSignes(int page) {
+        Long etudiantId = utilisateurService.getMyUserId();
+        PageRequest pageRequest = PageRequest.of(page, LIMIT_PER_PAGE);
+        Page<Contrat> contratsRetournessEnPages = contratRepository.findContratsBySignatureEtudiantIsNullAndEtudiant_Id(etudiantId, pageRequest);
+        if(contratsRetournessEnPages.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return contratsRetournessEnPages.stream().map(ContratDTO::toDTO).toList();
+    }
+
+    public Integer getAmountOfPagesOfContractNonSignees() {
+        Long etudiantId = utilisateurService.getMyUserId();
+        long amountOfRows = contratRepository.countBySignatureEtudiantIsNullAndEtudiantId(etudiantId);
+
+        if (amountOfRows == 0)
+            return 0;
+
+        int nombrePages = (int) Math.floor((double) amountOfRows / LIMIT_PER_PAGE);
+
+        if (amountOfRows % 10 > 0) {
+            // Return ++ (équivalent -> nombrePage + 1) parce que
+            // floor(13/10) = 1 mais il y a 2 page et pas 1
+            nombrePages++;
+        }
+
+        return nombrePages;
     }
 }

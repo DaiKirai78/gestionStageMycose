@@ -1,5 +1,6 @@
 package com.projet.mycose.controller;
 
+import com.projet.mycose.dto.ContratDTO;
 import com.projet.mycose.dto.OffreStageDTO;
 import com.projet.mycose.security.exception.UserNotFoundException;
 import com.projet.mycose.service.EtudiantService;
@@ -82,4 +83,19 @@ public class EtudiantController {
                 .body(responseMessage);
     }
 
+    @GetMapping("/getContratsNonSignees")
+    public ResponseEntity<List<ContratDTO>> getAllContratsNonSignes(@RequestParam int page) {
+        List<ContratDTO> contrats = etudiantService.getAllContratsNonSignes(page);
+        return ResponseEntity.ok(contrats);
+    }
+
+    @GetMapping("/pagesContrats")
+    public ResponseEntity<Integer> getAmountOfPagesOfCandidaturesNonSignees() {
+        try{
+            return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
+                    etudiantService.getAmountOfPagesOfContractNonSignees());
+        } catch(Exception e) {
+            return ResponseEntity.noContent().build();
+        }
+    }
 }
