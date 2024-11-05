@@ -28,6 +28,8 @@ function FileOffreStage() {
     const [selectedYear, setSelectedYear] = useState("");
     const [sessions, setSessions] = useState([]);
     const [selectedSession, setSelectedSession] = useState("");
+    const [yearsError, setYearsError] = useState("");
+    const [sessionsError, setSessionsError] = useState("");
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -145,9 +147,6 @@ function FileOffreStage() {
             }
         }
 
-        const formDataObject = Object.fromEntries(formData.entries());
-        console.log("Données envoyés:", formDataObject);
-
         try {
             const response = await axios.post("http://localhost:8080/api/offres-stages/upload-file", formData, {
                 headers: {
@@ -155,10 +154,7 @@ function FileOffreStage() {
                     "Content-Type": "multipart/form-data",
                 },
             });
-            const formDataObject = Object.fromEntries(formData.entries());
-            console.log(formDataObject);
             console.log("Fichier envoyé avec succès :", response.data);
-            console.log("étudiants sélectionnés :", selectedStudents);
             setSuccessMessage(t("fileUploadSuccess"));
             setUploadError("");
 
@@ -217,6 +213,20 @@ function FileOffreStage() {
             hasError = true;
         } else {
             setStudentSelectionError("");
+        }
+
+        if (!selectedYear) {
+            setYearsError("yearRequired");
+            hasError = true;
+        } else {
+            setYearsError("");
+        }
+
+        if (!selectedSession) {
+            setSessionsError("sessionRequired");
+            hasError = true;
+        } else {
+            setSessionsError("");
         }
 
         if (hasError) return;
@@ -358,36 +368,40 @@ function FileOffreStage() {
             <div>
                 <label className="block mb-2 text-sm font-medium text-black">{t("choisirAnnee")}</label>
                 <select
-                    className="block w-full p-2 border border-black rounded-md bg-transparent"
+                    className={`block w-full p-2 border border-black rounded-md ${yearsError ? 'border-red-500' : 'border-black'} bg-transparent`}
                     value={selectedYear}
                     onChange={(e) => {
                         changeYearValue(e);
+                        setYearsError("");
                     }}                >
-                    <option value="">{t("choisirAnnee")}</option>
+                    <option value="" className={"text-center"}>-- {t("choisirAnnee")} --</option>
                     {years.map((year, index) => (
                         <option key={index} value={year}>
                             {year}
                         </option>
                     ))}
                 </select>
+                {yearsError && <p className="text-red-500 text-sm">{t("yearRequired")}</p>}
             </div>
 
             {/* Input et label pour la session */}
             <div>
-                <label className="block mb-2 text-sm font-medium text-black">{t("choisirSession")}</label>
+                <label className="block mb-2 text-sm font-medium text-black">-- {t("choisirSession")} --</label>
                 <select
-                    className="block w-full p-2 border border-black rounded-md bg-transparent"
+                    className={`block w-full p-2 border border-black rounded-md ${programmeError ? 'border-red-500' : 'border-black'} bg-transparent`}
                     value={selectedSession}
                     onChange={(e) => {
                         changeSessionValue(e);
+                        setSessionsError("");
                     }}                >
-                    <option value="">{t("choisirSession")}</option>
+                    <option value="" className={"text-center"}>{t("choisirSession")}</option>
                     {sessions.map((session, index) => (
                         <option key={index} value={session}>
                             {session}
                         </option>
                     ))}
                 </select>
+                {sessionsError && <p className="text-red-500 text-sm">{t("sessionRequired")}</p>}
             </div>
 
             {/* Section pour choisir si l'offre est privée ou publique */}

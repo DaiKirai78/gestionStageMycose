@@ -257,5 +257,9 @@
     "summonStudent": "Convoquer l'étudiant",
     "date": "Date",
     "time": "Heure",
-    "summonLocation": "Lieu de la convocation"
+    "summonLocation": "Lieu de la convocation",
+    "yearRequired": "L'année est requise.",
+    "sessionRequired": "La session est requise.",
+    "choisirAnnee": "Choisir une année",
+    "choisirSession": "Choisir une session"
 }
