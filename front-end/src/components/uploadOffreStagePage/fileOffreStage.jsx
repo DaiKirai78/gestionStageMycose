@@ -386,7 +386,7 @@ function FileOffreStage() {
 
             {/* Input et label pour la session */}
             <div>
-                <label className="block mb-2 text-sm font-medium text-black">-- {t("choisirSession")} --</label>
+                <label className="block mb-2 text-sm font-medium text-black">{t("choisirSession")}</label>
                 <select
                     className={`block w-full p-2 border border-black rounded-md ${programmeError ? 'border-red-500' : 'border-black'} bg-transparent`}
                     value={selectedSession}
@@ -394,7 +394,7 @@ function FileOffreStage() {
                         changeSessionValue(e);
                         setSessionsError("");
                     }}                >
-                    <option value="" className={"text-center"}>{t("choisirSession")}</option>
+                    <option value="" className={"text-center"}>-- {t("choisirSession")} --</option>
                     {sessions.map((session, index) => (
                         <option key={index} value={session}>
                             {session}
