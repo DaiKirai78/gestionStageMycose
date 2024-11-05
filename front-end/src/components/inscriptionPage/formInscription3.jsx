@@ -181,10 +181,10 @@ function FormInscription3({prenom, nom, email, telephone, setStep, role, nomOrga
     return (
         <>
             <div className='flex flex-col px-10'>
-                <form method="get" className='flex flex-col sm:gap-5 gap-3 select-none'>
+                <form method="get" className='flex flex-col sm:gap-5 gap-3'>
                     <div>
                         {(errorKeyResponse !== "") ? renderMessageErreur() : null}
-                        <div className="w-full">
+                        <div className="w-full select-none">
                             <Input label={t("inputLabelPassword")} color='black' size='lg' 
                             onChange={(e) => {changePasswordValue(e);}}
                             type={isPasswordHidden ? 'password' : "text"}
@@ -212,7 +212,7 @@ function FormInscription3({prenom, nom, email, telephone, setStep, role, nomOrga
                         </div>
                     </div>
                     <div>
-                        <div className="w-full">
+                        <div className="w-full select-none">
                             <Input label={t("inputLabelPasswordConfirmation")} color='black' size='lg'
                             onChange={(e) => {changePasswordConfValue(e);}}
                             type={isConfirmPasswordHidden ? 'password' : "text"}
