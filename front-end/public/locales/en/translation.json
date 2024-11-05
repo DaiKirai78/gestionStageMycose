@@ -257,5 +257,9 @@
     "time": "Time",
     "summonLocation": "Summon location",
     "erreurNoSignature": "No signature written",
-    "wrongPassword": "Wrong password"
+    "wrongPassword": "Wrong password",
+    "yearRequired": "The year is required.",
+    "sessionRequired": "The session is required.",
+    "choisirAnnee": "Choose a year",
+    "choisirSession": "Choose a session"
 }
