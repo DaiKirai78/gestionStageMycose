@@ -36,12 +36,8 @@ public class EmployeurController {
 
     @PostMapping("/getContratsNonSignees")
     public ResponseEntity<List<ContratDTO>> getContrats(@RequestParam int pageNumber) {
-        try {
             return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
                     employeurService.getAllContratsNonSignes(pageNumber));
-        } catch (Exception e) {
-            return ResponseEntity.noContent().build();
-        }
     }
 
     @PostMapping(value = "/enregistrerSignature")
@@ -50,22 +46,14 @@ public class EmployeurController {
             @RequestParam Long contratId,
             @RequestParam String password
     ) {
-        try {
             return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
                     employeurService.enregistrerSignature(signature, password, contratId));
-        } catch (Exception e) {
-            return ResponseEntity.noContent().build();
-        }
     }
 
     @GetMapping("/pagesContrats")
     public ResponseEntity<Integer> getAmountOfPagesOfCandidaturesNonSignees() {
-        try{
             return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
                     employeurService.getAmountOfPagesOfContractNonSignees());
-        } catch(Exception e) {
-            return ResponseEntity.noContent().build();
-        }
     }
 }
 
