@@ -29,7 +29,7 @@ public class UploadFicherOffreStageDTO {
 
     private OffreStage.SessionEcole session;
 
-    private int annee;
+    private Integer annee;
 
     @PreUpdate
     public void preUpdate() {
