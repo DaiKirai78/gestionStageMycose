@@ -397,7 +397,7 @@ function FileOffreStage() {
                     <option value="" className={"text-center"}>-- {t("choisirSession")} --</option>
                     {sessions.map((session, index) => (
                         <option key={index} value={session}>
-                            {session}
+                            {t(session)}
                         </option>
                     ))}
                 </select>
