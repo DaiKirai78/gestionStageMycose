@@ -19,8 +19,10 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
@@ -137,7 +139,7 @@ public class GestionnaireController {
     }
 
     @GetMapping("/contrats/signes/anneeminimum")
-    public ResponseEntity<Integer> getYearFirstContratUploaded() {
+    public ResponseEntity<List<LocalDateTime>> getYearFirstContratUploaded() {
         return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
                 gestionnaireStageService.getYearFirstContratUploaded());
     }
