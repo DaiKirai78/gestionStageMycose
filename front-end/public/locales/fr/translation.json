@@ -264,5 +264,10 @@
     "choisirSession": "Choisir une session",
     "AUTOMNE": "Automne",
     "HIVER": "Hiver",
-    "ETE": "Été"
+    "ETE": "Été",
+    "afficherFiltres": "Afficher les filtres",
+    "masquerFiltres": "Masquer les filtres",
+    "annees": "Années",
+    "sessions": "Sessions",
+    "eraseFilters": "Effacer les filtres"
 }

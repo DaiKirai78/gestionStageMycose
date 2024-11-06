@@ -3,7 +3,6 @@ package com.projet.mycose.controller;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.projet.mycose.dto.*;
 import com.projet.mycose.modele.OffreStage;
-import com.projet.mycose.modele.Programme;
 import com.projet.mycose.service.ApplicationStageService;
 import com.projet.mycose.service.OffreStageService;
 import jakarta.validation.ConstraintViolationException;
@@ -15,9 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
-import java.time.Year;
 import java.util.*;
-import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/api/offres-stages")
@@ -107,7 +104,6 @@ public class OffreStageController {
         return ResponseEntity.status(HttpStatus.OK).body(offreStageDTOList);
     }
 
-
     // On passe le id de l'offre de stage
     @GetMapping("/offre-applications/{id}")
     public ResponseEntity<List<EtudiantDTO>> getAllEtudiantQuiOntAppliquesAUneOffre(@PathVariable Long id) {
@@ -137,8 +133,6 @@ public class OffreStageController {
         List<OffreStageDTO> offreStageDTOList = offreStageService.getAvailableOffreStagesForEtudiantFiltered(year, sessionEcole);
         return ResponseEntity.status(HttpStatus.OK).body(offreStageDTOList);
     }
-
-
 
     @PostMapping("/getOffresPosted")
     public ResponseEntity<List<OffreStageDTO>> getOffresStagesPubliees(@RequestParam int pageNumber) {
