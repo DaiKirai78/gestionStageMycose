@@ -14,6 +14,7 @@ function SignerContratGestionnaire({setSelectedContract}) {
     const [isContratsSignesView, setIsContratsSignesView] = useState(true);
 
     useEffect(() => {
+        fetchAnneeMinimum()
         fetchPages();
     }, [])
 
@@ -49,6 +50,32 @@ function SignerContratGestionnaire({setSelectedContract}) {
                 ...prevPages,
                 maxPages: data
             }));
+        } catch (e) {
+            console.log("Une erreur est survenue " + e);
+        }
+    }
+
+    async function fetchAnneeMinimum() {
+        const token = localStorage.getItem("token");
+
+        try {
+            const response = await fetch('http://localhost:8080/gestionnaire/contrats/signes/anneeminimum', {
+                method: 'GET',
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const data = await response.text();
+
+            if (!data) {
+                throw new Error('No data');
+            }
+
+            console.log((JSON).parse(data));
+
         } catch (e) {
             console.log("Une erreur est survenue " + e);
         }
