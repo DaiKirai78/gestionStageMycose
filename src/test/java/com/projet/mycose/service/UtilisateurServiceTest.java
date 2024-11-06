@@ -446,4 +446,32 @@ public class UtilisateurServiceTest {
             utilisateurService.getMe();
         });
     }
+
+    @Test
+    void testGetUtilisateurPrenomNom_Success() {
+        Long userId = 1L;
+        Utilisateur utilisateur = new Etudiant();
+        utilisateur.setPrenom("Jean");
+        utilisateur.setNom("Dupont");
+
+        when(utilisateurRepository.findById(userId)).thenReturn(Optional.of(utilisateur));
+
+        String result = utilisateurService.getUtilisateurPrenomNom(userId);
+        assertEquals("Jean Dupont", result);
+
+        verify(utilisateurRepository, times(1)).findById(userId);
+    }
+
+    @Test
+    void testGetUtilisateurPrenomNom_UserNotFound() {
+        Long userId = 2L;
+
+        when(utilisateurRepository.findById(userId)).thenReturn(Optional.empty());
+
+        assertThrows(UserNotFoundException.class, () -> {
+            utilisateurService.getUtilisateurPrenomNom(userId);
+        });
+
+        verify(utilisateurRepository, times(1)).findById(userId);
+    }
 }

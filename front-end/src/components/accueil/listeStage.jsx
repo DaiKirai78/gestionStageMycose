@@ -26,7 +26,6 @@ const listeStage = () => {
 
     const [annee, setAnnee] = useState("");
     const [session, setSession] = useState("");
-    const [anneeErrorKey, setAnneeErrorKey] = useState("");
 
     const {t} = useTranslation();
 
@@ -126,19 +125,10 @@ const listeStage = () => {
         setRecherche(e.target.value)
     }
 
-    function isValidYear() {
-        const regex = /^[0-9]{4}$/;
-        if (!regex.test(annee)) {
-            setAnneeErrorKey("erreurAnnee");
-        }
-
-        return regex.test(annee);
-    }
-
     async function rechercher(e) {
         e.preventDefault();
 
-        if (recherche !== "" && isValidYear()) {
+        if (recherche !== "") {
             setUneRechercheEstFaite(true);
             setIsSearching(true);
             setRecherchePageActuelle(0);
@@ -289,11 +279,9 @@ const listeStage = () => {
                     }
                 </div>
                 <FiltreSession annee={annee} 
-                                anneeErrorKey={anneeErrorKey} 
                                 session={session} t
                                 setAnnee={setAnnee} 
-                                setSession={setSession}
-                                setAnneeErrorKey={setAnneeErrorKey} />
+                                setSession={setSession} />
 
                 <div className="mb-7">
                     <hr/>

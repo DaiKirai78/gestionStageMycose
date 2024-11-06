@@ -7,7 +7,7 @@ import { Input } from '@material-tailwind/react';
 import InputErrorMessage from '../inputErrorMesssage';
 import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa';
 
-const SignerContrat = ({ selectedContract, setSelectedContract }) => {
+const SignerContrat = ({ selectedContract, setSelectedContract, userRole }) => {
     const navigate = useNavigate();
     const { t } = useTranslation();
     const canvasRef = useRef();
@@ -48,7 +48,7 @@ const SignerContrat = ({ selectedContract, setSelectedContract }) => {
             formData.append("signature", dataURLtoFile(signaturePngbase64, "signature.png"));
     
             const response = await fetch(
-                `http://localhost:8080/entreprise/enregistrerSignature?contratId=${selectedContract.id}&password=${password}`, {
+                `http://localhost:8080/${getUserRoleUrlPart()}/enregistrerSignature?contratId=${selectedContract.id}&password=${password}`, {
                 method: 'POST',
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -70,6 +70,19 @@ const SignerContrat = ({ selectedContract, setSelectedContract }) => {
             navigate("/contrats");
         } catch (e) {
             console.log("Une erreur est survenue " + e);
+        }
+    }
+
+    function getUserRoleUrlPart() {
+        switch (userRole) {
+            case "EMPLOYEUR":
+                return "entreprise";
+            case "ETUDIANT":
+                return "etudiant";
+            case "GESTIONNAIRE_STAGE":
+                return "gestionnaire";
+            default:
+                new Error("Mauvais role d'utilisateur pour fetch");
         }
     }
 
@@ -100,7 +113,7 @@ const SignerContrat = ({ selectedContract, setSelectedContract }) => {
 
     return (
         selectedContract ?
-        <div className='w-full h-full bg-orange-light flex flex-col items-center p-8'>
+        <div className='w-full h-full bg-orange-light flex flex-col items-center p-8 flex-1'>
             <h1 className='text-3xl md:text-4xl font-bold text-center mb-5'>{t("signContractOf")} {selectedContract.nomPrenom}</h1>
             <h1 className='mb-2'>{t("signature")} :</h1>
             <SignerContratCanvas 

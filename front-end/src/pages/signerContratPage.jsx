@@ -4,11 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import { useOutletContext } from "react-router-dom";
 import PageIsLoading from '../components/pageIsLoading.jsx';
 import SignerContratEmployeur from '../components/signerContrats/signerContratEmployeur.jsx';
+import SignerContratEtudiant from '../components/signerContrats/signerContratEtudiant.jsx';
 
 const AccueilPage = () => {
     const [cvStatus, setCvStatus] = useState(null);
     const navigate = useNavigate();
-    const {userInfo, setUserInfo, setSelectedContract, selectedContract } = useOutletContext();
+    const {userInfo, setUserInfo, setSelectedContract } = useOutletContext();
     const [isFetching, setIsFetching] = useState(true);
 
     useEffect(() => {
@@ -49,7 +50,7 @@ const AccueilPage = () => {
     function getEtudiantPage() {
         
         if (cvStatus === "ACCEPTED") {
-            return <p>Contrat etudiant</p>;
+            return <SignerContratEtudiant setSelectedContract={setSelectedContract} />;
         }
         else {
             navigate("/accueil")

@@ -178,7 +178,7 @@ function FormOffreStage() {
         }
 
         // Validation pour 'entrepriseName'
-        if (!formData.entrepriseName) {
+        if (role === "GESTIONNAIRE_STAGE" && !formData.entrepriseName) {
             errors.entrepriseName = t("entrepriseNameRequired");
             valid = false;
         }
@@ -313,21 +313,24 @@ function FormOffreStage() {
         <form onSubmit={handleSubmitForm} className="w-full">
             <h1 className="text-2xl text-black">{t("companyDetails")}</h1>
             <hr className="border-1 border-black"/>
-            <div className="space-y-2">
-                <label htmlFor="entrepriseName" className="block text-sm font-medium text-black mt-4">
-                    {t("companyName")}
-                </label>
-                <input
-                    type="text"
-                    id="entrepriseName"
-                    name="entrepriseName"
-                    value={formData.entrepriseName}
-                    onChange={handleInputChange}
-                    className={`mt-1 p-2 block w-full border ${error.entrepriseName ? 'border-red-500' : 'border-black'} rounded-md bg-transparent`}
-                    autoComplete="organization"
-                />
-                {error.entrepriseName && <p className="text-red-500 text-sm mt-1">{error.entrepriseName}</p>}
-            </div>
+
+            {role === "GESTIONNAIRE_STAGE" && (
+                <div className="space-y-2">
+                    <label htmlFor="entrepriseName" className="block text-sm font-medium text-black mt-4">
+                        {t("companyName")}
+                    </label>
+                    <input
+                        type="text"
+                        id="entrepriseName"
+                        name="entrepriseName"
+                        value={formData.entrepriseName}
+                        onChange={handleInputChange}
+                        className={`mt-1 p-2 block w-full border ${error.entrepriseName ? 'border-red-500' : 'border-black'} rounded-md bg-transparent`}
+                        autoComplete="organization"
+                    />
+                    {error.entrepriseName && <p className="text-red-500 text-sm mt-1">{error.entrepriseName}</p>}
+                </div>
+            )}
 
             <div className="space-y-2">
                 <label htmlFor="employerName" className="block text-sm font-medium text-black mt-4">
