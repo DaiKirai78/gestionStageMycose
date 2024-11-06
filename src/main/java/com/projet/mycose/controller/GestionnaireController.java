@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
@@ -140,7 +141,7 @@ public class GestionnaireController {
     }
 
     @GetMapping("/contrats/signes/anneeminimum")
-    public ResponseEntity<List<Integer>> getYearFirstContratUploaded() {
+    public ResponseEntity<Set<Integer>> getYearFirstContratUploaded() {
         return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
                 gestionnaireStageService.getYearFirstContratUploaded());
     }
