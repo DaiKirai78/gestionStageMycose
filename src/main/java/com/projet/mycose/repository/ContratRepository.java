@@ -7,6 +7,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -23,7 +26,15 @@ public interface ContratRepository extends JpaRepository<Contrat, Long> {
     @Query(value = "SELECT COUNT(*) FROM contrat c WHERE c.signature_gestionnaire IS NOT NULL AND EXTRACT(YEAR FROM c.created_at) = :annee", nativeQuery = true)
     int countByContratSigneeParGestionnaire(int annee);
 
-    Optional<Contrat> findFirstBySignatureEtudiantIsNotNullAndSignatureEmployeurIsNotNullAndSignatureGestionnaireIsNotNullOrderByCreatedAtAsc();
+    @Query(value = "SELECT DISTINCT DATE(created_at) FROM contrat " +
+            "WHERE signature_etudiant IS NOT NULL " +
+            "AND signature_employeur IS NOT NULL " +
+            "AND signature_gestionnaire IS NOT NULL " +
+            "ORDER BY DATE(created_at) ASC", nativeQuery = true)
+    List<LocalDateTime> findDistinctCreatedAtForSignedContrats();
+
+
+
 
 
     Page<Contrat> findContratsBySignatureEtudiantIsNullAndEtudiant_Id(Long etudiantId, Pageable pageable);

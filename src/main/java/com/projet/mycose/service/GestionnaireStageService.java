@@ -28,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -268,8 +269,8 @@ public class GestionnaireStageService {
         }
     }
 
-    public Integer getYearFirstContratUploaded() {
-        Optional<Contrat> firstSignedContrat = contratRepository.findFirstBySignatureEtudiantIsNotNullAndSignatureEmployeurIsNotNullAndSignatureGestionnaireIsNotNullOrderByCreatedAtAsc();
-        return firstSignedContrat.map(contrat -> contrat.getCreatedAt().getYear()).orElse(null);
+    public List<LocalDateTime> getYearFirstContratUploaded() {
+        List<LocalDateTime> timeList = contratRepository.findDistinctCreatedAtForSignedContrats();
+        return timeList;
     }
 }
