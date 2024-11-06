@@ -52,6 +52,8 @@ function SignerContratGestionnaire({setSelectedContract}) {
                 throw new Error('No data');
             }            
 
+            console.log(JSON.parse(data));
+            
             setListeAnneesDispo(data);
 
 
@@ -173,7 +175,7 @@ function SignerContratGestionnaire({setSelectedContract}) {
                 throw new Error('No data');
             }
 
-            console.log(JSON.parse(data));
+            //console.log(JSON.parse(data));
             setContrats(JSON.parse(data));
         } catch (e) {
             console.log("Une erreur est survenue " + e);       
