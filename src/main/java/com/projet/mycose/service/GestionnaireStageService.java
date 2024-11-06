@@ -119,7 +119,7 @@ public class GestionnaireStageService {
     public List<ContratDTO> getAllContratsNonSignes(int page) throws ChangeSetPersister.NotFoundException {
         PageRequest pageRequest = PageRequest.of(page, LIMIT_PER_PAGE);
 
-        Page<Contrat> contratsRetournessEnPages = contratRepository.findContratsBySignatureEmployeurIsNotNullAndSignatureEtudiantIsNotNullAndSignatureGestionnaireIsNotNull(pageRequest);
+        Page<Contrat> contratsRetournessEnPages = contratRepository.findContratsBySignatureEmployeurIsNotNullAndSignatureEtudiantIsNotNullAndSignatureGestionnaireIsNull(pageRequest);
         if(contratsRetournessEnPages.isEmpty()) {
             throw new ChangeSetPersister.NotFoundException();
         }
@@ -128,7 +128,7 @@ public class GestionnaireStageService {
     }
 
     public Integer getAmountOfPagesOfContractNonSignees() {
-        long amountOfRows = contratRepository.countContratsBySignatureEmployeurIsNotNullAndSignatureEtudiantIsNotNullAndSignatureGestionnaireIsNotNull();
+        long amountOfRows = contratRepository.countContratsBySignatureEmployeurIsNotNullAndSignatureEtudiantIsNotNullAndSignatureGestionnaireIsNull();
 
         if (amountOfRows == 0)
             return 0;
