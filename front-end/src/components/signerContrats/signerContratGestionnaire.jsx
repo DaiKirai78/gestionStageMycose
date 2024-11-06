@@ -12,6 +12,7 @@ function SignerContratGestionnaire({setSelectedContract}) {
     const [contrats, setContrats] = useState([]);
     const [nomPrenom, setNomPrenom] = useState([]);
     const [isContratsSignesView, setIsContratsSignesView] = useState(true);
+    const [listeAnneesDispo, setListeAnneesDispo] = useState([]);
 
     useEffect(() => {
         fetchPages();
@@ -19,11 +20,9 @@ function SignerContratGestionnaire({setSelectedContract}) {
 
     useEffect(() => {
         if(isContratsSignesView) {
-            console.log("aa");
             fetchContratsNonSignes();
         }
         else {
-            console.log("bb");
             fetchContratsSignes();
         }
             
@@ -31,7 +30,35 @@ function SignerContratGestionnaire({setSelectedContract}) {
 
     useEffect(() => {
         fetchPrenomNomEtudiants();
+        fetchMinimumAnneeDisponible();
     }, [contrats])
+
+    async function fetchMinimumAnneeDisponible() {
+        const token = localStorage.getItem("token");
+
+        try {
+            const response = await fetch('http://localhost:8080/gestionnaire/contrats/signes/anneeminimum', {
+                method: 'GET',
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const data = await response.text();
+
+            if (!data) {
+                throw new Error('No data');
+            }            
+
+            setListeAnneesDispo(data);
+
+
+        } catch (e) {
+            console.log("Une erreur est survenue " + e);
+        }
+    }
 
 
     async function fetchPages() {
@@ -69,7 +96,7 @@ function SignerContratGestionnaire({setSelectedContract}) {
 
         for (const contrat of contrats) {
             try {
-                const response = await fetch(`http://localhost:8080/utilisateur/getPrenomNomEtudiant?id=${contrat.etudiantId}`, {
+                const response = await fetch(`http://localhost:8080/utilisateur/getPrenomNom?id=${contrat.etudiantId}`, {
                     method: 'GET',
                     headers: {Authorization: `Bearer ${token}`}
                 });
@@ -135,6 +162,7 @@ function SignerContratGestionnaire({setSelectedContract}) {
                 headers: {Authorization: `Bearer ${token}`}
             });
 
+
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
@@ -145,6 +173,7 @@ function SignerContratGestionnaire({setSelectedContract}) {
                 throw new Error('No data');
             }
 
+            console.log(JSON.parse(data));
             setContrats(JSON.parse(data));
         } catch (e) {
             console.log("Une erreur est survenue " + e);       
@@ -166,7 +195,7 @@ function SignerContratGestionnaire({setSelectedContract}) {
         )
 
     return(
-        <div className="w-full h-full bg-orange-light flex flex-col items-center p-8">
+        <div className="flex-1 w-full h-full bg-orange-light flex flex-col items-center p-8">
             <h1 className='text-3xl md:text-4xl font-bold text-center mb-5'>{t("signerContrats")}</h1>
             <div className="space-x-10">
                 <button className={`${isContratsSignesView ? 'underline decoration-2 decoration-deep-orange-300' : ''} border border-orange rounded p-2 hover:bg-opacity-90 hover:shadow-lg`} onClick={() => setIsContratsSignesView(true)}>Contrats À Signer</button>
