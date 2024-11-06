@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -139,7 +140,7 @@ public class GestionnaireController {
     }
 
     @GetMapping("/contrats/signes/anneeminimum")
-    public ResponseEntity<List<LocalDateTime>> getYearFirstContratUploaded() {
+    public ResponseEntity<List<LocalDate>> getYearFirstContratUploaded() {
         return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
                 gestionnaireStageService.getYearFirstContratUploaded());
     }
