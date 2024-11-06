@@ -29,11 +29,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -270,8 +266,8 @@ public class GestionnaireStageService {
         }
     }
 
-    public List<LocalDate> getYearFirstContratUploaded() {
-        List<LocalDate> timeList = contratRepository.findDistinctCreatedAtForSignedContrats();
-        return timeList;
+    public List<Integer> getYearFirstContratUploaded() {
+        List<Date> timeList = contratRepository.findDistinctCreatedAtForSignedContrats();
+        return timeList.stream().map(Date::getYear).toList();
     }
 }
