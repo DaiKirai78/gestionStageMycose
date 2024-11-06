@@ -16,10 +16,8 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
@@ -177,7 +175,10 @@ public class OffreStageService {
             throw new AccessDeniedException("Utilisateur n'est pas un employeur");
         }
 
-        if(utilisateurDTO.getRole() == Role.GESTIONNAIRE_STAGE) {
+        if (utilisateurDTO.getRole() == Role.EMPLOYEUR) {
+            formulaireOffreStageDTO.setEntrepriseName(((EmployeurDTO) utilisateurDTO).getEntrepriseName());
+            formulaireOffreStageDTO.setVisibility(OffreStage.Visibility.UNDEFINED);
+        } else if (utilisateurDTO.getRole() == Role.GESTIONNAIRE_STAGE) {
             formulaireOffreStageDTO.setStatus(OffreStage.Status.ACCEPTED);
             formulaireOffreStageDTO.setVisibility(OffreStage.Visibility.UNDEFINED);
             if (formulaireOffreStageDTO.getProgramme() != Programme.NOT_SPECIFIED) {
