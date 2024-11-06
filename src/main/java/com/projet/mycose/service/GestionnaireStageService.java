@@ -267,4 +267,9 @@ public class GestionnaireStageService {
             throw new RuntimeException("Erreur lors de l'ajout des images au PDF", e);
         }
     }
+
+    public Integer getYearFirstContratUploaded() {
+        Optional<Contrat> firstSignedContrat = contratRepository.findFirstBySignatureEtudiantIsNotNullAndSignatureEmployeurIsNotNullAndSignatureGestionnaireIsNotNullOrderByCreatedAtAsc();
+        return firstSignedContrat.map(contrat -> contrat.getCreatedAt().getYear()).orElse(null);
+    }
 }
