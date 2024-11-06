@@ -24,6 +24,12 @@ function FileOffreStage() {
     const [studentSelectionError, setStudentSelectionError] = useState("");
     const [role, setRole] = useState("");
     const [isPrivate, setIsPrivate] = useState(false);
+    const [years, setYears] = useState([]);
+    const [selectedYear, setSelectedYear] = useState("");
+    const [sessions, setSessions] = useState([]);
+    const [selectedSession, setSelectedSession] = useState("");
+    const [yearsError, setYearsError] = useState("");
+    const [sessionsError, setSessionsError] = useState("");
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -40,6 +46,27 @@ function FileOffreStage() {
         };
 
         fetchUserData();
+    }, []);
+
+    useEffect(() => {
+        const fetchYears = async () => {
+            try {
+                const response = await axios.get("http://localhost:8080/api/offres-stages/years");
+                setYears(response.data);
+            } catch (error) {
+                console.error("Erreur lors de la récupération des années :", error);
+            }
+        };
+        const fetchSessions = async () => {
+            try {
+                const response = await axios.get("http://localhost:8080/api/offres-stages/sessions");
+                setSessions(response.data);
+            } catch (error) {
+                console.error("Erreur lors de la récupération des sessions :", error);
+            }
+        };
+        fetchYears();
+        fetchSessions();
     }, []);
 
     useEffect(() => {
@@ -109,6 +136,8 @@ function FileOffreStage() {
         const formData = new FormData();
         formData.append("file", file);
         formData.append("title", title);
+        formData.append("annee", parseInt(selectedYear, 10));
+        formData.append("session", selectedSession);
 
         if (role === "GESTIONNAIRE_STAGE") {
             formData.append("entrepriseName", companyName);
@@ -125,10 +154,7 @@ function FileOffreStage() {
                     "Content-Type": "multipart/form-data",
                 },
             });
-            const formDataObject = Object.fromEntries(formData.entries());
-            console.log(formDataObject);
             console.log("Fichier envoyé avec succès :", response.data);
-            console.log("étudiants sélectionnés :", selectedStudents);
             setSuccessMessage(t("fileUploadSuccess"));
             setUploadError("");
 
@@ -189,6 +215,20 @@ function FileOffreStage() {
             setStudentSelectionError("");
         }
 
+        if (!selectedYear) {
+            setYearsError("yearRequired");
+            hasError = true;
+        } else {
+            setYearsError("");
+        }
+
+        if (!selectedSession) {
+            setSessionsError("sessionRequired");
+            hasError = true;
+        } else {
+            setSessionsError("");
+        }
+
         if (hasError) return;
 
         await handleFileUpload();
@@ -221,8 +261,16 @@ function FileOffreStage() {
         document.getElementById("file").value = "";
     };
 
-    function ChangeProgrammeValue(e) {
+    function changeProgrammeValue(e) {
         setProgramme(e.target.value);
+    }
+
+    function changeYearValue(e) {
+        setSelectedYear(e.target.value);
+    }
+
+    function changeSessionValue(e) {
+        setSelectedSession(e.target.value);
     }
 
     return (
@@ -284,7 +332,7 @@ function FileOffreStage() {
                         className={`block w-full p-2 border border-black rounded-md ${programmeError ? 'border-red-500' : 'border-black'} bg-transparent`}
                         value={programme}
                         onChange={(e) => {
-                            ChangeProgrammeValue(e);
+                            changeProgrammeValue(e);
                             setProgrammeError("");
                         }}
                     >
@@ -314,6 +362,46 @@ function FileOffreStage() {
                     className={`mt-1 p-2 w-full border ${titleError ? 'border-red-500' : 'border-black'} rounded-md bg-transparent`}
                 />
                 {titleError && <p className="text-red-500 text-sm">{t("titleRequired")}</p>}
+            </div>
+
+            {/* Input et label pour l'année */}
+            <div>
+                <label className="block mb-2 text-sm font-medium text-black">{t("choisirAnnee")}</label>
+                <select
+                    className={`block w-full p-2 border border-black rounded-md ${yearsError ? 'border-red-500' : 'border-black'} bg-transparent`}
+                    value={selectedYear}
+                    onChange={(e) => {
+                        changeYearValue(e);
+                        setYearsError("");
+                    }}                >
+                    <option value="" className={"text-center"}>-- {t("choisirAnnee")} --</option>
+                    {years.map((year, index) => (
+                        <option key={index} value={year}>
+                            {year}
+                        </option>
+                    ))}
+                </select>
+                {yearsError && <p className="text-red-500 text-sm">{t("yearRequired")}</p>}
+            </div>
+
+            {/* Input et label pour la session */}
+            <div>
+                <label className="block mb-2 text-sm font-medium text-black">{t("choisirSession")}</label>
+                <select
+                    className={`block w-full p-2 border border-black rounded-md ${programmeError ? 'border-red-500' : 'border-black'} bg-transparent`}
+                    value={selectedSession}
+                    onChange={(e) => {
+                        changeSessionValue(e);
+                        setSessionsError("");
+                    }}                >
+                    <option value="" className={"text-center"}>-- {t("choisirSession")} --</option>
+                    {sessions.map((session, index) => (
+                        <option key={index} value={session}>
+                            {t(session)}
+                        </option>
+                    ))}
+                </select>
+                {sessionsError && <p className="text-red-500 text-sm">{t("sessionRequired")}</p>}
             </div>
 
             {/* Section pour choisir si l'offre est privée ou publique */}

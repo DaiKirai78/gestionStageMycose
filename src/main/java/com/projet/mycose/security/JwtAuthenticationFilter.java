@@ -35,6 +35,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
+        String path = request.getRequestURI();
+
+        // Only process API endpoints
+        if (!path.startsWith("/api/")) {
+            //Filtre parce que presque tous les endpoints sont mal appelés!!!!!!!!!
+            if (!path.startsWith("/contrat") && !path.startsWith("/entreprise") && !path.startsWith("/enseignant") && !path.startsWith("/gestionnaire") && !path.startsWith("/etudiant") && !path.startsWith("/utilisateur")) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+        }
+
+        // Allow les endpoints publiques
+        if (path.startsWith("/api/programme") || path.startsWith("/api/offres-stages/years") || path.startsWith("/api/offres-stages/sessions")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         String token = getJWTFromRequest(request);
         try {
             tokenProvider.validateToken(token);
@@ -66,5 +82,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return bearerToken.substring(7); // Remove "Bearer "
         }
         return null;
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String method = request.getMethod();
+
+        // Exclude OPTIONS requests
+        return "OPTIONS".equalsIgnoreCase(method);
     }
 }

@@ -72,6 +72,7 @@ class JwtAuthenticationFilterTest {
         doNothing().when(tokenProvider).validateToken(validToken);
         when(tokenProvider.getEmailFromJWT(validToken)).thenReturn(userEmail);
         when(utilisateurRepository.findUtilisateurByCourriel(userEmail)).thenReturn(Optional.of(utilisateur));
+        when(request.getRequestURI()).thenReturn("/api/offres-stages");
 
         // Act
         jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
@@ -97,6 +98,7 @@ class JwtAuthenticationFilterTest {
         // Arrange
         String invalidToken = "invalid.jwt.token";
         when(request.getHeader("Authorization")).thenReturn("Bearer " + invalidToken);
+        when(request.getRequestURI()).thenReturn("/api/offres-stages");
         doThrow(new RuntimeException("Invalid token")).when(tokenProvider).validateToken(invalidToken);
 
 
@@ -116,6 +118,7 @@ class JwtAuthenticationFilterTest {
     void doFilterInternal_WithNoToken_ShouldNotAuthenticateUser() throws ServletException, IOException {
         // Arrange
         when(request.getHeader("Authorization")).thenReturn(null);
+        when(request.getRequestURI()).thenReturn("/api/offres-stages");
 
         // Act
         jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
@@ -136,6 +139,7 @@ class JwtAuthenticationFilterTest {
         doNothing().when(tokenProvider).validateToken(validToken);
         when(tokenProvider.getEmailFromJWT(validToken)).thenReturn(userEmail);
         when(utilisateurRepository.findUtilisateurByCourriel(userEmail)).thenReturn(Optional.empty());
+        when(request.getRequestURI()).thenReturn("/api/offres-stages");
 
         // Act
         jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);

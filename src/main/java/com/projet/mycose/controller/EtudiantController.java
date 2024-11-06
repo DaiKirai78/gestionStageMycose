@@ -1,16 +1,22 @@
 package com.projet.mycose.controller;
 
+import com.projet.mycose.dto.ContratDTO;
 import com.projet.mycose.dto.OffreStageDTO;
+import com.projet.mycose.security.exception.UserNotFoundException;
 import com.projet.mycose.service.EtudiantService;
 import com.projet.mycose.dto.EtudiantDTO;
 import com.projet.mycose.dto.RegisterEtudiantDTO;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -61,6 +67,34 @@ public class EtudiantController {
             return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
                     etudiantService.getStagesByRecherche(pageNumber, recherche));
         } catch (Exception e) {
+            return ResponseEntity.noContent().build();
+        }
+    }
+
+    @PostMapping(value = "/enregistrerSignature")
+    public ResponseEntity<String> enregistrerSignature(
+            @RequestParam("signature") MultipartFile signature,
+            @RequestParam Long contratId,
+            @RequestParam String password
+    ) {
+        String responseMessage = etudiantService.enregistrerSignature(signature, password, contratId);
+        return ResponseEntity.status(HttpStatus.ACCEPTED)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(responseMessage);
+    }
+
+    @GetMapping("/getContratsNonSignees")
+    public ResponseEntity<List<ContratDTO>> getAllContratsNonSignes(@RequestParam int page) {
+        List<ContratDTO> contrats = etudiantService.getAllContratsNonSignes(page);
+        return ResponseEntity.ok(contrats);
+    }
+
+    @GetMapping("/pagesContrats")
+    public ResponseEntity<Integer> getAmountOfPagesOfCandidaturesNonSignees() {
+        try{
+            return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
+                    etudiantService.getAmountOfPagesOfContractNonSignees());
+        } catch(Exception e) {
             return ResponseEntity.noContent().build();
         }
     }

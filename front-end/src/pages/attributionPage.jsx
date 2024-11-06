@@ -9,7 +9,7 @@ const AttributionPage = () => {
 
     return (
         <TokenPageContainer role={["GESTIONNAIRE_STAGE"]} setUserInfo={setUserInfo}>
-            <div className='bg-orange-light min-h-full'>
+            <div className='bg-orange-light min-h-full flex-1'>
                 <Outlet context={{
                     "selectedStudent": selectedStudent,
                     "setSelectedStudent": setSelectedStudent,

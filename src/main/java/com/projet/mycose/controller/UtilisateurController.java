@@ -1,6 +1,8 @@
 package com.projet.mycose.controller;
 
 import com.projet.mycose.dto.*;
+import com.projet.mycose.modele.Utilisateur;
+import com.projet.mycose.security.exception.UserNotFoundException;
 import com.projet.mycose.service.UtilisateurService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -50,15 +52,14 @@ public class UtilisateurController {
             return ResponseEntity.status(HttpStatus.OK).body(courrielTelephoneDTO);
     }
 
-    @GetMapping("/getPrenomNomEtudiant")
+    @GetMapping("/getPrenomNom")
     public ResponseEntity<String> getNomEtudiantSelonId(@RequestParam long id) {
         try {
-
-            EtudiantDTO etudiantDTO = utilisateurService.getEtudiantDTO(id);
             return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
-                    etudiantDTO.getPrenom() + " " + etudiantDTO.getNom());
-        } catch (Exception e) {
-            return ResponseEntity.noContent().build();
+                    utilisateurService.getUtilisateurPrenomNom(id));
+        }
+        catch (UserNotFoundException e) {
+            return ResponseEntity.notFound().build();
         }
     }
 }

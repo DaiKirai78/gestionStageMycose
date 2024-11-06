@@ -64,6 +64,16 @@ public class UtilisateurService {
         }
     }
 
+    public String getUtilisateurPrenomNom(Long id) {
+        final Optional<Utilisateur> userOptionnal = utilisateurRepository.findById(id);
+        if (userOptionnal.isEmpty())
+            throw new UserNotFoundException();
+
+        Utilisateur utilisateur = userOptionnal.get();
+
+        return utilisateur.getPrenom() + " " + utilisateur.getNom();
+    }
+
     public EtudiantDTO getEtudiantDTO(Long id) {
         final Optional<Etudiant> etudiantOptional = etudiantRepository.findById(id);
         return etudiantOptional.isPresent() ?
