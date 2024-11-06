@@ -50,6 +50,17 @@ public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
     int countByCreateurId(Long employeurId);
 
     @Query("SELECT o FROM OffreStage o " +
+            "WHERE o.createur.id = :idEmployeur " +
+            "AND o.annee = :annee " +
+            "AND o.session = :sessionEcole")
+    Page<OffreStage> findOffreStageByCreateurIdFiltered(
+            @Param("idEmployeur") Long idEmployeur,
+            @Param("annee") Integer annee,
+            @Param("sessionEcole") OffreStage.SessionEcole sessionEcole,
+            Pageable pageable
+    );
+
+    @Query("SELECT o FROM OffreStage o " +
             "LEFT JOIN EtudiantOffreStagePrivee eop ON o.id = eop.offreStage.id " +
             "LEFT JOIN o.applicationStages a ON a.etudiant.id = :etudiantId " +
             "WHERE a.id IS NULL " +
@@ -59,22 +70,34 @@ public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
             "(o.visibility = 'PUBLIC' AND o.programme = :programme) " +
             "OR " +
             "(o.visibility = 'PRIVATE' AND eop.etudiant.id = :etudiantId)" +
-            ")")
-    List<OffreStage> findAllByEtudiantNotAppliedFiltered(
+            ") " +
+            "AND LOWER(o.title) LIKE LOWER(CONCAT('%', :title, '%'))")
+    Page<OffreStage> findAllByEtudiantNotAppliedFilteredWithTitle(
             @Param("etudiantId") Long id,
             @Param("programme") Programme programme,
             @Param("annee") Integer annee,
-            @Param("session") OffreStage.SessionEcole session
+            @Param("session") OffreStage.SessionEcole session,
+            @Param("title") String title,
+            Pageable pageable
     );
 
-    @Query("SELECT o FROM OffreStage o " +
-            "WHERE o.createur.id = :idEmployeur " +
+    @Query("SELECT COUNT(o) FROM OffreStage o " +
+            "LEFT JOIN EtudiantOffreStagePrivee eop ON o.id = eop.offreStage.id " +
+            "LEFT JOIN o.applicationStages a ON a.etudiant.id = :etudiantId " +
+            "WHERE a.id IS NULL " +
             "AND o.annee = :annee " +
-            "AND o.session = :sessionEcole")
-    Page<OffreStage> findOffreStageByCreateurIdFiltered(
-            @Param("idEmployeur") Long idEmployeur,
+            "AND o.session = :session " +
+            "AND (" +
+            "(o.visibility = 'PUBLIC' AND o.programme = :programme) " +
+            "OR " +
+            "(o.visibility = 'PRIVATE' AND eop.etudiant.id = :etudiantId)" +
+            ") " +
+            "AND LOWER(o.title) LIKE LOWER(CONCAT('%', :title, '%'))")
+    long countByEtudiantIdNotAppliedFilteredWithTitle(
+            @Param("etudiantId") Long etudiantId,
+            @Param("programme") Programme programme,
             @Param("annee") Integer annee,
-            @Param("sessionEcole") OffreStage.SessionEcole sessionEcole,
-            Pageable pageable
+            @Param("session") OffreStage.SessionEcole sessionEcole,
+            @Param("title") String title
     );
 }

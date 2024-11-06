@@ -130,15 +130,25 @@ public class OffreStageController {
         return offreStageService.getFutureYears();
     }
 
-    @GetMapping(value = "/my-offres", params = {"year", "sessionEcole"})
+    @GetMapping(value = "/my-offres", params = {"year", "sessionEcole", "pageNumber", "title"})
     public ResponseEntity<List<OffreStageDTO>> getMyOffresByYearAndSessionEcole(
             @RequestParam Integer year,
-            @RequestParam OffreStage.SessionEcole sessionEcole) throws AccessDeniedException {
-        List<OffreStageDTO> offreStageDTOList = offreStageService.getAvailableOffreStagesForEtudiantFiltered(year, sessionEcole);
+            @RequestParam OffreStage.SessionEcole sessionEcole,
+            @RequestParam int pageNumber,
+            @RequestParam(value = "title", required = false, defaultValue = "") String title
+    ) throws AccessDeniedException {
+        List<OffreStageDTO> offreStageDTOList = offreStageService.getAvailableOffreStagesForEtudiantFiltered(pageNumber, year, sessionEcole, title);
         return ResponseEntity.status(HttpStatus.OK).body(offreStageDTOList);
     }
 
-
+    @GetMapping(value = "/my-offres-pages", params = {"year", "sessionEcole", "title"})
+    public ResponseEntity<Integer> getAmountOfPagesForMyOffres(
+            @RequestParam Integer year,
+            @RequestParam OffreStage.SessionEcole sessionEcole,
+            @RequestParam(value = "title", required = false, defaultValue = "") String title
+    ) throws AccessDeniedException {
+        return ResponseEntity.status(HttpStatus.OK).body(offreStageService.getAmountOfPagesForEtudiantFiltered(year, sessionEcole, title));
+    }
 
     @PostMapping("/getOffresPosted")
     public ResponseEntity<List<OffreStageDTO>> getOffresStagesPubliees(@RequestParam int pageNumber) {
@@ -150,7 +160,7 @@ public class OffreStageController {
         }
     }
 
-    @GetMapping("/getOffresPosted")
+    @GetMapping(value = "/getOffresPosted", params = {"pageNumber", "annee", "session"})
     public ResponseEntity<List<OffreStageDTO>> getOffresStagesPublieesFiltre(@RequestParam int pageNumber, @RequestParam Integer annee, @RequestParam OffreStage.SessionEcole session) {
         try {
             return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(

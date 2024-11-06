@@ -251,9 +251,38 @@ public class OffreStageService {
         return offreStageRepository.findAllByEtudiantNotApplied(etudiantDTO.getId(), etudiantDTO.getProgramme()).stream().map(this::convertToDTO).toList();
     }
 
-    public List<OffreStageDTO> getAvailableOffreStagesForEtudiantFiltered(Integer annee, OffreStage.SessionEcole session) throws AccessDeniedException {
+    public List<OffreStageDTO> getAvailableOffreStagesForEtudiantFiltered(int page, Integer annee, OffreStage.SessionEcole session, String title) throws AccessDeniedException {
         EtudiantDTO etudiantDTO = (EtudiantDTO) utilisateurService.getMe();
-        return offreStageRepository.findAllByEtudiantNotAppliedFiltered(etudiantDTO.getId(), etudiantDTO.getProgramme(), annee, session).stream().map(this::convertToDTO).toList();
+        PageRequest pageRequest = PageRequest.of(page, LIMIT_PER_PAGE);
+
+        if (title == null) {
+            title = "";
+        }
+
+        return offreStageRepository.findAllByEtudiantNotAppliedFilteredWithTitle(etudiantDTO.getId(), etudiantDTO.getProgramme(), annee, session, title, pageRequest).stream().map(this::convertToDTO).toList();
+    }
+
+    public Integer getAmountOfPagesForEtudiantFiltered(Integer year, OffreStage.SessionEcole sessionEcole, String title) throws AccessDeniedException {
+        EtudiantDTO etudiantDTO = (EtudiantDTO) utilisateurService.getMe();
+
+        if (title == null) {
+            title = "";
+        }
+
+        long amountOfRows = offreStageRepository.countByEtudiantIdNotAppliedFilteredWithTitle(etudiantDTO.getId(), etudiantDTO.getProgramme(), year, sessionEcole, title);
+
+        if (amountOfRows == 0)
+            return 0;
+
+        int nombrePages = (int) Math.floor((double) amountOfRows / LIMIT_PER_PAGE);
+
+        if (amountOfRows % 10 > 0) {
+            // Return ++ (équivalent -> nombrePage + 1) parce que
+            // floor(13/10) = 1 mais il y a 2 page et pas 1
+            nombrePages++;
+        }
+
+        return nombrePages;
     }
 
     public long getTotalWaitingOffreStages() {
