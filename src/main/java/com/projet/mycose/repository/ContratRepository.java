@@ -7,8 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -30,7 +29,7 @@ public interface ContratRepository extends JpaRepository<Contrat, Long> {
             "AND signature_employeur IS NOT NULL " +
             "AND signature_gestionnaire IS NOT NULL " +
             "ORDER BY DATE(created_at) ASC", nativeQuery = true)
-    List<LocalDate> findDistinctCreatedAtForSignedContrats();
+    List<Date> findDistinctCreatedAtForSignedContrats();
 
 
 

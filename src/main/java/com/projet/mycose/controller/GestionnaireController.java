@@ -140,7 +140,7 @@ public class GestionnaireController {
     }
 
     @GetMapping("/contrats/signes/anneeminimum")
-    public ResponseEntity<List<LocalDate>> getYearFirstContratUploaded() {
+    public ResponseEntity<List<Integer>> getYearFirstContratUploaded() {
         return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
                 gestionnaireStageService.getYearFirstContratUploaded());
     }
