@@ -28,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -269,8 +270,8 @@ public class GestionnaireStageService {
         }
     }
 
-    public List<LocalDateTime> getYearFirstContratUploaded() {
-        List<LocalDateTime> timeList = contratRepository.findDistinctCreatedAtForSignedContrats();
+    public List<LocalDate> getYearFirstContratUploaded() {
+        List<LocalDate> timeList = contratRepository.findDistinctCreatedAtForSignedContrats();
         return timeList;
     }
 }
