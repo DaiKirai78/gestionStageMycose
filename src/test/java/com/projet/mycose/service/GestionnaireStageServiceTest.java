@@ -32,6 +32,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -359,7 +360,8 @@ class GestionnaireStageServiceTest {
         when(contratRepository.findContratsBySignatureGestionnaireIsNull(PageRequest.of(0, 10)))
                 .thenReturn(emptyPage);
 
-        assertThrows(ChangeSetPersister.NotFoundException.class, () -> gestionnaireStageService.getAllContratsNonSignes(0));
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> gestionnaireStageService.getAllContratsNonSignes(0));
+        assertEquals("404 NOT_FOUND \"Contrats not found\"", exception.getMessage());
     }
 
     @Test
@@ -419,9 +421,11 @@ class GestionnaireStageServiceTest {
         when(contratRepository.findContratSigneeParGestionnaire(annee, PageRequest.of(page, 10)))
                 .thenReturn(emptyPage);
 
-        assertThrows(ChangeSetPersister.NotFoundException.class, () -> {
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
             gestionnaireStageService.getAllContratsSignes(page, annee);
         });
+
+        assertEquals("404 NOT_FOUND \"Contrats not found\"", exception.getMessage());
     }
 
     @Test
@@ -498,9 +502,12 @@ class GestionnaireStageServiceTest {
         when(utilisateurRepository.findUtilisateurById(utilisateur.getId())).thenReturn(Optional.of(utilisateur));
 
         // Act & Assert
-        assertThrows(BadCredentialsException.class, () -> {
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
             gestionnaireStageService.enregistrerSignature(signature, password, contratId);
         });
+
+        assertEquals("401 UNAUTHORIZED \"Email ou mot de passe invalide.\"", exception.getMessage());
+
         verify(contratRepository, never()).save(any(Contrat.class));
     }
 
@@ -518,9 +525,12 @@ class GestionnaireStageServiceTest {
         when(utilisateurRepository.findUtilisateurById(utilisateur.getId())).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(UserNotFoundException.class, () -> {
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
             gestionnaireStageService.enregistrerSignature(signature, password, contratId);
         });
+
+        assertEquals("404 NOT_FOUND \"Utilisateur not found\"", exception.getMessage());
+
         verify(contratRepository, never()).save(any(Contrat.class));
     }
 
@@ -547,9 +557,12 @@ class GestionnaireStageServiceTest {
         when(contratRepository.findById(contratId)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(ChangeSetPersister.NotFoundException.class, () -> {
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
             gestionnaireStageService.enregistrerSignature(signature, password, contratId);
         });
+
+        assertEquals("404 NOT_FOUND \"Contrat not found\"", exception.getMessage());
+
         verify(contratRepository, never()).save(any(Contrat.class));
     }
 
@@ -578,9 +591,11 @@ class GestionnaireStageServiceTest {
         when(contratRepository.findById(contratId)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(NoSuchElementException.class, () -> {
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
             gestionnaireStageService.getContratSignee(contratId);
         });
+
+        assertEquals("404 NOT_FOUND \"Contrat not found\"", exception.getMessage());
     }
 
     @Test
@@ -597,9 +612,11 @@ class GestionnaireStageServiceTest {
         when(contratRepository.findById(contratId)).thenReturn(Optional.of(contrat));
 
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> {
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
             gestionnaireStageService.getContratSignee(contratId);
         });
+
+        assertEquals("400 BAD_REQUEST \"Aucune signature n'est présente sur le contrat\"", exception.getMessage());
     }
 
     private byte[] createTemporaryPdf() throws IOException {

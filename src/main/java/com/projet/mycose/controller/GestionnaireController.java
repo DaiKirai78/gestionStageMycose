@@ -106,12 +106,8 @@ public class GestionnaireController {
 
     @GetMapping("/contrats/non-signes")
     public ResponseEntity<List<ContratDTO>> getAllContratsNonSignes(@RequestParam int page) {
-        try {
-            List<ContratDTO> contrats = gestionnaireStageService.getAllContratsNonSignes(page);
-            return ResponseEntity.ok(contrats);
-        } catch (ChangeSetPersister.NotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        List<ContratDTO> contrats = gestionnaireStageService.getAllContratsNonSignes(page);
+        return ResponseEntity.ok(contrats);
     }
 
     @GetMapping("/contrats/non-signes/pages")
@@ -122,12 +118,8 @@ public class GestionnaireController {
 
     @GetMapping("/contrats/signes")
     public ResponseEntity<List<ContratDTO>> getAllContratsSignes(@RequestParam int page, @RequestParam int annee) {
-        try {
             List<ContratDTO> contrats = gestionnaireStageService.getAllContratsSignes(page, annee);
             return ResponseEntity.ok(contrats);
-        } catch (ChangeSetPersister.NotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
     }
 
     @GetMapping("/contrats/signes/pages")
@@ -142,27 +134,10 @@ public class GestionnaireController {
             @RequestParam Long contratId,
             @RequestParam String password
     ) {
-        try {
-            String responseMessage = gestionnaireStageService.enregistrerSignature(signature, password, contratId);
-            return ResponseEntity.status(HttpStatus.ACCEPTED)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(responseMessage);
-        } catch (UserNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Utilisateur non trouvé.");
-        } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("Email ou mot de passe invalide.");
-        } catch (ChangeSetPersister.NotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Contrat non trouvé.");
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Erreur lors de la sauvegarde de la signature.");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Une erreur inattendue s'est produite.");
-        }
+        String responseMessage = gestionnaireStageService.enregistrerSignature(signature, password, contratId);
+        return ResponseEntity.status(HttpStatus.ACCEPTED)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(responseMessage);
     }
 
     @GetMapping("/contrat/print")
@@ -173,5 +148,4 @@ public class GestionnaireController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("");
         }
     }
-
 }

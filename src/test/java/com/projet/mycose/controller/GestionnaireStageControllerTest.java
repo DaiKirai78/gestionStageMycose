@@ -23,8 +23,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -34,7 +36,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -367,7 +369,7 @@ public class GestionnaireStageControllerTest {
 
     @Test
     public void testGetAllContratsNonSignes_NotFound() throws Exception {
-        when(gestionnaireStageService.getAllContratsNonSignes(0)).thenThrow(new ChangeSetPersister.NotFoundException());
+        when(gestionnaireStageService.getAllContratsNonSignes(0)).thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Contrats not found"));
 
         mockMvc.perform(get("/gestionnaire/contrats/non-signes")
                         .param("page", "0"))
@@ -419,7 +421,7 @@ public class GestionnaireStageControllerTest {
         int annee = 2024;
 
         when(gestionnaireStageService.getAllContratsSignes(page, annee))
-                .thenThrow(new ChangeSetPersister.NotFoundException());
+                .thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Contrats not found"));
 
         mockMvc.perform(get("/gestionnaire/contrats/signes")
                         .param("page", String.valueOf(page))
@@ -478,16 +480,24 @@ public class GestionnaireStageControllerTest {
         MockMultipartFile signatureFile = new MockMultipartFile("signature", "signature.png", "image/png", "test signature content".getBytes());
 
         when(gestionnaireStageService.enregistrerSignature(any(MultipartFile.class), anyString(), any(Long.class)))
-                .thenThrow(new UserNotFoundException());
+                .thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Utilisateur not found"));
 
         // Act & Assert
-        mockMvc.perform(multipart("/gestionnaire/enregistrerSignature")
+        MvcResult result = mockMvc.perform(multipart("/gestionnaire/enregistrerSignature")
                         .file(signatureFile)
                         .param("contratId", "1")
                         .param("password", "motDePasse")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string("Utilisateur non trouvé."));
+                .andReturn();
+
+        Exception resolvedException = result.getResolvedException();
+        assertNotNull(resolvedException, "Expected an exception but none was resolved.");
+        assertInstanceOf(ResponseStatusException.class, resolvedException, "Expected ResponseStatusException.");
+        assertEquals("404 NOT_FOUND \"Utilisateur not found\"", resolvedException.getMessage(), "Error message does not match.");
+
+        String errorMessage = result.getResponse().getErrorMessage();
+        assertEquals("Utilisateur not found", errorMessage, "Error message does not match.");
     }
 
     @Test
@@ -496,16 +506,24 @@ public class GestionnaireStageControllerTest {
         MockMultipartFile signatureFile = new MockMultipartFile("signature", "signature.png", "image/png", "test signature content".getBytes());
 
         when(gestionnaireStageService.enregistrerSignature(any(MultipartFile.class), anyString(), any(Long.class)))
-                .thenThrow(new BadCredentialsException("Email ou mot de passe invalide."));
+                .thenThrow(new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Email ou mot de passe invalide."));
 
         // Act & Assert
-        mockMvc.perform(multipart("/gestionnaire/enregistrerSignature")
+        MvcResult result = mockMvc.perform(multipart("/gestionnaire/enregistrerSignature")
                         .file(signatureFile)
                         .param("contratId", "1")
                         .param("password", "motDePasse")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized())
-                .andExpect(content().string("Email ou mot de passe invalide."));
+                .andReturn();
+
+        Exception resolvedException = result.getResolvedException();
+        assertNotNull(resolvedException, "Expected an exception but none was resolved.");
+        assertInstanceOf(ResponseStatusException.class, resolvedException, "Expected ResponseStatusException.");
+        assertEquals("401 UNAUTHORIZED \"Email ou mot de passe invalide.\"", resolvedException.getMessage(), "Error message does not match.");
+
+        String errorMessage = result.getResponse().getErrorMessage();
+        assertEquals("Email ou mot de passe invalide.", errorMessage, "Error message does not match.");
     }
 
     @Test
@@ -514,16 +532,24 @@ public class GestionnaireStageControllerTest {
         MockMultipartFile signatureFile = new MockMultipartFile("signature", "signature.png", "image/png", "test signature content".getBytes());
 
         when(gestionnaireStageService.enregistrerSignature(any(MultipartFile.class), anyString(), any(Long.class)))
-                .thenThrow(new ChangeSetPersister.NotFoundException());
+                .thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Contrat not found"));
 
         // Act & Assert
-        mockMvc.perform(multipart("/gestionnaire/enregistrerSignature")
+        MvcResult result = mockMvc.perform(multipart("/gestionnaire/enregistrerSignature")
                         .file(signatureFile)
                         .param("contratId", "1")
                         .param("password", "motDePasse")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string("Contrat non trouvé."));
+                .andReturn();
+
+        Exception resolvedException = result.getResolvedException();
+        assertNotNull(resolvedException, "Expected an exception but none was resolved.");
+        assertInstanceOf(ResponseStatusException.class, resolvedException, "Expected ResponseStatusException.");
+        assertEquals("404 NOT_FOUND \"Contrat not found\"", resolvedException.getMessage(), "Error message does not match.");
+
+        String errorMessage = result.getResponse().getErrorMessage();
+        assertEquals("Contrat not found", errorMessage, "Error message does not match.");
     }
 
     @Test
@@ -532,33 +558,23 @@ public class GestionnaireStageControllerTest {
         MockMultipartFile signatureFile = new MockMultipartFile("signature", "signature.png", "image/png", "test signature content".getBytes());
 
         when(gestionnaireStageService.enregistrerSignature(any(MultipartFile.class), anyString(), any(Long.class)))
-                .thenThrow(new IOException("Erreur lors de la sauvegarde de la signature."));
+                .thenThrow(new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error while saving signature"));
 
         // Act & Assert
-        mockMvc.perform(multipart("/gestionnaire/enregistrerSignature")
+        MvcResult result = mockMvc.perform(multipart("/gestionnaire/enregistrerSignature")
                         .file(signatureFile)
                         .param("contratId", "1")
                         .param("password", "motDePasse")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError())
-                .andExpect(content().string("Erreur lors de la sauvegarde de la signature."));
-    }
+                .andReturn();
 
-    @Test
-    public void testEnregistrerSignature_OtherError() throws Exception {
-        // Arrange
-        MockMultipartFile signatureFile = new MockMultipartFile("signature", "signature.png", "image/png", "test signature content".getBytes());
+        Exception resolvedException = result.getResolvedException();
+        assertNotNull(resolvedException, "Expected an exception but none was resolved.");
+        assertInstanceOf(ResponseStatusException.class, resolvedException, "Expected ResponseStatusException.");
+        assertEquals("500 INTERNAL_SERVER_ERROR \"Error while saving signature\"", resolvedException.getMessage(), "Error message does not match.");
 
-        when(gestionnaireStageService.enregistrerSignature(any(MultipartFile.class), anyString(), any(Long.class)))
-                .thenThrow(new RuntimeException());
-
-        // Act & Assert
-        mockMvc.perform(multipart("/gestionnaire/enregistrerSignature")
-                        .file(signatureFile)
-                        .param("contratId", "1")
-                        .param("password", "motDePasse")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isInternalServerError())
-                .andExpect(content().string("Une erreur inattendue s'est produite."));
+        String errorMessage = result.getResponse().getErrorMessage();
+        assertEquals("Error while saving signature", errorMessage, "Error message does not match.");
     }
 }

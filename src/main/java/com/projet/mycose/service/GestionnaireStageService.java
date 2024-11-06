@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,6 +25,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -115,12 +117,12 @@ public class GestionnaireStageService {
     }
 
 
-    public List<ContratDTO> getAllContratsNonSignes(int page) throws ChangeSetPersister.NotFoundException {
+    public List<ContratDTO> getAllContratsNonSignes(int page) {
         PageRequest pageRequest = PageRequest.of(page, LIMIT_PER_PAGE);
 
         Page<Contrat> contratsRetournessEnPages = contratRepository.findContratsBySignatureGestionnaireIsNull(pageRequest);
         if(contratsRetournessEnPages.isEmpty()) {
-            throw new ChangeSetPersister.NotFoundException();
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Contrats not found");
         }
 
         return contratsRetournessEnPages.stream().map(ContratDTO::toDTO).toList();
@@ -143,12 +145,12 @@ public class GestionnaireStageService {
         return nombrePages;
     }
 
-    public List<ContratDTO> getAllContratsSignes(int page, int annee) throws ChangeSetPersister.NotFoundException {
+    public List<ContratDTO> getAllContratsSignes(int page, int annee) {
         PageRequest pageRequest = PageRequest.of(page, LIMIT_PER_PAGE);
 
         Page<Contrat> contratsRetournessEnPages = contratRepository.findContratSigneeParGestionnaire(annee, pageRequest);
         if(contratsRetournessEnPages.isEmpty()) {
-            throw new ChangeSetPersister.NotFoundException();
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Contrats not found");
         }
 
         return contratsRetournessEnPages.stream().map(ContratDTO::toDTO).toList();
@@ -172,14 +174,12 @@ public class GestionnaireStageService {
     }
 
     @Transactional
-    public String enregistrerSignature(MultipartFile signature, String password, Long contratId)
-            throws UserNotFoundException, BadCredentialsException,
-            ChangeSetPersister.NotFoundException, IOException {
+    public String enregistrerSignature(MultipartFile signature, String password, Long contratId) {
         Long gestionnaireId = utilisateurService.getMyUserId();
         Optional<Utilisateur> utilisateurOpt = utilisateurRepository.findUtilisateurById(gestionnaireId);
 
         if (utilisateurOpt.isEmpty())
-            throw new UserNotFoundException();
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Utilisateur not found");
 
         Utilisateur utilisateur = utilisateurOpt.get();
 
@@ -188,29 +188,33 @@ public class GestionnaireStageService {
         );
 
         if(!authentication.isAuthenticated())
-            throw new BadCredentialsException("Email ou mot de passe invalide.");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Email ou mot de passe invalide.");
 
         Optional<Contrat> contrat = contratRepository.findById(contratId);
         if(contrat.isEmpty())
-            throw new ChangeSetPersister.NotFoundException();
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Contrat not found");
 
         Contrat contratDispo = contrat.get();
-        contratDispo.setSignatureEmployeur(signature.getBytes());
+        try {
+            contratDispo.setSignatureEmployeur(signature.getBytes());
+        } catch (IOException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error while saving signature");
+        }
         contratRepository.save(contratDispo);
         return "Signature sauvegardée";
     }
 
-    public byte[] getContratSignee(long id) throws RuntimeException {
+    public byte[] getContratSignee(long id) {
         Optional<Contrat> contratOpt = contratRepository.findById(id);
 
         if (contratOpt.isEmpty()) {
-            throw new NoSuchElementException("Aucun contrat trouvé avec ce id " + id);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Contrat not found");
         }
 
         Contrat contrat = contratOpt.get();
 
         if (!isAllSignatureThere(contrat)) {
-            throw new IllegalArgumentException("Il manque des signature");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Aucune signature n'est présente sur le contrat");
         }
 
         return getPdfCompletContrat(contrat);
@@ -222,7 +226,7 @@ public class GestionnaireStageService {
                 contrat.getSignatureEmployeur() != null;
     }
 
-    private byte[] getPdfCompletContrat(Contrat contrat) throws RuntimeException {
+    private byte[] getPdfCompletContrat(Contrat contrat) {
         try {
             ByteArrayInputStream pdfInputStream = new ByteArrayInputStream(contrat.getPdf());
             PdfReader pdfReader = new PdfReader(pdfInputStream);
@@ -240,12 +244,12 @@ public class GestionnaireStageService {
             pdfReader.close();
 
             return outputStream.toByteArray();
-        } catch (Exception e) {
-            throw new RuntimeException("Erreur lors de la création du PDF complet du contrat", e);
+        } catch (IOException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de la création du PDF complet du contrat" + e);
         }
     }
 
-    private void ajouterImagesSurPage(PdfStamper stamper, int pageNumber, byte[]... images) throws RuntimeException {
+    private void ajouterImagesSurPage(PdfStamper stamper, int pageNumber, byte[]... images) {
         try {
             PdfContentByte contentByte = stamper.getOverContent(pageNumber);
 
@@ -264,7 +268,7 @@ public class GestionnaireStageService {
             }
 
         } catch (Exception e) {
-            throw new RuntimeException("Erreur lors de l'ajout des images au PDF", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de l'ajout des images au PDF" + e);
         }
     }
 }
