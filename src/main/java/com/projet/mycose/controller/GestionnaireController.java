@@ -136,6 +136,12 @@ public class GestionnaireController {
                 gestionnaireStageService.getAmountOfPagesOfContractSignees(annee));
     }
 
+    @GetMapping("/contrats/signes/anneeminimum")
+    public ResponseEntity<Integer> getYearFirstContratUploaded() {
+        return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
+                gestionnaireStageService.getYearFirstContratUploaded());
+    }
+
     @PostMapping(value = "/enregistrerSignature")
     public ResponseEntity<String> enregistrerSignature(
             @RequestParam("signature") MultipartFile signature,

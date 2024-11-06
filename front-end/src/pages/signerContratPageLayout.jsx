@@ -6,7 +6,7 @@ const SignerContratPageLayout = () => {
     const [selectedContract, setSelectedContract] = useState();
 
     return (
-        <div className='w-full h-full'>
+        <div className='w-full h-full flex-1 flex flex-col'>
             <Outlet context={{
                     "userInfo": userInfo,
                     "setUserInfo": setUserInfo,

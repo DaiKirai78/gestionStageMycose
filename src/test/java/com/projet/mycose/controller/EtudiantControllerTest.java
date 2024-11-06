@@ -16,17 +16,26 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -224,4 +233,297 @@ public class EtudiantControllerTest {
                 .andExpect(status().isNoContent());
     }
 
+    @Test
+    void shouldReturnUnauthorizedWhenAuthenticationFails() throws Exception {
+        // Arrange
+        MockMultipartFile signatureFile = new MockMultipartFile(
+                "signature",
+                "signature.png",
+                MediaType.IMAGE_PNG_VALUE,
+                "Dummy Image Content".getBytes()
+        );
+
+        Long contratId = 123L;
+        String password = "wrongPassword";
+
+        when(etudiantService.enregistrerSignature(
+                any(),
+                eq(password),
+                eq(contratId))
+        ).thenThrow(new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Email ou mot de passe invalide."));
+
+        // Act
+        MvcResult result = mockMvc.perform(multipart("/etudiant/enregistrerSignature")
+                        .file(signatureFile)
+                        .param("contratId", String.valueOf(contratId))
+                        .param("password", password)
+                        .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andExpect(status().isUnauthorized())
+                .andReturn();
+
+        // Assert
+        Exception resolvedException = result.getResolvedException();
+        assertNotNull(resolvedException, "Expected an exception but none was resolved.");
+        assertInstanceOf(ResponseStatusException.class, resolvedException, "Expected ResponseStatusException.");
+        assertEquals("401 UNAUTHORIZED \"Email ou mot de passe invalide.\"", resolvedException.getMessage(), "Error message does not match.");
+
+        String errorMessage = result.getResponse().getErrorMessage();
+        assertEquals("Email ou mot de passe invalide.", errorMessage, "Error message does not match.");
+
+        // Verify that the service was called once
+        verify(etudiantService, times(1))
+                .enregistrerSignature(any(), eq(password), eq(contratId));
+    }
+
+    @Test
+    void shouldReturnAcceptedStatus() throws Exception {
+        // Arrange
+        MockMultipartFile signatureFile = new MockMultipartFile(
+                "signature",
+                "signature.png",
+                MediaType.IMAGE_PNG_VALUE,
+                "Dummy Image Content".getBytes()
+        );
+
+        Long contratId = 123L;
+        String password = "securePassword";
+        String expectedResponseMessage = "Signature sauvegardée";
+
+        when(etudiantService.enregistrerSignature(
+                any(),
+                eq(password),
+                eq(contratId))
+        ).thenReturn(expectedResponseMessage);
+
+        // Act
+        MvcResult result = mockMvc.perform(multipart("/etudiant/enregistrerSignature")
+                        .file(signatureFile)
+                        .param("contratId", String.valueOf(contratId))
+                        .param("password", password)
+                        .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andExpect(status().isAccepted())
+                .andReturn();
+
+        // Assert
+        String responseContent = result.getResponse().getContentAsString();
+        assertEquals("Signature sauvegardÃ©e", responseContent, "Unexpected response content.");
+
+        // Verify that the service was called once
+        verify(etudiantService, times(1))
+                .enregistrerSignature(any(), eq(password), eq(contratId));
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenSignatureMissing() throws Exception {
+        // Arrange
+        Long contratId = 123L;
+        String password = "securePassword";
+
+        // Act
+        MvcResult result = mockMvc.perform(multipart("/etudiant/enregistrerSignature")
+                        // No file uploaded
+                        .param("contratId", String.valueOf(contratId))
+                        .param("password", password)
+                        .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        // Assert
+        assertEquals(MissingServletRequestPartException.class, Objects.requireNonNull(result.getResolvedException()).getClass(), "Expected MissingServletRequestPartException.");
+
+        String errorMessage = result.getResponse().getErrorMessage();
+        assertEquals("Required part 'signature' is not present.", errorMessage, "Error message does not match.");
+
+        // Verify that the service was never called
+        verify(etudiantService, never())
+                .enregistrerSignature(any(), anyString(), anyLong());
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenContratIdMissing() throws Exception {
+        // Arrange
+        MockMultipartFile signatureFile = new MockMultipartFile(
+                "signature",
+                "signature.png",
+                MediaType.IMAGE_PNG_VALUE,
+                "Dummy Image Content".getBytes()
+        );
+        String password = "securePassword";
+
+        // Act
+        MvcResult result = mockMvc.perform(multipart("/etudiant/enregistrerSignature")
+                        .file(signatureFile)
+                        // Missing contratId
+                        .param("password", password)
+                        .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        // Assert
+        assertEquals(MissingServletRequestParameterException.class, Objects.requireNonNull(result.getResolvedException()).getClass(), "Expected MissingServletRequestParameterException.");
+
+        String errorMessage = result.getResponse().getErrorMessage();
+        assertEquals("Required parameter 'contratId' is not present.", errorMessage, "Error message does not match.");
+
+        // Verify that the service was never called
+        verify(etudiantService, never())
+                .enregistrerSignature(any(), anyString(), anyLong());
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenPasswordMissing() throws Exception {
+        // Arrange
+        MockMultipartFile signatureFile = new MockMultipartFile(
+                "signature",
+                "signature.png",
+                MediaType.IMAGE_PNG_VALUE,
+                "Dummy Image Content".getBytes()
+        );
+        Long contratId = 123L;
+
+        // Act
+        MvcResult result = mockMvc.perform(multipart("/etudiant/enregistrerSignature")
+                        .file(signatureFile)
+                        .param("contratId", String.valueOf(contratId))
+                        // Missing password
+                        .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        // Assert
+        assertEquals(MissingServletRequestParameterException.class, Objects.requireNonNull(result.getResolvedException()).getClass(), "Expected MissingServletRequestParameterException.");
+
+        String errorMessage = result.getResponse().getErrorMessage();
+        assertEquals("Required parameter 'password' is not present.", errorMessage, "Error message does not match.");
+
+        // Verify that the service was never called
+        verify(etudiantService, never())
+                .enregistrerSignature(any(), anyString(), anyLong());
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenUserNotFound() throws Exception {
+        // Arrange
+        MockMultipartFile signatureFile = new MockMultipartFile(
+                "signature",
+                "signature.png",
+                MediaType.IMAGE_PNG_VALUE,
+                "Dummy Image Content".getBytes()
+        );
+
+        Long contratId = 123L;
+        String password = "securePassword";
+
+        when(etudiantService.enregistrerSignature(
+                any(),
+                eq(password),
+                eq(contratId))
+        ).thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Utilisateur not found"));
+
+        // Act
+        MvcResult result = mockMvc.perform(multipart("/etudiant/enregistrerSignature")
+                        .file(signatureFile)
+                        .param("contratId", String.valueOf(contratId))
+                        .param("password", password)
+                        .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andExpect(status().isNotFound())
+                .andReturn();
+
+        // Assert
+        Exception resolvedException = result.getResolvedException();
+        assertNotNull(resolvedException, "Expected an exception but none was resolved.");
+        assertInstanceOf(ResponseStatusException.class, resolvedException, "Expected ResponseStatusException.");
+        assertEquals("404 NOT_FOUND \"Utilisateur not found\"", resolvedException.getMessage(), "Error message does not match.");
+
+        String errorMessage = result.getResponse().getErrorMessage();
+        assertEquals("Utilisateur not found", errorMessage, "Error message does not match.");
+
+        // Verify that the service was called once
+        verify(etudiantService, times(1))
+                .enregistrerSignature(any(), eq(password), eq(contratId));
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenContratNotFound() throws Exception {
+        // Arrange
+        MockMultipartFile signatureFile = new MockMultipartFile(
+                "signature",
+                "signature.png",
+                MediaType.IMAGE_PNG_VALUE,
+                "Dummy Image Content".getBytes()
+        );
+
+        Long contratId = 999L; // Assume this ID does not exist
+        String password = "securePassword";
+
+        when(etudiantService.enregistrerSignature(
+                any(),
+                eq(password),
+                eq(contratId))
+        ).thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Contrat not found"));
+
+        // Act
+        MvcResult result = mockMvc.perform(multipart("/etudiant/enregistrerSignature")
+                        .file(signatureFile)
+                        .param("contratId", String.valueOf(contratId))
+                        .param("password", password)
+                        .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andExpect(status().isNotFound())
+                .andReturn();
+
+        // Assert
+        Exception resolvedException = result.getResolvedException();
+        assertNotNull(resolvedException, "Expected an exception but none was resolved.");
+        assertInstanceOf(ResponseStatusException.class, resolvedException, "Expected ResponseStatusException.");
+        assertEquals("404 NOT_FOUND \"Contrat not found\"", resolvedException.getMessage(), "Error message does not match.");
+
+        String errorMessage = result.getResponse().getErrorMessage();
+        assertEquals("Contrat not found", errorMessage, "Error message does not match.");
+
+        // Verify that the service was called once
+        verify(etudiantService, times(1))
+                .enregistrerSignature(any(), eq(password), eq(contratId));
+    }
+
+    @Test
+    void shouldReturnInternalServerErrorWhenSavingSignatureFails() throws Exception {
+        // Arrange
+        MockMultipartFile signatureFile = new MockMultipartFile(
+                "signature",
+                "signature.png",
+                MediaType.IMAGE_PNG_VALUE,
+                "Dummy Image Content".getBytes()
+        );
+
+        Long contratId = 123L;
+        String password = "securePassword";
+
+        when(etudiantService.enregistrerSignature(
+                any(),
+                eq(password),
+                eq(contratId))
+        ).thenThrow(new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error while saving signature"));
+
+        // Act
+        MvcResult result = mockMvc.perform(multipart("/etudiant/enregistrerSignature")
+                        .file(signatureFile)
+                        .param("contratId", String.valueOf(contratId))
+                        .param("password", password)
+                        .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andExpect(status().isInternalServerError())
+                .andReturn();
+
+        // Assert
+        Exception resolvedException = result.getResolvedException();
+        assertNotNull(resolvedException, "Expected an exception but none was resolved.");
+        assertInstanceOf(ResponseStatusException.class, resolvedException, "Expected ResponseStatusException.");
+        assertEquals("500 INTERNAL_SERVER_ERROR \"Error while saving signature\"", resolvedException.getMessage(), "Error message does not match.");
+
+        String errorMessage = result.getResponse().getErrorMessage();
+        assertEquals("Error while saving signature", errorMessage, "Error message does not match.");
+
+        // Verify that the service was called once
+        verify(etudiantService, times(1))
+                .enregistrerSignature(any(), eq(password), eq(contratId));
+    }
 }

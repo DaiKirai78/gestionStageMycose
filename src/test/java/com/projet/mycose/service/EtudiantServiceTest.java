@@ -1,11 +1,14 @@
 package com.projet.mycose.service;
 
 import com.projet.mycose.modele.*;
+import com.projet.mycose.modele.auth.Credentials;
 import com.projet.mycose.modele.auth.Role;
+import com.projet.mycose.repository.ContratRepository;
 import com.projet.mycose.repository.EtudiantRepository;
 import com.projet.mycose.repository.OffreStageRepository;
 import com.projet.mycose.dto.EtudiantDTO;
 import com.projet.mycose.dto.OffreStageDTO;
+import com.projet.mycose.repository.UtilisateurRepository;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -14,11 +17,18 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -35,10 +45,22 @@ public class EtudiantServiceTest {
     private PasswordEncoder passwordEncoder;
 
     @Mock
+    private ContratRepository contratRepository;
+
+    @Mock
+    private UtilisateurRepository utilisateurRepository;
+
+    @Mock
     private UtilisateurService utilisateurService;
 
     @Mock
     private OffreStageRepository offreStageRepositoryMock;
+
+    @Mock
+    private AuthenticationManager authenticationManager;
+
+    @Mock
+    private Authentication authentication;
 
     @InjectMocks
     private EtudiantService etudiantService;
@@ -354,5 +376,124 @@ public class EtudiantServiceTest {
         //Assert
         assertEquals(nombrePage, 0);
         verify(etudiantRepositoryMock, times(1)).countByContractStatusEquals(Etudiant.ContractStatus.PENDING);
+    }
+
+    @Test
+    public void testEnregistrerSignature_Success() {
+        // Arrange
+        Long gestionnaireId = 1L;
+        Long contratId = 1L;
+        String password = "motDePasse";
+        GestionnaireStage utilisateur = new GestionnaireStage();
+        utilisateur.setCredentials(new Credentials("unEmail@mail.com", password, Role.EMPLOYEUR));
+        Contrat contrat = new Contrat();
+        contrat.setId(contratId);
+        byte[] signatureBytes = "dummySignature".getBytes();
+        MockMultipartFile signature = new MockMultipartFile("signature", "signature.jpg", "image/jpeg", signatureBytes);
+        Authentication authentication = mock(Authentication.class);
+
+        when(utilisateurService.getMyUserId()).thenReturn(gestionnaireId);
+        when(utilisateurRepository.findUtilisateurById(gestionnaireId)).thenReturn(Optional.of(utilisateur));
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(authentication);
+        when(authentication.isAuthenticated()).thenReturn(true);
+        when(contratRepository.findById(contratId)).thenReturn(Optional.of(contrat));
+
+        // Act
+        String result = etudiantService.enregistrerSignature(signature, password, contratId);
+
+        // Assert
+        assertEquals("Signature sauvegardée", result);
+        verify(utilisateurService, times(1)).getMyUserId();
+        verify(utilisateurRepository, times(1)).findUtilisateurById(gestionnaireId);
+        verify(authenticationManager, times(1)).authenticate(any(UsernamePasswordAuthenticationToken.class));
+        verify(contratRepository, times(1)).findById(contratId);
+        verify(contratRepository, times(1)).save(contrat);
+        assertArrayEquals(signatureBytes, contrat.getSignatureEtudiant());
+    }
+    @Test
+    public void testEnregistrerSignature_WrongPassword() {
+        // Arrange
+        Long gestionnaireId = 3L;
+        Long contratId = 1L;
+        String password = "wrongPassword";
+        MockMultipartFile signature = new MockMultipartFile("signature", "signature.jpg", "image/jpeg", "dummy".getBytes());
+        GestionnaireStage utilisateur = new GestionnaireStage();
+        utilisateur.setCredentials(new Credentials("unEmail@mail.com", password, Role.EMPLOYEUR));
+        Authentication authentication = mock(Authentication.class);
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenReturn(authentication);
+        when(authentication.isAuthenticated()).thenReturn(false);
+        when(utilisateurService.getMyUserId()).thenReturn(gestionnaireId);
+        when(utilisateurRepository.findUtilisateurById(gestionnaireId)).thenReturn(Optional.of(utilisateur));
+        // Act & Assert
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () ->
+                etudiantService.enregistrerSignature(signature, password, contratId)
+        );
+
+        assertEquals("401 UNAUTHORIZED \"Email ou mot de passe invalide.\"", exception.getMessage());
+
+        verify(utilisateurService, times(1)).getMyUserId();
+        verify(utilisateurRepository, times(1)).findUtilisateurById(gestionnaireId);
+        verify(authenticationManager, times(1)).authenticate(any(UsernamePasswordAuthenticationToken.class));
+        verify(contratRepository, never()).findById(anyLong());
+        verify(contratRepository, never()).save(any(Contrat.class));
+    }
+    @Test
+    public void testEnregistrerSignature_NoUserFound() {
+        // Arrange
+        Long gestionnaireId = 1L;
+        Long contratId = 1L;
+        String password = "wrongPassword";
+        MockMultipartFile signature = new MockMultipartFile("signature", "signature.jpg", "image/jpeg", "dummy".getBytes());
+        GestionnaireStage utilisateur = new GestionnaireStage();
+        utilisateur.setCredentials(new Credentials("unEmail@mail.com", password, Role.EMPLOYEUR));
+        when(utilisateurService.getMyUserId()).thenReturn(gestionnaireId);
+        when(utilisateurRepository.findUtilisateurById(gestionnaireId)).thenReturn(Optional.empty());
+        // Act & Assert
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () ->
+                etudiantService.enregistrerSignature(signature, password, contratId)
+        );
+
+        assertEquals("404 NOT_FOUND \"Utilisateur not found\"", exception.getMessage());
+
+
+        verify(utilisateurService, times(1)).getMyUserId();
+        verify(utilisateurRepository, times(1)).findUtilisateurById(gestionnaireId);
+        verify(authenticationManager, never()).authenticate(any(UsernamePasswordAuthenticationToken.class));
+        verify(contratRepository, never()).findById(anyLong());
+        verify(contratRepository, never()).save(any(Contrat.class));
+    }
+    @Test
+    public void testEnregistrerSignature_NoContractFound() {
+        // Arrange
+        Long gestionnaireId = 1L;
+        Long contratId = 1L;
+        String password = "motDePasse";
+        //Gestionnaire de stage parce qu'on a un empty builder et c'est un mock anyways
+        GestionnaireStage utilisateur = new GestionnaireStage();
+        utilisateur.setCredentials(new Credentials("unEmail@mail.com", password, Role.ETUDIANT));
+        Contrat contrat = new Contrat();
+        contrat.setId(contratId);
+        byte[] signatureBytes = "dummySignature".getBytes();
+        MockMultipartFile signature = new MockMultipartFile("signature", "signature.jpg", "image/jpeg", signatureBytes);
+        Authentication authentication = mock(Authentication.class);
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenReturn(authentication);
+        when(authentication.isAuthenticated()).thenReturn(true);
+        when(utilisateurService.getMyUserId()).thenReturn(gestionnaireId);
+        when(utilisateurRepository.findUtilisateurById(gestionnaireId)).thenReturn(Optional.of(utilisateur));
+        when(contratRepository.findById(contratId)).thenReturn(Optional.empty());
+        // Act & Assert
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () ->
+                etudiantService.enregistrerSignature(signature, password, contratId)
+        );
+
+        assertEquals("404 NOT_FOUND \"Contrat not found\"", exception.getMessage());
+
+        verify(utilisateurService, times(1)).getMyUserId();
+        verify(utilisateurRepository, times(1)).findUtilisateurById(gestionnaireId);
+        verify(authenticationManager, times(1)).authenticate(any(UsernamePasswordAuthenticationToken.class));
+        verify(contratRepository, times(1)).findById(contratId);
+        verify(contratRepository, never()).save(any(Contrat.class));
     }
 }

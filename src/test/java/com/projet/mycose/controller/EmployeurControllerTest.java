@@ -13,19 +13,25 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -118,15 +124,16 @@ public class EmployeurControllerTest {
     }
 
     @Test
-    public void testGetAllContratsNonSignees_Error() throws Exception {
+    public void testGetAllContratsNonSignees_Empty() throws Exception {
         //Arrange
-        when(employeurService.getAllContratsNonSignes(0)).thenThrow(new RuntimeException());
 
         //Act & Assert
         mockMvc.perform(post("/entreprise/getContratsNonSignees")
                 .param("pageNumber", "0")
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isAccepted())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().string("[]"));
     }
 
     @Test
@@ -142,13 +149,14 @@ public class EmployeurControllerTest {
     }
 
     @Test
-    public void testGetAmountOfPagesContratsNonSignees_Error() throws Exception {
+    public void testGetAmountOfPagesContratsNonSigneesIsZero() throws Exception {
         //Arrange
-        when(employeurService.getAmountOfPagesOfContractNonSignees()).thenThrow(new RuntimeException());
 
         //Act & Assert
         mockMvc.perform(get("/entreprise/pagesContrats"))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isAccepted())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().string("0"));
     }
 
     @Test
@@ -176,15 +184,32 @@ public class EmployeurControllerTest {
         // Arrange
         MockMultipartFile signatureFile = new MockMultipartFile("signature", "signature.png", "image/png", "test signature content".getBytes());
 
-        when(employeurService.enregistrerSignature(any(MultipartFile.class), anyString(), any(Long.class))).thenThrow(new RuntimeException());
+        Long contratId = 123L;
+        String password = "securePassword";
+
+        when(employeurService.enregistrerSignature(any(MultipartFile.class), anyString(), any(Long.class))).thenThrow(new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error while saving signature"));
 
         // Act & Assert
-        mockMvc.perform(multipart("/entreprise/enregistrerSignature")
+        MvcResult result = mockMvc.perform(multipart("/entreprise/enregistrerSignature")
                         .file(signatureFile)
-                        .param("contratId", "1")
-                        .param("password", "Passw0rd")
+                        .param("contratId", String.valueOf(contratId))
+                        .param("password", password)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isInternalServerError())
+                .andReturn();
+
+        // Assert
+        Exception resolvedException = result.getResolvedException();
+        assertNotNull(resolvedException, "Expected an exception but none was resolved.");
+        assertInstanceOf(ResponseStatusException.class, resolvedException, "Expected ResponseStatusException.");
+        assertEquals("500 INTERNAL_SERVER_ERROR \"Error while saving signature\"", resolvedException.getMessage(), "Error message does not match.");
+
+        String errorMessage = result.getResponse().getErrorMessage();
+        assertEquals("Error while saving signature", errorMessage, "Error message does not match.");
+
+        // Verify that the service was called once
+        verify(employeurService, times(1))
+                .enregistrerSignature(any(), eq(password), eq(contratId));
     }
 
 }

@@ -2,6 +2,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import {useEffect, useState} from "react";
 import { useTranslation } from "react-i18next";
 import axios from "axios";
+import apiClient from "../../utils/apiClient.js";
 
 function ValiderOffreStage() {
     const { t } = useTranslation();
@@ -90,12 +91,11 @@ function ValiderOffreStage() {
 
             console.log("Payload to send:", payload);
 
-            const response = await axios.patch(
-                `http://localhost:8080/api/offres-stages/accept`,
+            const response = await apiClient.patch(
+                `offres-stages/accept`,
                 payload,
                 {
                     headers: {
-                        Authorization: `Bearer ${token}`,
                         "Content-Type": "application/json",
                     },
                 }

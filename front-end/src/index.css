@@ -6,17 +6,6 @@ body {
     background-image: url("./assets/bgOrange.jpg");
     background-repeat: no-repeat;
     background-size: cover;
-    width: 100%;
-    min-height: 100vh;
-    height: 100vh;
-}
-
-#root {
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    flex-direction: column;
 }
 
 #searchInput {

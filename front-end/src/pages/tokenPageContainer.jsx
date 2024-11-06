@@ -40,7 +40,7 @@ const TokenPageContainer = ({children, role, setUserInfo}) => {
         }
         
         return (
-            <div className='h-full w-full'>
+            <div className='flex-1 flex flex-col'>
                 {children}
             </div>
         );

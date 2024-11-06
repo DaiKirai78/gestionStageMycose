@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface ContratRepository extends JpaRepository<Contrat, Long> {
 
@@ -21,4 +23,10 @@ public interface ContratRepository extends JpaRepository<Contrat, Long> {
     @Query(value = "SELECT COUNT(*) FROM contrat c WHERE c.signature_gestionnaire IS NOT NULL AND EXTRACT(YEAR FROM c.created_at) = :annee", nativeQuery = true)
     int countByContratSigneeParGestionnaire(int annee);
 
+    Optional<Contrat> findFirstBySignatureEtudiantIsNotNullAndSignatureEmployeurIsNotNullAndSignatureGestionnaireIsNotNullOrderByCreatedAtAsc();
+
+
+    Page<Contrat> findContratsBySignatureEtudiantIsNullAndEtudiant_Id(Long etudiantId, Pageable pageable);
+
+    int countBySignatureEtudiantIsNullAndEtudiantId(Long etudiantId);
 }

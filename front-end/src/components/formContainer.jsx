@@ -101,7 +101,7 @@ const FormContainer = (props) => {
             </div>
             <div id="contentParent"
                  className={`${addedStyleForContentContainer} sm:w-10/12 sm:rounded-r-2xl sm:rounded-l-none z-10 md:w-7/12 bg-orange-light rounded-t-2xl flex flex-col justify-center pt-14 pb-10 box-content`}>
-                <div id="contentContainer" className="lg:mr-10 lg:ml-10">
+                <div id="contentContainer" className="xl:mr-10 xl:ml-10">
                     <div className='flex flex-col sm:px-30pct px-30pct pb-5'>
                         <img src={logoMycose} alt="logo mycose"/>
                         <img src={logoTitreMycose} alt="nom logo mycose" className='px-20pct py-10pct'/>

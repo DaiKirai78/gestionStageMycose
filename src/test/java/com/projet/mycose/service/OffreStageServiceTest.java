@@ -121,6 +121,7 @@ public class OffreStageServiceTest {
         fichierOffreStage.setId(1L);
         fichierOffreStage.setData(SAMPLE_DATA.getBytes());
         fichierOffreStage.setEntrepriseName("Sample Entreprise");
+        fichierOffreStage.setAnnee(Year.of(2024));
 
         formulaireOffreStageDTO = new FormulaireOffreStageDTO();
         formulaireOffreStageDTO.setCreateur_id(1L);
@@ -130,6 +131,7 @@ public class OffreStageServiceTest {
         formulaireOffreStage = new FormulaireOffreStage();
         formulaireOffreStage.setId(2L);
         formulaireOffreStage.setCreateur(new Employeur());
+        formulaireOffreStage.setAnnee(Year.of(2024));
 
         etudiant = Etudiant.builder()
                 .id(1L)
@@ -736,21 +738,25 @@ public class OffreStageServiceTest {
         fichierOffreStageDTO.setFileData("c2FtcGxlRGF0YQ=="); // Base64 for "sampleData"
         fichierOffreStageDTO.setCreateur_id(1L);
         fichierOffreStageDTO.setEntrepriseName("Sample Entreprise");
+        fichierOffreStageDTO.setAnnee(2024);
 
         FormulaireOffreStageDTO formulaireOffreStageDTO = new FormulaireOffreStageDTO();
         formulaireOffreStageDTO.setCreateur_id(2L);
         formulaireOffreStageDTO.setEntrepriseName("Sample Entreprise");
+        formulaireOffreStageDTO.setAnnee(2024);
 
         // Initialize Entities
         FichierOffreStage fichierOffreStage = new FichierOffreStage();
         fichierOffreStage.setId(1L);
         fichierOffreStage.setData("sampleData".getBytes());
         fichierOffreStage.setEntrepriseName("Sample Entreprise");
+        fichierOffreStage.setAnnee(Year.of(2024));
 
         FormulaireOffreStage formulaireOffreStage = new FormulaireOffreStage();
         formulaireOffreStage.setId(2L);
         formulaireOffreStage.setCreateur(new GestionnaireStage());
         formulaireOffreStage.setEntrepriseName("Sample Entreprise");
+        formulaireOffreStage.setAnnee(Year.of(2024));
 
         // Set OffreStages
         List<OffreStage> availableOffres = Arrays.asList(fichierOffreStage, formulaireOffreStage);

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.projet.mycose.modele.Etudiant;
 import com.projet.mycose.modele.Programme;
 import com.projet.mycose.modele.auth.Role;
+import com.projet.mycose.security.exception.UserNotFoundException;
 import com.projet.mycose.service.EtudiantService;
 import com.projet.mycose.service.UtilisateurService;
 import com.projet.mycose.dto.CourrielTelephoneDTO;
@@ -26,6 +27,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -204,5 +206,33 @@ public class UtilisateurControllerTest {
                         .with(user("karim").password("Mimi123$").roles("EMPLOYEUR")))
                 .andExpect(status().isOk());
     }
+    @Test
+    public void testGetNomEtudiantSelonId_Succes() throws Exception {
+        long userId = 1L;
+        String prenomNom = "Jean Dupont";
+
+        when(utilisateurService.getUtilisateurPrenomNom(userId)).thenReturn(prenomNom);
+
+        mockMvc.perform(get("/utilisateur/getPrenomNom")
+                        .param("id", String.valueOf(userId))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .with(csrf())
+                        .with(user("karim").roles("ETUDIANT")))
+                .andExpect(status().isAccepted())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().string(prenomNom));
+    }
+
+    @Test
+    public void testGetNomEtudiantSelonId_UserNotFound() throws Exception {
+        long userId = 2L;
+
+        when(utilisateurService.getUtilisateurPrenomNom(userId)).thenThrow(new UserNotFoundException());
+
+        mockMvc.perform(get("/utilisateur/getPrenomNom")
+                        .param("id", String.valueOf(userId)))
+                .andExpect(status().isNotFound());
+    }
+
 
 }

@@ -13,7 +13,7 @@
     "errorMessageTelephone" : "Le téléphone est invalide",
     "inputLabelEmail": "Courriel",
     "telephone": "Numéro de téléphone",
-    "errorPasswordNotSame" : "Les mots de passes doivenet être les mêmes",
+    "errorPasswordNotSame" : "Les mots de passes doivent être les mêmes",
     "inputLabelPassword": "Mot de Passe",
     "inputLabelPasswordConfirmation": "Confirmation du mot de passe",
     "newOnMycose": "Nouveau sur Mycose ?",
@@ -111,7 +111,7 @@
     "ACCEPTED": "Accepté",
     "REFUSED": "Refusé",
     "WAITING": "En attente",
-    "errorNoPDF": "No PDF data found in the response.",
+    "errorNoPDF": "Pas de données de PDF trouvées dans la réponse.",
     "impossibleLoadCV": "Impossible de charger le CV. Veuillez réessayer plus tard.",
     "myCV": "Mon CV",
     "fullScreen": "Plein écran",
@@ -257,5 +257,12 @@
     "summonStudent": "Convoquer l'étudiant",
     "date": "Date",
     "time": "Heure",
-    "summonLocation": "Lieu de la convocation"
+    "summonLocation": "Lieu de la convocation",
+    "yearRequired": "L'année est requise.",
+    "sessionRequired": "La session est requise.",
+    "choisirAnnee": "Choisir une année",
+    "choisirSession": "Choisir une session",
+    "AUTOMNE": "Automne",
+    "HIVER": "Hiver",
+    "ETE": "Été"
 }

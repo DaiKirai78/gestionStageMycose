@@ -141,6 +141,7 @@ const FormConnection = () => {
                 <div>
                     <div className="w-full">
                         <Input
+                            tabIndex={1}
                             label={t("email")}
                             color='black'
                             size='lg'
@@ -157,7 +158,10 @@ const FormConnection = () => {
                 </div>
                 <div>
                     <div className="w-full">
-                        <Input label={t("password")} color='black' size='lg'
+                        <Input label={t("password")} 
+                               color='black' 
+                               size='lg'
+                               tabIndex={2}
                                onChange={(e) => {
                                    changePasswordValue(e);
                                }}
@@ -166,7 +170,8 @@ const FormConnection = () => {
                                value={password}
                                error={errorKeyPassword.length > 0}
                                icon={
-                                <div
+                                <button 
+                                  tabIndex={3}
                                   className='p-1 border rounded border-gray-700 text-gray-700 cursor-pointer'
                                   onClick={(e) => {
                                       e.preventDefault();
@@ -178,7 +183,7 @@ const FormConnection = () => {
                                         :
                                         <FaRegEye />
                                     }
-                                </div>
+                                </button>
                             }
                         />
                         <InputErrorMessage messageKey={errorKeyPassword}/>

@@ -184,16 +184,20 @@ function FormInscription3({prenom, nom, email, telephone, setStep, role, nomOrga
                 <form method="get" className='flex flex-col sm:gap-5 gap-3'>
                     <div>
                         {(errorKeyResponse !== "") ? renderMessageErreur() : null}
-                        <div className="w-full">
-                            <Input label={t("inputLabelPassword")} color='black' size='lg' 
+                        <div className="w-full select-none">
+                            <Input label={t("inputLabelPassword")} 
+                            color='black' 
+                            size='lg' 
+                            tabIndex={1}
                             onChange={(e) => {changePasswordValue(e);}}
-                            type='password'
+                            type={isPasswordHidden ? 'password' : "text"}
                             autoFocus={true}
                             error={errorKeyPassword.length > 0}
                             value={password}
                             autoComplete='on'
                             icon={
-                                <div
+                                <button
+                                  tabIndex={2}
                                   className='p-1 border rounded border-gray-700 text-gray-700 cursor-pointer'
                                   onClick={(e) => {
                                       e.preventDefault();
@@ -205,22 +209,25 @@ function FormInscription3({prenom, nom, email, telephone, setStep, role, nomOrga
                                         :
                                         <FaRegEye />
                                     }
-                                </div>
+                                </button>
                             }
                             />
                             <InputErrorMessage messageKey={errorKeyPassword}/>
                         </div>
                     </div>
                     <div>
-                        <div className="w-full">
-                            <Input label={t("inputLabelPasswordConfirmation")} color='black' size='lg'
+                        <div className="w-full select-none">
+                            <Input label={t("inputLabelPasswordConfirmation")} 
+                            color='black' 
+                            size='lg'
+                            tabIndex={3}
                             onChange={(e) => {changePasswordConfValue(e);}}
-                            type='password'
+                            type={isConfirmPasswordHidden ? 'password' : "text"}
                             error={errorKeyPassword.length > 0}
                             value={passwordConf}
                             autoComplete='on'
                             icon={
-                                <div
+                                <button tabIndex={4}
                                   className='p-1 border rounded border-gray-700 text-gray-700 cursor-pointer'
                                   onClick={(e) => {
                                       e.preventDefault();
@@ -232,7 +239,7 @@ function FormInscription3({prenom, nom, email, telephone, setStep, role, nomOrga
                                         :
                                         <FaRegEye />
                                     }
-                                </div>
+                                </button>
                             }
                             />
                             <InputErrorMessage messageKey={errorKeyPassword}/>

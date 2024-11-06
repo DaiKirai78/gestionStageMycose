@@ -15,6 +15,7 @@ import com.projet.mycose.repository.UtilisateurRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -22,8 +23,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,7 +56,7 @@ public class EmployeurService {
 
         Page<Contrat> contratsRetournessEnPages = contratRepository.findContratsBySignatureEmployeurIsNullAndEmployeur_Id(employeurId, pageRequest);
         if(contratsRetournessEnPages.isEmpty()) {
-            return null;
+            return Collections.emptyList();
         }
 
         return contratsRetournessEnPages.stream().map(ContratDTO::toDTO).toList();
@@ -60,12 +64,12 @@ public class EmployeurService {
     }
 
     @Transactional
-    public String enregistrerSignature(MultipartFile signature, String password, Long contratId) throws Exception{
+    public String enregistrerSignature(MultipartFile signature, String password, Long contratId) {
         Long employeurId = utilisateurService.getMyUserId();
         Optional<Utilisateur> utilisateurOpt = utilisateurRepository.findUtilisateurById(employeurId);
 
         if (utilisateurOpt.isEmpty())
-            return "L'utilisateur n'existe pas";
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Utilisateur not found");
 
         Utilisateur utilisateur = utilisateurOpt.get();
 
@@ -73,14 +77,18 @@ public class EmployeurService {
                 new UsernamePasswordAuthenticationToken(utilisateur.getCourriel(), password)
         );
         if(!authentication.isAuthenticated())
-            return "Mauvais mot de passe";
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Email ou mot de passe invalide.");
 
         Optional<Contrat> contrat = contratRepository.findById(contratId);
         if(contrat.isEmpty())
-            return "Aucun contrat trouvé";
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Contrat not found");
 
         Contrat contratDispo = contrat.get();
-        contratDispo.setSignatureEmployeur(signature.getBytes());
+        try {
+            contratDispo.setSignatureEmployeur(signature.getBytes());
+        } catch (IOException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error while saving signature");
+        }
         contratRepository.save(contratDispo);
         return "Signature sauvegardée";
     }

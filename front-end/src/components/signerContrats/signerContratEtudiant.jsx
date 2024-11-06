@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import SignerContratCard from './signerContratCard';
 import PageIsLoading from '../pageIsLoading';
 
-const SignerContratEmployeur = ({ setSelectedContract }) => {
+const SignerContratEtudiant = ({ setSelectedContract }) => {
 
     const [pages, setPages] = useState({minPages: 1, maxPages: null, currentPage: 1});
     const { t } = useTranslation();
@@ -28,7 +28,7 @@ const SignerContratEmployeur = ({ setSelectedContract }) => {
         const token = localStorage.getItem("token");
 
         try {
-            const response = await fetch('http://localhost:8080/entreprise/pagesContrats', {
+            const response = await fetch('http://localhost:8080/etudiant/pagesContrats', {
                 method: 'GET',
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -59,7 +59,7 @@ const SignerContratEmployeur = ({ setSelectedContract }) => {
 
         for (const contrat of contrats) {
             try {
-                const response = await fetch(`http://localhost:8080/utilisateur/getPrenomNomEtudiant?id=${contrat.etudiantId}`, {
+                const response = await fetch(`http://localhost:8080/utilisateur/getPrenomNom?id=${contrat.employeurId}`, {
                     method: 'GET',
                     headers: {Authorization: `Bearer ${token}`}
                 });
@@ -91,8 +91,8 @@ const SignerContratEmployeur = ({ setSelectedContract }) => {
         const token = localStorage.getItem("token");
         
         try {
-            const response = await fetch(`http://localhost:8080/entreprise/getContratsNonSignees?pageNumber=${pages.currentPage - 1}`, {
-                method: 'POST',
+            const response = await fetch(`http://localhost:8080/etudiant/getContratsNonSignees?page=${pages.currentPage - 1}`, {
+                method: 'GET',
                 headers: {Authorization: `Bearer ${token}`}
             });
 
@@ -151,4 +151,4 @@ const SignerContratEmployeur = ({ setSelectedContract }) => {
     );
 };
 
-export default SignerContratEmployeur;
+export default SignerContratEtudiant;
