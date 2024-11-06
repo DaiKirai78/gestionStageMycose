@@ -268,6 +268,6 @@ public class GestionnaireStageService {
 
     public List<Integer> getYearFirstContratUploaded() {
         List<Date> timeList = contratRepository.findDistinctCreatedAtForSignedContrats();
-        return timeList.stream().map(Date::getYear).toList();
+        return timeList.stream().map(date -> date.getYear() + 1900).toList();
     }
 }
