@@ -184,7 +184,7 @@ function FormOffreStage() {
         }
 
         // Validation pour 'employerName'
-        if (!formData.employerName) {
+        if (role === "GESTIONNAIRE_STAGE" && !formData.employerName) {
             errors.employerName = t("employerNameRequired");
             valid = false;
         }
@@ -315,38 +315,39 @@ function FormOffreStage() {
             <hr className="border-1 border-black"/>
 
             {role === "GESTIONNAIRE_STAGE" && (
-                <div className="space-y-2">
-                    <label htmlFor="entrepriseName" className="block text-sm font-medium text-black mt-4">
-                        {t("companyName")}
-                    </label>
-                    <input
-                        type="text"
-                        id="entrepriseName"
-                        name="entrepriseName"
-                        value={formData.entrepriseName}
-                        onChange={handleInputChange}
-                        className={`mt-1 p-2 block w-full border ${error.entrepriseName ? 'border-red-500' : 'border-black'} rounded-md bg-transparent`}
-                        autoComplete="organization"
-                    />
-                    {error.entrepriseName && <p className="text-red-500 text-sm mt-1">{error.entrepriseName}</p>}
+                <div>
+                    <div className="space-y-2">
+                        <label htmlFor="entrepriseName" className="block text-sm font-medium text-black mt-4">
+                            {t("companyName")}
+                        </label>
+                        <input
+                            type="text"
+                            id="entrepriseName"
+                            name="entrepriseName"
+                            value={formData.entrepriseName}
+                            onChange={handleInputChange}
+                            className={`mt-1 p-2 block w-full border ${error.entrepriseName ? 'border-red-500' : 'border-black'} rounded-md bg-transparent`}
+                            autoComplete="organization"
+                        />
+                        {error.entrepriseName && <p className="text-red-500 text-sm mt-1">{error.entrepriseName}</p>}
+                    </div>
+                    <div className="space-y-2">
+                        <label htmlFor="employerName" className="block text-sm font-medium text-black mt-4">
+                            {t("employerName")}
+                        </label>
+                        <input
+                            type="text"
+                            id="employerName"
+                            name="employerName"
+                            value={formData.employerName}
+                            onChange={handleInputChange}
+                            className={`mt-1 p-2 block w-full border ${error.employerName ? 'border-red-500' : 'border-black'} rounded-md bg-transparent`}
+                            autoComplete="name"
+                        />
+                        {error.employerName && <p className="text-red-500 text-sm mt-1">{error.employerName}</p>}
+                    </div>
                 </div>
             )}
-
-            <div className="space-y-2">
-                <label htmlFor="employerName" className="block text-sm font-medium text-black mt-4">
-                    {t("employerName")}
-                </label>
-                <input
-                    type="text"
-                    id="employerName"
-                    name="employerName"
-                    value={formData.employerName}
-                    onChange={handleInputChange}
-                    className={`mt-1 p-2 block w-full border ${error.employerName ? 'border-red-500' : 'border-black'} rounded-md bg-transparent`}
-                    autoComplete="name"
-                />
-                {error.employerName && <p className="text-red-500 text-sm mt-1">{error.employerName}</p>}
-            </div>
 
             <div className="space-y-2">
                 <label htmlFor="email" className="block text-sm font-medium text-black mt-4">
@@ -366,7 +367,7 @@ function FormOffreStage() {
 
 
             <div className="space-y-2">
-                <label htmlFor="website" className="block text-sm font-medium text-black mt-4">
+            <label htmlFor="website" className="block text-sm font-medium text-black mt-4">
                     {t("website")}
                 </label>
                 <input

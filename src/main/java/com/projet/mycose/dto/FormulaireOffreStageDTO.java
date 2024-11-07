@@ -21,7 +21,6 @@ import java.util.List;
 @Setter
 public class FormulaireOffreStageDTO extends OffreStageDTO {
 
-    @NotBlank(message = "Employer name is required.")
     private String employerName;
 
     @NotBlank(message = "Email is required.")

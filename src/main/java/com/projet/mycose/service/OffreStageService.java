@@ -177,6 +177,7 @@ public class OffreStageService {
 
         if (utilisateurDTO.getRole() == Role.EMPLOYEUR) {
             formulaireOffreStageDTO.setEntrepriseName(((EmployeurDTO) utilisateurDTO).getEntrepriseName());
+            formulaireOffreStageDTO.setEmployerName(((EmployeurDTO) utilisateurDTO).getPrenom() + " " + ((EmployeurDTO) utilisateurDTO).getNom());
             formulaireOffreStageDTO.setVisibility(OffreStage.Visibility.UNDEFINED);
         } else if (utilisateurDTO.getRole() == Role.GESTIONNAIRE_STAGE) {
             formulaireOffreStageDTO.setStatus(OffreStage.Status.ACCEPTED);
