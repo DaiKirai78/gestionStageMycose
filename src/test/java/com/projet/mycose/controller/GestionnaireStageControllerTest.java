@@ -7,6 +7,7 @@ import com.projet.mycose.modele.Etudiant;
 import com.projet.mycose.modele.Programme;
 import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.repository.UtilisateurRepository;
+import com.projet.mycose.security.exception.AuthenticationException;
 import com.projet.mycose.security.exception.UserNotFoundException;
 import com.projet.mycose.service.EtudiantService;
 import com.projet.mycose.service.GestionnaireStageService;
@@ -493,7 +494,7 @@ public class GestionnaireStageControllerTest {
         MockMultipartFile signatureFile = new MockMultipartFile("signature", "signature.png", "image/png", "test signature content".getBytes());
 
         when(gestionnaireStageService.enregistrerSignature(any(MultipartFile.class), anyString(), any(Long.class)))
-                .thenThrow(new BadCredentialsException("Email ou mot de passe invalide."));
+                .thenThrow(new AuthenticationException(HttpStatus.UNAUTHORIZED ,"Email ou mot de passe invalide."));
 
         // Act & Assert
         mockMvc.perform(multipart("/gestionnaire/enregistrerSignature")
@@ -561,7 +562,10 @@ public class GestionnaireStageControllerTest {
     @Test
     public void testGetYearFirstContratUploaded_NormalSuccess() throws Exception {
         // Arrange
-        when(gestionnaireStageService.getYearFirstContratUploaded()).thenReturn(Set.of(2019, 2021));
+        Set set = new HashSet();
+        set.add(2019);
+        set.add(2021);
+        when(gestionnaireStageService.getYearFirstContratUploaded()).thenReturn(set);
 
         // Act & Assert
         mockMvc.perform(get("/gestionnaire/contrats/signes/anneeminimum")

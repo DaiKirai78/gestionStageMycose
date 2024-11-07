@@ -474,7 +474,7 @@ class GestionnaireStageServiceTest {
         // Assert
         assertEquals("Signature sauvegardée", result);
         verify(contratRepository, times(1)).save(contrat);
-        assertArrayEquals(signatureBytes, contrat.getSignatureEmployeur());
+        assertArrayEquals(signatureBytes, contrat.getSignatureGestionnaire());
     }
 
     @Test

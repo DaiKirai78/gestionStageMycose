@@ -1,6 +1,7 @@
 package com.projet.mycose.service;
 
 import com.lowagie.text.Image;
+import com.lowagie.text.PageSize;
 import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfStamper;
@@ -20,6 +21,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -172,7 +174,7 @@ public class GestionnaireStageService {
 
     @Transactional
     public String enregistrerSignature(MultipartFile signature, String password, Long contratId)
-            throws UserNotFoundException, BadCredentialsException,
+            throws UserNotFoundException, AuthenticationException,
             ChangeSetPersister.NotFoundException, IOException {
         Long gestionnaireId = utilisateurService.getMyUserId();
         Optional<Utilisateur> utilisateurOpt = utilisateurRepository.findUtilisateurById(gestionnaireId);
@@ -194,7 +196,7 @@ public class GestionnaireStageService {
             throw new ChangeSetPersister.NotFoundException();
 
         Contrat contratDispo = contrat.get();
-        contratDispo.setSignatureEmployeur(signature.getBytes());
+        contratDispo.setSignatureGestionnaire(signature.getBytes());
         contratRepository.save(contratDispo);
         return "Signature sauvegardée";
     }
@@ -248,16 +250,19 @@ public class GestionnaireStageService {
 
     private void ajouterImagesSurPage(PdfStamper stamper, int pageNumber, byte[]... images) throws RuntimeException {
         try {
-            PdfContentByte contentByte = stamper.getOverContent(pageNumber);
+            stamper.insertPage(pageNumber + 1, PageSize.A4);
+            PdfContentByte contentByte = stamper.getOverContent(pageNumber + 1);
 
-            float yPosition = 100;
+            float yPosition = 50;
 
             for (byte[] imageBytes : images) {
                 if (imageBytes != null) {
                     Image image = Image.getInstance(imageBytes);
-                    image.scaleToFit(500, 700);
+                    image.scaleToFit(200, 300);
 
-                    image.setAbsolutePosition(50, yPosition);
+                    float xPosition = (PageSize.A4.getWidth() - image.getScaledWidth()) / 2;
+
+                    image.setAbsolutePosition(xPosition, yPosition);
                     contentByte.addImage(image);
 
                     yPosition += image.getScaledHeight() + 10;

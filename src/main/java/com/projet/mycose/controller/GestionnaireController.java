@@ -6,6 +6,7 @@ import com.projet.mycose.dto.EnseignantDTO;
 import com.projet.mycose.dto.EtudiantDTO;
 import com.projet.mycose.modele.Employeur;
 import com.projet.mycose.modele.Programme;
+import com.projet.mycose.security.exception.AuthenticationException;
 import com.projet.mycose.security.exception.UserNotFoundException;
 import com.projet.mycose.service.EtudiantService;
 import com.projet.mycose.service.GestionnaireStageService;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+//import org.springframework.security.exception.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
@@ -160,7 +162,7 @@ public class GestionnaireController {
         } catch (UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("Utilisateur non trouvé.");
-        } catch (BadCredentialsException e) {
+        } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body("Email ou mot de passe invalide.");
         } catch (ChangeSetPersister.NotFoundException e) {

@@ -264,5 +264,8 @@
     "choisirSession": "Choose a session",
     "AUTOMNE": "Autumn",
     "HIVER": "Winter",
-    "ETE": "Summer"
+    "ETE": "Summer",
+    "imprimer" : "Print",
+    "contratsSignes" : "Signed Contracts",
+    "contratsASigner" : "Sign Contracts"
 }

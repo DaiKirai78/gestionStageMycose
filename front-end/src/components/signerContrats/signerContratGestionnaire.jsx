@@ -249,10 +249,10 @@ function SignerContratGestionnaire({setSelectedContract}) {
         <div className="flex-1 w-full h-full bg-orange-light flex flex-col items-center p-8">
             <h1 className='text-3xl md:text-4xl font-bold text-center mb-5'>{t("signerContrats")}</h1>
             <div className="space-x-10">
-                <button className={`${isContratsSignesView ? 'underline decoration-2 decoration-deep-orange-300' : ''} border border-orange rounded p-2 hover:bg-opacity-90 hover:shadow-lg`} onClick={() => setIsContratsSignesView(true)}>Contrats À Signer</button>
-                <button className={`${!isContratsSignesView ? 'underline decoration-2 decoration-deep-orange-300' : ''} border border-orange rounded p-2 hover:bg-opacity-90 hover:shadow-lg`} onClick={() => setIsContratsSignesView(false)}>Contrats Signés</button>
+                <button className={`${isContratsSignesView ? 'underline decoration-2 decoration-deep-orange-300' : ''} border border-orange rounded p-2 hover:bg-opacity-90 hover:shadow-lg`} onClick={() => setIsContratsSignesView(true)}>{t("contratsASigner")}</button>
+                <button className={`${!isContratsSignesView ? 'underline decoration-2 decoration-deep-orange-300' : ''} border border-orange rounded p-2 hover:bg-opacity-90 hover:shadow-lg`} onClick={() => setIsContratsSignesView(false)}>{t("contratsSignes")}</button>
             </div>
-            <div className="my-10">
+            <div className="my-10 w-1/2">
             {
                 contrats && contrats.length > 0 ? (
                     <>
@@ -286,7 +286,7 @@ function SignerContratGestionnaire({setSelectedContract}) {
                                         <p className='text-lg'>{getNomEtudiant(contrat)}</p>
                                         <button className='bg-orange rounded p-2 text-white hover:bg-opacity-90'
                                             onClick={() => imprimer(contrat)}>
-                                            Imprimer
+                                            {t("imprimer")}
                                         </button>
                                     </div>
                                 )   

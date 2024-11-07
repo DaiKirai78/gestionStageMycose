@@ -14,16 +14,10 @@ const SignerContratCard = ({ contrat, setSelectedContract, nomPrenom }) => {
     return (
         <div className='flex w-full justify-between items-center p-4 shadow mb-4 rounded bg-white'>
             <p className='text-lg'>{nomPrenom}</p>
-            <div className="flex gap-1">
-                <button className='bg-orange rounded p-2 text-white hover:bg-opacity-90'
-                    onClick={() => selectContrat(contrat)}>
-                    {t("print")}
-                </button>
-                <button className='bg-orange rounded p-2 text-white hover:bg-opacity-90'
-                    onClick={() => printShit(contrat)}>
-                    {t("signContract")}
-                </button>
-            </div>
+            <button className='bg-orange rounded p-2 text-white hover:bg-opacity-90'
+                onClick={() => selectContrat(contrat)}>
+                {t("signContract")}
+            </button>
         </div>
     );
 };
