@@ -33,8 +33,8 @@ const listeStage = () => {
 
     let localhost = "http://localhost:8080/";
     let urlGetFormulaireStage = "etudiant/getStages?pageNumber=";
-    let urlGetNombreDePage = "etudiant/pages"
-    let urlRechercheOffres = "etudiant/recherche-offre"
+    let urlGetNombreDePage = "api/offres-stages/my-offres-pages";
+    let urlRechercheOffres = "api/offres-stages/my-offres";
     let urlGetOffresFiltre = "api/offres-stages/my-offres";
     let urlGetPagesFiltre = "api/offres-stages/my-offres-pages";
 
@@ -86,7 +86,7 @@ const listeStage = () => {
             let endpoint = annee || session ? urlGetOffresFiltre : urlGetFormulaireStage + pageNumber;
             const response = await axios.get(localhost + endpoint, {
                 headers: { Authorization: `Bearer ${token}` },
-                params: { pageNumber, year: annee, sessionEcole: session, title: recherche || "" }
+                params: { pageNumber: pageNumber, year: annee, sessionEcole: session, title: recherche || "" }
             });
             setStages(response.data);
             setLoading(false);
@@ -101,14 +101,16 @@ const listeStage = () => {
     const fetchStagesByRecherche = async (pageNumber, doesItComeFromUseEffect) => {
         setLoading(true);
         try {
-            const responseRecherche = await axios.post(localhost + urlRechercheOffres, {}, {
+            const responseRecherche = await axios.get(localhost + urlRechercheOffres, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 },
                 params: {
-                    pageNumber,
-                    recherche
+                    pageNumber: pageNumber,
+                    year: annee,
+                    sessionEcole: session,
+                    title: recherche || ""
                 }
             });
             if (!doesItComeFromUseEffect)
