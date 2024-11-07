@@ -20,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -1420,12 +1421,12 @@ public class OffreStageServiceTest {
         OffreStage.SessionEcole session = OffreStage.SessionEcole.AUTOMNE;
         String title = "Software Engineer";
 
-        when(utilisateurService.getMe()).thenThrow(new AccessDeniedException("Access denied"));
+        when(utilisateurService.getMe()).thenThrow(new AuthenticationException(HttpStatus.FORBIDDEN, "Authentication error"));
 
         // Act & Assert
-        assertThrows(AccessDeniedException.class, () -> {
+        assertThrows(AuthenticationException.class, () -> {
             offreStageService.getAvailableOffreStagesForEtudiantFiltered(page, annee, session, title);
-        }, "Should throw AccessDeniedException");
+        }, "Should throw AuthenticationException");
 
         verify(utilisateurService, times(1)).getMe();
         verify(offreStageRepository, never()).findAllByEtudiantNotAppliedFilteredWithTitle(anyLong(), any(Programme.class), any(Year.class), any(OffreStage.SessionEcole.class), anyString(), any(PageRequest.class));

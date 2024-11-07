@@ -378,30 +378,6 @@ public class OffreStageControllerTest {
     }
 
     @Test
-    public void testGetStages_Error() throws Exception {
-        //Arrange
-        when(offreStageService.getStagesFiltered(0, null, null)).thenReturn(null);
-
-
-        //Act & Assert
-        mockMvc.perform(get("/api/offres-stages/getOffresPosted")
-                        .param("pageNumber", String.valueOf(0))
-                        .contentType(MediaType.APPLICATION_JSON))
-                //.andExpect(status().isNoContent())
-                .andExpect(content().string(""));
-    }
-
-    @Test
-    public void testGetAmountOfPagesForCreateur_Error() throws Exception {
-        //Arrange
-        when(offreStageService.getAmountOfPagesForCreateurFiltered(null, null)).thenThrow(new RuntimeException());
-
-        //Act & Assert
-        mockMvc.perform(get("/api/offres-stages/pagesForCreateur"))
-                .andExpect(status().isNoContent());
-    }
-
-    @Test
     public void testGetAmountOfPagesForCreateur_Success() throws Exception {
         //Arrange
         when(offreStageService.getAmountOfPagesForCreateurFiltered(null, null)).thenReturn(2);

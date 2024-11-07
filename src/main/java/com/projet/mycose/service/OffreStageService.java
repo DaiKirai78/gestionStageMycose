@@ -250,13 +250,23 @@ public class OffreStageService {
         OffreStage offreStage = offreStageRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("OffreStage not found with ID: " + id));
         return OffreStageAvecUtilisateurInfoDTO.toDto(offreStage);
     }
-    public List<OffreStageDTO> getAvailableOffreStagesForEtudiant() throws AccessDeniedException {
-        EtudiantDTO etudiantDTO = (EtudiantDTO) utilisateurService.getMe();
+    public List<OffreStageDTO> getAvailableOffreStagesForEtudiant() {
+        EtudiantDTO etudiantDTO;
+        try {
+            etudiantDTO = (EtudiantDTO) utilisateurService.getMe();
+        } catch (AccessDeniedException e) {
+            throw new AuthenticationException(HttpStatus.FORBIDDEN, "Authentication error");
+        }
         return offreStageRepository.findAllByEtudiantNotApplied(etudiantDTO.getId(), etudiantDTO.getProgramme()).stream().map(this::convertToDTO).toList();
     }
 
-    public List<OffreStageDTO> getAvailableOffreStagesForEtudiantFiltered(int page, Integer annee, OffreStage.SessionEcole session, String title) throws AccessDeniedException {
-        EtudiantDTO etudiantDTO = (EtudiantDTO) utilisateurService.getMe();
+    public List<OffreStageDTO> getAvailableOffreStagesForEtudiantFiltered(int page, Integer annee, OffreStage.SessionEcole session, String title) {
+        EtudiantDTO etudiantDTO;
+        try {
+            etudiantDTO = (EtudiantDTO) utilisateurService.getMe();
+        } catch (AccessDeniedException e) {
+            throw new AuthenticationException(HttpStatus.FORBIDDEN, "Authentication error");
+        }
         PageRequest pageRequest = PageRequest.of(page, LIMIT_PER_PAGE);
 
         if (title == null) {
@@ -266,8 +276,13 @@ public class OffreStageService {
         return offreStageRepository.findAllByEtudiantNotAppliedFilteredWithTitle(etudiantDTO.getId(), etudiantDTO.getProgramme(), Year.of(annee), session, title, pageRequest).stream().map(this::convertToDTO).toList();
     }
 
-    public Integer getAmountOfPagesForEtudiantFiltered(Integer year, OffreStage.SessionEcole sessionEcole, String title) throws AccessDeniedException {
-        EtudiantDTO etudiantDTO = (EtudiantDTO) utilisateurService.getMe();
+    public Integer getAmountOfPagesForEtudiantFiltered(Integer year, OffreStage.SessionEcole sessionEcole, String title) {
+        EtudiantDTO etudiantDTO;
+        try {
+            etudiantDTO = (EtudiantDTO) utilisateurService.getMe();
+        } catch (AccessDeniedException e) {
+            throw new AuthenticationException(HttpStatus.FORBIDDEN, "Authentication error");
+        }
 
         if (title == null) {
             title = "";

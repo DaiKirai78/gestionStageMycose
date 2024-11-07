@@ -130,7 +130,7 @@ public class OffreStageController {
             @RequestParam(required = false) OffreStage.SessionEcole sessionEcole,
             @RequestParam int pageNumber,
             @RequestParam(value = "title", required = false, defaultValue = "") String title
-    ) throws AccessDeniedException {
+    ) {
         List<OffreStageDTO> offreStageDTOList = offreStageService.getAvailableOffreStagesForEtudiantFiltered(pageNumber, year, sessionEcole, title);
         return ResponseEntity.status(HttpStatus.OK).body(offreStageDTOList);
     }
@@ -140,32 +140,24 @@ public class OffreStageController {
             @RequestParam(required = false) Integer year,
             @RequestParam(required = false) OffreStage.SessionEcole sessionEcole,
             @RequestParam(value = "title", required = false, defaultValue = "") String title
-    ) throws AccessDeniedException {
+    ) {
         return ResponseEntity.status(HttpStatus.OK).body(offreStageService.getAmountOfPagesForEtudiantFiltered(year, sessionEcole, title));
     }
 
     @GetMapping( "/getOffresPosted")
     public ResponseEntity<List<OffreStageDTO>> getOffresStagesPublieesFiltre(
-            @RequestParam int pageNumber,
-            @RequestParam(required = false) Integer annee,
-            @RequestParam(required = false) OffreStage.SessionEcole session) {
-        try {
-            return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
-                    offreStageService.getStagesFiltered(pageNumber, annee, session));
-        } catch (Exception e) {
-            return ResponseEntity.noContent().build();
-        }
+        @RequestParam int pageNumber,
+        @RequestParam(required = false) Integer annee,
+        @RequestParam(required = false) OffreStage.SessionEcole session) {
+        return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
+                offreStageService.getStagesFiltered(pageNumber, annee, session));
     }
 
     @GetMapping("/pagesForCreateur")
     public ResponseEntity<Integer> getAmountOfPagesForCreateurFiltered(
-            @RequestParam(required = false) Integer annee,
-            @RequestParam(required = false) OffreStage.SessionEcole session) {
-        try {
-            return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
-                    offreStageService.getAmountOfPagesForCreateurFiltered(annee, session));
-        } catch(Exception e) {
-            return ResponseEntity.noContent().build();
-        }
+        @RequestParam(required = false) Integer annee,
+        @RequestParam(required = false) OffreStage.SessionEcole session) {
+        return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
+                offreStageService.getAmountOfPagesForCreateurFiltered(annee, session));
     }
 }
