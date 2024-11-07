@@ -164,6 +164,8 @@ function FileOffreStage() {
             setProgramme("");
             setIsPrivate(false);
             setSelectedStudents([]);
+            setSelectedYear("");
+            setSelectedSession("");
             document.getElementById("file").value = "";
 
         } catch (error) {
