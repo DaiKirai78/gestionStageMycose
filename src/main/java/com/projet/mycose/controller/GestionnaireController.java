@@ -47,6 +47,7 @@ public class GestionnaireController {
     @GetMapping("/getEtudiantsParProgramme")
     public ResponseEntity<List<EtudiantDTO>> getEtudiantsByProgramme(@RequestParam Programme programme) {
         return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
+                etudiantService.findEtudiantsByProgramme(programme));
     }
 
     @PostMapping("/assignerEnseignantEtudiant")
