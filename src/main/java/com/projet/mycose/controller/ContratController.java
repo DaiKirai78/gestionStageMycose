@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,20 +28,12 @@ public class ContratController {
     public ResponseEntity<?> upload(@RequestParam MultipartFile contratPDF, @RequestParam Long etudiantId, @RequestParam Long employeurId) {
         try {
             ContratDTO contratDTO = contratService.save(contratPDF, etudiantId, employeurId);
+            System.out.println("ContratDTO créé : " + contratDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(contratDTO);
-        } catch (ConstraintViolationException e) {
-            Map<String, String> errors = new HashMap<>();
-            e.getConstraintViolations().forEach(violation ->
-                    errors.put(violation.getPropertyPath().toString(), violation.getMessage()));
-
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
-
         } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized access : " + e.getMessage());
-        } catch (RuntimeException e) {
+        } catch (RuntimeException | IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Fichier non trouvé : " + e.getMessage());
-        } catch (IOException e) {
-            throw new RuntimeException(e.getMessage());
         }
     }
 }
