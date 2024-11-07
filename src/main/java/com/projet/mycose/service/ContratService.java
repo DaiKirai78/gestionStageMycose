@@ -3,6 +3,8 @@ package com.projet.mycose.service;
 import com.projet.mycose.dto.ContratDTO;
 import com.projet.mycose.dto.EtudiantDTO;
 import com.projet.mycose.dto.FichierCVDTO;
+import com.projet.mycose.exceptions.ResourceConflictException;
+import com.projet.mycose.exceptions.ResourceNotFoundException;
 import com.projet.mycose.modele.Contrat;
 import com.projet.mycose.modele.Etudiant;
 import com.projet.mycose.modele.FichierCV;
@@ -44,7 +46,7 @@ public class ContratService {
 
     public void changeContractStatusToActive(Long etudiantId) {
         if (utilisateurService.getEtudiantDTO(etudiantId) == null)
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "L'étudiant avec l'ID " + etudiantId + " est innexistant");
+            throw new ResourceNotFoundException("L'étudiant avec l'ID " + etudiantId + " est innexistant");
 
 
         Etudiant etudiant = etudiantRepository.findEtudiantById(etudiantId);
@@ -53,7 +55,7 @@ public class ContratService {
             etudiant.setContractStatus(Etudiant.ContractStatus.ACTIVE);
             etudiantRepository.save(etudiant);
         } else
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "L'étudiant a déjà un stage actif ou n'a pas fait de demande de stage");
+            throw new ResourceConflictException("L'étudiant a déjà un stage actif ou n'a pas fait de demande de stage");
     }
 
     public ContratDTO convertToDTO(Contrat contrat) {
@@ -72,8 +74,8 @@ public class ContratService {
 
         contrat.setPdf(Base64.getDecoder().decode(dto.getPdf()));
 
-        contrat.setEtudiant(etudiantRepository.findById(dto.getEtudiantId()).orElseThrow(() -> new RuntimeException("Étudiant non trouvé")));
-        contrat.setEmployeur(employeurRepository.findById(dto.getEmployeurId()).orElseThrow(() -> new RuntimeException("Employeur non trouvé")));
+        contrat.setEtudiant(etudiantRepository.findById(dto.getEtudiantId()).orElseThrow(() -> new ResourceNotFoundException("Étudiant non trouvé")));
+        contrat.setEmployeur(employeurRepository.findById(dto.getEmployeurId()).orElseThrow(() -> new ResourceNotFoundException("Employeur non trouvé")));
 
         return contrat;
     }

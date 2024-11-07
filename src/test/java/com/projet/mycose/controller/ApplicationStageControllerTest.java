@@ -200,19 +200,6 @@ public class ApplicationStageControllerTest {
     }
 
     @Test
-    void testAccepterApplication_Echec() {
-        // Arrange
-        when(applicationStageService.accepterOuRefuserApplication(20L, ApplicationStage.ApplicationStatus.ACCEPTED))
-                .thenThrow(new ResponseStatusException(HttpStatus.UNAUTHORIZED));
-
-        // Act
-        ResponseEntity<?> response = applicationStageController.accepterApplication(20L);
-
-        // Assert
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-    }
-
-    @Test
     void testRefuserApplication_Success() {
         // Arrange
         when(applicationStageService.accepterOuRefuserApplication(id, ApplicationStage.ApplicationStatus.REJECTED)).thenReturn(ApplicationStageAvecInfosDTO.toDTO(applicationStage));
@@ -225,19 +212,6 @@ public class ApplicationStageControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(response.getBody(), "Application refusée");
         verify(applicationStageService, times(1)).accepterOuRefuserApplication(id, ApplicationStage.ApplicationStatus.REJECTED);
-    }
-
-    @Test
-    void testRefuserApplication_Echec() {
-        // Arrange
-        when(applicationStageService.accepterOuRefuserApplication(20L, ApplicationStage.ApplicationStatus.REJECTED))
-                .thenThrow(new ResponseStatusException(HttpStatus.UNAUTHORIZED));
-
-        // Act
-        ResponseEntity<?> response = applicationStageController.refuserApplication(20L);
-
-        // Assert
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 
     @Test

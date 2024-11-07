@@ -3,6 +3,7 @@ package com.projet.mycose.service;
 import com.projet.mycose.dto.EtudiantDTO;
 import com.projet.mycose.dto.OffreStageDTO;
 import com.projet.mycose.dto.*;
+import com.projet.mycose.exceptions.*;
 import com.projet.mycose.modele.*;
 import com.projet.mycose.repository.ApplicationStageRepository;
 import com.projet.mycose.repository.EtudiantOffreStagePriveeRepository;
@@ -12,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.nio.file.AccessDeniedException;
 import java.util.List;
@@ -28,8 +28,13 @@ public class ApplicationStageService {
     private final EtudiantRepository etudiantRepository;
 
     @Transactional
-    public ApplicationStageDTO applyToOffreStage(Long offreStageId) throws AccessDeniedException {
-        Utilisateur utilisateur = utilisateurService.getMeUtilisateur();
+    public ApplicationStageDTO applyToOffreStage(Long offreStageId) {
+        Utilisateur utilisateur = null;
+        try {
+            utilisateur = utilisateurService.getMeUtilisateur();
+        } catch (AccessDeniedException e) {
+            throw new AuthenticationException(HttpStatus.UNAUTHORIZED, "Problème d'authentification");
+        }
         Etudiant etudiant = getValidatedEtudiant(utilisateur);
 
         OffreStage offreStage = getValidatedOffreStage(offreStageId);
@@ -46,35 +51,35 @@ public class ApplicationStageService {
 
     private Etudiant getValidatedEtudiant(Utilisateur utilisateur) {
         if (!(utilisateur instanceof Etudiant etudiant)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not an Etudiant.");
+            throw new AuthenticationException(HttpStatus.FORBIDDEN, "User is not an Etudiant.");
         }
         return etudiant;
     }
 
     private OffreStage getValidatedOffreStage(Long offreStageId) {
         return offreStageRepository.findById(offreStageId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "OffreStage not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("OffreStage not found"));
     }
 
     private void ensureNotAlreadyApplied(Etudiant etudiant, OffreStage offreStage) {
         Optional<ApplicationStage> existingApplication = applicationStageRepository.findByEtudiantAndOffreStage(etudiant, offreStage);
         if (existingApplication.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Etudiant has already applied to this OffreStage.");
+            throw new ResourceConflictException("Etudiant has already applied to this OffreStage.");
         }
     }
 
     private void checkAccessToOffreStage(Etudiant etudiant, OffreStage offreStage) {
         if (offreStage.getStatus() != OffreStage.Status.ACCEPTED) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Offre de stage non disponible");
+            throw new ResourceNotAvailableException("Offre de stage non disponible");
         }
         if (offreStage.getVisibility() == OffreStage.Visibility.PRIVATE) {
             boolean isAssociated = etudiantOffreStagePriveeRepository.existsByOffreStageAndEtudiant(offreStage, etudiant);
             if (!isAssociated) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Offre de stage non disponible");
+                throw new ResourceNotAvailableException("Offre de stage non disponible");
             }
         }
         if (offreStage.getProgramme() != etudiant.getProgramme()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Offre de stage non disponible car vous ne faites pas partie du programme associé à l'offre de stage");
+            throw new ResourceNotAvailableException("Offre de stage non disponible car vous ne faites pas partie du programme associé à l'offre de stage");
         }
     }
 
@@ -108,7 +113,7 @@ public class ApplicationStageService {
         Long etudiantId = utilisateurService.getMyUserId();
         return applicationStageRepository.findByEtudiantIdAndOffreStageId(etudiantId, applicationId)
                 .map(this::convertToDTOAvecInfos)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Application not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
     }
 
     public List<ApplicationStageAvecInfosDTO> getAllApplicationsPourUneOffreByIdPendingOrSummoned(Long offreId) {
@@ -126,10 +131,10 @@ public class ApplicationStageService {
     @Transactional
     public ApplicationStageAvecInfosDTO accepterOuRefuserApplication(Long id, ApplicationStage.ApplicationStatus status) {
         ApplicationStage applicationStage = applicationStageRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Application not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
 
         if (applicationStage.getStatus() != ApplicationStage.ApplicationStatus.PENDING && applicationStage.getStatus() != ApplicationStage.ApplicationStatus.SUMMONED)
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "La candidature a déjà été acceptée ou refusée et ne peut pas être modifiée.");
+            throw new ResourceConflictException("La candidature a déjà été acceptée ou refusée et ne peut pas être modifiée.");
 
         ApplicationStageAvecInfosDTO applicationStageAvecInfosDTO = convertToDTOAvecInfos(applicationStage);
 
@@ -158,7 +163,7 @@ public class ApplicationStageService {
 
     public EtudiantDTO changeContractStatusToPending(Long etudiantId) {
         if (utilisateurService.getEtudiantDTO(etudiantId) == null)
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "L'étudiant avec l'ID " + etudiantId + " est innexistant");
+            throw new ResourceNotFoundException("L'étudiant avec l'ID " + etudiantId + " est innexistant");
 
         Etudiant etudiant = etudiantRepository.findEtudiantById(etudiantId);
 
@@ -166,20 +171,20 @@ public class ApplicationStageService {
             etudiant.setContractStatus(Etudiant.ContractStatus.PENDING);
             return EtudiantDTO.toDTO(etudiantRepository.save(etudiant));
         } else
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "L'étudiant a déjà un stage actif ou une demande de stage active");
+            throw new ResourceConflictException("L'étudiant a déjà un stage actif ou une demande de stage active");
     }
 
     @Transactional
     public ApplicationStageAvecInfosDTO summonEtudiant(Long id, SummonEtudiantDTO summonEtudiantDTO) {
         ApplicationStage applicationStage = applicationStageRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Application not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
         Long userId = utilisateurService.getMyUserId();
         Long applicationID = applicationStage.getOffreStage().getCreateur().getId();
         if (!userId.equals(applicationID)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to summon this student");
+            throw new ResourceForbiddenException("You are not allowed to summon this student");
         }
         if (applicationStage.getStatus() != ApplicationStage.ApplicationStatus.PENDING) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Application is not pending");
+            throw new ResourceNotAvailableException("Application is not pending");
         }
         createConvocation(applicationStage, summonEtudiantDTO);
 
@@ -197,20 +202,20 @@ public class ApplicationStageService {
     public ApplicationStageAvecInfosDTO answerSummon(Long id, AnswerSummonDTO answer) {
         //Fetch type is set to EAGER for Convocation & Etudiant so no need for a special query to fetch the convocation
         ApplicationStage applicationStage = applicationStageRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Application not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
         Long userId = utilisateurService.getMyUserId();
         Long applicationID = applicationStage.getEtudiant().getId();
         if (!userId.equals(applicationID)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to answer this summon");
+            throw new ResourceForbiddenException("You are not allowed to answer this summon");
         }
         if (applicationStage.getStatus() != ApplicationStage.ApplicationStatus.SUMMONED) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Application is not summoned");
+            throw new ResourceNotAvailableException("Application is not summoned");
         }
         if (applicationStage.getConvocation().getStatus() != Convocation.ConvocationStatus.PENDING) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Convocation is not pending");
+            throw new ResourceNotAvailableException("Convocation is not pending");
         }
         if (answer.getStatus() != Convocation.ConvocationStatus.ACCEPTED && answer.getStatus() != Convocation.ConvocationStatus.REJECTED) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid status");
+            throw new ResourceNotAvailableException("Invalid status");
         }
         applicationStage.getConvocation().setMessageEtudiant(answer.getMessageEtudiant());
         applicationStage.getConvocation().setStatus(answer.getStatus());
@@ -219,13 +224,13 @@ public class ApplicationStageService {
 
     public EtudiantDTO getEtudiantFromApplicationId(Long applicationId) {
         ApplicationStage application = applicationStageRepository.findById(applicationId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Application non trouvée"));
+                .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
         return EtudiantDTO.toDTO(application.getEtudiant());
     }
 
     public OffreStageDTO getOffreStageFromApplicationId(Long applicationId) {
         ApplicationStage application = applicationStageRepository.findById(applicationId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Application non trouvée"));
+                .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
         return OffreStageDTO.toOffreStageInstaceDTO(application.getOffreStage());
     }
 }

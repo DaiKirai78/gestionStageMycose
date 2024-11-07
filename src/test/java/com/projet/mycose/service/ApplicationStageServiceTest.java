@@ -2,6 +2,7 @@ package com.projet.mycose.service;
 
 import com.projet.mycose.dto.*;
 
+import com.projet.mycose.exceptions.*;
 import com.projet.mycose.modele.*;
 import com.projet.mycose.modele.auth.Credentials;
 import com.projet.mycose.modele.auth.Role;
@@ -132,7 +133,7 @@ public class ApplicationStageServiceTest {
         when(utilisateurService.getMeUtilisateur()).thenReturn(etudiant);
         when(offreStageRepository.findById(offreStageId)).thenReturn(Optional.empty());
 
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
             applicationStageService.applyToOffreStage(offreStageId);
         }, "Expected ResponseStatusException to be thrown.");
 
@@ -151,11 +152,11 @@ public class ApplicationStageServiceTest {
         when(offreStageRepository.findById(offreStageId)).thenReturn(Optional.of(fichierOffreStage));
         when(applicationStageRepository.findByEtudiantAndOffreStage(etudiant, fichierOffreStage)).thenReturn(Optional.of(applicationStage));
 
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+        ResourceConflictException exception = assertThrows(ResourceConflictException.class, () -> {
             applicationStageService.applyToOffreStage(offreStageId);
         }, "Etudiant has already applied to this OffreStage.");
 
-        assertEquals("409 CONFLICT \"Etudiant has already applied to this OffreStage.\"", exception.getMessage(), "Exception message should match.");
+        assertEquals("Etudiant has already applied to this OffreStage.", exception.getMessage(), "Exception message should match.");
 
         verify(utilisateurService, times(1)).getMeUtilisateur();
         verify(offreStageRepository, times(1)).findById(offreStageId);
@@ -171,11 +172,11 @@ public class ApplicationStageServiceTest {
         when(offreStageRepository.findById(offreStageId)).thenReturn(Optional.of(fichierOffreStage));
         when(applicationStageRepository.findByEtudiantAndOffreStage(etudiant, fichierOffreStage)).thenReturn(Optional.empty());
 
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+        ResourceNotAvailableException exception = assertThrows(ResourceNotAvailableException.class, () -> {
             applicationStageService.applyToOffreStage(offreStageId);
         }, "Expected ResponseStatusException to be thrown.");
 
-        assertEquals("400 BAD_REQUEST \"Offre de stage non disponible\"", exception.getMessage(), "Exception message should match.");
+        assertEquals("Offre de stage non disponible", exception.getMessage(), "Exception message should match.");
 
         verify(utilisateurService, times(1)).getMeUtilisateur();
         verify(offreStageRepository, times(1)).findById(offreStageId);
@@ -187,7 +188,7 @@ public class ApplicationStageServiceTest {
     void applyToOffreStage_UserIsNotAnEtudiant() throws Exception {
         when(utilisateurService.getMeUtilisateur()).thenReturn(new Enseignant());
 
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+        AuthenticationException exception = assertThrows(AuthenticationException.class, () -> {
             applicationStageService.applyToOffreStage(offreStageId);
         }, "Expected ResponseStatusException to be thrown.");
 
@@ -208,11 +209,11 @@ public class ApplicationStageServiceTest {
         when(applicationStageRepository.findByEtudiantAndOffreStage(etudiant, fichierOffreStage)).thenReturn(Optional.empty());
         when(etudiantOffreStagePriveeRepository.existsByOffreStageAndEtudiant(fichierOffreStage, etudiant)).thenReturn(false);
 
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+        ResourceNotAvailableException exception = assertThrows(ResourceNotAvailableException.class, () -> {
             applicationStageService.applyToOffreStage(offreStageId);
         }, "Expected ResponseStatusException to be thrown.");
 
-        assertEquals("400 BAD_REQUEST \"Offre de stage non disponible\"", exception.getMessage(), "Exception message should match.");
+        assertEquals("Offre de stage non disponible", exception.getMessage(), "Exception message should match.");
 
         verify(utilisateurService, times(1)).getMeUtilisateur();
         verify(offreStageRepository, times(1)).findById(offreStageId);
@@ -253,13 +254,13 @@ public class ApplicationStageServiceTest {
         when(offreStageRepository.findById(offreStageId)).thenReturn(Optional.of(fichierOffreStage));
 
         // Act
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+        ResourceNotAvailableException exception = assertThrows(ResourceNotAvailableException.class, () -> {
             applicationStageService.applyToOffreStage(offreStageId);
         });
 
         // Assert
         assertNotNull(exception);
-        assertEquals("400 BAD_REQUEST \"Offre de stage non disponible car vous ne faites pas partie du programme associé à l'offre de stage\"", exception.getMessage());
+        assertEquals("Offre de stage non disponible car vous ne faites pas partie du programme associé à l'offre de stage", exception.getMessage());
 
         verify(utilisateurService, times(1)).getMeUtilisateur();
         verify(offreStageRepository, times(1)).findById(offreStageId);
@@ -339,7 +340,7 @@ public class ApplicationStageServiceTest {
         when(utilisateurService.getMyUserId()).thenReturn(etudiantId);
         when(applicationStageRepository.findByEtudiantIdAndOffreStageId(etudiantId, applicationId)).thenReturn(Optional.empty());
 
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
             applicationStageService.getApplicationById(applicationId);
         }, "Expected NotFoundException to be thrown.");
 
@@ -411,19 +412,19 @@ public class ApplicationStageServiceTest {
         when(applicationStageRepository.findById(applicationId)).thenReturn(Optional.of(applicationStage));
 
         // Act et Assert
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () ->
+        ResourceConflictException exception = assertThrows(ResourceConflictException.class, () ->
                 applicationStageService.accepterOuRefuserApplication(1L, ApplicationStage.ApplicationStatus.ACCEPTED)
         );
-        assertEquals("409 CONFLICT \"La candidature a déjà été acceptée ou refusée et ne peut pas être modifiée.\"", exception.getMessage());
+        assertEquals("La candidature a déjà été acceptée ou refusée et ne peut pas être modifiée.", exception.getMessage());
     }
 
     @Test
     public void testAccepterOuRefuserApplicationNotFound() {
         // Act et Assert
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () ->
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () ->
                 applicationStageService.accepterOuRefuserApplication(1L, ApplicationStage.ApplicationStatus.ACCEPTED)
         );
-        assertEquals("404 NOT_FOUND \"Application not found\"", exception.getMessage());
+        assertEquals("Application not found", exception.getMessage());
     }
 
     @Test
@@ -475,13 +476,13 @@ public class ApplicationStageServiceTest {
         when(applicationStageRepository.findById(1L)).thenReturn(Optional.empty());
 
         // Act
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
             applicationStageService.summonEtudiant(1L, summonEtudiantDTO);
         });
 
         // Assert
         assertNotNull(exception);
-        assertEquals("404 NOT_FOUND \"Application not found\"", exception.getMessage());
+        assertEquals("Application not found", exception.getMessage());
 
         verify(applicationStageRepository, times(1)).findById(1L);
         verify(utilisateurService, never()).getMyUserId();
@@ -495,13 +496,13 @@ public class ApplicationStageServiceTest {
         when(utilisateurService.getMyUserId()).thenReturn(2L);
 
         // Act
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+        ResourceForbiddenException exception = assertThrows(ResourceForbiddenException.class, () -> {
             applicationStageService.summonEtudiant(1L, summonEtudiantDTO);
         });
 
         // Assert
         assertNotNull(exception);
-        assertEquals("403 FORBIDDEN \"You are not allowed to summon this student\"", exception.getMessage());
+        assertEquals("You are not allowed to summon this student", exception.getMessage());
 
         verify(applicationStageRepository, times(1)).findById(1L);
         verify(utilisateurService, times(1)).getMyUserId();
@@ -516,13 +517,13 @@ public class ApplicationStageServiceTest {
         when(utilisateurService.getMyUserId()).thenReturn(1L);
 
         // Act
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+        ResourceNotAvailableException exception = assertThrows(ResourceNotAvailableException.class, () -> {
             applicationStageService.summonEtudiant(1L, summonEtudiantDTO);
         });
 
         // Assert
         assertNotNull(exception);
-        assertEquals("400 BAD_REQUEST \"Application is not pending\"", exception.getMessage());
+        assertEquals("Application is not pending", exception.getMessage());
 
         verify(applicationStageRepository, times(1)).findById(1L);
         verify(utilisateurService, times(1)).getMyUserId();
@@ -553,11 +554,11 @@ public class ApplicationStageServiceTest {
     @Test
     void testChangeContractStatusToPending_etudiantEmpty() {
         // Act & Assert
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
             applicationStageService.changeContractStatusToPending(etudiant.getId());
         });
 
-        assertEquals("404 NOT_FOUND \"L'étudiant avec l'ID 1 est innexistant\"", exception.getMessage());
+        assertEquals("L'étudiant avec l'ID 1 est innexistant", exception.getMessage());
     }
 
     @Test
@@ -568,11 +569,11 @@ public class ApplicationStageServiceTest {
         when(utilisateurService.getEtudiantDTO(1L)).thenReturn(EtudiantDTO.toDTO(etudiant));
 
         // Act & Assert
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+        ResourceConflictException exception = assertThrows(ResourceConflictException.class, () -> {
             applicationStageService.changeContractStatusToPending(etudiant.getId());
         });
 
-        assertEquals("409 CONFLICT \"L'étudiant a déjà un stage actif ou une demande de stage active\"", exception.getMessage());
+        assertEquals("L'étudiant a déjà un stage actif ou une demande de stage active", exception.getMessage());
     }
 
     @Test
@@ -608,11 +609,11 @@ public class ApplicationStageServiceTest {
         when(applicationStageRepository.findById(applicationStageId)).thenReturn(Optional.empty());
 
         // Act & Assert
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
             applicationStageService.answerSummon(applicationStageId, answerSummonDTO);
         });
 
-        assertEquals("404 NOT_FOUND \"Application not found\"", exception.getMessage());
+        assertEquals("Application not found", exception.getMessage());
         verify(applicationStageRepository, times(1)).findById(applicationStageId);
         verify(utilisateurService, times(0)).getMyUserId();
         verify(applicationStageRepository, times(0)).save(any(ApplicationStage.class));
@@ -628,11 +629,11 @@ public class ApplicationStageServiceTest {
         when(utilisateurService.getMyUserId()).thenReturn(etudiant2.getId()); // Different user
 
         // Act & Assert
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+        ResourceForbiddenException exception = assertThrows(ResourceForbiddenException.class, () -> {
             applicationStageService.answerSummon(applicationStageId, answerSummonDTO);
         });
 
-        assertEquals("403 FORBIDDEN \"You are not allowed to answer this summon\"", exception.getMessage());
+        assertEquals("You are not allowed to answer this summon", exception.getMessage());
         verify(applicationStageRepository, times(1)).findById(applicationStageId);
         verify(utilisateurService, times(1)).getMyUserId();
         verify(applicationStageRepository, times(0)).save(any(ApplicationStage.class));
@@ -652,11 +653,11 @@ public class ApplicationStageServiceTest {
         when(utilisateurService.getMyUserId()).thenReturn(etudiant.getId());
 
         // Act & Assert
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+        ResourceNotAvailableException exception = assertThrows(ResourceNotAvailableException.class, () -> {
             applicationStageService.answerSummon(applicationStageId, answerSummonDTO);
         });
 
-        assertEquals("400 BAD_REQUEST \"Application is not summoned\"", exception.getMessage());
+        assertEquals("Application is not summoned", exception.getMessage());
         verify(applicationStageRepository, times(1)).findById(applicationStageId);
         verify(utilisateurService, times(1)).getMyUserId();
         verify(applicationStageRepository, times(0)).save(any(ApplicationStage.class));
@@ -677,11 +678,11 @@ public class ApplicationStageServiceTest {
         when(utilisateurService.getMyUserId()).thenReturn(etudiant.getId());
 
         // Act & Assert
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+        ResourceNotAvailableException exception = assertThrows(ResourceNotAvailableException.class, () -> {
             applicationStageService.answerSummon(applicationStageId, answerSummonDTO);
         });
 
-        assertEquals("400 BAD_REQUEST \"Convocation is not pending\"", exception.getMessage());
+        assertEquals("Convocation is not pending", exception.getMessage());
         verify(applicationStageRepository, times(1)).findById(applicationStageId);
         verify(utilisateurService, times(1)).getMyUserId();
         verify(applicationStageRepository, times(0)).save(any(ApplicationStage.class));
@@ -700,11 +701,11 @@ public class ApplicationStageServiceTest {
         when(utilisateurService.getMyUserId()).thenReturn(etudiant.getId());
 
         // Act & Assert
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+        ResourceNotAvailableException exception = assertThrows(ResourceNotAvailableException.class, () -> {
             applicationStageService.answerSummon(applicationStageId, answerSummonDTO);
         });
 
-        assertEquals("400 BAD_REQUEST \"Invalid status\"", exception.getMessage());
+        assertEquals("Invalid status", exception.getMessage());
         verify(applicationStageRepository, times(1)).findById(applicationStageId);
         verify(utilisateurService, times(1)).getMyUserId();
         verify(applicationStageRepository, times(0)).save(any(ApplicationStage.class));

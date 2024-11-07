@@ -21,7 +21,7 @@ public class ApplicationStageController {
     private final ApplicationStageService applicationStageService;
 
     @PostMapping("/apply")
-    public ResponseEntity<ApplicationStageDTO> applyForStage(@RequestParam Long id) throws AccessDeniedException {
+    public ResponseEntity<ApplicationStageDTO> applyForStage(@RequestParam Long id) {
         ApplicationStageDTO applicationStageDTO = applicationStageService.applyToOffreStage(id);
         return new ResponseEntity<>(applicationStageDTO, HttpStatus.CREATED);
     }
@@ -49,34 +49,19 @@ public class ApplicationStageController {
     @GetMapping("/get/etudiant/{id}")
     public ResponseEntity
             <List<ApplicationStageAvecInfosDTO>> getApplicationsByEtudiantId(@PathVariable Long id) {
-        try {
-            return new ResponseEntity<>(applicationStageService.getApplicationsByEtudiant(id), HttpStatus.OK);
-        } catch (Exception e) {
-            System.err.println("Une erreur est survenue lors de la tentative de récupération des applications d'un étudiant :" + e.getMessage());
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return new ResponseEntity<>(applicationStageService.getApplicationsByEtudiant(id), HttpStatus.OK);
     }
 
     @PatchMapping("/application/{id}/accepter")
     public ResponseEntity<?> accepterApplication(@PathVariable Long id) {
-        try {
-            applicationStageService.accepterOuRefuserApplication(id, ApplicationStage.ApplicationStatus.ACCEPTED);
-            return ResponseEntity.ok().body("Application acceptée");
-        } catch (Exception e) {
-            System.err.println("Une erreur est survenue lors de la tentative d'acceptation d'une candidature à une offre : " + e.getMessage());
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        applicationStageService.accepterOuRefuserApplication(id, ApplicationStage.ApplicationStatus.ACCEPTED);
+        return ResponseEntity.ok().body("Application acceptée");
     }
 
     @PatchMapping("/application/{id}/refuser")
     public ResponseEntity<?> refuserApplication(@PathVariable Long id) {
-        try {
-            applicationStageService.accepterOuRefuserApplication(id, ApplicationStage.ApplicationStatus.REJECTED);
-            return ResponseEntity.ok().body("Application refusée");
-        } catch (Exception e) {
-            System.err.println("Une erreur est survenue lors de la tentative de refus d'une candidature à une offre : " + e.getMessage());
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        applicationStageService.accepterOuRefuserApplication(id, ApplicationStage.ApplicationStatus.REJECTED);
+        return ResponseEntity.ok().body("Application refusée");
     }
 
     @PatchMapping("/summon/{id}")
