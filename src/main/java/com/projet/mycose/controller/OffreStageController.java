@@ -150,7 +150,7 @@ public class OffreStageController {
         return ResponseEntity.status(HttpStatus.OK).body(offreStageService.getAmountOfPagesForEtudiantFiltered(year, sessionEcole, title));
     }
 
-    @PostMapping("/getOffresPosted")
+    @GetMapping("/getOffresPosted")
     public ResponseEntity<List<OffreStageDTO>> getOffresStagesPubliees(@RequestParam int pageNumber) {
         try {
             return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
@@ -175,6 +175,16 @@ public class OffreStageController {
         try{
             return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
                     offreStageService.getAmountOfPagesForCreateur());
+        } catch(Exception e) {
+            return ResponseEntity.noContent().build();
+        }
+    }
+
+    @GetMapping(value = "/pagesForCreateur", params = {"annee", "session"})
+    public ResponseEntity<Integer> getAmountOfPagesForCreateurFiltered(@RequestParam Integer annee, @RequestParam OffreStage.SessionEcole session) {
+        try{
+            return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
+                    offreStageService.getAmountOfPagesForCreateurFiltered(annee, session));
         } catch(Exception e) {
             return ResponseEntity.noContent().build();
         }

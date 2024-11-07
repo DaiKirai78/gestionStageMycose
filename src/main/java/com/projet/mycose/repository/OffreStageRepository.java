@@ -60,6 +60,16 @@ public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
             Pageable pageable
     );
 
+    @Query("SELECT COUNT(o) FROM OffreStage o " +
+            "WHERE o.createur.id = :idEmployeur " +
+            "AND o.annee = :annee " +
+            "AND o.session = :sessionEcole")
+    Long countOffreStageByCreateurIdFiltered(
+            @Param("idEmployeur") Long idEmployeur,
+            @Param("annee") Year annee,
+            @Param("sessionEcole") OffreStage.SessionEcole sessionEcole
+    );
+
     @Query("SELECT o FROM OffreStage o " +
             "LEFT JOIN EtudiantOffreStagePrivee eop ON o.id = eop.offreStage.id " +
             "LEFT JOIN o.applicationStages a ON a.etudiant.id = :etudiantId " +

@@ -367,7 +367,7 @@ public class OffreStageControllerTest {
         when(offreStageService.getStages(0)).thenReturn(mockListeOffres);
 
         // Act & Assert
-        mockMvc.perform(post("/api/offres-stages/getOffresPosted")
+        mockMvc.perform(get("/api/offres-stages/getOffresPosted")
                         .param("pageNumber", String.valueOf(0))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isAccepted())
@@ -384,7 +384,7 @@ public class OffreStageControllerTest {
 
 
         //Act & Assert
-        mockMvc.perform(post("/api/offres-stages/getOffresPosted")
+        mockMvc.perform(get("/api/offres-stages/getOffresPosted")
                         .param("pageNumber", String.valueOf(0))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
