@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -61,6 +62,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/application-stage/my-applications/status/*").hasAnyAuthority("GESTIONNAIRE_STAGE", "EMPLOYEUR", "ETUDIANT")
                         .requestMatchers("/api/application-stage/application/*").hasAuthority("EMPLOYEUR")
                         .requestMatchers("/api/application-stage/status/*").hasAuthority("GESTIONNAIRE_STAGE")
+                        .requestMatchers("/contrat/**").hasAuthority("GESTIONNAIRE_STAGE")
 
                         .requestMatchers("/**").permitAll()
                         //Laisser en commentaire car c'est utile pour faire des postman lorsqu'on veut tester des features :)
