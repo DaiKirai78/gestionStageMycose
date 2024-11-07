@@ -26,7 +26,7 @@ public class ApplicationStageController {
         return new ResponseEntity<>(applicationStageDTO, HttpStatus.CREATED);
     }
 
-    @GetMapping("/get/etudiant/{id}")
+    @GetMapping("/get/{id}")
     public ResponseEntity
             <List<ApplicationStageAvecInfosDTO>> getApplicationsByEtudiantId(@PathVariable Long id) {
         return new ResponseEntity<>(applicationStageService.getApplicationsByEtudiant(id), HttpStatus.OK);
