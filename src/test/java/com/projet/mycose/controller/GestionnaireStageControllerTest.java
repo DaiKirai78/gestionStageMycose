@@ -19,21 +19,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.io.IOException;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -486,4 +480,62 @@ public class GestionnaireStageControllerTest {
                 .andExpect(jsonPath("$.status").value(500))
                 .andExpect(jsonPath("$.timestamp").isNumber());
     }
+    @Test
+    public void testGetYearFirstContratUploaded_NormalSuccess() throws Exception {
+        // Arrange
+        Set set = new HashSet();
+        set.add(2019);
+        set.add(2021);
+        when(gestionnaireStageService.getYearFirstContratUploaded()).thenReturn(set);
+
+        // Act & Assert
+        mockMvc.perform(get("/gestionnaire/contrats/signes/anneeminimum")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isAccepted())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0]").value(2019))
+                .andExpect(jsonPath("$[1]").value(2021));
+    }
+    @Test
+    public void testGetYearFirstContratUploaded_Empty() throws Exception {
+        // Arrange
+        when(gestionnaireStageService.getYearFirstContratUploaded()).thenReturn(Set.of());
+
+        // Act & Assert
+        mockMvc.perform(get("/gestionnaire/contrats/signes/anneeminimum")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isAccepted())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$").isEmpty());
+    }
+
+    @Test
+    void testImprimerContrat_Success() throws Exception {
+        long contratId = 1L;
+        String pdfBase64 = "JVBERi0xLjQKJcTl8uXrp/Og0MTGCjEgMCBvYmoKPDwvTGluZWFyaXpl";
+
+        when(gestionnaireStageService.getContratSignee(contratId)).thenReturn(pdfBase64);
+
+        mockMvc.perform(get("/gestionnaire/contrat/print")
+                        .param("id", String.valueOf(contratId))
+                        .accept(MediaType.TEXT_PLAIN))
+                .andExpect(status().isOk())
+                .andExpect(content().string(pdfBase64));
+    }
+
+    @Test
+    void testImprimerContrat_Failure() throws Exception {
+        long contratId = 1L;
+
+        when(gestionnaireStageService.getContratSignee(contratId)).thenThrow(new RuntimeException("Une erreur est surevenue de notre coté"));
+
+        mockMvc.perform(get("/gestionnaire/contrat/print")
+                        .param("id", String.valueOf(contratId)))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Une erreur est surevenue de notre coté"))
+                .andExpect(jsonPath("$.status").value(500))
+                .andExpect(jsonPath("$.timestamp").isNumber());
+    }
+
 }

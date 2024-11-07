@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useOutletContext } from "react-router-dom";
 import PageIsLoading from '../components/pageIsLoading.jsx';
 import SignerContratEmployeur from '../components/signerContrats/signerContratEmployeur.jsx';
+import SignerContratGestionnaire from '../components/signerContrats/signerContratGestionnaire.jsx';
 import SignerContratEtudiant from '../components/signerContrats/signerContratEtudiant.jsx';
 
 const AccueilPage = () => {
@@ -67,7 +68,7 @@ const AccueilPage = () => {
             case "EMPLOYEUR":
                 return <SignerContratEmployeur setSelectedContract={setSelectedContract} />;
             case "GESTIONNAIRE_STAGE":
-                return <p>Contrat Gestionnaire</p>;
+                return <SignerContratGestionnaire setSelectedContract={setSelectedContract} />
             default:
                 navigate("/accueil");
                 break;

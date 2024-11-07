@@ -1,6 +1,7 @@
 package com.projet.mycose.service;
 
 import com.lowagie.text.Image;
+import com.lowagie.text.PageSize;
 import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfStamper;
@@ -31,6 +32,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -117,7 +120,7 @@ public class GestionnaireStageService {
     public List<ContratDTO> getAllContratsNonSignes(int page) {
         PageRequest pageRequest = PageRequest.of(page, LIMIT_PER_PAGE);
 
-        Page<Contrat> contratsRetournessEnPages = contratRepository.findContratsBySignatureGestionnaireIsNull(pageRequest);
+        Page<Contrat> contratsRetournessEnPages = contratRepository.findContratsBySignatureEmployeurIsNotNullAndSignatureEtudiantIsNotNullAndSignatureGestionnaireIsNull(pageRequest);
         if(contratsRetournessEnPages.isEmpty()) {
             throw new ResourceNotFoundException("Contrats not found");
         }
@@ -126,7 +129,7 @@ public class GestionnaireStageService {
     }
 
     public Integer getAmountOfPagesOfContractNonSignees() {
-        long amountOfRows = contratRepository.countBySignatureGestionnaireIsNull();
+        long amountOfRows = contratRepository.countContratsBySignatureEmployeurIsNotNullAndSignatureEtudiantIsNotNullAndSignatureGestionnaireIsNull();
 
         if (amountOfRows == 0)
             return 0;
@@ -193,7 +196,7 @@ public class GestionnaireStageService {
 
         Contrat contratDispo = contrat.get();
         try {
-            contratDispo.setSignatureEmployeur(signature.getBytes());
+            contratDispo.setSignatureGestionnaire(signature.getBytes());
         } catch (IOException e) {
             throw new SignaturePersistenceException("Error while saving signature");
         }
@@ -201,7 +204,7 @@ public class GestionnaireStageService {
         return "Signature sauvegardée";
     }
 
-    public byte[] getContratSignee(long id) {
+    public String getContratSignee(long id) {
         Optional<Contrat> contratOpt = contratRepository.findById(id);
 
         if (contratOpt.isEmpty()) {
@@ -215,7 +218,9 @@ public class GestionnaireStageService {
 
         }
 
-        return getPdfCompletContrat(contrat);
+        byte[] pdfBytes = getPdfCompletContrat(contrat);
+
+        return Base64.getEncoder().encodeToString(pdfBytes);
     }
 
     private boolean isAllSignatureThere(Contrat contrat) {
@@ -242,23 +247,26 @@ public class GestionnaireStageService {
             pdfReader.close();
 
             return outputStream.toByteArray();
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new ResourcePersistenceException("Erreur lors de la création du PDF complet du contrat");
         }
     }
 
     private void ajouterImagesSurPage(PdfStamper stamper, int pageNumber, byte[]... images) {
         try {
-            PdfContentByte contentByte = stamper.getOverContent(pageNumber);
+            stamper.insertPage(pageNumber + 1, PageSize.A4);
+            PdfContentByte contentByte = stamper.getOverContent(pageNumber + 1);
 
-            float yPosition = 100;
+            float yPosition = 50;
 
             for (byte[] imageBytes : images) {
                 if (imageBytes != null) {
                     Image image = Image.getInstance(imageBytes);
-                    image.scaleToFit(500, 700);
+                    image.scaleToFit(200, 300);
 
-                    image.setAbsolutePosition(50, yPosition);
+                    float xPosition = (PageSize.A4.getWidth() - image.getScaledWidth()) / 2;
+
+                    image.setAbsolutePosition(xPosition, yPosition);
                     contentByte.addImage(image);
 
                     yPosition += image.getScaledHeight() + 10;
@@ -268,5 +276,10 @@ public class GestionnaireStageService {
         } catch (IOException e) {
             throw new ResourcePersistenceException("Erreur lors de l'ajout des images au PDF");
         }
+    }
+
+    public Set<Integer> getYearFirstContratUploaded() {
+        List<Date> timeList = contratRepository.findDistinctCreatedAtForSignedContrats();
+        return timeList.stream().map(date -> date.getYear() + 1900).collect(Collectors.toSet());
     }
 }

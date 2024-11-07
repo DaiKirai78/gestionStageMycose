@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
@@ -89,6 +90,12 @@ public class GestionnaireController {
     public ResponseEntity<Integer> getAmountOfPagesOfContratSignee(@RequestParam int annee) {
         return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
                 gestionnaireStageService.getAmountOfPagesOfContractSignees(annee));
+    }
+
+    @GetMapping("/contrats/signes/anneeminimum")
+    public ResponseEntity<Set<Integer>> getYearFirstContratUploaded() {
+        return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
+                gestionnaireStageService.getYearFirstContratUploaded());
     }
 
     @PostMapping(value = "/enregistrerSignature")
