@@ -13,6 +13,7 @@ function SignerContratGestionnaire({setSelectedContract}) {
     const [nomPrenom, setNomPrenom] = useState([]);
     const [isContratsSignesView, setIsContratsSignesView] = useState(true);
     const [listeAnneesDispo, setListeAnneesDispo] = useState([]);
+    const [filtreAnnee, setFiltreAnnee] = useState();
 
     useEffect(() => {
         fetchPages();
@@ -26,7 +27,7 @@ function SignerContratGestionnaire({setSelectedContract}) {
             fetchContratsSignes();
         }
             
-    }, [pages.currentPage, isContratsSignesView])
+    }, [pages.currentPage, isContratsSignesView, filtreAnnee])
 
     useEffect(() => {
         fetchPrenomNomEtudiants();
@@ -51,10 +52,15 @@ function SignerContratGestionnaire({setSelectedContract}) {
             if (!data) {
                 throw new Error('No data');
             }            
-
-            console.log(JSON.parse(data));
             
-            setListeAnneesDispo(data);
+            let annees = JSON.parse(data)
+
+            annees = annees.reverse();
+            
+            if (!filtreAnnee || JSON.stringify(listeAnneesDispo) !== JSON.stringify(annees)) {
+                setListeAnneesDispo(annees);
+                setFiltreAnnee(annees.at(0));
+            }
 
 
         } catch (e) {
@@ -157,9 +163,10 @@ function SignerContratGestionnaire({setSelectedContract}) {
 
     async function fetchContratsSignes() {
         const token = localStorage.getItem("token");
+        console.log(filtreAnnee);
         
         try {
-            const response = await fetch(`http://localhost:8080/gestionnaire/contrats/signes?page=${pages.currentPage - 1}&annee=${2024}`, {
+            const response = await fetch(`http://localhost:8080/gestionnaire/contrats/signes?page=${pages.currentPage - 1}&annee=${filtreAnnee}`, {
                 method: 'GET',
                 headers: {Authorization: `Bearer ${token}`}
             });
@@ -188,6 +195,10 @@ function SignerContratGestionnaire({setSelectedContract}) {
         const etudiant = nomPrenom.find(nom => nom.id === contrat.id);
         return etudiant ? etudiant.nom : '';
     }
+
+    function imprimer() {
+
+    }
     
     if (isFetching)
         return (
@@ -207,6 +218,17 @@ function SignerContratGestionnaire({setSelectedContract}) {
             {
                 contrats && contrats.length > 0 ? (
                     <>
+                    {!isContratsSignesView ?
+                        <div className="flex flex-col w-1/2 mx-auto mb-6">
+                            <select value={filtreAnnee} onChange={(e) => setFiltreAnnee(e.target.value)} className="bg-orange px-4 py-2 rounded text-white mt-3">
+                                {listeAnneesDispo.map((annee) => {
+                                    return(
+                                        <option value={annee}>{annee}</option>
+                                    );
+                                })}
+                            </select>
+                        </div>
+                     : null}
                         {
                             contrats.map((contrat, index) =>
                             {
@@ -221,14 +243,13 @@ function SignerContratGestionnaire({setSelectedContract}) {
                                     key={"contrat" + index} />
                                     
                                     :
-                                    <div>
-                                        <div className="flex flex-col w-1/2 mx-auto">
-                                            <select name="" id="" className="bg-orange px-4 py-2 rounded text-white mt-3">
-                                                <option value="">A</option>
-                                                <option value="">B</option>
-                                                <option value="">C</option>
-                                            </select>
-                                        </div>
+                                    
+                                    <div className='flex w-full justify-between items-center p-4 shadow mb-4 rounded bg-white'>
+                                        <p className='text-lg'>{getNomEtudiant(contrat)}</p>
+                                        <button className='bg-orange rounded p-2 text-white hover:bg-opacity-90'
+                                            onClick={() => imprimer()}>
+                                            Imprimer
+                                        </button>
                                     </div>
                                 )   
                             }
