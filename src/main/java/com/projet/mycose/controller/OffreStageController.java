@@ -101,12 +101,6 @@ public class OffreStageController {
         return ResponseEntity.status(HttpStatus.OK).body(offreStageDTO);
     }
 
-    @GetMapping("/my-offres")
-    public ResponseEntity<List<OffreStageDTO>> getMyOffres() throws AccessDeniedException {
-        List<OffreStageDTO> offreStageDTOList = offreStageService.getAvailableOffreStagesForEtudiant();
-        return ResponseEntity.status(HttpStatus.OK).body(offreStageDTOList);
-    }
-
 
     // On passe le id de l'offre de stage
     @GetMapping("/offre-applications/{id}")
@@ -130,10 +124,10 @@ public class OffreStageController {
         return offreStageService.getFutureYears();
     }
 
-    @GetMapping(value = "/my-offres", params = {"year", "sessionEcole", "pageNumber", "title"})
+    @GetMapping("/my-offres")
     public ResponseEntity<List<OffreStageDTO>> getMyOffresByYearAndSessionEcole(
-            @RequestParam Integer year,
-            @RequestParam OffreStage.SessionEcole sessionEcole,
+            @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) OffreStage.SessionEcole sessionEcole,
             @RequestParam int pageNumber,
             @RequestParam(value = "title", required = false, defaultValue = "") String title
     ) throws AccessDeniedException {
@@ -141,27 +135,20 @@ public class OffreStageController {
         return ResponseEntity.status(HttpStatus.OK).body(offreStageDTOList);
     }
 
-    @GetMapping(value = "/my-offres-pages", params = {"year", "sessionEcole", "title"})
+    @GetMapping("/my-offres-pages")
     public ResponseEntity<Integer> getAmountOfPagesForMyOffres(
-            @RequestParam Integer year,
-            @RequestParam OffreStage.SessionEcole sessionEcole,
+            @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) OffreStage.SessionEcole sessionEcole,
             @RequestParam(value = "title", required = false, defaultValue = "") String title
     ) throws AccessDeniedException {
         return ResponseEntity.status(HttpStatus.OK).body(offreStageService.getAmountOfPagesForEtudiantFiltered(year, sessionEcole, title));
     }
 
-    @GetMapping("/getOffresPosted")
-    public ResponseEntity<List<OffreStageDTO>> getOffresStagesPubliees(@RequestParam int pageNumber) {
-        try {
-            return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
-                    offreStageService.getStages(pageNumber));
-        } catch (Exception e) {
-            return ResponseEntity.noContent().build();
-        }
-    }
-
-    @GetMapping(value = "/getOffresPosted", params = {"pageNumber", "annee", "session"})
-    public ResponseEntity<List<OffreStageDTO>> getOffresStagesPublieesFiltre(@RequestParam int pageNumber, @RequestParam Integer annee, @RequestParam OffreStage.SessionEcole session) {
+    @GetMapping( "/getOffresPosted")
+    public ResponseEntity<List<OffreStageDTO>> getOffresStagesPublieesFiltre(
+            @RequestParam int pageNumber,
+            @RequestParam(required = false) Integer annee,
+            @RequestParam(required = false) OffreStage.SessionEcole session) {
         try {
             return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
                     offreStageService.getStagesFiltered(pageNumber, annee, session));
@@ -171,18 +158,10 @@ public class OffreStageController {
     }
 
     @GetMapping("/pagesForCreateur")
-    public ResponseEntity<Integer> getAmountOfPagesForCreateur() {
-        try{
-            return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
-                    offreStageService.getAmountOfPagesForCreateur());
-        } catch(Exception e) {
-            return ResponseEntity.noContent().build();
-        }
-    }
-
-    @GetMapping(value = "/pagesForCreateur", params = {"annee", "session"})
-    public ResponseEntity<Integer> getAmountOfPagesForCreateurFiltered(@RequestParam Integer annee, @RequestParam OffreStage.SessionEcole session) {
-        try{
+    public ResponseEntity<Integer> getAmountOfPagesForCreateurFiltered(
+            @RequestParam(required = false) Integer annee,
+            @RequestParam(required = false) OffreStage.SessionEcole session) {
+        try {
             return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
                     offreStageService.getAmountOfPagesForCreateurFiltered(annee, session));
         } catch(Exception e) {

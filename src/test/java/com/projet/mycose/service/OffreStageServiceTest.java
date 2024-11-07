@@ -1199,10 +1199,10 @@ public class OffreStageServiceTest {
         Page<OffreStage> offresPage = new PageImpl<>(mockOffresListe, pageRequest, 2);
 
         when(utilisateurService.getMyUserId()).thenReturn(createurId);
-        when(offreStageRepository.findOffreStageByCreateurId(createurId, pageRequest)).thenReturn(offresPage);
+        when(offreStageRepository.findOffreStageByCreateurIdFiltered(createurId, null, null, pageRequest)).thenReturn(offresPage);
 
         // Act
-        List<OffreStageDTO> result = offreStageService.getStages(page);
+        List<OffreStageDTO> result = offreStageService.getStagesFiltered(page, null, null);
 
         // Assert
         assertNotNull(result);
@@ -1211,7 +1211,7 @@ public class OffreStageServiceTest {
         assertEquals("unTitreFichier", result.get(1).getTitle());
 
         verify(utilisateurService, times(1)).getMyUserId();
-        verify(offreStageRepository, times(1)).findOffreStageByCreateurId(createurId, pageRequest);
+        verify(offreStageRepository, times(1)).findOffreStageByCreateurIdFiltered(createurId, null, null, pageRequest);
     }
 
     @Test
@@ -1224,58 +1224,58 @@ public class OffreStageServiceTest {
         Page<OffreStage> offresPage = new PageImpl<>(List.of(), pageRequest, 0);
 
         when(utilisateurService.getMyUserId()).thenReturn(createurId);
-        when(offreStageRepository.findOffreStageByCreateurId(createurId, pageRequest)).thenReturn(offresPage);
+        when(offreStageRepository.findOffreStageByCreateurIdFiltered(createurId, null, null, pageRequest)).thenReturn(offresPage);
 
         // Act
-        List<OffreStageDTO> result = offreStageService.getStages(page);
+        List<OffreStageDTO> result = offreStageService.getStagesFiltered(page, null, null);
 
         // Assert
         assertNull(result);
 
         verify(utilisateurService, times(1)).getMyUserId();
-        verify(offreStageRepository, times(1)).findOffreStageByCreateurId(createurId, pageRequest);
+        verify(offreStageRepository, times(1)).findOffreStageByCreateurIdFiltered(createurId, null, null, pageRequest);
     }
 
     @Test
     public void testGetAmountOfPageForCreateur_NumberEndWithZero() {
         //Arrange
         when(utilisateurService.getMyUserId()).thenReturn(1L);
-        when(offreStageRepository.countByCreateurId(1L)).thenReturn(30);
+        when(offreStageRepository.countOffreStageByCreateurIdFiltered(1L, null, null)).thenReturn(30L);
 
         //Act
-        int nombrePage = offreStageService.getAmountOfPagesForCreateur();
+        int nombrePage = offreStageService.getAmountOfPagesForCreateurFiltered(null, null);
 
         //Assert
         assertEquals(nombrePage, 3);
-        verify(offreStageRepository, times(1)).countByCreateurId(1L);
+        verify(offreStageRepository, times(1)).countOffreStageByCreateurIdFiltered(1L, null, null);
     }
 
     @Test
     public void testGetAmountOfPageForCreateur_NumberNotEndWithZero() {
         //Arrange
         when(utilisateurService.getMyUserId()).thenReturn(1L);
-        when(offreStageRepository.countByCreateurId(1L)).thenReturn(43);
+        when(offreStageRepository.countOffreStageByCreateurIdFiltered(1L, null, null)).thenReturn(43L);
 
         //Act
-        int nombrePage = offreStageService.getAmountOfPagesForCreateur();
+        int nombrePage = offreStageService.getAmountOfPagesForCreateurFiltered(null, null);
 
         //Assert
-        assertEquals(nombrePage, 5);
-        verify(offreStageRepository, times(1)).countByCreateurId(1L);
+        assertEquals(5, nombrePage);
+        verify(offreStageRepository, times(1)).countOffreStageByCreateurIdFiltered(1L, null, null);
     }
 
     @Test
     public void testGetAmountOfPageForCreateur_NumberIsZero() {
         //Arrange
         when(utilisateurService.getMyUserId()).thenReturn(1L);
-        when(offreStageRepository.countByCreateurId(1L)).thenReturn(0);
+        when(offreStageRepository.countOffreStageByCreateurIdFiltered(1L, null, null)).thenReturn(0L);
 
         //Act
-        int nombrePage = offreStageService.getAmountOfPagesForCreateur();
+        int nombrePage = offreStageService.getAmountOfPagesForCreateurFiltered(null, null);
 
         //Assert
         assertEquals(nombrePage, 0);
-        verify(offreStageRepository, times(1)).countByCreateurId(1L);
+        verify(offreStageRepository, times(1)).countOffreStageByCreateurIdFiltered(1L, null, null);
     }
 
     @Test
