@@ -35,7 +35,11 @@ const AppliquerStage = ({idStage}) => {
 
     const fetchStage = async () => {
         try {
-            const response = await axios.get(localhost + urlOffreStageAPI + "/id/" + idStage);
+            const response = await axios.get(localhost + urlOffreStageAPI + "/id/" + idStage, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
             const stageData = response.data;
             setUnStage(stageData);
 
