@@ -1,6 +1,7 @@
 package com.projet.mycose.service;
 
 import com.projet.mycose.dto.*;
+import com.projet.mycose.exceptions.AuthenticationException;
 import com.projet.mycose.modele.*;
 import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.repository.*;
@@ -9,28 +10,27 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.modelmapper.ModelMapper;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.MediaType;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.nio.file.AccessDeniedException;
+import java.time.Clock;
 import java.time.Year;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 public class OffreStageServiceTest {
@@ -89,6 +89,8 @@ public class OffreStageServiceTest {
     private AcceptOffreDeStageDTO acceptDtoInvalidStatus;
     private AcceptOffreDeStageDTO acceptDtoProgramNotSpecified;
 
+    private Clock fixedClock;
+
     private static final String SAMPLE_DATA = "sampleData";
     private static final String BASE64_SAMPLE_DATA = "c2FtcGxlRGF0YQ==";
     private static final String VALID_TOKEN = "validToken";
@@ -96,6 +98,7 @@ public class OffreStageServiceTest {
 
     @BeforeEach
     public void setUp() {
+
         employeurDTO = EmployeurDTO.empty();
         employeurDTO.setId(1L);
         employeurDTO.setRole(Role.EMPLOYEUR);
@@ -1075,6 +1078,56 @@ public class OffreStageServiceTest {
     }
 
     @Test
+    void acceptOffreDeStage_InvalidRole() {
+        // Arrange
+        when(utilisateurService.checkRole(Role.GESTIONNAIRE_STAGE)).thenReturn(false);
+
+        // Act & Assert
+        AuthenticationException exception = assertThrows(AuthenticationException.class, () -> {
+            offreStageService.acceptOffreDeStage(acceptDtoPublic);
+        }, "Expected AuthenticationException to be thrown");
+
+        assertEquals("Vous n'avez pas les droits pour accepter une offre de stage", exception.getMessage(),
+                "Exception message should match");
+        verify(offreStageRepository, never()).findById(anyLong());
+        verify(offreStageRepository, never()).save(any(OffreStage.class));
+        verify(etudiantRepository, never()).findAllById(anyList());
+        verify(etudiantOffreStagePriveeRepository, never()).save(any());
+    }
+
+    @Test
+    void refuserOffreDeStage_InvalidRole() {
+        // Arrange
+        when(utilisateurService.checkRole(Role.GESTIONNAIRE_STAGE)).thenReturn(false);
+
+        // Act & Assert
+        AuthenticationException exception = assertThrows(AuthenticationException.class, () -> {
+            offreStageService.refuseOffreDeStage(1L, "Not suitable for the position");
+        }, "Expected AuthenticationException to be thrown");
+
+        assertEquals("Vous n'avez pas les droits pour refuser une offre de stage", exception.getMessage(),
+                "Exception message should match");
+        verify(offreStageRepository, never()).findById(anyLong());
+        verify(offreStageRepository, never()).save(any(OffreStage.class));
+    }
+
+    @Test
+    public void testGetSessions_ReturnsCorrectSessionNames() {
+        // Arrange
+        List<String> expectedSessions = Arrays.stream(OffreStage.SessionEcole.values())
+                .map(Enum::toString)
+                .toList();
+
+        // Act
+        List<String> actualSessions = offreStageService.getSessions();
+
+        // Assert
+        assertNotNull(actualSessions, "The returned session list should not be null.");
+        assertEquals(expectedSessions.size(), actualSessions.size(), "The size of the session lists should match.");
+        assertTrue(actualSessions.containsAll(expectedSessions), "The session list should contain all expected session names.");
+    }
+
+    @Test
     void getOffreStageWithUtilisateurInfo_Success() {
         // Arrange
         Long offreStageId = 1L;
@@ -1209,5 +1262,172 @@ public class OffreStageServiceTest {
         //Assert
         assertEquals(nombrePage, 5);
         verify(offreStageRepository, times(1)).countByCreateurId(1L);
+    }
+
+    @Test
+    public void testGetAmountOfPageForCreateur_NumberIsZero() {
+        //Arrange
+        when(utilisateurService.getMyUserId()).thenReturn(1L);
+        when(offreStageRepository.countByCreateurId(1L)).thenReturn(0);
+
+        //Act
+        int nombrePage = offreStageService.getAmountOfPagesForCreateur();
+
+        //Assert
+        assertEquals(nombrePage, 0);
+        verify(offreStageRepository, times(1)).countByCreateurId(1L);
+    }
+
+    @Test
+    void testGetAvailableOffreStagesForEtudiantFiltered_ValidInputs_ReturnsList() throws AccessDeniedException {
+        // Arrange
+        int page = 0;
+        Integer annee = 2024;
+        OffreStage.SessionEcole session = OffreStage.SessionEcole.AUTOMNE;
+        String title = "Software Engineer";
+        EtudiantDTO etudiantDTO = EtudiantDTO.empty();
+        etudiantDTO.setId(1L);
+
+        when(utilisateurService.getMe()).thenReturn(etudiantDTO);
+        when(modelMapper.map(fichierOffreStage, FichierOffreStageDTO.class)).thenReturn(fichierOffreStageDTO);
+        when(modelMapper.map(formulaireOffreStage, FormulaireOffreStageDTO.class)).thenReturn(formulaireOffreStageDTO);
+
+        List<OffreStage> content = Arrays.asList(fichierOffreStage, formulaireOffreStage);
+        Pageable pageable = PageRequest.of(0, 2);
+        Page<OffreStage> offreStages = new PageImpl<>(content, pageable, content.size());
+
+        PageRequest pageRequest = PageRequest.of(page, 10);
+        when(offreStageRepository.findAllByEtudiantNotAppliedFilteredWithTitle(
+                etudiantDTO.getId(),
+                etudiantDTO.getProgramme(),
+                Year.of(annee),
+                session,
+                title,
+                pageRequest
+        )).thenReturn(offreStages);
+
+        // Act
+        List<OffreStageDTO> result = offreStageService.getAvailableOffreStagesForEtudiantFiltered(page, annee, session, title);
+
+        // Assert
+        assertNotNull(result, "Result should not be null");
+        assertEquals(2, result.size(), "Result size should be 2");
+
+        verify(utilisateurService, times(1)).getMe();
+        verify(offreStageRepository, times(1)).findAllByEtudiantNotAppliedFilteredWithTitle(
+                etudiantDTO.getId(),
+                etudiantDTO.getProgramme(),
+                Year.of(annee),
+                session,
+                title,
+                pageRequest
+        );
+    }
+
+    @Test
+    void testGetAvailableOffreStagesForEtudiantFiltered_NoData_ReturnsEmptyList() throws AccessDeniedException {
+        // Arrange
+        int page = 1;
+        Integer annee = 2025;
+        OffreStage.SessionEcole session = OffreStage.SessionEcole.AUTOMNE;
+        String title = "Marketing Manager";
+        EtudiantDTO etudiantDTO = EtudiantDTO.empty();
+        etudiantDTO.setId(1L);
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<OffreStage> offreStages = new PageImpl<>(Collections.emptyList(), pageable, 0);
+
+        PageRequest pageRequest = PageRequest.of(page, 10);
+
+        when(utilisateurService.getMe()).thenReturn(etudiantDTO);
+
+        when(offreStageRepository.findAllByEtudiantNotAppliedFilteredWithTitle(
+                etudiantDTO.getId(),
+                etudiantDTO.getProgramme(),
+                Year.of(annee),
+                session,
+                title,
+                pageRequest
+        )).thenReturn(offreStages);
+
+        // Act
+        List<OffreStageDTO> result = offreStageService.getAvailableOffreStagesForEtudiantFiltered(page, annee, session, title);
+
+        // Assert
+        assertNotNull(result, "Result should not be null");
+        assertTrue(result.isEmpty(), "Result should be empty");
+
+        verify(utilisateurService, times(1)).getMe();
+        verify(offreStageRepository, times(1)).findAllByEtudiantNotAppliedFilteredWithTitle(
+                etudiantDTO.getId(),
+                etudiantDTO.getProgramme(),
+                Year.of(annee),
+                session,
+                title,
+                pageRequest
+        );
+    }
+
+    @Test
+    void testGetAvailableOffreStagesForEtudiantFiltered_NullTitle_TreatedAsEmpty() throws AccessDeniedException {
+        // Arrange
+        int page = 2;
+        Integer annee = 2026;
+        OffreStage.SessionEcole session = OffreStage.SessionEcole.AUTOMNE;
+
+        EtudiantDTO etudiantDTO = EtudiantDTO.empty();
+        etudiantDTO.setId(1L);
+
+        when(utilisateurService.getMe()).thenReturn(etudiantDTO);
+        when(modelMapper.map(fichierOffreStage, FichierOffreStageDTO.class)).thenReturn(fichierOffreStageDTO);
+
+        List<OffreStage> content = Collections.singletonList(fichierOffreStage);
+        Pageable pageable = PageRequest.of(0, 2);
+        Page<OffreStage> offreStages = new PageImpl<>(content, pageable, content.size());
+
+        PageRequest pageRequest = PageRequest.of(page, 10);
+        when(offreStageRepository.findAllByEtudiantNotAppliedFilteredWithTitle(
+                etudiantDTO.getId(),
+                etudiantDTO.getProgramme(),
+                Year.of(annee),
+                session,
+                "",
+                pageRequest
+        )).thenReturn(offreStages);
+
+        // Act
+        List<OffreStageDTO> result = offreStageService.getAvailableOffreStagesForEtudiantFiltered(page, annee, session, null);
+
+        // Assert
+        assertNotNull(result, "Result should not be null");
+        assertEquals(1, result.size(), "Result size should be 1");
+
+        verify(utilisateurService, times(1)).getMe();
+        verify(offreStageRepository, times(1)).findAllByEtudiantNotAppliedFilteredWithTitle(
+                etudiantDTO.getId(),
+                etudiantDTO.getProgramme(),
+                Year.of(annee),
+                session,
+                "",
+                pageRequest
+        );
+    }
+
+    @Test
+    void testGetAvailableOffreStagesForEtudiantFiltered_AccessDeniedException() throws AccessDeniedException {
+        // Arrange
+        int page = 0;
+        Integer annee = 2024;
+        OffreStage.SessionEcole session = OffreStage.SessionEcole.AUTOMNE;
+        String title = "Software Engineer";
+
+        when(utilisateurService.getMe()).thenThrow(new AccessDeniedException("Access denied"));
+
+        // Act & Assert
+        assertThrows(AccessDeniedException.class, () -> {
+            offreStageService.getAvailableOffreStagesForEtudiantFiltered(page, annee, session, title);
+        }, "Should throw AccessDeniedException");
+
+        verify(utilisateurService, times(1)).getMe();
+        verify(offreStageRepository, never()).findAllByEtudiantNotAppliedFilteredWithTitle(anyLong(), any(Programme.class), any(Year.class), any(OffreStage.SessionEcole.class), anyString(), any(PageRequest.class));
     }
 }
