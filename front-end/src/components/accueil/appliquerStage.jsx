@@ -35,6 +35,7 @@ const AppliquerStage = ({idStage}) => {
 
     const fetchStage = async () => {
         try {
+            const token = localStorage.getItem("token");
             const response = await axios.get(localhost + urlOffreStageAPI + "/id/" + idStage, {
                 headers: {
                     Authorization: `Bearer ${token}`,
