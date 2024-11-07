@@ -35,8 +35,14 @@ public class ContratDTO {
             message = "Invalid file data. Should be Base64 encoded.")
     private String signatureEmployeur;
 
+    @NotBlank(message = "Student is required.")
+    @Pattern(regexp = "^[0-9]*$",
+            message = "Must be a number.")
     private Long etudiantId;
 
+    @NotBlank(message = "Employer is required.")
+    @Pattern(regexp = "^[0-9]*$",
+            message = "Must be a number.")
     private Long employeurId;
 
     private Contrat.Status status;
