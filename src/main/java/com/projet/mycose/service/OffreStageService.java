@@ -371,23 +371,16 @@ public class OffreStageService {
         return listeMappee;
     }
 
-    public List<OffreStageDTO> getStages(int page) {
-        Long idCreateur = utilisateurService.getMyUserId();
-        PageRequest pageRequest = PageRequest.of(page, LIMIT_PER_PAGE);
-
-        Page<OffreStage> offresRetourneesEnPages = offreStageRepository.findOffreStageByCreateurId(idCreateur, pageRequest);
-        if(offresRetourneesEnPages.isEmpty()) {
-            return null;
-        }
-
-        return listeOffreStageToDTO(offresRetourneesEnPages.getContent());
-    }
-
     public List<OffreStageDTO> getStagesFiltered(int page, Integer annee, OffreStage.SessionEcole session) {
         Long idCreateur = utilisateurService.getMyUserId();
         PageRequest pageRequest = PageRequest.of(page, LIMIT_PER_PAGE);
 
-        Page<OffreStage> offresRetourneesEnPages = offreStageRepository.findOffreStageByCreateurIdFiltered(idCreateur, Year.of(annee), session, pageRequest);
+        Page<OffreStage> offresRetourneesEnPages = null;
+        if (annee != null) {
+            offresRetourneesEnPages = offreStageRepository.findOffreStageByCreateurIdFiltered(idCreateur, Year.of(annee), session, pageRequest);
+        } else {
+            offresRetourneesEnPages = offreStageRepository.findOffreStageByCreateurIdFiltered(idCreateur, null, session, pageRequest);
+        }
         if(offresRetourneesEnPages.isEmpty()) {
             return null;
         }
@@ -395,29 +388,14 @@ public class OffreStageService {
         return listeOffreStageToDTO(offresRetourneesEnPages.getContent());
     }
 
-
-
-    public Integer getAmountOfPagesForCreateur() {
-        Long createurId = utilisateurService.getMyUserId();
-        long amountOfRows = offreStageRepository.countByCreateurId(createurId);
-
-        if (amountOfRows == 0)
-            return 0;
-
-        int nombrePages = (int) Math.floor((double) amountOfRows / LIMIT_PER_PAGE);
-
-        if (amountOfRows % 10 > 0) {
-            // Return ++ (équivalent -> nombrePage + 1) parce que
-            // floor(13/10) = 1 mais il y a 2 page et pas 1
-            nombrePages++;
-        }
-
-        return nombrePages;
-    }
-
     public Integer getAmountOfPagesForCreateurFiltered(Integer annee, OffreStage.SessionEcole session) {
         Long createurId = utilisateurService.getMyUserId();
-        long amountOfRows = offreStageRepository.countOffreStageByCreateurIdFiltered(createurId, Year.of(annee), session);
+        long amountOfRows = 0;
+        if (annee != null) {
+            amountOfRows = offreStageRepository.countOffreStageByCreateurIdFiltered(createurId, Year.of(annee), session);
+        } else {
+            amountOfRows = offreStageRepository.countOffreStageByCreateurIdFiltered(createurId, null, session);
+        }
 
         if (amountOfRows == 0)
             return 0;

@@ -45,14 +45,12 @@ public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
             "ORDER BY o.createdAt")
     Page<OffreStage> findOffresByEtudiantIdWithSearch(@Param("etudiantId") long etudiantId, @Param("rechercheValue") String rechercheValue, Pageable pageable);
 
-    Page<OffreStage> findOffreStageByCreateurId(@Param("employeurId") Long employeurId, Pageable pageable);
-
     int countByCreateurId(Long employeurId);
 
     @Query("SELECT o FROM OffreStage o " +
-            "WHERE o.createur.id = :idEmployeur " +
-            "AND o.annee = :annee " +
-            "AND o.session = :sessionEcole")
+            "WHERE (o.createur.id = :idEmployeur) " +
+            "AND (:annee IS NULL OR o.annee = :annee) " +
+            "AND (:sessionEcole IS NULL OR o.session = :sessionEcole)")
     Page<OffreStage> findOffreStageByCreateurIdFiltered(
             @Param("idEmployeur") Long idEmployeur,
             @Param("annee") Year annee,
@@ -62,8 +60,8 @@ public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
 
     @Query("SELECT COUNT(o) FROM OffreStage o " +
             "WHERE o.createur.id = :idEmployeur " +
-            "AND o.annee = :annee " +
-            "AND o.session = :sessionEcole")
+            "AND (:annee IS NULL OR o.annee = :annee) " +
+            "AND (:sessionEcole IS NULL OR o.session = :sessionEcole)")
     Long countOffreStageByCreateurIdFiltered(
             @Param("idEmployeur") Long idEmployeur,
             @Param("annee") Year annee,
@@ -74,8 +72,8 @@ public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
             "LEFT JOIN EtudiantOffreStagePrivee eop ON o.id = eop.offreStage.id " +
             "LEFT JOIN o.applicationStages a ON a.etudiant.id = :etudiantId " +
             "WHERE a.id IS NULL " +
-            "AND o.annee = :annee " +
-            "AND o.session = :session " +
+            "AND (:annee IS NULL OR o.annee = :annee) " +
+            "AND (:session IS NULL OR o.session = :session) " +
             "AND (" +
             "(o.visibility = 'PUBLIC' AND o.programme = :programme) " +
             "OR " +
@@ -95,8 +93,8 @@ public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
             "LEFT JOIN EtudiantOffreStagePrivee eop ON o.id = eop.offreStage.id " +
             "LEFT JOIN o.applicationStages a ON a.etudiant.id = :etudiantId " +
             "WHERE a.id IS NULL " +
-            "AND o.annee = :annee " +
-            "AND o.session = :session " +
+            "AND (:annee IS NULL OR o.annee = :annee) " +
+            "AND (:session IS NULL OR o.session = :session) " +
             "AND (" +
             "(o.visibility = 'PUBLIC' AND o.programme = :programme) " +
             "OR " +
