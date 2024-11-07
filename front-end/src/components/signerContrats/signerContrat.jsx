@@ -56,11 +56,16 @@ const SignerContrat = ({ selectedContract, setSelectedContract, userRole }) => {
                 body: formData
             });
     
-            if(response.status == 401 || response.status == 409) {
+            if(response.status === 401 || response.status === 409) {
                 console.log("ERREUR MY GODD JASON POURQUOI");
                 
-                setErrorKeyMdp("wrongPassword")
+
                 throw new Error('No Password');
+            }
+            else if (response.status === 403) {
+                setErrorKeyMdp("wrongPassword")
+
+                throw new Error('Wrong Password');
             }
             else if (!response.ok) {
                 console.log(await response.text());
