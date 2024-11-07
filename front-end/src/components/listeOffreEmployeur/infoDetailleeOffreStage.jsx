@@ -59,7 +59,7 @@ const InfoDetailleeOffreStage = ({ setActiveOffer, activeOffer, getColorOffreSta
 
         for (const etudiant of candidats) {
             try {
-                const response = await axios.get(`http://localhost:8080/api/application-stage/get/${etudiant.id}`, {
+                const response = await axios.get(`http://localhost:8080/api/application-stage/get/etudiant/${etudiant.id}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 
