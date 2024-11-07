@@ -214,4 +214,22 @@ public class ApplicationStageService {
     public List<ApplicationStageAvecInfosDTO> getApplicationsByEtudiant(Long etudiantId) {
         return applicationStageRepository.findByEtudiantId(etudiantId).stream().map(this::convertToDTOAvecInfos).toList();
     }
+
+    public List<ApplicationStageAvecInfosDTO> getApplicationsWithStatus(ApplicationStage.ApplicationStatus status) {
+        return applicationStageRepository.findByStatusAndContractStatus(status, Etudiant.ContractStatus.PENDING)
+                .stream()
+                .map(this::convertToDTOAvecInfos)
+                .toList();
+    }
+
+    public EtudiantDTO getEtudiantFromApplicationId(Long applicationId) {
+        ApplicationStage application = applicationStageRepository.findById(applicationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
+        return EtudiantDTO.toDTO(application.getEtudiant());
+    }
+    public OffreStageDTO getOffreStageFromApplicationId(Long applicationId) {
+        ApplicationStage application = applicationStageRepository.findById(applicationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
+        return OffreStageDTO.toOffreStageInstaceDTO(application.getOffreStage());
+    }
 }

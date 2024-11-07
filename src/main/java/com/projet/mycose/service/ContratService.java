@@ -36,7 +36,7 @@ public class ContratService {
     private final UtilisateurService utilisateurService;
 
     @Transactional
-    @PreAuthorize("hasRole('GESTIONNAIRE_STAGE')")
+    @PreAuthorize("hasAuthority('GESTIONNAIRE_STAGE')")
     public ContratDTO save(MultipartFile contratPDF, Long etudiantId, Long employeurId) {
 
         ContratDTO contratDTO = new ContratDTO();

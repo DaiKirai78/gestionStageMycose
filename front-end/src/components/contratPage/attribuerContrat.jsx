@@ -41,7 +41,6 @@ const AttribuerContrat = () => {
                     'Content-Type': 'application/json'
                 }
             });
-            console.log("app : " + JSON.stringify(response.data));
             setApplications(response.data);
             setLoading(false);
         } catch (e) {
