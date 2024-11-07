@@ -41,10 +41,10 @@ const listeStage = () => {
     let token = localStorage.getItem("token");
 
     useEffect(() => {
-        if (annee && session) {
+        if (annee || session) {
             fetchStages(0);
             fetchNombrePages();
-        } else if (!annee && !session) {
+        } else if (!annee || !session) {
             fetchStages(0);
             fetchNombrePages();
         }
@@ -68,13 +68,12 @@ const listeStage = () => {
 
     const fetchNombrePages = async () => {
         try {
-            let endpoint = annee && session ? urlGetPagesFiltre : urlGetNombreDePage;
+            let endpoint = annee || session ? urlGetPagesFiltre : urlGetNombreDePage;
             const response = await axios.get(localhost + endpoint, {
                 headers: { Authorization: `Bearer ${token}` },
                 params: { year: annee, sessionEcole: session, title: recherche || "" }
             });
             setNombreDePage(response.data);
-            console.log("Nombre de pages:", response.data);
         } catch (error) {
             console.error("Erreur lors de la récupération du nombre de pages:", error);
         }
@@ -84,7 +83,7 @@ const listeStage = () => {
     const fetchStages = async (pageNumber) => {
         setLoading(true);
         try {
-            let endpoint = annee && session ? urlGetOffresFiltre : urlGetFormulaireStage + pageNumber;
+            let endpoint = annee || session ? urlGetOffresFiltre : urlGetFormulaireStage + pageNumber;
             const response = await axios.get(localhost + endpoint, {
                 headers: { Authorization: `Bearer ${token}` },
                 params: { pageNumber, year: annee, sessionEcole: session, title: recherche || "" }
@@ -146,7 +145,7 @@ const listeStage = () => {
             setIsSearching(true);
             setRecherchePageActuelle(0);
             setStages([]);
-            if(annee && session) {
+            if(annee || session) {
                 await fetchStages(0);
                 await fetchNombrePages();
             } else {
@@ -179,7 +178,7 @@ const listeStage = () => {
 
     async function isThereANextPage(doesItComeFromNextPage) {
         if (isSearching) {
-            if (annee && session) {
+            if (annee || session) {
                 const response = await fetchStages(recherchePageActuelle + 1);
                 if (!doesItComeFromNextPage)
                     await fetchStages(recherchePageActuelle);
@@ -199,7 +198,7 @@ const listeStage = () => {
 
     async function isItTheFirstPage(doesItComeFromPreviousPage) {
         if (isSearching) {
-            if (annee && session) {
+            if (annee || session) {
                 return recherchePageActuelle < 0;
             } else {
                 const response = await fetchStagesByRecherche(recherchePageActuelle - 1, false)
@@ -221,7 +220,7 @@ const listeStage = () => {
             if (isSearching) {
                 setRecherchePageActuelle((prevPage) => {
                     const newPage = prevPage + 1;
-                    if (annee && session) {
+                    if (annee || session) {
                         fetchStages(newPage);
                     } else {
                         fetchStagesByRecherche(newPage, false);
@@ -246,7 +245,7 @@ const listeStage = () => {
             if (isSearching) {
                 setRecherchePageActuelle((prevPage) => {
                     const newPage = prevPage - 1;
-                    if (annee && session) {
+                    if (annee || session) {
                         fetchStages(newPage);
                     } else {
                         fetchStagesByRecherche(newPage, false);
@@ -267,7 +266,7 @@ const listeStage = () => {
     useEffect(() => {
         const verifierBoutonsPagination = async () => {
             if (isSearching) {
-                if (annee && session) {
+                if (annee || session) {
                     const hasNextPage = await fetchStages(recherchePageActuelle + 1);
                     console.log("recherchePageActuelle:", recherchePageActuelle);
                     console.log("hasNextPage:", hasNextPage);

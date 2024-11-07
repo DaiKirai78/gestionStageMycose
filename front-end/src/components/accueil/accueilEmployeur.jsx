@@ -74,8 +74,6 @@ const AccueilEmployeur = () => {
                 url += `&session=${session}`;
             }
 
-            console.log("url offre stage", url);
-
             const response = await fetch(url, {
                 method: "GET",
                 headers: { Authorization: `Bearer ${token}` },
@@ -118,8 +116,6 @@ const AccueilEmployeur = () => {
             } else if (!annee && session) {
                 url += `?ssession=${session}`;
             }
-
-            console.log("url nombre page", url);
 
             const response = await fetch(url, {
                 method: "GET",
