@@ -135,7 +135,7 @@ public class ContratServiceTest {
 
         // Assert
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
-        assertEquals("L'étudiant avec l'ID " + invalidEtudiantId + " est innexistant", exception.getMessage());
+        assertEquals("L'étudiant avec l'ID " + invalidEtudiantId + " est inexistant", exception.getMessage());
     }
 
     @Test

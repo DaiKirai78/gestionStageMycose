@@ -56,9 +56,17 @@ const SignerContrat = ({ selectedContract, setSelectedContract, userRole }) => {
                 body: formData
             });
     
-            if (!response.ok) {
+            if(response.status == 401 || response.status == 409) {
+                console.log("ERREUR MY GODD JASON POURQUOI");
+                
+                setErrorKeyMdp("wrongPassword")
+                throw new Error('No Password');
+            }
+            else if (!response.ok) {
+                console.log(await response.text());
                 throw new Error('Network response was not ok');
             }
+
     
             const data = await response.text();
     

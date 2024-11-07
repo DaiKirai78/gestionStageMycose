@@ -59,7 +59,7 @@ const SignerContratEmployeur = ({ setSelectedContract }) => {
 
         for (const contrat of contrats) {
             try {
-                const response = await fetch(`http://localhost:8080/utilisateur/getPrenomNomEtudiant?id=${contrat.etudiantId}`, {
+                const response = await fetch(`http://localhost:8080/utilisateur/getPrenomNom?id=${contrat.etudiantId}`, {
                     method: 'GET',
                     headers: {Authorization: `Bearer ${token}`}
                 });

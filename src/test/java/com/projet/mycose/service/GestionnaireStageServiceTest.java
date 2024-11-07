@@ -344,7 +344,7 @@ class GestionnaireStageServiceTest {
         List<Contrat> contrats = List.of(new Contrat());
         Page<Contrat> pageContrats = new PageImpl<>(contrats, PageRequest.of(0, 10), contrats.size());
 
-        when(contratRepository.findContratsBySignatureGestionnaireIsNull(PageRequest.of(0, 10)))
+        when(contratRepository.findContratsBySignatureEmployeurIsNotNullAndSignatureEtudiantIsNotNullAndSignatureGestionnaireIsNull(PageRequest.of(0, 10)))
                 .thenReturn(pageContrats);
 
         List<ContratDTO> result = gestionnaireStageService.getAllContratsNonSignes(0);
@@ -356,7 +356,7 @@ class GestionnaireStageServiceTest {
     public void testGetAllContratsNonSignes_NotFound() {
         Page<Contrat> emptyPage = new PageImpl<>(Collections.emptyList(), PageRequest.of(0, 10), 0);
 
-        when(contratRepository.findContratsBySignatureGestionnaireIsNull(PageRequest.of(0, 10)))
+        when(contratRepository.findContratsBySignatureEmployeurIsNotNullAndSignatureEtudiantIsNotNullAndSignatureGestionnaireIsNull(PageRequest.of(0, 10)))
                 .thenReturn(emptyPage);
 
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> gestionnaireStageService.getAllContratsNonSignes(0));
@@ -365,7 +365,7 @@ class GestionnaireStageServiceTest {
 
     @Test
     void testGetAmountOfPagesOfContractNonSignees_0() {
-        when(contratRepository.countBySignatureGestionnaireIsNull()).thenReturn(0);
+        when(contratRepository.countContratsBySignatureEmployeurIsNotNullAndSignatureEtudiantIsNotNullAndSignatureGestionnaireIsNull()).thenReturn(0);
 
         Integer pages = gestionnaireStageService.getAmountOfPagesOfContractNonSignees();
 
@@ -374,7 +374,7 @@ class GestionnaireStageServiceTest {
 
     @Test
     void testGetAmountOfPagesOfContractNonSignees_10() {
-        when(contratRepository.countBySignatureGestionnaireIsNull()).thenReturn(10);
+        when(contratRepository.countContratsBySignatureEmployeurIsNotNullAndSignatureEtudiantIsNotNullAndSignatureGestionnaireIsNull()).thenReturn(10);
 
         Integer pages = gestionnaireStageService.getAmountOfPagesOfContractNonSignees();
 
@@ -383,7 +383,7 @@ class GestionnaireStageServiceTest {
 
     @Test
     void testGetAmountOfPagesOfContractNonSignees_13() {
-        when(contratRepository.countBySignatureGestionnaireIsNull()).thenReturn(13);
+        when(contratRepository.countContratsBySignatureEmployeurIsNotNullAndSignatureEtudiantIsNotNullAndSignatureGestionnaireIsNull()).thenReturn(13);
 
         Integer pages = gestionnaireStageService.getAmountOfPagesOfContractNonSignees();
 
@@ -480,7 +480,7 @@ class GestionnaireStageServiceTest {
         // Assert
         assertEquals("Signature sauvegardée", result);
         verify(contratRepository, times(1)).save(contrat);
-        assertArrayEquals(signatureBytes, contrat.getSignatureEmployeur());
+        assertArrayEquals(signatureBytes, contrat.getSignatureGestionnaire());
     }
 
     @Test
@@ -577,9 +577,9 @@ class GestionnaireStageServiceTest {
         when(contratRepository.findById(contratId)).thenReturn(Optional.of(contrat));
 
         // Act
-        byte[] result = gestionnaireStageService.getContratSignee(contratId);
+        String result = gestionnaireStageService.getContratSignee(contratId);
 
-        // Asser
+        // Assert
         assertNotNull(result);
     }
 
@@ -651,4 +651,30 @@ class GestionnaireStageServiceTest {
         javax.imageio.ImageIO.write(bufferedImage, "png", tempFile);
         return Files.readAllBytes(tempFile.toPath());
     }
+    @Test
+    public void testGetYearFirstContratUploaded_NormalSuccess() {
+        // Arrange
+        Date date1 = new Date(121, 5, 15);
+        Date date2 = new Date(119, 3, 10);
+        when(contratRepository.findDistinctCreatedAtForSignedContrats()).thenReturn(List.of(date1, date2));
+
+        // Act
+        Set<Integer> result = gestionnaireStageService.getYearFirstContratUploaded();
+
+        // Assert
+        assertEquals(Set.of(2019, 2021), result);
+    }
+    @Test
+    public void testGetYearFirstContratUploaded_Empty() {
+        // Arrange
+        when(contratRepository.findDistinctCreatedAtForSignedContrats()).thenReturn(List.of());
+
+        // Act
+        Set<Integer> result = gestionnaireStageService.getYearFirstContratUploaded();
+
+        // Assert
+        assertEquals(Set.of(), result);
+    }
+
+
 }

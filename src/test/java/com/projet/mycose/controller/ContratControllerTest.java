@@ -10,6 +10,7 @@ import com.projet.mycose.modele.Programme;
 import com.projet.mycose.modele.auth.Credentials;
 import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.service.ContratService;
+import jakarta.persistence.PersistenceException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,8 +30,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ContratControllerTest {
@@ -113,23 +113,10 @@ public class ContratControllerTest {
                         .param("etudiantId", "1")
                         .param("employeurId", "2"))
                 .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$").value("Unauthorized access : Unauthorized access"));
-    }
-
-    @Test
-    void upload_ShouldReturnInternalServerError_WhenRuntimeException() throws Exception {
-        // Arrange
-        MockMultipartFile file = new MockMultipartFile("contratPDF", "testfile.pdf", MediaType.APPLICATION_PDF_VALUE, "Test content".getBytes());
-
-        when(contratService.save(any(MultipartFile.class), anyLong(), anyLong())).thenThrow(new RuntimeException("File not found"));
-
-        // Act & Assert
-        mockMvc.perform(multipart("/contrat/upload")
-                        .file(file)
-                        .param("etudiantId", "1")
-                        .param("employeurId", "2"))
-                .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$").value("Fichier non trouvé : File not found"));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Unauthorized access"))
+                .andExpect(jsonPath("$.status").value(401))
+                .andExpect(jsonPath("$.timestamp").isNumber());
     }
 
     @Test
@@ -137,7 +124,7 @@ public class ContratControllerTest {
         // Arrange
         MockMultipartFile file = new MockMultipartFile("contratPDF", "testfile.pdf", MediaType.APPLICATION_PDF_VALUE, "Test content".getBytes());
 
-        when(contratService.save(any(MultipartFile.class), anyLong(), anyLong())).thenThrow(new IOException("I/O error"));
+        when(contratService.save(any(MultipartFile.class), anyLong(), anyLong())).thenThrow(new PersistenceException("Erreur lors de la lecture du fichier PDF"));
 
         // Act & Assert
         mockMvc.perform(multipart("/contrat/upload")
@@ -145,6 +132,9 @@ public class ContratControllerTest {
                         .param("etudiantId", "1")
                         .param("employeurId", "2"))
                 .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$").value("Fichier non trouvé : I/O error"));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Erreur lors de la lecture du fichier PDF"))
+                .andExpect(jsonPath("$.status").value(500))
+                .andExpect(jsonPath("$.timestamp").isNumber());
     }
 }

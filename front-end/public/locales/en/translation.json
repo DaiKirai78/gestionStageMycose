@@ -271,5 +271,8 @@
     "sessions": "Sessions",
     "eraseFilters": "Erase filters",
     "StatusConvocation": "Convocation status",
-    "WaitingForStudent": "Waiting for the student to respond"
+    "WaitingForStudent": "Waiting for the student to respond",
+    "imprimer" : "Print",
+    "contratsSignes" : "Signed Contracts",
+    "contratsASigner" : "Sign Contracts"
 }

@@ -53,12 +53,7 @@ public class UtilisateurController {
 
     @GetMapping("/getPrenomNom")
     public ResponseEntity<String> getNomEtudiantSelonId(@RequestParam long id) {
-        try {
-            return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
-                    utilisateurService.getUtilisateurPrenomNom(id));
-        }
-        catch (UserNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
+            utilisateurService.getUtilisateurPrenomNom(id));
     }
 }
