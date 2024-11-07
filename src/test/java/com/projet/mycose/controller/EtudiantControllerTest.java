@@ -136,7 +136,7 @@ public class EtudiantControllerTest {
         when(etudiantService.getStages(0)).thenReturn(mockListeOffres);
 
         // Act & Assert
-        mockMvc.perform(post("/etudiant/getStages")
+        mockMvc.perform(get("/etudiant/getStages")
                         .param("pageNumber", String.valueOf(0))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isAccepted())
@@ -152,7 +152,7 @@ public class EtudiantControllerTest {
 
 
         //Act & Assert
-        mockMvc.perform(post("/etudiant/getStages")
+        mockMvc.perform(get("/etudiant/getStages")
                 .param("pageNumber", String.valueOf(0))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());

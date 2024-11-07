@@ -2,6 +2,8 @@ package com.projet.mycose.service;
 
 import com.projet.mycose.dto.ContratDTO;
 import com.projet.mycose.dto.EtudiantDTO;
+import com.projet.mycose.exceptions.ResourceConflictException;
+import com.projet.mycose.exceptions.ResourceNotFoundException;
 import com.projet.mycose.modele.Contrat;
 import com.projet.mycose.modele.Employeur;
 import com.projet.mycose.modele.Etudiant;
@@ -127,13 +129,13 @@ public class ContratServiceTest {
         when(utilisateurService.getEtudiantDTO(invalidEtudiantId)).thenReturn(null);
 
         // Act & Assert
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () ->
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () ->
                 contratService.save(multipartFile, invalidEtudiantId, employeur.getId())
         );
 
         // Assert
-        assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
-        assertEquals("L'étudiant avec l'ID " + invalidEtudiantId + " est innexistant", exception.getReason());
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+        assertEquals("L'étudiant avec l'ID " + invalidEtudiantId + " est innexistant", exception.getMessage());
     }
 
     @Test
@@ -147,12 +149,12 @@ public class ContratServiceTest {
         when(etudiantRepository.findEtudiantById(etudiant.getId())).thenReturn(etudiant);
 
         // Act & Assert
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () ->
+        ResourceConflictException exception = assertThrows(ResourceConflictException.class, () ->
                 contratService.save(multipartFile, etudiant.getId(), employeur.getId())
         );
 
         // Assert
-        assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
-        assertEquals("L'étudiant a déjà un stage actif ou n'a pas fait de demande de stage", exception.getReason());
+        assertEquals(HttpStatus.CONFLICT, exception.getStatus());
+        assertEquals("L'étudiant a déjà un stage actif ou n'a pas fait de demande de stage", exception.getMessage());
     }
 }
