@@ -8,6 +8,12 @@ import BoutonAvancerReculer from '../listeOffreEmployeur/boutonAvancerReculer.js
 const ListOffreStageEmployeur = ({data, voirPdf, setVoirPdf, activeOffer, setActiveOffer, pages, setPages}) => {
 
     useEffect(() => {
+        if (data && data.length > 0) {
+            setActiveOffer(data[0]);
+        }
+    }, [data]);
+
+    useEffect(() => {
         if (!isMediumScreen()) {
             setActiveOffer(data[0]);
         }

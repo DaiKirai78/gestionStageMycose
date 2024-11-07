@@ -39,9 +39,17 @@ const AccueilEmployeur = () => {
 
     useEffect(() => {
         if (annee && session) {
+            setPages(prevState => ({
+                ...prevState,
+                currentPage: 1
+            }));
             fetchOffreStage();
             fetchNombrePage();
         } else if (!annee && !session) {
+            setPages(prevState => ({
+                ...prevState,
+                currentPage: 1
+            }));
             fetchOffreStage();
             fetchNombrePage();
         }
@@ -58,7 +66,6 @@ const AccueilEmployeur = () => {
         try {
             let url = `${baseUrl}/getOffresPosted?pageNumber=${pages.currentPage - 1}`;
 
-            // Ajouter les paramètres `annee` et `session` si définis
             if (annee && session) {
                 url += `&annee=${annee}&session=${session}`;
             }
@@ -69,21 +76,25 @@ const AccueilEmployeur = () => {
             });
 
             if (response.status === STATUS_CODE_ACCEPTED) {
-                const text = await response.text(); // Lire la réponse en tant que texte
+                const text = await response.text();
                 if (text) {
-                    const fetchedData = JSON.parse(text); // Analyser en JSON si ce n'est pas vide
+                    const fetchedData = JSON.parse(text);
                     setData(fetchedData);
+
+                    if (fetchedData && fetchedData.length > 0) {
+                        setActiveOffer(fetchedData[0]);
+                    }
                 } else {
-                    setData(null); // Aucun contenu dans la réponse
+                    setData(null);
                     console.log("Nothing found");
                 }
             } else if (response.status === STATUS_CODE_NO_CONTENT) {
-                setData(null); // Aucun contenu, donc aucun résultat
+                setData(null);
                 console.log("Nothing found");
             }
         } catch (e) {
             console.log(e);
-            setData(null); // En cas d'erreur, définir `data` à null pour indiquer l'absence de résultats
+            setData(null);
         }
     }
 
@@ -94,7 +105,6 @@ const AccueilEmployeur = () => {
         try {
             let url = `${baseUrl}/pagesForCreateur`;
 
-            // Ajouter les paramètres `annee` et `session` si définis
             if (annee && session) {
                 url += `?annee=${annee}&session=${session}`;
             }
@@ -134,7 +144,6 @@ const AccueilEmployeur = () => {
         <TokenPageContainer role={["EMPLOYEUR"]} setUserInfo={setUserInfo}>
             <div className={`bg-orange-light w-full min-h-full flex-1 flex flex-col items-center gap-10 p-5`}>
                 <div className='w-4/5'>
-                    {/* Ajout du composant FiltreSession au-dessus de ListOffreStageEmployeur */}
                     <FiltreSession
                         annee={annee}
                         setAnnee={setAnnee}
