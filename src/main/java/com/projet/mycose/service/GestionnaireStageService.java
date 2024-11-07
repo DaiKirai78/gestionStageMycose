@@ -7,7 +7,7 @@ import com.lowagie.text.pdf.PdfStamper;
 import com.projet.mycose.dto.ContratDTO;
 import com.projet.mycose.dto.EnseignantDTO;
 import com.projet.mycose.dto.EtudiantDTO;
-import com.projet.mycose.exceptions.ResourceNotFoundException;
+import com.projet.mycose.exceptions.*;
 import com.projet.mycose.modele.*;
 import com.projet.mycose.repository.ContratRepository;
 import com.projet.mycose.repository.GestionnaireStageRepository;
@@ -176,7 +176,7 @@ public class GestionnaireStageService {
         Optional<Utilisateur> utilisateurOpt = utilisateurRepository.findUtilisateurById(gestionnaireId);
 
         if (utilisateurOpt.isEmpty())
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Utilisateur not found");
+            throw new UserNotFoundException();
 
         Utilisateur utilisateur = utilisateurOpt.get();
 
@@ -185,17 +185,17 @@ public class GestionnaireStageService {
         );
 
         if(!authentication.isAuthenticated())
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Email ou mot de passe invalide.");
+            throw new AuthenticationException(HttpStatus.UNAUTHORIZED, "Email ou mot de passe invalide.");
 
         Optional<Contrat> contrat = contratRepository.findById(contratId);
         if(contrat.isEmpty())
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Contrat not found");
+            throw new ResourceNotFoundException("Contrat not found");
 
         Contrat contratDispo = contrat.get();
         try {
             contratDispo.setSignatureEmployeur(signature.getBytes());
         } catch (IOException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error while saving signature");
+            throw new SignaturePersistenceException("Error while saving signature");
         }
         contratRepository.save(contratDispo);
         return "Signature sauvegardée";
@@ -205,13 +205,14 @@ public class GestionnaireStageService {
         Optional<Contrat> contratOpt = contratRepository.findById(id);
 
         if (contratOpt.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Contrat not found");
+            throw new ResourceNotFoundException("Contrat not found");
         }
 
         Contrat contrat = contratOpt.get();
 
         if (!isAllSignatureThere(contrat)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Aucune signature n'est présente sur le contrat");
+            throw new ResourceNotAvailableException("Les signatures ne sont pas complètes sur le contrat");
+
         }
 
         return getPdfCompletContrat(contrat);
@@ -242,7 +243,7 @@ public class GestionnaireStageService {
 
             return outputStream.toByteArray();
         } catch (IOException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de la création du PDF complet du contrat" + e);
+            throw new ResourcePersistenceException("Erreur lors de la création du PDF complet du contrat");
         }
     }
 
@@ -264,8 +265,8 @@ public class GestionnaireStageService {
                 }
             }
 
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de l'ajout des images au PDF" + e);
+        } catch (IOException e) {
+            throw new ResourcePersistenceException("Erreur lors de l'ajout des images au PDF");
         }
     }
 }

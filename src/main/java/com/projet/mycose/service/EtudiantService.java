@@ -3,6 +3,8 @@ package com.projet.mycose.service;
 import com.projet.mycose.dto.ContratDTO;
 import com.projet.mycose.dto.EtudiantDTO;
 import com.projet.mycose.dto.OffreStageDTO;
+import com.projet.mycose.exceptions.AuthenticationException;
+import com.projet.mycose.exceptions.ResourceNotFoundException;
 import com.projet.mycose.exceptions.SignaturePersistenceException;
 import com.projet.mycose.modele.*;
 import com.projet.mycose.repository.ContratRepository;
@@ -135,10 +137,10 @@ public class EtudiantService {
         );
 
         if(!authentication.isAuthenticated())
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Email ou mot de passe invalide.");
+            throw new AuthenticationException(HttpStatus.UNAUTHORIZED, "Email ou mot de passe invalide.");
 
         Contrat contratDispo = contratRepository.findById(contratId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Contrat not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Contrat non trouvé"));
         try {
             contratDispo.setSignatureEtudiant(signature.getBytes());
         } catch (IOException e) {

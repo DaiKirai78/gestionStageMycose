@@ -6,7 +6,10 @@ import com.lowagie.text.pdf.PdfWriter;
 import com.projet.mycose.dto.ContratDTO;
 import com.projet.mycose.dto.EnseignantDTO;
 import com.projet.mycose.dto.EtudiantDTO;
+import com.projet.mycose.exceptions.AuthenticationException;
+import com.projet.mycose.exceptions.ResourceNotAvailableException;
 import com.projet.mycose.exceptions.ResourceNotFoundException;
+import com.projet.mycose.exceptions.UserNotFoundException;
 import com.projet.mycose.modele.*;
 import com.projet.mycose.modele.auth.Credentials;
 import com.projet.mycose.modele.auth.Role;
@@ -498,11 +501,11 @@ class GestionnaireStageServiceTest {
         when(utilisateurRepository.findUtilisateurById(utilisateur.getId())).thenReturn(Optional.of(utilisateur));
 
         // Act & Assert
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+        AuthenticationException exception = assertThrows(AuthenticationException.class, () -> {
             gestionnaireStageService.enregistrerSignature(signature, password, contratId);
         });
 
-        assertEquals("401 UNAUTHORIZED \"Email ou mot de passe invalide.\"", exception.getMessage());
+        assertEquals("Email ou mot de passe invalide.", exception.getMessage());
 
         verify(contratRepository, never()).save(any(Contrat.class));
     }
@@ -521,11 +524,11 @@ class GestionnaireStageServiceTest {
         when(utilisateurRepository.findUtilisateurById(utilisateur.getId())).thenReturn(Optional.empty());
 
         // Act & Assert
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> {
             gestionnaireStageService.enregistrerSignature(signature, password, contratId);
         });
 
-        assertEquals("404 NOT_FOUND \"Utilisateur not found\"", exception.getMessage());
+        assertEquals("Utilisateur not found", exception.getMessage());
 
         verify(contratRepository, never()).save(any(Contrat.class));
     }
@@ -553,11 +556,11 @@ class GestionnaireStageServiceTest {
         when(contratRepository.findById(contratId)).thenReturn(Optional.empty());
 
         // Act & Assert
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
             gestionnaireStageService.enregistrerSignature(signature, password, contratId);
         });
 
-        assertEquals("404 NOT_FOUND \"Contrat not found\"", exception.getMessage());
+        assertEquals("Contrat not found", exception.getMessage());
 
         verify(contratRepository, never()).save(any(Contrat.class));
     }
@@ -587,11 +590,11 @@ class GestionnaireStageServiceTest {
         when(contratRepository.findById(contratId)).thenReturn(Optional.empty());
 
         // Act & Assert
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
             gestionnaireStageService.getContratSignee(contratId);
         });
 
-        assertEquals("404 NOT_FOUND \"Contrat not found\"", exception.getMessage());
+        assertEquals("Contrat not found", exception.getMessage());
     }
 
     @Test
@@ -608,11 +611,11 @@ class GestionnaireStageServiceTest {
         when(contratRepository.findById(contratId)).thenReturn(Optional.of(contrat));
 
         // Act & Assert
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+        ResourceNotAvailableException exception = assertThrows(ResourceNotAvailableException.class, () -> {
             gestionnaireStageService.getContratSignee(contratId);
         });
 
-        assertEquals("400 BAD_REQUEST \"Aucune signature n'est présente sur le contrat\"", exception.getMessage());
+        assertEquals("Les signatures ne sont pas complètes sur le contrat", exception.getMessage());
     }
 
     private byte[] createTemporaryPdf() throws IOException {

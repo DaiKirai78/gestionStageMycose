@@ -28,72 +28,42 @@ public class GestionnaireController {
 
     @PostMapping("/getEtudiants")
     public ResponseEntity<List<EtudiantDTO>> getEtudiantsSansEnseignant(@RequestParam int pageNumber, @RequestParam Programme programme) {
-        try {
-            return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
-                    gestionnaireStageService.getEtudiantsSansEnseignants(pageNumber, programme));
-        } catch (Exception e) {
-            return ResponseEntity.noContent().build();
-        }
+        return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
+            gestionnaireStageService.getEtudiantsSansEnseignants(pageNumber, programme));
     }
 
     @GetMapping("/getEtudiantsPages")
     public ResponseEntity<Integer> getAmountOfPages(@RequestParam Programme programme) {
-        try {
-            return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
-                    gestionnaireStageService.getAmountOfPages(programme));
-        } catch (Exception e) {
-            return ResponseEntity.noContent().build();
-        }
+        return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
+            gestionnaireStageService.getAmountOfPages(programme));
     }
 
     @PostMapping("/rechercheEnseignants")
     public ResponseEntity<List<EnseignantDTO>> rechercherEnseignants(@RequestParam String search) {
-        try {
-            return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
-                    gestionnaireStageService.getEnseignantsParRecherche(search));
-        } catch (Exception e) {
-            return ResponseEntity.noContent().build();
-        }
+        return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
+            gestionnaireStageService.getEnseignantsParRecherche(search));
     }
 
     @GetMapping("/getEtudiantsParProgramme")
     public ResponseEntity<List<EtudiantDTO>> getEtudiantsByProgramme(@RequestParam Programme programme) {
-        try {
-            return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
-                    etudiantService.findEtudiantsByProgramme(programme));
-        } catch (Exception e) {
-            return ResponseEntity.noContent().build();
-        }
+        return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
     }
 
     @PostMapping("/assignerEnseignantEtudiant")
     public ResponseEntity<?> assignerEnseignantVersEtudiant(@RequestParam Long idEtudiant, @RequestParam Long idEnseignant) {
-        try {
-            gestionnaireStageService.assignerEnseigantEtudiant(idEtudiant, idEnseignant);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.noContent().build();
-        }
+        gestionnaireStageService.assignerEnseigantEtudiant(idEtudiant, idEnseignant);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/getEtudiantsContratEnDemande")
     public ResponseEntity<List<EtudiantDTO>> getEtudiantsContratEnDemande() {
-        try {
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(etudiantService.getEtudiantsContratEnDemande());
-        } catch (Exception e) {
-            System.err.println("Une erreur est survenue lors de la récupération des étudiants en demande de contrat : " + e.getMessage());
-            return ResponseEntity.internalServerError().build();
-        }
+        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(etudiantService.getEtudiantsContratEnDemande());
     }
 
     @GetMapping("/getEtudiantsSansContratPages")
     public ResponseEntity<Integer> getEtudiantsSansContratPages() {
-        try {
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(
+        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(
                     etudiantService.getEtudiantsSansContratPages());
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
     }
 
     @GetMapping("/contrats/non-signes")
@@ -134,10 +104,6 @@ public class GestionnaireController {
 
     @GetMapping("/contrat/print")
     public ResponseEntity<?> imprimerContrat(@RequestParam long id) {
-        try {
-            return ResponseEntity.ok(gestionnaireStageService.getContratSignee(id));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("");
-        }
+        return ResponseEntity.ok(gestionnaireStageService.getContratSignee(id));
     }
 }

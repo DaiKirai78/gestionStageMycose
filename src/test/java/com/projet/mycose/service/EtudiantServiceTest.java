@@ -1,5 +1,7 @@
 package com.projet.mycose.service;
 
+import com.projet.mycose.exceptions.AuthenticationException;
+import com.projet.mycose.exceptions.ResourceNotFoundException;
 import com.projet.mycose.modele.*;
 import com.projet.mycose.modele.auth.Credentials;
 import com.projet.mycose.modele.auth.Role;
@@ -427,11 +429,11 @@ public class EtudiantServiceTest {
         when(utilisateurService.getMyUserId()).thenReturn(gestionnaireId);
         when(utilisateurRepository.findUtilisateurById(gestionnaireId)).thenReturn(Optional.of(utilisateur));
         // Act & Assert
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () ->
+        AuthenticationException exception = assertThrows(AuthenticationException.class, () ->
                 etudiantService.enregistrerSignature(signature, password, contratId)
         );
 
-        assertEquals("401 UNAUTHORIZED \"Email ou mot de passe invalide.\"", exception.getMessage());
+        assertEquals("Email ou mot de passe invalide.", exception.getMessage());
 
         verify(utilisateurService, times(1)).getMyUserId();
         verify(utilisateurRepository, times(1)).findUtilisateurById(gestionnaireId);
@@ -485,11 +487,11 @@ public class EtudiantServiceTest {
         when(utilisateurRepository.findUtilisateurById(gestionnaireId)).thenReturn(Optional.of(utilisateur));
         when(contratRepository.findById(contratId)).thenReturn(Optional.empty());
         // Act & Assert
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () ->
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () ->
                 etudiantService.enregistrerSignature(signature, password, contratId)
         );
 
-        assertEquals("404 NOT_FOUND \"Contrat not found\"", exception.getMessage());
+        assertEquals("Contrat non trouvé", exception.getMessage());
 
         verify(utilisateurService, times(1)).getMyUserId();
         verify(utilisateurRepository, times(1)).findUtilisateurById(gestionnaireId);
