@@ -231,7 +231,7 @@
     "uploadContractFilePDF": "Téléversez votre contrat en format PDF",
     "signerContrats": "Signer contrats",
     "validate": "Valider",
-    "noContratToSign" : "Aucun contrat a signer", 
+    "noContratToSign" : "Vous n'avez présentement aucun contrat à signer",
     "signContract": "Signer contrat",
     "signContractOf": "Signer le contrat de",
     "signature": "Signature",

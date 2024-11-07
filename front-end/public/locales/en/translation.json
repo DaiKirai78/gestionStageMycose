@@ -231,7 +231,7 @@
     "annee" : "Year",
     "signerContrats": "Sign contracts",
     "validate": "Validate",
-    "noContratToSign" : "No contrat to sign",
+    "noContratToSign" : "You currently do not have any contracts to sign.",
     "signContract": "Sign contract",
     "signContractOf": "Signing the contract of",
     "signature": "Signature",
