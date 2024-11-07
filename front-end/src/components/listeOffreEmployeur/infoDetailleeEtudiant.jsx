@@ -86,8 +86,13 @@ function InfoDetailleeEtudiant({ isModalOpen, setIsModalOpen, infosEtudiant, sum
                                 </div>
                                 {studentInfo && ((studentInfo.convocationStatus === 'ACCEPTED' || studentInfo.convocationStatus === 'REJECTED')) && (
                                     <div className="mt-4 p-4 bg-gray-100 rounded-md w-full text-center">
-                                        <p><strong>{t("Status")}:</strong> {t(studentInfo.convocationStatus)}</p>
+                                        <p><strong>{t("StatusConvocation")}:</strong> {t(studentInfo.convocationStatus)}</p>
                                         <p><strong>{t("Message")}:</strong> {studentInfo.convocationMessageEtudiant}</p>
+                                    </div>
+                                )}
+                                {studentInfo && studentInfo.convocationStatus === 'PENDING' && (
+                                    <div className="mt-4 p-4 bg-gray-100 rounded-md w-full text-center">
+                                        <p><strong>{t("StatusConvocation")}:</strong> {t("WaitingForStudent")}</p>
                                     </div>
                                 )}
                                 <div className="h-full">

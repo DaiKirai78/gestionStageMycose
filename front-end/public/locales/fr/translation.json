@@ -269,5 +269,7 @@
     "masquerFiltres": "Masquer les filtres",
     "annees": "Années",
     "sessions": "Sessions",
-    "eraseFilters": "Effacer les filtres"
+    "eraseFilters": "Effacer les filtres",
+    "StatusConvocation": "Statut de la convocation ",
+    "WaitingForStudent": "En attente d'une réponse de l'étudiant"
 }
