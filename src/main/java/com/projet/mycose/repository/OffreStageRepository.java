@@ -11,7 +11,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.Year;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,7 +55,7 @@ public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
             "AND o.session = :sessionEcole")
     Page<OffreStage> findOffreStageByCreateurIdFiltered(
             @Param("idEmployeur") Long idEmployeur,
-            @Param("annee") Integer annee,
+            @Param("annee") Year annee,
             @Param("sessionEcole") OffreStage.SessionEcole sessionEcole,
             Pageable pageable
     );
@@ -76,7 +75,7 @@ public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
     Page<OffreStage> findAllByEtudiantNotAppliedFilteredWithTitle(
             @Param("etudiantId") Long id,
             @Param("programme") Programme programme,
-            @Param("annee") Integer annee,
+            @Param("annee") Year annee,
             @Param("session") OffreStage.SessionEcole session,
             @Param("title") String title,
             Pageable pageable

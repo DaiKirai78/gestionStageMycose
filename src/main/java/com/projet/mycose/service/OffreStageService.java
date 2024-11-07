@@ -260,7 +260,7 @@ public class OffreStageService {
             title = "";
         }
 
-        return offreStageRepository.findAllByEtudiantNotAppliedFilteredWithTitle(etudiantDTO.getId(), etudiantDTO.getProgramme(), annee, session, title, pageRequest).stream().map(this::convertToDTO).toList();
+        return offreStageRepository.findAllByEtudiantNotAppliedFilteredWithTitle(etudiantDTO.getId(), etudiantDTO.getProgramme(), Year.of(annee), session, title, pageRequest).stream().map(this::convertToDTO).toList();
     }
 
     public Integer getAmountOfPagesForEtudiantFiltered(Integer year, OffreStage.SessionEcole sessionEcole, String title) throws AccessDeniedException {
@@ -375,7 +375,7 @@ public class OffreStageService {
         Long idCreateur = utilisateurService.getMyUserId();
         PageRequest pageRequest = PageRequest.of(page, LIMIT_PER_PAGE);
 
-        Page<OffreStage> offresRetourneesEnPages = offreStageRepository.findOffreStageByCreateurIdFiltered(idCreateur, annee, session, pageRequest);
+        Page<OffreStage> offresRetourneesEnPages = offreStageRepository.findOffreStageByCreateurIdFiltered(idCreateur, Year.of(annee), session, pageRequest);
         if(offresRetourneesEnPages.isEmpty()) {
             return null;
         }
