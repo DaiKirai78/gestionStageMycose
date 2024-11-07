@@ -35,12 +35,26 @@ const listeStage = () => {
     let urlGetFormulaireStage = "etudiant/getStages?pageNumber=";
     let urlGetNombreDePage = "etudiant/pages"
     let urlRechercheOffres = "etudiant/recherche-offre"
+    let urlGetOffresFiltre = "api/offres-stages/my-offres";
+    let urlGetPagesFiltre = "api/offres-stages/my-offres-pages";
 
     let token = localStorage.getItem("token");
 
     useEffect(() => {
-        fetchStages(0);
-    }, []);
+        if (annee && session) {
+            fetchStages(0);
+            fetchNombrePages();
+        } else if (!annee && !session) {
+            fetchStages(0);
+            fetchNombrePages();
+        }
+    }, [annee, session]);
+
+    useEffect(() => {
+        if (!recherche && !isSearching) {
+            fetchStages(0);
+        }
+    }, [recherche, isSearching]);
 
     useEffect(() => {
         fetchNombrePages();
@@ -54,38 +68,37 @@ const listeStage = () => {
 
     const fetchNombrePages = async () => {
         try {
-            const response = await axios.get(localhost + urlGetNombreDePage, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
+            let endpoint = annee && session ? urlGetPagesFiltre : urlGetNombreDePage;
+            const response = await axios.get(localhost + endpoint, {
+                headers: { Authorization: `Bearer ${token}` },
+                params: { year: annee, sessionEcole: session, title: recherche || "" }
             });
             setNombreDePage(response.data);
-            return response.data;
+            console.log("Nombre de pages:", response.data);
         } catch (error) {
-            console.error("Erreur lors de la récupération du nombre de page:", error);
+            console.error("Erreur lors de la récupération du nombre de pages:", error);
         }
     };
+
+
     const fetchStages = async (pageNumber) => {
         setLoading(true);
         try {
-            const responseForms = await axios.post(localhost + urlGetFormulaireStage + pageNumber, {}, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                params: {
-                    pageNumber,
-                }
+            let endpoint = annee && session ? urlGetOffresFiltre : urlGetFormulaireStage + pageNumber;
+            const response = await axios.get(localhost + endpoint, {
+                headers: { Authorization: `Bearer ${token}` },
+                params: { pageNumber, year: annee, sessionEcole: session, title: recherche || "" }
             });
-            setStages(responseForms.data);
+            setStages(response.data);
             setLoading(false);
-            return responseForms.data;
+            return response.data;
         } catch (error) {
             console.error("Erreur lors de la récupération des stages:", error);
             setLoading(false);
         }
     };
+
+
     const fetchStagesByRecherche = async (pageNumber, doesItComeFromUseEffect) => {
         setLoading(true);
         try {
@@ -133,7 +146,12 @@ const listeStage = () => {
             setIsSearching(true);
             setRecherchePageActuelle(0);
             setStages([]);
-            await fetchStagesByRecherche(0, false);
+            if(annee && session) {
+                await fetchStages(0);
+                await fetchNombrePages();
+            } else {
+                await fetchStagesByRecherche(0, false);
+            }
         }
     }
 
@@ -161,10 +179,17 @@ const listeStage = () => {
 
     async function isThereANextPage(doesItComeFromNextPage) {
         if (isSearching) {
-            const response = await fetchStagesByRecherche(recherchePageActuelle + 1, false);
-            if (!doesItComeFromNextPage)
-                await fetchStagesByRecherche(recherchePageActuelle, false);
-            return response.length !== 0;
+            if (annee && session) {
+                const response = await fetchStages(recherchePageActuelle + 1);
+                if (!doesItComeFromNextPage)
+                    await fetchStages(recherchePageActuelle);
+                return !(response === undefined || response === null || response.length === 0);
+            } else {
+                const response = await fetchStagesByRecherche(recherchePageActuelle + 1, false);
+                if (!doesItComeFromNextPage)
+                    await fetchStagesByRecherche(recherchePageActuelle, false);
+                return response.length !== 0;
+            }
         } else {
             if (!doesItComeFromNextPage)
                 await fetchStages(recherchePageActuelle);
@@ -174,10 +199,14 @@ const listeStage = () => {
 
     async function isItTheFirstPage(doesItComeFromPreviousPage) {
         if (isSearching) {
-            const response = await fetchStagesByRecherche(recherchePageActuelle - 1, false)
-            if (!doesItComeFromPreviousPage)
-                await fetchStagesByRecherche(recherchePageActuelle, false);
-            return response.length === 0;
+            if (annee && session) {
+                return recherchePageActuelle < 0;
+            } else {
+                const response = await fetchStagesByRecherche(recherchePageActuelle - 1, false)
+                if (!doesItComeFromPreviousPage)
+                    await fetchStagesByRecherche(recherchePageActuelle, false);
+                return response.length === 0;
+            }
         } else {
             if (!doesItComeFromPreviousPage)
                 await fetchStages(recherchePageActuelle);
@@ -192,7 +221,12 @@ const listeStage = () => {
             if (isSearching) {
                 setRecherchePageActuelle((prevPage) => {
                     const newPage = prevPage + 1;
-                    fetchStagesByRecherche(newPage, false);
+                    if (annee && session) {
+                        fetchStages(newPage);
+                    } else {
+                        fetchStagesByRecherche(newPage, false);
+                    }
+
                     return newPage;
                 });
             } else {
@@ -212,7 +246,12 @@ const listeStage = () => {
             if (isSearching) {
                 setRecherchePageActuelle((prevPage) => {
                     const newPage = prevPage - 1;
-                    fetchStagesByRecherche(newPage, false);
+                    if (annee && session) {
+                        fetchStages(newPage);
+                    } else {
+                        fetchStagesByRecherche(newPage, false);
+                    }
+
                     return newPage;
                 });
             } else {
@@ -228,9 +267,23 @@ const listeStage = () => {
     useEffect(() => {
         const verifierBoutonsPagination = async () => {
             if (isSearching) {
-                const hasNextPage = await fetchStagesByRecherche(recherchePageActuelle + 1, true);
-                setNextPageDisabled(hasNextPage.length === 0);
-                setPreviousPageDisabled(recherchePageActuelle <= 0);
+                if (annee && session) {
+                    const hasNextPage = await fetchStages(recherchePageActuelle + 1);
+                    console.log("recherchePageActuelle:", recherchePageActuelle);
+                    console.log("hasNextPage:", hasNextPage);
+                    if (hasNextPage === undefined || hasNextPage === null || hasNextPage.length === 0) {
+                        setNextPageDisabled(true);
+                    } else {
+                        setNextPageDisabled(false);
+                    }
+                    setPreviousPageDisabled(recherchePageActuelle <= 0);
+                } else {
+                    const hasNextPage = await fetchStagesByRecherche(recherchePageActuelle + 1, true);
+                    console.log("recherchePageActuelle:", recherchePageActuelle);
+                    console.log("hasNextPage:", hasNextPage);
+                    setNextPageDisabled(hasNextPage.length === 0);
+                    setPreviousPageDisabled(recherchePageActuelle <= 0);
+                }
             } else {
                 setNextPageDisabled(pageActuelle >= nombreDePage - 1);
                 setPreviousPageDisabled(pageActuelle <= 0);
