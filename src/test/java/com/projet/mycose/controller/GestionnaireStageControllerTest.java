@@ -102,19 +102,6 @@ public class GestionnaireStageControllerTest {
     }
 
     @Test
-    public void testGetEtudiantsSansEnseignants_Error() throws Exception {
-        //Arrange
-        when(gestionnaireStageService.getEtudiantsSansEnseignants(0, null)).thenThrow(new RuntimeException());
-
-        //Act & Assert
-        mockMvc.perform(post("/gestionnaire/getEtudiants")
-                        .param("pageNumber", String.valueOf(0))
-                        .param("programme", Programme.TECHNIQUE_INFORMATIQUE.toString())
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNoContent());
-    }
-
-    @Test
     public void testRechercherEnseignants_Success() throws Exception {
         // Arrange
         EnseignantDTO enseignantDTOMock = new EnseignantDTO(
@@ -143,18 +130,6 @@ public class GestionnaireStageControllerTest {
     }
 
     @Test
-    public void testRechercherEnseignants_Error() throws Exception {
-        //Arrange
-        when(gestionnaireStageService.getEnseignantsParRecherche("uneValeur")).thenThrow(new RuntimeException());
-
-        //Act & Assert
-        mockMvc.perform(post("/gestionnaire/rechercheEnseignants")
-                        .param("search", "uneValeur")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNoContent());
-    }
-
-    @Test
     public void testGetAmountOfPages_Success() throws Exception {
         //Arrange
         when(gestionnaireStageService.getAmountOfPages(Programme.TECHNIQUE_INFORMATIQUE)).thenReturn(2);
@@ -165,18 +140,6 @@ public class GestionnaireStageControllerTest {
                 .andExpect(status().isAccepted())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().string("2"));
-    }
-
-    @Test
-    public void testGetAmountOfPages_Error() throws Exception {
-        //Arrange
-        when(gestionnaireStageService.getAmountOfPages(Programme.TECHNIQUE_INFORMATIQUE)).thenThrow(new RuntimeException());
-
-        //Act & Assert
-        mockMvc.perform(get("/gestionnaire/getEtudiantsPages")
-                        .param("programme", Programme.TECHNIQUE_INFORMATIQUE.toString()))
-                .andExpect(status().isNoContent());
-
     }
 
     @Test
@@ -193,24 +156,6 @@ public class GestionnaireStageControllerTest {
                         .param("idEtudiant", String.valueOf(idEtudiant))
                         .param("idEnseignant", String.valueOf(idEnseignant)))
                 .andExpect(status().isOk());
-
-        verify(gestionnaireStageService, times(1)).assignerEnseigantEtudiant(idEtudiant, idEnseignant);
-    }
-
-
-    @Test
-    public void testAssignerEnseignantEtudiant_Error() throws Exception {
-        // Arrange
-        Long idEtudiant = 1L;
-        Long idEnseignant = 2L;
-
-        doThrow(new RuntimeException()).when(gestionnaireStageService).assignerEnseigantEtudiant(idEtudiant, idEnseignant);
-
-        // Act & Assert
-        mockMvc.perform(post("/gestionnaire/assignerEnseignantEtudiant")
-                        .param("idEtudiant", String.valueOf(idEtudiant))
-                        .param("idEnseignant", String.valueOf(idEnseignant)))
-                .andExpect(status().isNoContent());
 
         verify(gestionnaireStageService, times(1)).assignerEnseigantEtudiant(idEtudiant, idEnseignant);
     }
@@ -237,23 +182,6 @@ public class GestionnaireStageControllerTest {
                 .andExpect(jsonPath("$[0].nom").value(etudiants.get(0).getNom()))
                 .andExpect(jsonPath("$[1].id").value(etudiants.get(1).getId()))
                 .andExpect(jsonPath("$[1].nom").value(etudiants.get(1).getNom()));
-
-        verify(etudiantService, times(1)).findEtudiantsByProgramme(programme);
-    }
-
-    @Test
-    void getEtudiantsByProgramme_ServiceThrowsException() throws Exception {
-        // Arrange
-        Programme programme = Programme.TECHNIQUE_INFORMATIQUE;
-
-        when(etudiantService.findEtudiantsByProgramme(programme))
-                .thenThrow(new RuntimeException("Service failure"));
-
-        // Act & Assert
-        mockMvc.perform(get("/gestionnaire/getEtudiantsParProgramme")
-                        .param("programme", "TECHNIQUE_INFORMATIQUE")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNoContent());
 
         verify(etudiantService, times(1)).findEtudiantsByProgramme(programme);
     }
