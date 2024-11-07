@@ -210,4 +210,8 @@ public class ApplicationStageService {
         applicationStage.getConvocation().setStatus(answer.getStatus());
         return convertToDTOAvecInfos(applicationStageRepository.save(applicationStage));
     }
+
+    public List<ApplicationStageAvecInfosDTO> getApplicationsByEtudiant(Long etudiantId) {
+        return applicationStageRepository.findByEtudiantId(etudiantId).stream().map(this::convertToDTOAvecInfos).toList();
+    }
 }
