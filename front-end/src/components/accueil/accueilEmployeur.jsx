@@ -39,9 +39,17 @@ const AccueilEmployeur = () => {
 
     useEffect(() => {
         if (annee && session) {
+            setPages(prevState => ({
+                ...prevState,
+                currentPage: 1
+            }));
             fetchOffreStage();
             fetchNombrePage();
         } else if (!annee && !session) {
+            setPages(prevState => ({
+                ...prevState,
+                currentPage: 1
+            }));
             fetchOffreStage();
             fetchNombrePage();
         }
