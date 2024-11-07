@@ -8,4 +8,5 @@ Définition de Done:
 
 Points SMART:
   1. Lors de chaque code review, on doit vérifier que la définition de Done est respectée à l'aide de la checklist
-  2. À chaque fois que l'on fini de travailler, on merge avec la branche active (ex. sprint2) pour s'assurer que celle-ci reste le plus à jour possible. De même,          on merge notre branche avec la branche active (ex. sprint2) à chaque fois que l'on commence à travailler pour avoir les fonctionnalités les plus à jour. Si           des conflits de merge apparaîssent, ceux-ci doivent être résolus avant de continuer à travailler. Cela permettra d'éviter de plus gros conflits plus tard.
+  2. À chaque fois que l'on fini de travailler, on merge avec la branche active (ex. sprint2) pour s'assurer que celle-ci reste le plus à jour possible. De même,          on merge notre branche avec la branche       active (ex. sprint2) à chaque fois que l'on commence à travailler pour avoir les fonctionnalités les plus à jour. Si           des conflits de merge apparaîssent, ceux-ci doivent être résolus avant de continuer à travailler. Cela permettra d'éviter de plus gros conflits plus tard.
+3. Si on est boqué plus de 30 minutes sur un bug, on demande de l'aide à notre équipe.
