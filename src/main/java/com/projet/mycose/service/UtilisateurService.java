@@ -2,6 +2,7 @@ package com.projet.mycose.service;
 
 import com.projet.mycose.dto.*;
 import com.projet.mycose.modele.*;
+import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.repository.*;
 import com.projet.mycose.security.CustomUserDetails;
 import com.projet.mycose.security.JwtTokenProvider;
@@ -123,5 +124,12 @@ public class UtilisateurService {
         }
     }
 
-    // TODO: Finir les tests non couverts
+    public boolean checkRole(Role role) {
+        try {
+            UtilisateurDTO userRecu = getMe();
+            return userRecu.getRole().equals(role);
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }

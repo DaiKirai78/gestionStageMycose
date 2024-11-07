@@ -1,6 +1,7 @@
 package com.projet.mycose.service;
 
 import com.projet.mycose.dto.*;
+import com.projet.mycose.exceptions.AuthenticationException;
 import com.projet.mycose.modele.*;
 import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.repository.*;
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -291,6 +293,10 @@ public class OffreStageService {
         return offreStageRepository.countByStatus(OffreStage.Status.WAITING);
     }
     public void refuseOffreDeStage(Long id, String description) {
+        if (!utilisateurService.checkRole(Role.GESTIONNAIRE_STAGE)) {
+            throw new AuthenticationException(HttpStatus.FORBIDDEN, "Vous n'avez pas les droits pour refuser une offre de stage");
+        }
+
         Optional<OffreStage> offreStageOptional = offreStageRepository.findById(id);
 
         if (offreStageOptional.isEmpty()) {
@@ -306,6 +312,11 @@ public class OffreStageService {
         offreStageRepository.save(offreStage);
     }
     public void acceptOffreDeStage(AcceptOffreDeStageDTO acceptOffreDeStageDTO) {
+        if (!utilisateurService.checkRole(Role.GESTIONNAIRE_STAGE)) {
+            throw new AuthenticationException(HttpStatus.FORBIDDEN, "Vous n'avez pas les droits pour accepter une offre de stage");
+        }
+
+
         Optional<OffreStage> offreStageOptional = offreStageRepository.findById(acceptOffreDeStageDTO.getId());
         if (offreStageOptional.isEmpty()) {
             throw new EntityNotFoundException("OffreStage not found with ID: " + acceptOffreDeStageDTO.getId());

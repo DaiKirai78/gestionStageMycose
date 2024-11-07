@@ -92,7 +92,7 @@ function ValiderOffreStage() {
             console.log("Payload to send:", payload);
 
             const response = await apiClient.patch(
-                `offres-stages/accept`,
+                `/api/offres-stages/accept`,
                 payload,
                 {
                     headers: {
