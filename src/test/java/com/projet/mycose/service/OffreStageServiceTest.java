@@ -905,6 +905,9 @@ public class OffreStageServiceTest {
         when(offreStageRepository.findById(offreStageId)).thenReturn(Optional.of(fichierOffreStage));
         when(offreStageRepository.save(any(OffreStage.class))).thenReturn(fichierOffreStage);
 
+        when(utilisateurService.checkRole(Role.GESTIONNAIRE_STAGE)).thenReturn(true);
+
+
         // Act
         offreStageService.refuseOffreDeStage(offreStageId, refusalDescription);
 
@@ -922,6 +925,8 @@ public class OffreStageServiceTest {
         String refusalDescription = "Not suitable for the position";
 
         when(offreStageRepository.findById(nonExistentId)).thenReturn(Optional.empty());
+
+        when(utilisateurService.checkRole(Role.GESTIONNAIRE_STAGE)).thenReturn(true);
 
         // Act & Assert
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
@@ -943,6 +948,8 @@ public class OffreStageServiceTest {
 
         when(offreStageRepository.findById(offreStageId)).thenReturn(Optional.of(fichierOffreStage));
 
+        when(utilisateurService.checkRole(Role.GESTIONNAIRE_STAGE)).thenReturn(true);
+
         // Act & Assert
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             offreStageService.refuseOffreDeStage(offreStageId, refusalDescription);
@@ -961,6 +968,8 @@ public class OffreStageServiceTest {
         when(offreStageRepository.findById(1L)).thenReturn(Optional.of(fichierOffreStage));
         when(offreStageRepository.save(any(OffreStage.class))).thenReturn(fichierOffreStage);
         when(etudiantRepository.findAllById(etudiantsPrivesIds)).thenReturn(etudiantsPrives);
+
+        when(utilisateurService.checkRole(Role.GESTIONNAIRE_STAGE)).thenReturn(true);
 
         // Act
         offreStageService.acceptOffreDeStage(acceptDtoPrivate);
@@ -984,6 +993,9 @@ public class OffreStageServiceTest {
         when(offreStageRepository.findById(1L)).thenReturn(Optional.of(fichierOffreStage));
         when(offreStageRepository.save(any(OffreStage.class))).thenReturn(fichierOffreStage);
 
+        when(utilisateurService.checkRole(Role.GESTIONNAIRE_STAGE)).thenReturn(true);
+
+
         // Act
         offreStageService.acceptOffreDeStage(acceptDtoPublic);
 
@@ -1004,6 +1016,9 @@ public class OffreStageServiceTest {
         // Arrange
         when(offreStageRepository.findById(99L)).thenReturn(Optional.empty());
 
+        when(utilisateurService.checkRole(Role.GESTIONNAIRE_STAGE)).thenReturn(true);
+
+
         // Act & Assert
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
             offreStageService.acceptOffreDeStage(acceptDtoNonExistent);
@@ -1022,6 +1037,9 @@ public class OffreStageServiceTest {
         fichierOffreStage.setStatus(OffreStage.Status.ACCEPTED);
         when(offreStageRepository.findById(2L)).thenReturn(Optional.of(fichierOffreStage));
 
+        when(utilisateurService.checkRole(Role.GESTIONNAIRE_STAGE)).thenReturn(true);
+
+
         // Act & Assert
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             offreStageService.acceptOffreDeStage(acceptDtoInvalidStatus);
@@ -1039,6 +1057,9 @@ public class OffreStageServiceTest {
         // Arrange
         fichierOffreStage.setStatus(OffreStage.Status.WAITING);
         when(offreStageRepository.findById(1L)).thenReturn(Optional.of(fichierOffreStage));
+
+        when(utilisateurService.checkRole(Role.GESTIONNAIRE_STAGE)).thenReturn(true);
+
 
         // Act & Assert
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
