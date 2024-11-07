@@ -270,7 +270,7 @@ public class OffreStageService {
             title = "";
         }
 
-        long amountOfRows = offreStageRepository.countByEtudiantIdNotAppliedFilteredWithTitle(etudiantDTO.getId(), etudiantDTO.getProgramme(), year, sessionEcole, title);
+        long amountOfRows = offreStageRepository.countByEtudiantIdNotAppliedFilteredWithTitle(etudiantDTO.getId(), etudiantDTO.getProgramme(), Year.of(year), sessionEcole, title);
 
         if (amountOfRows == 0)
             return 0;

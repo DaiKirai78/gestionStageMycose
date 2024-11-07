@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.Year;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -96,7 +97,7 @@ public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
     long countByEtudiantIdNotAppliedFilteredWithTitle(
             @Param("etudiantId") Long etudiantId,
             @Param("programme") Programme programme,
-            @Param("annee") Integer annee,
+            @Param("annee") Year annee,
             @Param("session") OffreStage.SessionEcole sessionEcole,
             @Param("title") String title
     );
