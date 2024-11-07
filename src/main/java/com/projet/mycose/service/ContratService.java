@@ -34,14 +34,11 @@ public class ContratService {
 
     @Transactional
     public ContratDTO save(MultipartFile contratPDF, Long etudiantId, Long employeurId) throws IOException {
-        System.out.println("sboltz");
         ContratDTO contratDTO = new ContratDTO();
         contratDTO.setPdf(Base64.getEncoder().encodeToString(contratPDF.getBytes()));
         contratDTO.setEtudiantId(etudiantId);
         contratDTO.setEmployeurId(employeurId);
-        System.out.println("doitz");
         Contrat contrat = convertToEntity(contratDTO);
-        System.out.println("un contrat : " + contrat);
         changeContractStatusToActive(etudiantId);
         return convertToDTO(contratRepository.save(contrat));
     }

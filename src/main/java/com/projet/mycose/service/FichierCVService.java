@@ -82,7 +82,6 @@ public class FichierCVService {
         }
 
         FichierCV fichierCV = convertToEntity(fichierCVDTO);
-        System.out.println(fichierCV.toString());
 
         return convertToDTO(fileRepository.save(fichierCV));
     }

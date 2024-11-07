@@ -53,7 +53,6 @@ public class JwtTokenProvider {
 					.getBody()
 					.getSubject();
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
 			throw new AccessDeniedException("Token Invalide");
 		}
 	}

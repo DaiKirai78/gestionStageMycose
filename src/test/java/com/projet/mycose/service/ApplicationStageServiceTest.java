@@ -608,7 +608,6 @@ public class ApplicationStageServiceTest {
 
         applicationStage.setStatus(ApplicationStage.ApplicationStatus.SUMMONED);
         applicationStage.setConvocation(new Convocation(applicationStage, summonEtudiantDTO));
-        System.out.println(applicationStage.getConvocation().getStatus());
 
         // Act
         ApplicationStageAvecInfosDTO result = applicationStageService.answerSummon(applicationStageId, answerSummonDTO);

@@ -63,18 +63,14 @@ public class ApplicationStageAvecInfosDTO {
             dto.setConvocationStatus(applicationStage.getConvocation().getStatus());
         }
         if (applicationStage.getOffreStage() instanceof FichierOffreStage fichier) {
-            System.out.println("FichierOffreStage");
             dto.setFilename(fichier.getFilename());
             dto.setFileData(Base64.getEncoder().encodeToString(fichier.getData()));
         } else if (applicationStage.getOffreStage() instanceof FormulaireOffreStage formulaire) {
-            System.out.println("FormulaireOffreStage");
             dto.setEmail(formulaire.getEmail());
             dto.setWebsite(formulaire.getWebsite());
             dto.setLocation(formulaire.getLocation());
             dto.setSalary(formulaire.getSalary());
             dto.setDescription(formulaire.getDescription());
-        } else {
-            System.out.println("nothing");
         }
         return dto;
     }
