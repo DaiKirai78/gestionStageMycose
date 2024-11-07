@@ -199,7 +199,7 @@ public class GestionnaireStageService {
         return "Signature sauvegardée";
     }
 
-    public byte[] getContratSignee(long id) throws RuntimeException {
+    public String getContratSignee(long id) throws RuntimeException {
         Optional<Contrat> contratOpt = contratRepository.findById(id);
 
         if (contratOpt.isEmpty()) {
@@ -212,7 +212,9 @@ public class GestionnaireStageService {
             throw new IllegalArgumentException("Il manque des signature");
         }
 
-        return getPdfCompletContrat(contrat);
+        byte[] pdfBytes = getPdfCompletContrat(contrat);
+
+        return Base64.getEncoder().encodeToString(pdfBytes);
     }
 
     private boolean isAllSignatureThere(Contrat contrat) {
