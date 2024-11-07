@@ -1,13 +1,10 @@
 package com.projet.mycose.controller;
 
-import com.projet.mycose.dto.AnswerSummonDTO;
-import com.projet.mycose.dto.SummonEtudiantDTO;
+import com.projet.mycose.dto.*;
 import com.projet.mycose.modele.*;
 import com.projet.mycose.modele.auth.Credentials;
 import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.service.ApplicationStageService;
-import com.projet.mycose.dto.ApplicationStageAvecInfosDTO;
-import com.projet.mycose.dto.ApplicationStageDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,7 +23,6 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ApplicationStageControllerTest {
-
     @Mock
     private ApplicationStageService applicationStageService;
 
