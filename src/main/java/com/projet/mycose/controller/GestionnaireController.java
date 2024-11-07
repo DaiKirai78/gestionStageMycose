@@ -176,11 +176,11 @@ public class GestionnaireController {
     }
 
     @GetMapping("/contrat/print")
-    public ResponseEntity<?> imprimerContrat(@RequestParam long id) {
+    public ResponseEntity<String> imprimerContrat(@RequestParam long id) {
         try {
             return ResponseEntity.ok(gestionnaireStageService.getContratSignee(id));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Une erreur est surevenue de notre coté");
         }
     }
 

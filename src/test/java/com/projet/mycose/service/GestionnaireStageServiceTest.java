@@ -562,9 +562,9 @@ class GestionnaireStageServiceTest {
         when(contratRepository.findById(contratId)).thenReturn(Optional.of(contrat));
 
         // Act
-        byte[] result = gestionnaireStageService.getContratSignee(contratId);
+        String result = gestionnaireStageService.getContratSignee(contratId);
 
-        // Asser
+        // Assert
         assertNotNull(result);
     }
 
@@ -632,4 +632,30 @@ class GestionnaireStageServiceTest {
         javax.imageio.ImageIO.write(bufferedImage, "png", tempFile);
         return Files.readAllBytes(tempFile.toPath());
     }
+    @Test
+    public void testGetYearFirstContratUploaded_NormalSuccess() {
+        // Arrange
+        Date date1 = new Date(121, 5, 15);
+        Date date2 = new Date(119, 3, 10);
+        when(contratRepository.findDistinctCreatedAtForSignedContrats()).thenReturn(List.of(date1, date2));
+
+        // Act
+        Set<Integer> result = gestionnaireStageService.getYearFirstContratUploaded();
+
+        // Assert
+        assertEquals(Set.of(2019, 2021), result);
+    }
+    @Test
+    public void testGetYearFirstContratUploaded_Empty() {
+        // Arrange
+        when(contratRepository.findDistinctCreatedAtForSignedContrats()).thenReturn(List.of());
+
+        // Act
+        Set<Integer> result = gestionnaireStageService.getYearFirstContratUploaded();
+
+        // Assert
+        assertEquals(Set.of(), result);
+    }
+
+
 }
