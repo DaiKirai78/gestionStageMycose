@@ -1,13 +1,14 @@
 package com.projet.mycose.controller;
 
 import com.projet.mycose.dto.ContratDTO;
+import com.projet.mycose.exceptions.AuthenticationException;
+import com.projet.mycose.exceptions.GlobalExceptionHandler;
 import com.projet.mycose.modele.Contrat;
 import com.projet.mycose.modele.Employeur;
 import com.projet.mycose.modele.Etudiant;
 import com.projet.mycose.modele.Programme;
 import com.projet.mycose.modele.auth.Credentials;
 import com.projet.mycose.modele.auth.Role;
-import com.projet.mycose.security.exception.AuthenticationException;
 import com.projet.mycose.service.ContratService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
