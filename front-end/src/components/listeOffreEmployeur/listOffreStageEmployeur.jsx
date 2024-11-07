@@ -34,7 +34,7 @@ const ListOffreStageEmployeur = ({data, voirPdf, setVoirPdf, activeOffer, setAct
     }
 
     return (
-        <div className='min-w-screen bg-orange-light flex gap-5 pt-10'>
+        <div className='min-w-screen bg-orange-light flex gap-5'>
             <div className='flex flex-col gap-2 w-full h-full overflow-auto'>
                 {
                     data.map((offre, index) => {
