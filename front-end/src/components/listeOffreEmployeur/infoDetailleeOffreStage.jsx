@@ -40,7 +40,6 @@ const InfoDetailleeOffreStage = ({ setActiveOffer, activeOffer, getColorOffreSta
             let fetchedData = await response.text();
             if (fetchedData) {
                 setListeEtudiantsAppliques(JSON.parse(fetchedData));
-                console.log("1er fetch" + fetchedData);
                 await assignerStatusEtudiants(JSON.parse(fetchedData))
             }
             else {
@@ -65,9 +64,7 @@ const InfoDetailleeOffreStage = ({ setActiveOffer, activeOffer, getColorOffreSta
 
                 if (response.status === 200) {
                     const applications = response.data;
-                    console.log("2eme fetch 1", applications);
                     const studentApplication = applications.find(app => app.etudiant_id === etudiant.id && app.offreStage_id === activeOffer.id);
-                    console.log("2eme fetch 2", studentApplication);
                     newStatus[etudiant.id] = studentApplication ? studentApplication.status : "N/A";
                 }
             } catch (error) {
@@ -93,8 +90,6 @@ const InfoDetailleeOffreStage = ({ setActiveOffer, activeOffer, getColorOffreSta
     }
 
     function ouvrirModal(etudiantId) {
-        console.log(etudiantId);
-
         if(etudiantId !== "default") {
             const etudiant = listeEtudiantsAppliques.find(e => e.id === parseInt(etudiantId));
             setSelectedEtudiant(etudiant);
@@ -123,11 +118,9 @@ const InfoDetailleeOffreStage = ({ setActiveOffer, activeOffer, getColorOffreSta
 
             if (response.status === 200) {
                 const applications = response.data
-                console.log("3eme fetch 1", applications);
 
                 // On vérifie l'application avec le bon etudiantId et l'offreStageId
                 const studentApplication = applications.find(app => app.etudiant_id === selectedEtudiant.id && app.offreStage_id === activeOffer.id);
-                console.log("3eme fetch 2", studentApplication);
                 setStudentInfo(studentApplication);
             }
         } catch (error) {
@@ -141,7 +134,6 @@ const InfoDetailleeOffreStage = ({ setActiveOffer, activeOffer, getColorOffreSta
         setIsFetchingStatus(true);
 
         try {
-            console.log(summonDetails);
             const response = await axios.patch(`http://localhost:8080/api/application-stage/summon/${studentInfo.id}`, summonDetails, {
                 headers: {
                     Authorization: `Bearer ${token}`,
