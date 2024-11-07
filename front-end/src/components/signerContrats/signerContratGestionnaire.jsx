@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import PageIsLoading from "../pageIsLoading";
 import SignerContratCard from "./signerContratCard";
 import BoutonAvancerReculer from "../listeOffreEmployeur/boutonAvancerReculer";
+import printJS from "print-js";
 
 
 function SignerContratGestionnaire({setSelectedContract}) {
@@ -54,7 +55,6 @@ function SignerContratGestionnaire({setSelectedContract}) {
             }            
             
             let annees = JSON.parse(data)
-
             annees = annees.reverse();
             
             if (!filtreAnnee || JSON.stringify(listeAnneesDispo) !== JSON.stringify(annees)) {
@@ -182,7 +182,6 @@ function SignerContratGestionnaire({setSelectedContract}) {
                 throw new Error('No data');
             }
 
-            //console.log(JSON.parse(data));
             setContrats(JSON.parse(data));
         } catch (e) {
             console.log("Une erreur est survenue " + e);       
@@ -196,8 +195,47 @@ function SignerContratGestionnaire({setSelectedContract}) {
         return etudiant ? etudiant.nom : '';
     }
 
-    function imprimer() {
+    async function imprimer(contrat) {
 
+        const contratToPrint = await fetchFullContrat(contrat.id);
+
+        console.log(contratToPrint);
+        
+        printJS({
+            printable: contratToPrint,
+            type: 'pdf',
+            base64: true,
+        });
+    }
+
+    async function fetchFullContrat(contratId) {
+        const token = localStorage.getItem("token");
+        
+        try {
+            const response = await fetch(`http://localhost:8080/gestionnaire/contrat/print?id=${contratId}`, {
+                method: 'GET',
+                headers: {Authorization: `Bearer ${token}`}
+            });
+
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const data = await response.text();
+            
+
+            if (!data) {
+                throw new Error('No data');
+            }
+
+            return data;
+
+        } catch (e) {
+            console.log("Une erreur est survenue " + e);       
+            setContrats([]);
+            setIsFetching(false);
+        }
     }
     
     if (isFetching)
@@ -247,7 +285,7 @@ function SignerContratGestionnaire({setSelectedContract}) {
                                     <div className='flex w-full justify-between items-center p-4 shadow mb-4 rounded bg-white'>
                                         <p className='text-lg'>{getNomEtudiant(contrat)}</p>
                                         <button className='bg-orange rounded p-2 text-white hover:bg-opacity-90'
-                                            onClick={() => imprimer()}>
+                                            onClick={() => imprimer(contrat)}>
                                             Imprimer
                                         </button>
                                     </div>
