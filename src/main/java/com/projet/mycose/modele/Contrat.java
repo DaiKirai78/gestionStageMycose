@@ -72,7 +72,8 @@ public class Contrat {
                 "id=" + id +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
-                ", etudiant=" + etudiant +
+                ", etudiant=" + etudiant.getPrenom() + " " + etudiant.getNom() +
+                ", employeur=" + employeur.getPrenom() + " " + employeur.getNom() +
                 ", status=" + status +
                 '}';
     }
