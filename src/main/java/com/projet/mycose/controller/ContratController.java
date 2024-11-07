@@ -26,14 +26,7 @@ public class ContratController {
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> upload(@RequestParam MultipartFile contratPDF, @RequestParam Long etudiantId, @RequestParam Long employeurId) {
-        try {
-            ContratDTO contratDTO = contratService.save(contratPDF, etudiantId, employeurId);
-            System.out.println("ContratDTO créé : " + contratDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body(contratDTO);
-        } catch (AuthenticationException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized access : " + e.getMessage());
-        } catch (RuntimeException | IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Fichier non trouvé : " + e.getMessage());
-        }
+        ContratDTO contratDTO = contratService.save(contratPDF, etudiantId, employeurId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(contratDTO);
     }
 }

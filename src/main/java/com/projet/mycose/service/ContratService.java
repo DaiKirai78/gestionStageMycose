@@ -8,12 +8,15 @@ import com.projet.mycose.exceptions.ResourceNotFoundException;
 import com.projet.mycose.modele.Contrat;
 import com.projet.mycose.modele.Etudiant;
 import com.projet.mycose.modele.FichierCV;
+import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.repository.ContratRepository;
 import com.projet.mycose.repository.EmployeurRepository;
 import com.projet.mycose.repository.EtudiantRepository;
+import jakarta.persistence.PersistenceException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,9 +36,15 @@ public class ContratService {
     private final UtilisateurService utilisateurService;
 
     @Transactional
-    public ContratDTO save(MultipartFile contratPDF, Long etudiantId, Long employeurId) throws IOException {
+    @PreAuthorize("hasRole('GESTIONNAIRE_STAGE')")
+    public ContratDTO save(MultipartFile contratPDF, Long etudiantId, Long employeurId) {
+
         ContratDTO contratDTO = new ContratDTO();
-        contratDTO.setPdf(Base64.getEncoder().encodeToString(contratPDF.getBytes()));
+        try {
+            contratDTO.setPdf(Base64.getEncoder().encodeToString(contratPDF.getBytes()));
+        } catch (IOException e) {
+            throw new PersistenceException("Erreur lors de la lecture du fichier PDF");
+        }
         contratDTO.setEtudiantId(etudiantId);
         contratDTO.setEmployeurId(employeurId);
         Contrat contrat = convertToEntity(contratDTO);
@@ -45,8 +54,7 @@ public class ContratService {
 
     public void changeContractStatusToActive(Long etudiantId) {
         if (utilisateurService.getEtudiantDTO(etudiantId) == null)
-            throw new ResourceNotFoundException("L'étudiant avec l'ID " + etudiantId + " est innexistant");
-
+            throw new ResourceNotFoundException("L'étudiant avec l'ID " + etudiantId + " est inexistant");
 
         Etudiant etudiant = etudiantRepository.findEtudiantById(etudiantId);
 
