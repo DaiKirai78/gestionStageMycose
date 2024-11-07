@@ -36,20 +36,9 @@ public class ApplicationStageController {
         return new ResponseEntity<>(applicationStageService.getApplicationsByEtudiantWithStatus(status), HttpStatus.OK);
     }
 
-    @GetMapping("/status/{status}")
-    public ResponseEntity<List<ApplicationStageAvecInfosDTO>> getApplicationsWithStatus(@PathVariable("status") ApplicationStage.ApplicationStatus status) {
-        return new ResponseEntity<>(applicationStageService.getApplicationsWithStatus(status), HttpStatus.OK);
-    }
-
     @GetMapping("/my-applications/{id}")
     public ResponseEntity<ApplicationStageAvecInfosDTO> getMyApplication(@PathVariable Long id) {
         return new ResponseEntity<>(applicationStageService.getApplicationById(id), HttpStatus.OK);
-    }
-
-    @GetMapping("/get/etudiant/{id}")
-    public ResponseEntity
-            <List<ApplicationStageAvecInfosDTO>> getApplicationsByEtudiantId(@PathVariable Long id) {
-        return new ResponseEntity<>(applicationStageService.getApplicationsByEtudiant(id), HttpStatus.OK);
     }
 
     @PatchMapping("/application/{id}/accepter")
@@ -72,17 +61,5 @@ public class ApplicationStageController {
     @PatchMapping("/answer-summon/{id}")
     public ResponseEntity<ApplicationStageAvecInfosDTO> answerSummon(@PathVariable Long id, @Valid @RequestBody AnswerSummonDTO answer) {
         return new ResponseEntity<>(applicationStageService.answerSummon(id, answer), HttpStatus.OK);
-    }
-
-    @GetMapping("/getEtudiant/{applicationId}")
-    public ResponseEntity<EtudiantDTO> getEtudiantFromApplication(@PathVariable Long applicationId) {
-        EtudiantDTO etudiantDTO = applicationStageService.getEtudiantFromApplicationId(applicationId);
-        return ResponseEntity.ok(etudiantDTO);
-    }
-
-    @GetMapping("/getOffreStage/{applicationId}")
-    public ResponseEntity<OffreStageDTO> getOffreStageFromApplication(@PathVariable Long applicationId) {
-        OffreStageDTO offreStageDTO = applicationStageService.getOffreStageFromApplicationId(applicationId);
-        return ResponseEntity.ok(offreStageDTO);
     }
 }

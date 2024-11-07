@@ -729,34 +729,4 @@ public class ApplicationStageServiceTest {
         verify(utilisateurService, times(1)).getMyUserId();
         verify(applicationStageRepository, times(0)).save(any(ApplicationStage.class));
     }
-
-    @Test
-    void testGetEtudiantFromApplicationId_Success() {
-        // Arrange
-        when(applicationStageRepository.findById(anyLong())).thenReturn(Optional.ofNullable(applicationStage));
-
-        // Act
-        EtudiantDTO etudiantDTO = applicationStageService.getEtudiantFromApplicationId(applicationStage.getId());
-
-        // Assert
-        assertEquals(1L, etudiantDTO.getId());
-        assertEquals("Roberto", etudiantDTO.getPrenom());
-        assertEquals("Berrios", etudiantDTO.getNom());
-        verify(applicationStageRepository, times(1)).findById(anyLong());
-    }
-
-    @Test
-    void testGetOffreStageFromApplicationId_Success() {
-        // Arrange
-        when(applicationStageRepository.findById(anyLong())).thenReturn(Optional.ofNullable(applicationStage));
-
-        // Act
-        OffreStageDTO offreStageDTO = applicationStageService.getOffreStageFromApplicationId(applicationStage.getId());
-
-        // Assert
-        assertEquals(1L, offreStageDTO.getId());
-        assertEquals("Software Engineering Internship", offreStageDTO.getTitle());
-        assertEquals("Tech Corp", offreStageDTO.getEntrepriseName());
-        verify(applicationStageRepository, times(1)).findById(anyLong());
-    }
 }

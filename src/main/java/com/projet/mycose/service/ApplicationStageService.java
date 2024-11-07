@@ -102,13 +102,6 @@ public class ApplicationStageService {
         return applicationStageRepository.findByEtudiantIdAndStatusEquals(etudiantId, status).stream().map(this::convertToDTOAvecInfos).toList();
     }
 
-    public List<ApplicationStageAvecInfosDTO> getApplicationsWithStatus(ApplicationStage.ApplicationStatus status) {
-        return applicationStageRepository.findByStatusAndContractStatus(status, Etudiant.ContractStatus.PENDING)
-                .stream()
-                .map(this::convertToDTOAvecInfos)
-                .toList();
-    }
-
     public ApplicationStageAvecInfosDTO getApplicationById(Long applicationId) {
         Long etudiantId = utilisateurService.getMyUserId();
         return applicationStageRepository.findByEtudiantIdAndOffreStageId(etudiantId, applicationId)
@@ -122,10 +115,6 @@ public class ApplicationStageService {
                 .stream()
                 .map(this::convertToDTOAvecInfos)
                 .toList();
-    }
-
-    public List<ApplicationStageAvecInfosDTO> getApplicationsByEtudiant(Long etudiantId) {
-        return applicationStageRepository.findByEtudiantId(etudiantId).stream().map(this::convertToDTOAvecInfos).toList();
     }
 
     @Transactional
@@ -220,17 +209,5 @@ public class ApplicationStageService {
         applicationStage.getConvocation().setMessageEtudiant(answer.getMessageEtudiant());
         applicationStage.getConvocation().setStatus(answer.getStatus());
         return convertToDTOAvecInfos(applicationStageRepository.save(applicationStage));
-    }
-
-    public EtudiantDTO getEtudiantFromApplicationId(Long applicationId) {
-        ApplicationStage application = applicationStageRepository.findById(applicationId)
-                .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
-        return EtudiantDTO.toDTO(application.getEtudiant());
-    }
-
-    public OffreStageDTO getOffreStageFromApplicationId(Long applicationId) {
-        ApplicationStage application = applicationStageRepository.findById(applicationId)
-                .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
-        return OffreStageDTO.toOffreStageInstaceDTO(application.getOffreStage());
     }
 }
