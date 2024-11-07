@@ -3,7 +3,7 @@ package com.projet.mycose.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.projet.mycose.modele.FichierCV;
-import com.projet.mycose.security.exception.AuthenticationException;
+import com.projet.mycose.exceptions.AuthenticationException;
 import com.projet.mycose.service.FichierCVService;
 import com.projet.mycose.service.UtilisateurService;
 import com.projet.mycose.dto.FichierCVDTO;

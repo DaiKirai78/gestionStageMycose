@@ -2,10 +2,7 @@ package com.projet.mycose.security;
 
 import com.projet.mycose.modele.GestionnaireStage;
 import com.projet.mycose.modele.Utilisateur;
-import com.projet.mycose.modele.auth.Credentials;
-import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.repository.UtilisateurRepository;
-import com.projet.mycose.security.exception.UserNotFoundException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,10 +1,11 @@
 package com.projet.mycose.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.projet.mycose.exceptions.GlobalExceptionHandler;
 import com.projet.mycose.modele.Etudiant;
 import com.projet.mycose.modele.Programme;
 import com.projet.mycose.modele.auth.Role;
-import com.projet.mycose.security.exception.UserNotFoundException;
+import com.projet.mycose.exceptions.UserNotFoundException;
 import com.projet.mycose.service.EtudiantService;
 import com.projet.mycose.service.UtilisateurService;
 import com.projet.mycose.dto.CourrielTelephoneDTO;
@@ -21,7 +22,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;

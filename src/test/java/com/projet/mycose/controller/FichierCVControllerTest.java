@@ -1,7 +1,9 @@
 package com.projet.mycose.controller;
 
+import com.projet.mycose.exceptions.GlobalExceptionHandler;
+import com.projet.mycose.exceptions.UserNotFoundException;
 import com.projet.mycose.modele.FichierCV;
-import com.projet.mycose.security.exception.AuthenticationException;
+import com.projet.mycose.exceptions.AuthenticationException;
 import com.projet.mycose.service.FichierCVService;
 import com.projet.mycose.dto.FichierCVDTO;
 import com.projet.mycose.dto.FichierCVStudInfoDTO;
@@ -14,7 +16,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
@@ -314,7 +315,7 @@ public class FichierCVControllerTest {
     @Test
     void test_acceptCv_UserNotFound() throws Exception {
         // Act
-        doThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Fichier non trouvé"))
+        doThrow(new UserNotFoundException())
                 .when(fichierCVService)
                 .changeStatus(1L, FichierCV.Status.ACCEPTED, "asd");
         // Assert

@@ -1,6 +1,7 @@
 package com.projet.mycose.controller;
 
 import com.projet.mycose.dto.*;
+import com.projet.mycose.exceptions.GlobalExceptionHandler;
 import com.projet.mycose.modele.ApplicationStage;
 import com.projet.mycose.modele.Etudiant;
 import com.projet.mycose.modele.OffreStage;

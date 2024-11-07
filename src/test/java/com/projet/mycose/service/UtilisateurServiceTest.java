@@ -7,7 +7,7 @@ import com.projet.mycose.repository.EtudiantRepository;
 import com.projet.mycose.repository.UtilisateurRepository;
 import com.projet.mycose.security.CustomUserDetails;
 import com.projet.mycose.security.JwtTokenProvider;
-import com.projet.mycose.security.exception.UserNotFoundException;
+import com.projet.mycose.exceptions.UserNotFoundException;
 import com.projet.mycose.dto.EmployeurDTO;
 import com.projet.mycose.dto.EnseignantDTO;
 import com.projet.mycose.dto.EtudiantDTO;

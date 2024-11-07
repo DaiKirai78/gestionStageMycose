@@ -1,6 +1,9 @@
 package com.projet.mycose.service;
 
 import com.projet.mycose.dto.ContratDTO;
+import com.projet.mycose.exceptions.AuthenticationException;
+import com.projet.mycose.exceptions.ResourceNotFoundException;
+import com.projet.mycose.exceptions.UserNotFoundException;
 import com.projet.mycose.modele.*;
 import com.projet.mycose.modele.auth.Credentials;
 import com.projet.mycose.modele.auth.Role;
@@ -24,6 +27,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -250,7 +254,7 @@ public class EmployeurServiceTest {
     }
 
     @Test
-    public void testEnregistrerSignature_Success() {
+    public void testEnregistrerSignature_Success() throws IOException {
         // Arrange
         Long employeurId = 1L;
         Long contratId = 1L;
@@ -298,12 +302,12 @@ public class EmployeurServiceTest {
         when(utilisateurRepository.findUtilisateurById(1L)).thenReturn(Optional.of(employeur));
 
         // Act
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () ->
+        AuthenticationException exception = assertThrows(AuthenticationException.class, () ->
                 employeurService.enregistrerSignature(signature, password, contratId)
         );
 
         // Assert
-        assertEquals("401 UNAUTHORIZED \"Email ou mot de passe invalide.\"", exception.getMessage());
+        assertEquals("Email ou mot de passe invalide.", exception.getMessage());
         verify(contratRepositoryMock, never()).save(any(Contrat.class));
     }
 
@@ -327,12 +331,12 @@ public class EmployeurServiceTest {
         when(contratRepositoryMock.findById(contratId)).thenReturn(Optional.empty());
 
         // Act
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () ->
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () ->
                 employeurService.enregistrerSignature(signature, password, contratId)
         );
 
         // Assert
-        assertEquals("404 NOT_FOUND \"Contrat not found\"", exception.getMessage());
+        assertEquals("Contrat non trouvé", exception.getMessage());
         verify(contratRepositoryMock, never()).save(any(Contrat.class));
     }
 
@@ -348,12 +352,12 @@ public class EmployeurServiceTest {
         when(utilisateurRepository.findUtilisateurById(1L)).thenReturn(Optional.empty());
 
         // Act
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () ->
+        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () ->
                 employeurService.enregistrerSignature(signature, password, contratId)
         );
 
         // Assert
-        assertEquals("404 NOT_FOUND \"Utilisateur not found\"", exception.getMessage());
+        assertEquals("Utilisateur not found", exception.getMessage());
         verify(contratRepositoryMock, never()).save(any(Contrat.class));
     }
 

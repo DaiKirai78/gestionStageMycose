@@ -2,7 +2,7 @@ package com.projet.mycose.controller;
 
 
 import com.projet.mycose.dto.ContratDTO;
-import com.projet.mycose.security.exception.AuthenticationException;
+import com.projet.mycose.exceptions.AuthenticationException;
 import com.projet.mycose.service.ContratService;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,6 @@
 package com.projet.mycose.security;
 
-import com.projet.mycose.security.exception.InvalidJwtTokenException;
+import com.projet.mycose.exceptions.InvalidJwtTokenException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.BeforeEach;

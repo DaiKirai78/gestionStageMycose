@@ -1,5 +1,6 @@
 package com.projet.mycose.service;
 
+import com.projet.mycose.exceptions.ResourceNotFoundException;
 import com.projet.mycose.modele.FichierCV;
 import com.projet.mycose.repository.EtudiantRepository;
 import com.projet.mycose.repository.FichierCVRepository;
@@ -119,7 +120,7 @@ public class FichierCVService {
 
     @Transactional
     public void changeStatus(Long id, FichierCV.Status status, String description) {
-        FichierCV fichierCV = fileRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Fichier non trouvé"));
+        FichierCV fichierCV = fileRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Fichier non trouvé"));
         fichierCV.setStatus(status);
         fichierCV.setStatusDescription(description);
         fileRepository.save(fichierCV);

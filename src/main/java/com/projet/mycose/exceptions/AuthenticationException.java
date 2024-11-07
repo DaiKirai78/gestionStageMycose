@@ -1,4 +1,4 @@
-package com.projet.mycose.security.exception;
+package com.projet.mycose.exceptions;
 
 import org.springframework.http.HttpStatus;
 

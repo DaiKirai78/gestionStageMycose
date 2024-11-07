@@ -3,13 +3,12 @@ package com.projet.mycose.modele.auth;
 import com.projet.mycose.modele.Utilisateur;
 import com.projet.mycose.repository.UtilisateurRepository;
 import com.projet.mycose.security.AuthProvider;
-import com.projet.mycose.security.exception.AuthenticationException;
-import com.projet.mycose.security.exception.UserNotFoundException;
+import com.projet.mycose.exceptions.AuthenticationException;
+import com.projet.mycose.exceptions.UserNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -20,7 +19,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.nio.file.AccessDeniedException;
 import java.util.Collections;
 import java.util.Optional;
 

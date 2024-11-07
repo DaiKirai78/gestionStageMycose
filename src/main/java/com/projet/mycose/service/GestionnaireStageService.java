@@ -7,18 +7,16 @@ import com.lowagie.text.pdf.PdfStamper;
 import com.projet.mycose.dto.ContratDTO;
 import com.projet.mycose.dto.EnseignantDTO;
 import com.projet.mycose.dto.EtudiantDTO;
+import com.projet.mycose.exceptions.ResourceNotFoundException;
 import com.projet.mycose.modele.*;
 import com.projet.mycose.repository.ContratRepository;
 import com.projet.mycose.repository.GestionnaireStageRepository;
 import com.projet.mycose.repository.UtilisateurRepository;
-import com.projet.mycose.security.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,7 +29,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -122,7 +119,7 @@ public class GestionnaireStageService {
 
         Page<Contrat> contratsRetournessEnPages = contratRepository.findContratsBySignatureGestionnaireIsNull(pageRequest);
         if(contratsRetournessEnPages.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Contrats not found");
+            throw new ResourceNotFoundException("Contrats not found");
         }
 
         return contratsRetournessEnPages.stream().map(ContratDTO::toDTO).toList();

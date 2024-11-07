@@ -1,5 +1,6 @@
 package com.projet.mycose.service;
 
+import com.projet.mycose.exceptions.ResourceNotFoundException;
 import com.projet.mycose.modele.Etudiant;
 import com.projet.mycose.modele.FichierCV;
 import com.projet.mycose.modele.Programme;
@@ -327,7 +328,7 @@ public class FichierCVServiceTest {
         when(fileRepository.findById(1L)).thenReturn(Optional.empty());
 
         // Assert
-        assertThrows(ResponseStatusException.class, () -> {
+        assertThrows(ResourceNotFoundException.class, () -> {
             fichierCVService.changeStatus(1L, FichierCV.Status.ACCEPTED, "asd");
         });
     }

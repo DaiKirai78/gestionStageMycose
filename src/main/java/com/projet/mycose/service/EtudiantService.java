@@ -3,13 +3,14 @@ package com.projet.mycose.service;
 import com.projet.mycose.dto.ContratDTO;
 import com.projet.mycose.dto.EtudiantDTO;
 import com.projet.mycose.dto.OffreStageDTO;
+import com.projet.mycose.exceptions.SignaturePersistenceException;
 import com.projet.mycose.modele.*;
 import com.projet.mycose.repository.ContratRepository;
 import com.projet.mycose.repository.EtudiantRepository;
 import com.projet.mycose.repository.OffreStageRepository;
 import com.projet.mycose.repository.UtilisateurRepository;
+import com.projet.mycose.exceptions.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -127,7 +128,7 @@ public class EtudiantService {
     public String enregistrerSignature(MultipartFile signature, String password, Long contratId) {
         Long gestionnaireId = utilisateurService.getMyUserId();
         Utilisateur utilisateur = utilisateurRepository.findUtilisateurById(gestionnaireId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utilisateur not found"));
+                .orElseThrow(UserNotFoundException::new);
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(utilisateur.getCourriel(), password)
@@ -141,7 +142,7 @@ public class EtudiantService {
         try {
             contratDispo.setSignatureEtudiant(signature.getBytes());
         } catch (IOException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error while saving signature");
+            throw new SignaturePersistenceException("Error while saving signature");
         }
         contratRepository.save(contratDispo);
         return "Signature sauvegardée";

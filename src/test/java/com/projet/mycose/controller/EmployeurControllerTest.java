@@ -2,9 +2,9 @@ package com.projet.mycose.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.projet.mycose.dto.*;
+import com.projet.mycose.exceptions.GlobalExceptionHandler;
+import com.projet.mycose.exceptions.SignaturePersistenceException;
 import com.projet.mycose.modele.Contrat;
-import com.projet.mycose.modele.OffreStage;
-import com.projet.mycose.modele.Programme;
 import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.service.EmployeurService;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,7 +22,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -187,26 +186,21 @@ public class EmployeurControllerTest {
         Long contratId = 123L;
         String password = "securePassword";
 
-        when(employeurService.enregistrerSignature(any(MultipartFile.class), anyString(), any(Long.class))).thenThrow(new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error while saving signature"));
+        when(employeurService.enregistrerSignature(any(MultipartFile.class), anyString(), any(Long.class))).thenThrow(new SignaturePersistenceException("Error while saving signature"));
 
         // Act & Assert
-        MvcResult result = mockMvc.perform(multipart("/entreprise/enregistrerSignature")
+        mockMvc.perform(multipart("/entreprise/enregistrerSignature")
                         .file(signatureFile)
                         .param("contratId", String.valueOf(contratId))
                         .param("password", password)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError())
-                .andReturn();
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Error while saving signature"))
+                .andExpect(jsonPath("$.status").value(500))
+                .andExpect(jsonPath("$.timestamp").isNumber());
 
         // Assert
-        Exception resolvedException = result.getResolvedException();
-        assertNotNull(resolvedException, "Expected an exception but none was resolved.");
-        assertInstanceOf(ResponseStatusException.class, resolvedException, "Expected ResponseStatusException.");
-        assertEquals("500 INTERNAL_SERVER_ERROR \"Error while saving signature\"", resolvedException.getMessage(), "Error message does not match.");
-
-        String errorMessage = result.getResponse().getErrorMessage();
-        assertEquals("Error while saving signature", errorMessage, "Error message does not match.");
-
         // Verify that the service was called once
         verify(employeurService, times(1))
                 .enregistrerSignature(any(), eq(password), eq(contratId));

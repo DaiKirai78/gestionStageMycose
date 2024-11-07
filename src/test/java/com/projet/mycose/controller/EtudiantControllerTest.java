@@ -5,6 +5,9 @@ import com.projet.mycose.dto.EtudiantDTO;
 import com.projet.mycose.dto.FormulaireOffreStageDTO;
 import com.projet.mycose.dto.OffreStageDTO;
 import com.projet.mycose.dto.RegisterEtudiantDTO;
+import com.projet.mycose.exceptions.AuthenticationException;
+import com.projet.mycose.exceptions.GlobalExceptionHandler;
+import com.projet.mycose.exceptions.SignaturePersistenceException;
 import com.projet.mycose.modele.Etudiant;
 import com.projet.mycose.modele.OffreStage;
 import com.projet.mycose.modele.Programme;
@@ -19,7 +22,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -27,6 +29,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -250,25 +253,21 @@ public class EtudiantControllerTest {
                 any(),
                 eq(password),
                 eq(contratId))
-        ).thenThrow(new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Email ou mot de passe invalide."));
+        ).thenThrow(new AuthenticationException(HttpStatus.UNAUTHORIZED, "Email ou mot de passe invalide."));
 
         // Act
-        MvcResult result = mockMvc.perform(multipart("/etudiant/enregistrerSignature")
+        mockMvc.perform(multipart("/etudiant/enregistrerSignature")
                         .file(signatureFile)
                         .param("contratId", String.valueOf(contratId))
                         .param("password", password)
                         .contentType(MediaType.MULTIPART_FORM_DATA))
                 .andExpect(status().isUnauthorized())
-                .andReturn();
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Email ou mot de passe invalide."))
+                .andExpect(jsonPath("$.status").value(401))
+                .andExpect(jsonPath("$.timestamp").isNumber());
 
         // Assert
-        Exception resolvedException = result.getResolvedException();
-        assertNotNull(resolvedException, "Expected an exception but none was resolved.");
-        assertInstanceOf(ResponseStatusException.class, resolvedException, "Expected ResponseStatusException.");
-        assertEquals("401 UNAUTHORIZED \"Email ou mot de passe invalide.\"", resolvedException.getMessage(), "Error message does not match.");
-
-        String errorMessage = result.getResponse().getErrorMessage();
-        assertEquals("Email ou mot de passe invalide.", errorMessage, "Error message does not match.");
 
         // Verify that the service was called once
         verify(etudiantService, times(1))
@@ -320,19 +319,18 @@ public class EtudiantControllerTest {
         String password = "securePassword";
 
         // Act
-        MvcResult result = mockMvc.perform(multipart("/etudiant/enregistrerSignature")
+        mockMvc.perform(multipart("/etudiant/enregistrerSignature")
                         // No file uploaded
                         .param("contratId", String.valueOf(contratId))
                         .param("password", password)
                         .contentType(MediaType.MULTIPART_FORM_DATA))
                 .andExpect(status().isBadRequest())
-                .andReturn();
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Missing part: signature"))
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.timestamp").isNumber());
 
         // Assert
-        assertEquals(MissingServletRequestPartException.class, Objects.requireNonNull(result.getResolvedException()).getClass(), "Expected MissingServletRequestPartException.");
-
-        String errorMessage = result.getResponse().getErrorMessage();
-        assertEquals("Required part 'signature' is not present.", errorMessage, "Error message does not match.");
 
         // Verify that the service was never called
         verify(etudiantService, never())
@@ -351,20 +349,18 @@ public class EtudiantControllerTest {
         String password = "securePassword";
 
         // Act
-        MvcResult result = mockMvc.perform(multipart("/etudiant/enregistrerSignature")
+        mockMvc.perform(multipart("/etudiant/enregistrerSignature")
                         .file(signatureFile)
                         // Missing contratId
                         .param("password", password)
                         .contentType(MediaType.MULTIPART_FORM_DATA))
                 .andExpect(status().isBadRequest())
-                .andReturn();
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Missing parameter: contratId"))
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.timestamp").isNumber());
 
         // Assert
-        assertEquals(MissingServletRequestParameterException.class, Objects.requireNonNull(result.getResolvedException()).getClass(), "Expected MissingServletRequestParameterException.");
-
-        String errorMessage = result.getResponse().getErrorMessage();
-        assertEquals("Required parameter 'contratId' is not present.", errorMessage, "Error message does not match.");
-
         // Verify that the service was never called
         verify(etudiantService, never())
                 .enregistrerSignature(any(), anyString(), anyLong());
@@ -382,20 +378,18 @@ public class EtudiantControllerTest {
         Long contratId = 123L;
 
         // Act
-        MvcResult result = mockMvc.perform(multipart("/etudiant/enregistrerSignature")
+        mockMvc.perform(multipart("/etudiant/enregistrerSignature")
                         .file(signatureFile)
                         .param("contratId", String.valueOf(contratId))
                         // Missing password
                         .contentType(MediaType.MULTIPART_FORM_DATA))
                 .andExpect(status().isBadRequest())
-                .andReturn();
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Missing parameter: password"))
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.timestamp").isNumber());
 
         // Assert
-        assertEquals(MissingServletRequestParameterException.class, Objects.requireNonNull(result.getResolvedException()).getClass(), "Expected MissingServletRequestParameterException.");
-
-        String errorMessage = result.getResponse().getErrorMessage();
-        assertEquals("Required parameter 'password' is not present.", errorMessage, "Error message does not match.");
-
         // Verify that the service was never called
         verify(etudiantService, never())
                 .enregistrerSignature(any(), anyString(), anyLong());
@@ -418,25 +412,21 @@ public class EtudiantControllerTest {
                 any(),
                 eq(password),
                 eq(contratId))
-        ).thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Utilisateur not found"));
+        ).thenThrow(new AuthenticationException(HttpStatus.NOT_FOUND, "Utilisateur not found"));
 
         // Act
-        MvcResult result = mockMvc.perform(multipart("/etudiant/enregistrerSignature")
+        mockMvc.perform(multipart("/etudiant/enregistrerSignature")
                         .file(signatureFile)
                         .param("contratId", String.valueOf(contratId))
                         .param("password", password)
                         .contentType(MediaType.MULTIPART_FORM_DATA))
                 .andExpect(status().isNotFound())
-                .andReturn();
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Utilisateur not found"))
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.timestamp").isNumber());
 
         // Assert
-        Exception resolvedException = result.getResolvedException();
-        assertNotNull(resolvedException, "Expected an exception but none was resolved.");
-        assertInstanceOf(ResponseStatusException.class, resolvedException, "Expected ResponseStatusException.");
-        assertEquals("404 NOT_FOUND \"Utilisateur not found\"", resolvedException.getMessage(), "Error message does not match.");
-
-        String errorMessage = result.getResponse().getErrorMessage();
-        assertEquals("Utilisateur not found", errorMessage, "Error message does not match.");
 
         // Verify that the service was called once
         verify(etudiantService, times(1))
@@ -460,26 +450,22 @@ public class EtudiantControllerTest {
                 any(),
                 eq(password),
                 eq(contratId))
-        ).thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Contrat not found"));
+        ).thenThrow(new AuthenticationException(HttpStatus.NOT_FOUND, "Contrat not found"));
 
         // Act
-        MvcResult result = mockMvc.perform(multipart("/etudiant/enregistrerSignature")
+        mockMvc.perform(multipart("/etudiant/enregistrerSignature")
                         .file(signatureFile)
                         .param("contratId", String.valueOf(contratId))
                         .param("password", password)
                         .contentType(MediaType.MULTIPART_FORM_DATA))
                 .andExpect(status().isNotFound())
-                .andReturn();
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Contrat not found"))
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.timestamp").isNumber());
+
 
         // Assert
-        Exception resolvedException = result.getResolvedException();
-        assertNotNull(resolvedException, "Expected an exception but none was resolved.");
-        assertInstanceOf(ResponseStatusException.class, resolvedException, "Expected ResponseStatusException.");
-        assertEquals("404 NOT_FOUND \"Contrat not found\"", resolvedException.getMessage(), "Error message does not match.");
-
-        String errorMessage = result.getResponse().getErrorMessage();
-        assertEquals("Contrat not found", errorMessage, "Error message does not match.");
-
         // Verify that the service was called once
         verify(etudiantService, times(1))
                 .enregistrerSignature(any(), eq(password), eq(contratId));
@@ -502,25 +488,21 @@ public class EtudiantControllerTest {
                 any(),
                 eq(password),
                 eq(contratId))
-        ).thenThrow(new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error while saving signature"));
+        ).thenThrow(new SignaturePersistenceException("Error while saving signature"));
 
         // Act
-        MvcResult result = mockMvc.perform(multipart("/etudiant/enregistrerSignature")
+        mockMvc.perform(multipart("/etudiant/enregistrerSignature")
                         .file(signatureFile)
                         .param("contratId", String.valueOf(contratId))
                         .param("password", password)
                         .contentType(MediaType.MULTIPART_FORM_DATA))
                 .andExpect(status().isInternalServerError())
-                .andReturn();
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Error while saving signature"))
+                .andExpect(jsonPath("$.status").value(500))
+                .andExpect(jsonPath("$.timestamp").isNumber());
 
         // Assert
-        Exception resolvedException = result.getResolvedException();
-        assertNotNull(resolvedException, "Expected an exception but none was resolved.");
-        assertInstanceOf(ResponseStatusException.class, resolvedException, "Expected ResponseStatusException.");
-        assertEquals("500 INTERNAL_SERVER_ERROR \"Error while saving signature\"", resolvedException.getMessage(), "Error message does not match.");
-
-        String errorMessage = result.getResponse().getErrorMessage();
-        assertEquals("Error while saving signature", errorMessage, "Error message does not match.");
 
         // Verify that the service was called once
         verify(etudiantService, times(1))

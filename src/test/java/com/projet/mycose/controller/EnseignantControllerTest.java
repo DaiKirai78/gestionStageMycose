@@ -1,6 +1,7 @@
 package com.projet.mycose.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.projet.mycose.exceptions.GlobalExceptionHandler;
 import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.service.EnseignantService;
 import com.projet.mycose.service.UtilisateurService;

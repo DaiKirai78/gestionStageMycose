@@ -9,6 +9,7 @@ import com.projet.mycose.repository.OffreStageRepository;
 import com.projet.mycose.dto.EtudiantDTO;
 import com.projet.mycose.dto.OffreStageDTO;
 import com.projet.mycose.repository.UtilisateurRepository;
+import com.projet.mycose.exceptions.UserNotFoundException;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -379,7 +380,7 @@ public class EtudiantServiceTest {
     }
 
     @Test
-    public void testEnregistrerSignature_Success() {
+    public void testEnregistrerSignature_Success() throws IOException {
         // Arrange
         Long gestionnaireId = 1L;
         Long contratId = 1L;
@@ -450,11 +451,11 @@ public class EtudiantServiceTest {
         when(utilisateurService.getMyUserId()).thenReturn(gestionnaireId);
         when(utilisateurRepository.findUtilisateurById(gestionnaireId)).thenReturn(Optional.empty());
         // Act & Assert
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () ->
+        Exception exception = assertThrows(UserNotFoundException.class, () ->
                 etudiantService.enregistrerSignature(signature, password, contratId)
         );
 
-        assertEquals("404 NOT_FOUND \"Utilisateur not found\"", exception.getMessage());
+        assertEquals("Utilisateur not found", exception.getMessage());
 
 
         verify(utilisateurService, times(1)).getMyUserId();

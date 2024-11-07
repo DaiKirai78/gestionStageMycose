@@ -1,10 +1,10 @@
-package com.projet.mycose.security.exception;
+package com.projet.mycose.exceptions;
 
 import org.springframework.http.HttpStatus;
 
 public class UserNotFoundException extends APIException{
         public UserNotFoundException() {
-            super(HttpStatus.NOT_FOUND,"userNotFound");
+            super(HttpStatus.NOT_FOUND,"Utilisateur not found");
 
         }
 }

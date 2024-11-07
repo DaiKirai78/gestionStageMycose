@@ -1,25 +1,17 @@
 package com.projet.mycose.controller;
 
-import com.projet.mycose.dto.ApplicationStageDTO;
 import com.projet.mycose.dto.ContratDTO;
 import com.projet.mycose.dto.EnseignantDTO;
 import com.projet.mycose.dto.EtudiantDTO;
-import com.projet.mycose.modele.Employeur;
 import com.projet.mycose.modele.Programme;
-import com.projet.mycose.security.exception.UserNotFoundException;
 import com.projet.mycose.service.EtudiantService;
 import com.projet.mycose.service.GestionnaireStageService;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 
 @RestController

@@ -2,6 +2,10 @@ package com.projet.mycose.service;
 
 import com.projet.mycose.dto.ContratDTO;
 import com.projet.mycose.dto.LoginDTO;
+import com.projet.mycose.exceptions.AuthenticationException;
+import com.projet.mycose.exceptions.ResourceNotFoundException;
+import com.projet.mycose.exceptions.SignaturePersistenceException;
+import com.projet.mycose.exceptions.UserNotFoundException;
 import com.projet.mycose.modele.Contrat;
 import com.projet.mycose.modele.Employeur;
 import com.projet.mycose.modele.OffreStage;
@@ -13,6 +17,7 @@ import com.projet.mycose.dto.EmployeurDTO;
 import com.projet.mycose.dto.OffreStageDTO;
 import com.projet.mycose.repository.UtilisateurRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -23,7 +28,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -69,7 +73,7 @@ public class EmployeurService {
         Optional<Utilisateur> utilisateurOpt = utilisateurRepository.findUtilisateurById(employeurId);
 
         if (utilisateurOpt.isEmpty())
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Utilisateur not found");
+            throw new UserNotFoundException();
 
         Utilisateur utilisateur = utilisateurOpt.get();
 
@@ -77,17 +81,17 @@ public class EmployeurService {
                 new UsernamePasswordAuthenticationToken(utilisateur.getCourriel(), password)
         );
         if(!authentication.isAuthenticated())
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Email ou mot de passe invalide.");
+            throw new AuthenticationException(HttpStatus.UNAUTHORIZED, "Email ou mot de passe invalide.");
 
         Optional<Contrat> contrat = contratRepository.findById(contratId);
         if(contrat.isEmpty())
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Contrat not found");
+            throw new ResourceNotFoundException("Contrat non trouvé");
 
         Contrat contratDispo = contrat.get();
         try {
             contratDispo.setSignatureEmployeur(signature.getBytes());
         } catch (IOException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error while saving signature");
+            throw new SignaturePersistenceException("Error while saving signature");
         }
         contratRepository.save(contratDispo);
         return "Signature sauvegardée";

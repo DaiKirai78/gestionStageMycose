@@ -1,8 +1,7 @@
 package com.projet.mycose.controller;
 
 import com.projet.mycose.dto.*;
-import com.projet.mycose.modele.Utilisateur;
-import com.projet.mycose.security.exception.UserNotFoundException;
+import com.projet.mycose.exceptions.UserNotFoundException;
 import com.projet.mycose.service.UtilisateurService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

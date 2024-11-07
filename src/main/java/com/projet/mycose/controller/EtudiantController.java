@@ -2,15 +2,12 @@ package com.projet.mycose.controller;
 
 import com.projet.mycose.dto.ContratDTO;
 import com.projet.mycose.dto.OffreStageDTO;
-import com.projet.mycose.security.exception.UserNotFoundException;
 import com.projet.mycose.service.EtudiantService;
 import com.projet.mycose.dto.EtudiantDTO;
 import com.projet.mycose.dto.RegisterEtudiantDTO;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;

@@ -2,8 +2,8 @@ package com.projet.mycose.security;
 
 import com.projet.mycose.repository.UtilisateurRepository;
 import com.projet.mycose.modele.Utilisateur;
-import com.projet.mycose.security.exception.AuthenticationException;
-import com.projet.mycose.security.exception.UserNotFoundException;
+import com.projet.mycose.exceptions.AuthenticationException;
+import com.projet.mycose.exceptions.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationProvider;

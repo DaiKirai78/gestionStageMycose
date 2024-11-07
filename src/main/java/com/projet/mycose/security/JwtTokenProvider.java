@@ -3,12 +3,11 @@ package com.projet.mycose.security;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
-import com.projet.mycose.security.exception.InvalidJwtTokenException;
+import com.projet.mycose.exceptions.InvalidJwtTokenException;
 
 import java.nio.file.AccessDeniedException;
 import java.security.Key;
