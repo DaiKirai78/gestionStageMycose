@@ -20,11 +20,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -196,7 +196,7 @@ public class GestionnaireStageService {
 
         Contrat contratDispo = contrat.get();
         try {
-            contratDispo.setSignatureEmployeur(signature.getBytes());
+            contratDispo.setSignatureGestionnaire(signature.getBytes());
         } catch (IOException e) {
             throw new SignaturePersistenceException("Error while saving signature");
         }
@@ -204,7 +204,7 @@ public class GestionnaireStageService {
         return "Signature sauvegardée";
     }
 
-    public byte[] getContratSignee(long id) {
+    public String getContratSignee(long id) {
         Optional<Contrat> contratOpt = contratRepository.findById(id);
 
         if (contratOpt.isEmpty()) {
@@ -247,7 +247,7 @@ public class GestionnaireStageService {
             pdfReader.close();
 
             return outputStream.toByteArray();
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new ResourcePersistenceException("Erreur lors de la création du PDF complet du contrat");
         }
     }

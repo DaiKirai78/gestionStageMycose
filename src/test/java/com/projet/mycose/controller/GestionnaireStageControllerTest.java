@@ -15,16 +15,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.io.IOException;
 
 import static org.hamcrest.Matchers.hasSize;
@@ -529,13 +527,15 @@ public class GestionnaireStageControllerTest {
     void testImprimerContrat_Failure() throws Exception {
         long contratId = 1L;
 
-        when(gestionnaireStageService.getContratSignee(contratId)).thenThrow(new RuntimeException("Erreur de service"));
+        when(gestionnaireStageService.getContratSignee(contratId)).thenThrow(new RuntimeException("Une erreur est surevenue de notre coté"));
 
         mockMvc.perform(get("/gestionnaire/contrat/print")
-                        .param("id", String.valueOf(contratId))
-                        .accept(MediaType.TEXT_PLAIN))
+                        .param("id", String.valueOf(contratId)))
                 .andExpect(status().isInternalServerError())
-                .andExpect(content().string("Une erreur est surevenue de notre coté"));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Une erreur est surevenue de notre coté"))
+                .andExpect(jsonPath("$.status").value(500))
+                .andExpect(jsonPath("$.timestamp").isNumber());
     }
 
 }
