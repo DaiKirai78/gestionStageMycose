@@ -269,14 +269,16 @@ public class OffreStageService {
         }
         PageRequest pageRequest = PageRequest.of(page, LIMIT_PER_PAGE);
 
+        Year year = (annee != null) ? Year.of(annee) : null;
+
         if (title == null) {
             title = "";
         }
 
-        return offreStageRepository.findAllByEtudiantNotAppliedFilteredWithTitle(etudiantDTO.getId(), etudiantDTO.getProgramme(), Year.of(annee), session, title, pageRequest).stream().map(this::convertToDTO).toList();
+        return offreStageRepository.findAllByEtudiantNotAppliedFilteredWithTitle(etudiantDTO.getId(), etudiantDTO.getProgramme(), year, session, title, pageRequest).stream().map(this::convertToDTO).toList();
     }
 
-    public Integer getAmountOfPagesForEtudiantFiltered(Integer year, OffreStage.SessionEcole sessionEcole, String title) {
+    public Integer getAmountOfPagesForEtudiantFiltered(Integer annee, OffreStage.SessionEcole sessionEcole, String title) {
         EtudiantDTO etudiantDTO;
         try {
             etudiantDTO = (EtudiantDTO) utilisateurService.getMe();
@@ -288,7 +290,9 @@ public class OffreStageService {
             title = "";
         }
 
-        long amountOfRows = offreStageRepository.countByEtudiantIdNotAppliedFilteredWithTitle(etudiantDTO.getId(), etudiantDTO.getProgramme(), Year.of(year), sessionEcole, title);
+        Year year = (annee != null) ? Year.of(annee) : null;
+
+        long amountOfRows = offreStageRepository.countByEtudiantIdNotAppliedFilteredWithTitle(etudiantDTO.getId(), etudiantDTO.getProgramme(), year, sessionEcole, title);
 
         if (amountOfRows == 0)
             return 0;
@@ -359,10 +363,13 @@ public class OffreStageService {
     public List<EtudiantDTO> getEtudiantsQuiOntAppliquesAUneOffre(List<ApplicationStageAvecInfosDTO> applicationStageDTOList) {
         List<EtudiantDTO> etudiantDTOList = new ArrayList<>();
         if (!applicationStageDTOList.isEmpty()) {
+            System.out.println("is not empty");
             for (ApplicationStageAvecInfosDTO applicationStageDTO : applicationStageDTOList)
                 etudiantDTOList.add(EtudiantDTO.toDTO(etudiantRepository.findEtudiantById(applicationStageDTO.getEtudiant_id())));
-        } else
+        } else {
+            System.out.println("is empty");
             return null;
+            }
         return etudiantDTOList;
     }
 
@@ -391,11 +398,8 @@ public class OffreStageService {
         PageRequest pageRequest = PageRequest.of(page, LIMIT_PER_PAGE);
 
         Page<OffreStage> offresRetourneesEnPages = null;
-        if (annee != null) {
-            offresRetourneesEnPages = offreStageRepository.findOffreStageByCreateurIdFiltered(idCreateur, Year.of(annee), session, pageRequest);
-        } else {
-            offresRetourneesEnPages = offreStageRepository.findOffreStageByCreateurIdFiltered(idCreateur, null, session, pageRequest);
-        }
+        offresRetourneesEnPages = offreStageRepository.findOffreStageByCreateurIdFiltered(idCreateur, (annee != null) ? Year.of(annee) : null, session, pageRequest);
+
         if(offresRetourneesEnPages.isEmpty()) {
             return null;
         }
@@ -406,11 +410,7 @@ public class OffreStageService {
     public Integer getAmountOfPagesForCreateurFiltered(Integer annee, OffreStage.SessionEcole session) {
         Long createurId = utilisateurService.getMyUserId();
         long amountOfRows = 0;
-        if (annee != null) {
-            amountOfRows = offreStageRepository.countOffreStageByCreateurIdFiltered(createurId, Year.of(annee), session);
-        } else {
-            amountOfRows = offreStageRepository.countOffreStageByCreateurIdFiltered(createurId, null, session);
-        }
+        amountOfRows = offreStageRepository.countOffreStageByCreateurIdFiltered(createurId, (annee != null) ? Year.of(annee) : null, session);
 
         if (amountOfRows == 0)
             return 0;
