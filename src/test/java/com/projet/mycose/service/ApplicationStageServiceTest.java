@@ -15,8 +15,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.time.Year;
 import java.util.*;
@@ -219,6 +221,24 @@ public class ApplicationStageServiceTest {
         verify(offreStageRepository, times(1)).findById(offreStageId);
         verify(applicationStageRepository, times(1)).findByEtudiantAndOffreStage(etudiant, fichierOffreStage);
         verify(applicationStageRepository, never()).save(any());
+    }
+
+    @Test
+    public void testApplyToOffreStage_AccessDeniedExceptionThrown() throws java.nio.file.AccessDeniedException {
+        // Arrange
+        Long offreStageId = 1L;
+        when(utilisateurService.getMeUtilisateur()).thenThrow(new AccessDeniedException("Access Denied"));
+
+        // Act & Assert
+        AuthenticationException exception = assertThrows(AuthenticationException.class, () -> {
+            applicationStageService.applyToOffreStage(offreStageId);
+        });
+
+        // Verify the exception details
+        assertEquals("Problème d'authentification", exception.getMessage());
+
+        // Optionally, verify that getMeUtilisateur was called once
+        verify(utilisateurService, times(1)).getMeUtilisateur();
     }
 
     @Test
