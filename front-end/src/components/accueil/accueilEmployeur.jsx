@@ -38,14 +38,14 @@ const AccueilEmployeur = () => {
     }, [pages]);
 
     useEffect(() => {
-        if (annee && session) {
+        if (annee || session) {
             setPages(prevState => ({
                 ...prevState,
                 currentPage: 1
             }));
             fetchOffreStage();
             fetchNombrePage();
-        } else if (!annee && !session) {
+        } else if (!annee || !session) {
             setPages(prevState => ({
                 ...prevState,
                 currentPage: 1
@@ -68,7 +68,13 @@ const AccueilEmployeur = () => {
 
             if (annee && session) {
                 url += `&annee=${annee}&session=${session}`;
+            } else if (annee && !session) {
+                url += `&annee=${annee}`;
+            } else if (!annee && session) {
+                url += `&session=${session}`;
             }
+
+            console.log("url offre stage", url);
 
             const response = await fetch(url, {
                 method: "GET",
@@ -107,7 +113,13 @@ const AccueilEmployeur = () => {
 
             if (annee && session) {
                 url += `?annee=${annee}&session=${session}`;
+            } else if (annee && !session) {
+                url += `?annee=${annee}`;
+            } else if (!annee && session) {
+                url += `?ssession=${session}`;
             }
+
+            console.log("url nombre page", url);
 
             const response = await fetch(url, {
                 method: "GET",
