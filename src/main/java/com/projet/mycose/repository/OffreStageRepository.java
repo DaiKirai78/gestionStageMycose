@@ -15,18 +15,20 @@ import java.util.Optional;
 
 @Repository
 public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
-    Optional<List<OffreStage>> getOffreStageWithStudentInfoByStatusEquals(OffreStage.Status status, Pageable pageable);
-    @Query("SELECT o FROM OffreStage o LEFT JOIN EtudiantOffreStagePrivee eop ON o.id = eop.offreStage.id " +
-            "WHERE (eop.etudiant.id = :etudiantId OR eop.id IS NULL) " +
-            "AND o.status = :status " +
-            "AND o.programme = (SELECT e.programme FROM Etudiant e WHERE e.id = :etudiantId) " +
-            "ORDER BY o.createdAt")
 
-    Optional<List<OffreStage>> getOffreStagesByStatusEquals(OffreStage.Status status);
+    Optional<List<OffreStage>> getOffreStageWithStudentInfoByStatusEquals(OffreStage.Status status, Pageable pageable);
+
     @Query("SELECT o FROM OffreStage o" +
             " WHERE o.status = :status " +
             " ORDER BY o.createdAt")
+    Optional<List<OffreStage>> getOffreStagesByStatusEquals(OffreStage.Status status);
 
+
+    @Query("SELECT o FROM OffreStage o LEFT JOIN EtudiantOffreStagePrivee eop ON o.id = eop.offreStage.id " +
+            "WHERE (eop.etudiant.id = :etudiantId OR eop.id IS NULL) " +
+            "AND o.status = 'ACCEPTED' " +
+            "AND o.programme = (SELECT e.programme FROM Etudiant e WHERE e.id = :etudiantId) " +
+            "ORDER BY o.createdAt")
     Page<OffreStage> findOffresByEtudiantId(@Param("etudiantId") long etudiantId, Pageable pageable);
 
 
@@ -49,8 +51,6 @@ public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
             "OR LOWER(o.entrepriseName) LIKE LOWER(concat('%', :rechercheValue, '%'))) " +
             "ORDER BY o.createdAt")
     Page<OffreStage> findOffresByEtudiantIdWithSearch(@Param("etudiantId") long etudiantId, @Param("rechercheValue") String rechercheValue, Pageable pageable);
-
-    int countByCreateurId(Long employeurId);
 
     @Query("SELECT o FROM OffreStage o " +
             "WHERE (o.createur.id = :idEmployeur) " +

@@ -36,4 +36,29 @@ public class RapportsController {
     public ResponseEntity<List<EtudiantDTO>> rapportAllEtudiants() {
         return ResponseEntity.status(HttpStatus.OK).body(etudiantService.getAllEtudiants());
     }
+
+    @GetMapping("/etudiants-sans-cv")
+    public ResponseEntity<List<EtudiantDTO>> rapportEtudiantsSansCV() {
+        return ResponseEntity.status(HttpStatus.OK).body(etudiantService.getEtudiantsSansFichierCV());
+    }
+
+    @GetMapping("/etudiants-avec-cv-waiting")
+    public ResponseEntity<List<EtudiantDTO>> rapportEtudiantsAvecCVWaiting() {
+        return ResponseEntity.status(HttpStatus.OK).body(etudiantService.getEtudiantsWithFichierCVWaiting());
+    }
+
+    @GetMapping("/etudiants-sans-convocation")
+    public ResponseEntity<List<EtudiantDTO>> rapportEtudiantsSansConvocation() {
+        return ResponseEntity.status(HttpStatus.OK).body(etudiantService.getEtudiantsSansConvocation());
+    }
+
+    @GetMapping("/etudiants-avec-convocation")
+    public ResponseEntity<List<EtudiantDTO>> rapportEtudiantsAvecConvocation() {
+        return ResponseEntity.status(HttpStatus.OK).body(etudiantService.getEtudiantsAvecConvocation());
+    }
+
+    @GetMapping("/etudiants-interviewed")
+    public ResponseEntity<List<EtudiantDTO>> rapportEtudiantsInterviewed() {
+        return ResponseEntity.status(HttpStatus.OK).body(etudiantService.getEtudiantsInterviewed());
+    }
 }
