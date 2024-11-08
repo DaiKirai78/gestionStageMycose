@@ -71,6 +71,7 @@ public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
     @Query("SELECT o FROM OffreStage o " +
             "LEFT JOIN EtudiantOffreStagePrivee eop ON o.id = eop.offreStage.id " +
             "LEFT JOIN o.applicationStages a ON a.etudiant.id = :etudiantId " +
+            "LEFT JOIN FichierOffreStage f ON o.id = f.id " + // Left join with subclass
             "WHERE a.id IS NULL " +
             "AND (:annee IS NULL OR o.annee = :annee) " +
             "AND (:session IS NULL OR o.session = :session) " +
@@ -79,7 +80,12 @@ public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
             "OR " +
             "(o.visibility = 'PRIVATE' AND eop.etudiant.id = :etudiantId)" +
             ") " +
-            "AND LOWER(o.title) LIKE LOWER(CONCAT('%', :title, '%'))")
+            "AND LOWER(o.title) LIKE LOWER(CONCAT('%', :title, '%')) " +
+            "AND (" +
+            "f.id IS NULL " + // Not a Fichier
+            "OR " +
+            "f.data IS NOT NULL" + // If Fichier, data must not be null
+            ")")
     Page<OffreStage> findAllByEtudiantNotAppliedFilteredWithTitle(
             @Param("etudiantId") Long id,
             @Param("programme") Programme programme,
@@ -89,9 +95,13 @@ public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
             Pageable pageable
     );
 
+
+
+
     @Query("SELECT COUNT(o) FROM OffreStage o " +
             "LEFT JOIN EtudiantOffreStagePrivee eop ON o.id = eop.offreStage.id " +
             "LEFT JOIN o.applicationStages a ON a.etudiant.id = :etudiantId " +
+            "LEFT JOIN FichierOffreStage f ON o.id = f.id " + // Left join with subclass
             "WHERE a.id IS NULL " +
             "AND (:annee IS NULL OR o.annee = :annee) " +
             "AND (:session IS NULL OR o.session = :session) " +
@@ -100,7 +110,12 @@ public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
             "OR " +
             "(o.visibility = 'PRIVATE' AND eop.etudiant.id = :etudiantId)" +
             ") " +
-            "AND LOWER(o.title) LIKE LOWER(CONCAT('%', :title, '%'))")
+            "AND LOWER(o.title) LIKE LOWER(CONCAT('%', :title, '%')) " +
+            "AND (" +
+            "f.id IS NULL " + // Not a Fichier
+            "OR " +
+            "f.data IS NOT NULL" + // If Fichier, data must not be null
+            ")")
     long countByEtudiantIdNotAppliedFilteredWithTitle(
             @Param("etudiantId") Long etudiantId,
             @Param("programme") Programme programme,
@@ -108,4 +123,6 @@ public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
             @Param("session") OffreStage.SessionEcole sessionEcole,
             @Param("title") String title
     );
+
+
 }
