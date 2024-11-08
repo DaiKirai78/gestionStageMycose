@@ -227,7 +227,7 @@ public class OffreStageService {
     }
 
     public List<OffreStageAvecUtilisateurInfoDTO> getWaitingOffreStage(int page) {
-        Optional<List<OffreStage>> optionalOffreStageList = offreStageRepository.getOffreStageByStatusEquals(OffreStage.Status.WAITING,
+        Optional<List<OffreStage>> optionalOffreStageList = offreStageRepository.getOffreStageWithStudentInfoByStatusEquals(OffreStage.Status.WAITING,
                 PageRequest.of(page - 1, LIMIT_PER_PAGE));
         if (optionalOffreStageList.isEmpty()) {
             return new ArrayList<>();
@@ -308,9 +308,30 @@ public class OffreStageService {
         return nombrePages;
     }
 
-    public long getTotalWaitingOffreStages() {
+    public List<OffreStageDTO> getWaitingOffreStage() {
+        Optional<List<OffreStage>> optionalOffreStageList = offreStageRepository.getOffreStagesByStatusEquals(OffreStage.Status.WAITING);
+        if (optionalOffreStageList.isEmpty()) {
+            return new ArrayList<>();
+        }
+        List<OffreStage> offreStages = optionalOffreStageList.get();
+
+        return offreStages.stream().map(OffreStageDTO::toOffreStageInstanceDTOAll).toList();
+    }
+
+    public List<OffreStageDTO> getAcceptedOffreStage() {
+        Optional<List<OffreStage>> optionalOffreStageList = offreStageRepository.getOffreStagesByStatusEquals(OffreStage.Status.ACCEPTED);
+        if (optionalOffreStageList.isEmpty()) {
+            return new ArrayList<>();
+        }
+        List<OffreStage> offreStages = optionalOffreStageList.get();
+
+        return offreStages.stream().map(OffreStageDTO::toOffreStageInstanceDTOAll).toList();
+    }
+
+    public long getTotalWaitingOffresStage() {
         return offreStageRepository.countByStatus(OffreStage.Status.WAITING);
     }
+
     public void refuseOffreDeStage(Long id, String description) {
         if (!utilisateurService.checkRole(Role.GESTIONNAIRE_STAGE)) {
             throw new AuthenticationException(HttpStatus.FORBIDDEN, "Vous n'avez pas les droits pour refuser une offre de stage");
@@ -388,7 +409,7 @@ public class OffreStageService {
     private List<OffreStageDTO> listeOffreStageToDTO(List<OffreStage> listeAMapper) {
         List<OffreStageDTO> listeMappee = new ArrayList<>();
         for(OffreStage offreStage : listeAMapper) {
-            listeMappee.add(OffreStageDTO.toOffreStageInstaceDTOAll(offreStage));
+            listeMappee.add(OffreStageDTO.toOffreStageInstanceDTOAll(offreStage));
         }
         return listeMappee;
     }

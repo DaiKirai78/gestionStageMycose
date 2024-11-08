@@ -109,6 +109,11 @@ public class EtudiantService {
         return etudiants.stream().map(EtudiantDTO::toDTO).collect(Collectors.toList());
     }
 
+    public List<EtudiantDTO> getAllEtudiants() {
+        List<Etudiant> etudiants = etudiantRepository.findAll();
+        return etudiants.stream().map(EtudiantDTO::toDTO).collect(Collectors.toList());
+    }
+
     public Integer getEtudiantsSansContratPages() {
         long amountOfRows = etudiantRepository.countByContractStatusEquals(Etudiant.ContractStatus.PENDING);
 

@@ -59,7 +59,7 @@ public class OffreStageDTO {
         this.annee = annee;
     }
 
-    public static OffreStageDTO toOffreStageInstaceDTOAll(OffreStage offreStage) {
+    public static OffreStageDTO toOffreStageInstanceDTOAll(OffreStage offreStage) {
         OffreStageDTO offreStageDTO = null;
         if(offreStage instanceof FormulaireOffreStage) {
             offreStageDTO = FormulaireOffreStageDTO.toDTO((FormulaireOffreStage) offreStage);
