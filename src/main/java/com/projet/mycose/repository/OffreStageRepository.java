@@ -3,7 +3,6 @@ package com.projet.mycose.repository;
 import com.projet.mycose.modele.OffreStage;
 import com.projet.mycose.modele.Programme;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -16,12 +15,18 @@ import java.util.Optional;
 
 @Repository
 public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
-    Optional<List<OffreStage>> getOffreStageByStatusEquals(OffreStage.Status status, Pageable pageable);
+    Optional<List<OffreStage>> getOffreStageWithStudentInfoByStatusEquals(OffreStage.Status status, Pageable pageable);
     @Query("SELECT o FROM OffreStage o LEFT JOIN EtudiantOffreStagePrivee eop ON o.id = eop.offreStage.id " +
             "WHERE (eop.etudiant.id = :etudiantId OR eop.id IS NULL) " +
-            "AND o.status = 'ACCEPTED' " +
+            "AND o.status = :status " +
             "AND o.programme = (SELECT e.programme FROM Etudiant e WHERE e.id = :etudiantId) " +
             "ORDER BY o.createdAt")
+
+    Optional<List<OffreStage>> getOffreStagesByStatusEquals(OffreStage.Status status);
+    @Query("SELECT o FROM OffreStage o" +
+            " WHERE o.status = :status " +
+            " ORDER BY o.createdAt")
+
     Page<OffreStage> findOffresByEtudiantId(@Param("etudiantId") long etudiantId, Pageable pageable);
 
 
@@ -71,6 +76,7 @@ public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
     @Query("SELECT o FROM OffreStage o " +
             "LEFT JOIN EtudiantOffreStagePrivee eop ON o.id = eop.offreStage.id " +
             "LEFT JOIN o.applicationStages a ON a.etudiant.id = :etudiantId " +
+            "LEFT JOIN FichierOffreStage f ON o.id = f.id " + // Left join with subclass
             "WHERE a.id IS NULL " +
             "AND (:annee IS NULL OR o.annee = :annee) " +
             "AND (:session IS NULL OR o.session = :session) " +
@@ -79,7 +85,12 @@ public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
             "OR " +
             "(o.visibility = 'PRIVATE' AND eop.etudiant.id = :etudiantId)" +
             ") " +
-            "AND LOWER(o.title) LIKE LOWER(CONCAT('%', :title, '%'))")
+            "AND LOWER(o.title) LIKE LOWER(CONCAT('%', :title, '%')) " +
+            "AND (" +
+            "f.id IS NULL " + // Not a Fichier
+            "OR " +
+            "f.data IS NOT NULL" + // If Fichier, data must not be null
+            ")")
     Page<OffreStage> findAllByEtudiantNotAppliedFilteredWithTitle(
             @Param("etudiantId") Long id,
             @Param("programme") Programme programme,
@@ -89,9 +100,13 @@ public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
             Pageable pageable
     );
 
+
+
+
     @Query("SELECT COUNT(o) FROM OffreStage o " +
             "LEFT JOIN EtudiantOffreStagePrivee eop ON o.id = eop.offreStage.id " +
             "LEFT JOIN o.applicationStages a ON a.etudiant.id = :etudiantId " +
+            "LEFT JOIN FichierOffreStage f ON o.id = f.id " + // Left join with subclass
             "WHERE a.id IS NULL " +
             "AND (:annee IS NULL OR o.annee = :annee) " +
             "AND (:session IS NULL OR o.session = :session) " +
@@ -100,7 +115,12 @@ public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
             "OR " +
             "(o.visibility = 'PRIVATE' AND eop.etudiant.id = :etudiantId)" +
             ") " +
-            "AND LOWER(o.title) LIKE LOWER(CONCAT('%', :title, '%'))")
+            "AND LOWER(o.title) LIKE LOWER(CONCAT('%', :title, '%')) " +
+            "AND (" +
+            "f.id IS NULL " + // Not a Fichier
+            "OR " +
+            "f.data IS NOT NULL" + // If Fichier, data must not be null
+            ")")
     long countByEtudiantIdNotAppliedFilteredWithTitle(
             @Param("etudiantId") Long etudiantId,
             @Param("programme") Programme programme,
@@ -108,4 +128,6 @@ public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
             @Param("session") OffreStage.SessionEcole sessionEcole,
             @Param("title") String title
     );
+
+
 }

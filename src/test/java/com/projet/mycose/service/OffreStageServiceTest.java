@@ -10,7 +10,6 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.modelmapper.ModelMapper;
@@ -24,7 +23,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.nio.file.AccessDeniedException;
 import java.time.Clock;
 import java.time.Year;
@@ -633,7 +631,7 @@ public class OffreStageServiceTest {
         fichierOffreStage.setCreateur(employeur);
         formulaireOffreStage.setCreateur(employeur);
         List<OffreStage> offreStageList = Arrays.asList(fichierOffreStage, formulaireOffreStage);
-        when(offreStageRepository.getOffreStageByStatusEquals(eq(OffreStage.Status.WAITING), any()))
+        when(offreStageRepository.getOffreStageWithStudentInfoByStatusEquals(eq(OffreStage.Status.WAITING), any()))
                 .thenReturn(Optional.of(offreStageList));
 
         try (MockedStatic<OffreStageAvecUtilisateurInfoDTO> mockedStatic = Mockito.mockStatic(OffreStageAvecUtilisateurInfoDTO.class)) {
@@ -660,7 +658,7 @@ public class OffreStageServiceTest {
 
             // Verify repository interaction
             verify(offreStageRepository, times(1))
-                    .getOffreStageByStatusEquals(eq(OffreStage.Status.WAITING), eq(PageRequest.of(page - 1, 10)));
+                    .getOffreStageWithStudentInfoByStatusEquals(eq(OffreStage.Status.WAITING), eq(PageRequest.of(page - 1, 10)));
 
             // Verify static method invocations
             mockedStatic.verify(() -> OffreStageAvecUtilisateurInfoDTO.toDto(fichierOffreStage), times(1));
@@ -672,7 +670,7 @@ public class OffreStageServiceTest {
     public void shouldReturnEmptyList_WhenThereAreNoWaitingOffreStages() {
         // Arrange
         int page = 1;
-        when(offreStageRepository.getOffreStageByStatusEquals(eq(OffreStage.Status.WAITING), any()))
+        when(offreStageRepository.getOffreStageWithStudentInfoByStatusEquals(eq(OffreStage.Status.WAITING), any()))
                 .thenReturn(Optional.empty());
 
         // Act
@@ -681,7 +679,7 @@ public class OffreStageServiceTest {
         // Assert
         assertNotNull(result);
         assertTrue(result.isEmpty());
-        verify(offreStageRepository, times(1)).getOffreStageByStatusEquals(OffreStage.Status.WAITING, PageRequest.of(page - 1, 10));
+        verify(offreStageRepository, times(1)).getOffreStageWithStudentInfoByStatusEquals(OffreStage.Status.WAITING, PageRequest.of(page - 1, 10));
     }
 
 
@@ -872,13 +870,13 @@ public class OffreStageServiceTest {
     }
 
     @Test
-    void getTotalWaitingOffreStages_WithWaitingOffreStages() {
+    void getTotalWaitingOffreStages_WithWaitingOffresStage() {
         // Arrange
         long expectedCount = 5L;
         when(offreStageRepository.countByStatus(OffreStage.Status.WAITING)).thenReturn(expectedCount);
 
         // Act
-        long actualCount = offreStageService.getTotalWaitingOffreStages();
+        long actualCount = offreStageService.getTotalWaitingOffresStage();
 
         // Assert
         assertEquals(expectedCount, actualCount, "The count of waiting OffreStages should match the expected value");
@@ -886,13 +884,13 @@ public class OffreStageServiceTest {
     }
 
     @Test
-    void getTotalWaitingOffreStages_NoWaitingOffreStages() {
+    void getTotalWaitingOffreStages_NoWaitingOffresStage() {
         // Arrange
         long expectedCount = 0L;
         when(offreStageRepository.countByStatus(OffreStage.Status.WAITING)).thenReturn(expectedCount);
 
         // Act
-        long actualCount = offreStageService.getTotalWaitingOffreStages();
+        long actualCount = offreStageService.getTotalWaitingOffresStage();
 
         // Assert
         assertEquals(expectedCount, actualCount, "The count should be zero when there are no waiting OffreStages");

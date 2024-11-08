@@ -3,7 +3,6 @@ package com.projet.mycose.controller;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.projet.mycose.dto.*;
 import com.projet.mycose.modele.OffreStage;
-import com.projet.mycose.modele.Programme;
 import com.projet.mycose.service.ApplicationStageService;
 import com.projet.mycose.service.OffreStageService;
 import jakarta.validation.ConstraintViolationException;
@@ -15,9 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
-import java.time.Year;
 import java.util.*;
-import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/api/offres-stages")
@@ -73,7 +70,7 @@ public class OffreStageController {
 
     @GetMapping("/totalwaitingoffres")
     public ResponseEntity<Long> getTotalWaitingOffres() {
-        return ResponseEntity.status(HttpStatus.OK).body(offreStageService.getTotalWaitingOffreStages());
+        return ResponseEntity.status(HttpStatus.OK).body(offreStageService.getTotalWaitingOffresStage());
     }
 
     @PatchMapping(value = "/accept")
