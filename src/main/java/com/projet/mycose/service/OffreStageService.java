@@ -315,7 +315,7 @@ public class OffreStageService {
         }
         List<OffreStage> offreStages = optionalOffreStageList.get();
 
-        return offreStages.stream().map(OffreStageDTO::toOffreStageInstanceDTOAll).toList();
+        return offreStages.stream().map(OffreStageDTO::toOffreStageInstanceDTONoData).toList();
     }
 
     public List<OffreStageDTO> getAcceptedOffreStage() {
@@ -325,7 +325,7 @@ public class OffreStageService {
         }
         List<OffreStage> offreStages = optionalOffreStageList.get();
 
-        return offreStages.stream().map(OffreStageDTO::toOffreStageInstanceDTOAll).toList();
+        return offreStages.stream().map(OffreStageDTO::toOffreStageInstanceDTONoData).toList();
     }
 
     public long getTotalWaitingOffresStage() {

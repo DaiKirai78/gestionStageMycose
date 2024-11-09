@@ -39,7 +39,8 @@ public interface EtudiantRepository extends JpaRepository<Etudiant, Long> {
     @Query("SELECT DISTINCT e FROM Etudiant e JOIN e.fichiersCV f WHERE f.status = :status")
     List<Etudiant> findEtudiantsWithFichierCVStatus(@Param("status") FichierCV.Status status);
 
-    @Query("SELECT DISTINCT e FROM Etudiant e JOIN e.applications a WHERE a.status != :status")
+    //J'assume que la query doit retourner toutes les personnes qui ont pas le status spécifié, même si elles n'ont aucune application
+    @Query("SELECT DISTINCT e FROM Etudiant e LEFT OUTER JOIN e.applications a WHERE (a.status != :status OR a.id IS NULL)")
     List<Etudiant> findEtudiantsWithApplicationStatusNotEquals(@Param("status") ApplicationStage.ApplicationStatus status);
 
     @Query("SELECT DISTINCT e FROM Etudiant e JOIN e.applications a WHERE a.status = :status")

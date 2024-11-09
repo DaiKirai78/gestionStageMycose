@@ -70,4 +70,15 @@ public class OffreStageDTO {
         return offreStageDTO;
     }
 
+    public static OffreStageDTO toOffreStageInstanceDTONoData(OffreStage offreStage) {
+        OffreStageDTO offreStageDTO = null;
+        if(offreStage instanceof FormulaireOffreStage) {
+            offreStageDTO = FormulaireOffreStageDTO.toDTO((FormulaireOffreStage) offreStage);
+        }
+        else if(offreStage instanceof FichierOffreStage) {
+            offreStageDTO = FichierOffreStageDTO.toDTONoData((FichierOffreStage) offreStage);
+        }
+        return offreStageDTO;
+    }
+
 }
