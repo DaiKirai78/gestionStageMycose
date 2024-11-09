@@ -274,5 +274,9 @@
     "WaitingForStudent": "En attente d'une réponse de l'étudiant",
     "imprimer" : "Imprimer",
     "contratsSignes" : "Contrats Signés",
-    "contratsASigner" : "Contrats À Signer"
+    "contratsASigner" : "Contrats À Signer",
+    "creerContrat": "Créer un contrat",
+    "creerContratDescription": "Créer un contrat en un seul clique",
+    "stage": "Stage",
+    "employeurInconnu" : "Employeur inconnu"
 }

@@ -19,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.io.IOException;
@@ -387,5 +388,23 @@ public class OffreStageControllerTest {
                 .andExpect(status().isAccepted())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().string("2"));
+    }
+
+    @Test
+    public void testGetEmployeurFromOffreStage_Success() throws Exception {
+        Long offreStageId = 1L;
+        EmployeurDTO employeurDTO = new EmployeurDTO();
+        employeurDTO.setId(10L);
+        employeurDTO.setPrenom("Jean");
+        employeurDTO.setNom("Dupont");
+
+        when(offreStageService.getEmployeurByOffreStageId(offreStageId)).thenReturn(employeurDTO);
+
+        mockMvc.perform(get("/api/offres-stages/getEmployeur/{offreStageId}", offreStageId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(10L))
+                .andExpect(jsonPath("$.nom").value("Dupont"))
+                .andExpect(jsonPath("$.prenom").value("Jean"));
     }
 }

@@ -2,7 +2,9 @@ package com.projet.mycose.service;
 
 import com.projet.mycose.dto.*;
 import com.projet.mycose.exceptions.AuthenticationException;
+import com.projet.mycose.exceptions.ResourceNotFoundException;
 import com.projet.mycose.modele.*;
+import com.projet.mycose.modele.auth.Credentials;
 import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.repository.*;
 import jakarta.persistence.EntityNotFoundException;
@@ -1430,5 +1432,47 @@ public class OffreStageServiceTest {
 
         verify(utilisateurService, times(1)).getMe();
         verify(offreStageRepository, never()).findAllByEtudiantNotAppliedFilteredWithTitle(anyLong(), any(Programme.class), any(Year.class), any(OffreStage.SessionEcole.class), anyString(), any(PageRequest.class));
+    }
+
+    @Test
+    public void testGetEmployeurByOffreStageId_Success() {
+        // Arrange
+        Long offreStageId = 1L;
+        Credentials credentials = new Credentials("example@gmail.com", "passw0rd", Role.EMPLOYEUR);
+        Employeur employeur = new Employeur();
+        employeur.setId(1L);
+        employeur.setNom("Dupont");
+        employeur.setPrenom("Jean");
+        employeur.setCredentials(credentials);
+        EmployeurDTO employeurDTO = new EmployeurDTO();
+        employeurDTO.setId(1L);
+        employeurDTO.setNom("Dupont");
+        employeurDTO.setPrenom("Jean");
+
+        when(offreStageRepository.findEmployeurByOffreStageId(offreStageId)).thenReturn(employeur);
+
+        // Act
+        EmployeurDTO result = offreStageService.getEmployeurByOffreStageId(offreStageId);
+
+        // Assert
+        assertEquals(employeurDTO.getNom(), result.getNom());
+        assertEquals(employeurDTO.getPrenom(), result.getPrenom());
+        verify(offreStageRepository, times(1)).findEmployeurByOffreStageId(offreStageId);
+    }
+
+    @Test
+    public void testGetEmployeurByOffreStageId_NotFound() {
+        // Arrange
+        Long offreStageId = 2L;
+
+        when(offreStageRepository.findEmployeurByOffreStageId(offreStageId)).thenReturn(null);
+
+        // Act & Assert
+        Exception exception = assertThrows(ResourceNotFoundException.class, () -> {
+            offreStageService.getEmployeurByOffreStageId(offreStageId);
+        });
+
+        assertEquals("Aucun employeur associé à l'offre de stage id " + offreStageId + " n'existe.", exception.getMessage());
+        verify(offreStageRepository, times(1)).findEmployeurByOffreStageId(offreStageId);
     }
 }

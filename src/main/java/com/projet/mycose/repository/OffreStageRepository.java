@@ -1,5 +1,6 @@
 package com.projet.mycose.repository;
 
+import com.projet.mycose.modele.Employeur;
 import com.projet.mycose.modele.OffreStage;
 import com.projet.mycose.modele.Programme;
 import org.springframework.data.domain.Page;
@@ -124,5 +125,7 @@ public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
             @Param("title") String title
     );
 
-
+    @Query("SELECT e FROM OffreStage o JOIN Employeur e ON o.createur.id = e.id " +
+            "WHERE o.id = :offreStageId")
+    Employeur findEmployeurByOffreStageId(@Param("offreStageId") Long offreStageId);
 }

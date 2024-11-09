@@ -64,7 +64,7 @@
     "errorOccurredNotCode": "An error has occurred",
     "wrongEmailOrPassword": "The email or password have an error",
     "loading": "Loading",
-    "entreprise": "Entreprise",
+    "entreprise": "Company",
     "etudiant" : "Student",
     "professeur" : "Teacher",
     "retour": "Return",
@@ -274,5 +274,9 @@
     "WaitingForStudent": "Waiting for the student to respond",
     "imprimer" : "Print",
     "contratsSignes" : "Signed Contracts",
-    "contratsASigner" : "Sign Contracts"
+    "contratsASigner" : "Sign Contracts",
+    "creerContrat": "Create a contract",
+    "creerContratDescription": "Create a contract with just one click",
+    "stage": "Internship",
+    "employeurInconnu" : "Unknown employer"
 }

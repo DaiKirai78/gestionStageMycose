@@ -2,6 +2,7 @@ package com.projet.mycose.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.projet.mycose.dto.*;
+import com.projet.mycose.modele.Employeur;
 import com.projet.mycose.modele.OffreStage;
 import com.projet.mycose.modele.Programme;
 import com.projet.mycose.service.ApplicationStageService;
@@ -159,5 +160,11 @@ public class OffreStageController {
         @RequestParam(required = false) OffreStage.SessionEcole session) {
         return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
                 offreStageService.getAmountOfPagesForCreateurFiltered(annee, session));
+    }
+
+    @GetMapping("/getEmployeur/{offreStageId}")
+    public ResponseEntity<EmployeurDTO> getEmployeurFromOffreStage(@PathVariable Long offreStageId) {
+        EmployeurDTO employeurDTO = offreStageService.getEmployeurByOffreStageId(offreStageId);
+        return ResponseEntity.ok(employeurDTO);
     }
 }

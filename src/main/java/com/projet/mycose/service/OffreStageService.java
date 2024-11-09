@@ -2,6 +2,7 @@ package com.projet.mycose.service;
 
 import com.projet.mycose.dto.*;
 import com.projet.mycose.exceptions.AuthenticationException;
+import com.projet.mycose.exceptions.ResourceNotFoundException;
 import com.projet.mycose.modele.*;
 import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.repository.*;
@@ -424,5 +425,12 @@ public class OffreStageService {
         }
 
         return nombrePages;
+    }
+
+    public EmployeurDTO getEmployeurByOffreStageId(Long offreStageId) {
+        Employeur employeur = offreStageRepository.findEmployeurByOffreStageId(offreStageId);
+        if (employeur == null)
+            throw new ResourceNotFoundException("Aucun employeur associé à l'offre de stage id " + offreStageId + " n'existe.");
+        return EmployeurDTO.toDTO(employeur);
     }
 }

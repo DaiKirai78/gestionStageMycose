@@ -134,7 +134,7 @@ const AppliquerStage = ({idStage}) => {
                             <p className="text-gray-500 mt-4 break-words">{t("publieLe") + formaterDate(unStage.createdAt) || t("DateNonDisponible")}</p>
                             <button
                                 onClick={applyForStage}
-                                className="mt-20 lg:mt-8 bg-deep-orange-300 w-52 lg:w-48 text-white px-12 py-3 center rounded-lg hover:bg-orange-dark disabled:opacity-65 disabled:hover:bg-orange"
+                                className="mt-20 lg:mt-8 bg-deep-orange-300 w-52 lg:w-48 text-white px-12 py-3 center rounded-lg hover:bg-orange-dark disabled:opacity-65 disabled:hover:bg-deep-orange-300"
                                 disabled={successMessage}
                             >
                                 {t("boutonAppliquerAUnStage")}
