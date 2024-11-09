@@ -11,6 +11,7 @@ import com.projet.mycose.repository.EtudiantRepository;
 import com.projet.mycose.repository.OffreStageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -164,6 +165,7 @@ public class ApplicationStageService {
     }
 
     @Transactional
+    @PreAuthorize("hasAuthority('GESTIONNAIRE_STAGE') or hasAuthority('EMPLOYEUR')")
     public ApplicationStageAvecInfosDTO summonEtudiant(Long id, SummonEtudiantDTO summonEtudiantDTO) {
         ApplicationStage applicationStage = applicationStageRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
