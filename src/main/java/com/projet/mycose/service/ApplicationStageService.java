@@ -119,6 +119,7 @@ public class ApplicationStageService {
     }
 
     @Transactional
+    @PreAuthorize("hasAuthority('GESTIONNAIRE_STAGE') or hasAuthority('EMPLOYEUR')")
     public ApplicationStageAvecInfosDTO accepterOuRefuserApplication(Long id, ApplicationStage.ApplicationStatus status) {
         ApplicationStage applicationStage = applicationStageRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
