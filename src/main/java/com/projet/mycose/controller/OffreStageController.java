@@ -141,6 +141,7 @@ public class OffreStageController {
         return ResponseEntity.status(HttpStatus.OK).body(offreStageService.getAmountOfPagesForEtudiantFiltered(year, sessionEcole, title));
     }
 
+    //Offres postées par un Gestionnaire ou un Employeur
     @GetMapping( "/getOffresPosted")
     public ResponseEntity<List<OffreStageDTO>> getOffresStagesPublieesFiltre(
         @RequestParam int pageNumber,

@@ -18,6 +18,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -384,11 +385,9 @@ public class OffreStageService {
     public List<EtudiantDTO> getEtudiantsQuiOntAppliquesAUneOffre(List<ApplicationStageAvecInfosDTO> applicationStageDTOList) {
         List<EtudiantDTO> etudiantDTOList = new ArrayList<>();
         if (!applicationStageDTOList.isEmpty()) {
-            System.out.println("is not empty");
             for (ApplicationStageAvecInfosDTO applicationStageDTO : applicationStageDTOList)
                 etudiantDTOList.add(EtudiantDTO.toDTO(etudiantRepository.findEtudiantById(applicationStageDTO.getEtudiant_id())));
         } else {
-            System.out.println("is empty");
             return null;
             }
         return etudiantDTOList;
@@ -414,6 +413,7 @@ public class OffreStageService {
         return listeMappee;
     }
 
+    @PreAuthorize("hasAuthority('EMPLOYEUR') or hasAuthority('GESTIONNAIRE_STAGE')")
     public List<OffreStageDTO> getStagesFiltered(int page, Integer annee, OffreStage.SessionEcole session) {
         Long idCreateur = utilisateurService.getMyUserId();
         PageRequest pageRequest = PageRequest.of(page, LIMIT_PER_PAGE);
@@ -428,6 +428,7 @@ public class OffreStageService {
         return listeOffreStageToDTO(offresRetourneesEnPages.getContent());
     }
 
+    @PreAuthorize("hasAuthority('EMPLOYEUR') or hasAuthority('GESTIONNAIRE_STAGE')")
     public Integer getAmountOfPagesForCreateurFiltered(Integer annee, OffreStage.SessionEcole session) {
         Long createurId = utilisateurService.getMyUserId();
         long amountOfRows = 0;
