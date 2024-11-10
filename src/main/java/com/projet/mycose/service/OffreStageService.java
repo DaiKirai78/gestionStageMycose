@@ -244,17 +244,9 @@ public class OffreStageService {
         OffreStage offreStage = offreStageRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("OffreStage not found with ID: " + id));
         return OffreStageAvecUtilisateurInfoDTO.toDto(offreStage);
     }
-    public List<OffreStageDTO> getAvailableOffreStagesForEtudiant() {
-        EtudiantDTO etudiantDTO;
-        try {
-            etudiantDTO = (EtudiantDTO) utilisateurService.getMe();
-        } catch (AccessDeniedException e) {
-            throw new AuthenticationException(HttpStatus.FORBIDDEN, "Authentication error");
-        }
-        return offreStageRepository.findAllByEtudiantNotApplied(etudiantDTO.getId(), etudiantDTO.getProgramme()).stream().map(this::convertToDTO).toList();
-    }
 
     public List<OffreStageDTO> getAvailableOffreStagesForEtudiantFiltered(int page, Integer annee, OffreStage.SessionEcole session, String title) {
+        checkAnneeAndSessionTogether(annee, session);
         EtudiantDTO etudiantDTO;
         try {
             etudiantDTO = (EtudiantDTO) utilisateurService.getMe();
@@ -273,6 +265,7 @@ public class OffreStageService {
     }
 
     public Integer getAmountOfPagesForEtudiantFiltered(Integer annee, OffreStage.SessionEcole sessionEcole, String title) {
+        checkAnneeAndSessionTogether(annee, sessionEcole);
         EtudiantDTO etudiantDTO;
         try {
             etudiantDTO = (EtudiantDTO) utilisateurService.getMe();
@@ -386,12 +379,14 @@ public class OffreStageService {
         return etudiantDTOList;
     }
 
+    @Deprecated
     public List<String> getSessions() {
         return new ArrayList<>(Arrays.stream(OffreStage.SessionEcole.values())
                 .map(OffreStage.SessionEcole::toString)
                 .toList());
     }
 
+    @Deprecated
     public List<Integer> getFutureYears() {
         return Stream.of(Year.now(), Year.now().plusYears(1), Year.now().plusYears(2), Year.now().plusYears(3), Year.now().plusYears(4))
                 .map(Year::getValue)
@@ -408,6 +403,8 @@ public class OffreStageService {
 
     @PreAuthorize("hasAuthority('EMPLOYEUR') or hasAuthority('GESTIONNAIRE_STAGE')")
     public List<OffreStageDTO> getStagesFiltered(int page, Integer annee, OffreStage.SessionEcole session) {
+        checkAnneeAndSessionTogether(annee, session);
+
         Long idCreateur = utilisateurService.getMyUserId();
         PageRequest pageRequest = PageRequest.of(page, LIMIT_PER_PAGE);
 
@@ -423,6 +420,7 @@ public class OffreStageService {
 
     @PreAuthorize("hasAuthority('EMPLOYEUR') or hasAuthority('GESTIONNAIRE_STAGE')")
     public Integer getAmountOfPagesForCreateurFiltered(Integer annee, OffreStage.SessionEcole session) {
+        checkAnneeAndSessionTogether(annee, session);
         Long createurId = utilisateurService.getMyUserId();
         long amountOfRows = 0;
         amountOfRows = offreStageRepository.countOffreStageByCreateurIdFiltered(createurId, (annee != null) ? Year.of(annee) : null, session);
@@ -440,6 +438,13 @@ public class OffreStageService {
 
         return nombrePages;
     }
+
+    private static void checkAnneeAndSessionTogether(Integer annee, OffreStage.SessionEcole session) {
+        if ((annee != null && session == null) || (annee == null && session != null)) {
+            throw new IllegalArgumentException("Session and year must be provided together");
+        }
+    }
+
 
     public EmployeurDTO getEmployeurByOffreStageId(Long offreStageId) {
         Employeur employeur = offreStageRepository.findEmployeurByOffreStageId(offreStageId);

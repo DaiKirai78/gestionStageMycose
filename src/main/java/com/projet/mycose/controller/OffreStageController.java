@@ -111,11 +111,13 @@ public class OffreStageController {
         }
     }
 
+    @Deprecated
     @GetMapping("/sessions")
     public List<String> getSessions() {
         return offreStageService.getSessions();
     }
 
+    @Deprecated
     @GetMapping("/years")
     public List<Integer> getYears() {
         return offreStageService.getFutureYears();

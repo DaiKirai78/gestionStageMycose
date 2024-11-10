@@ -36,6 +36,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class OffreStageServiceTest {
 
+    private static final int LIMIT_PER_PAGE = 10;
     @Mock
     private OffreStageRepository offreStageRepository;
 
@@ -761,21 +762,21 @@ public class OffreStageServiceTest {
         formulaireOffreStage.setAnnee(Year.of(2024));
 
         // Set OffreStages
-        List<OffreStage> availableOffres = Arrays.asList(fichierOffreStage, formulaireOffreStage);
-        when(offreStageRepository.findAllByEtudiantNotApplied(etudiantId, programme)).thenReturn(availableOffres);
+        Page<OffreStage> availableOffres = new PageImpl<>(Arrays.asList(fichierOffreStage, formulaireOffreStage));
+        when(offreStageRepository.findAllByEtudiantNotAppliedFilteredWithTitle(etudiantId, programme, null, null, "", PageRequest.of(1, LIMIT_PER_PAGE))).thenReturn(availableOffres);
 
         // Correct stubbing: map to specific DTO classes
         when(modelMapper.map(fichierOffreStage, FichierOffreStageDTO.class)).thenReturn(fichierOffreStageDTO);
         when(modelMapper.map(formulaireOffreStage, FormulaireOffreStageDTO.class)).thenReturn(formulaireOffreStageDTO);
 
         // Act
-        List<OffreStageDTO> result = offreStageService.getAvailableOffreStagesForEtudiant();
+        List<OffreStageDTO> result = offreStageService.getAvailableOffreStagesForEtudiantFiltered(1, null, null, null);
 
         // Assert
         assertNotNull(result);
         assertEquals(2, result.size());
         verify(utilisateurService, times(1)).getMe(); // Changed to getMe(token)
-        verify(offreStageRepository, times(1)).findAllByEtudiantNotApplied(etudiantId, programme);
+        verify(offreStageRepository, times(1)).findAllByEtudiantNotAppliedFilteredWithTitle(etudiantId, programme, null, null, "", PageRequest.of(1, LIMIT_PER_PAGE));
         verify(modelMapper, times(1)).map(fichierOffreStage, FichierOffreStageDTO.class);
         verify(modelMapper, times(1)).map(formulaireOffreStage, FormulaireOffreStageDTO.class);
     }
