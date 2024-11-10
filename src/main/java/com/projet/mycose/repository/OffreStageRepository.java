@@ -139,7 +139,7 @@ public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
             "FROM OffreStage o " +
             "WHERE o.createur.id = :createurId " +
             "GROUP BY o.session, o.annee " +
-            "ORDER BY o.annee DESC, " +
+            "ORDER BY o.annee ASC, " +
             "CASE " +
             "  WHEN o.session = com.projet.mycose.modele.OffreStage.SessionEcole.HIVER THEN 1 " +
             "  WHEN o.session = com.projet.mycose.modele.OffreStage.SessionEcole.ETE THEN 2 " +
@@ -151,7 +151,7 @@ public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
     @Query("SELECT new com.projet.mycose.dto.SessionInfoDTO(o.session, o.annee) " +
             "FROM OffreStage o " +
             "GROUP BY o.session, o.annee " +
-            "ORDER BY o.annee DESC, " +
+            "ORDER BY o.annee ASC, " +
             "CASE " +
             "  WHEN o.session = com.projet.mycose.modele.OffreStage.SessionEcole.HIVER THEN 1 " +
             "  WHEN o.session = com.projet.mycose.modele.OffreStage.SessionEcole.ETE THEN 2 " +
