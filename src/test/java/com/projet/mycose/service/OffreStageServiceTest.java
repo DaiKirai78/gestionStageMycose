@@ -111,8 +111,6 @@ public class OffreStageServiceTest {
         uploadFicherOffreStageDTO = new UploadFicherOffreStageDTO();
         uploadFicherOffreStageDTO.setFile(file);
         uploadFicherOffreStageDTO.setEntrepriseName("Sample Entreprise");
-        uploadFicherOffreStageDTO.setSession(OffreStage.SessionEcole.AUTOMNE);
-        uploadFicherOffreStageDTO.setAnnee(2024);
 
         fichierOffreStageDTO = new FichierOffreStageDTO();
         fichierOffreStageDTO.setFileData(BASE64_SAMPLE_DATA); // Base64 for "sampleData"

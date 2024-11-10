@@ -27,10 +27,6 @@ public class UploadFicherOffreStageDTO {
 
     private List<Long> etudiantsPrives;
 
-    private OffreStage.SessionEcole session;
-
-    private Integer annee;
-
     @PreUpdate
     public void preUpdate() {
         if (this.programme == null) {

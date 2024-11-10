@@ -106,8 +106,6 @@ public class FichierOffreStageDTO extends OffreStageDTO{
         this.setTitle(uploadFicherOffreStageDTO.getTitle());
         this.setEntrepriseName(uploadFicherOffreStageDTO.getEntrepriseName());
         this.setCreateur_id(createur_id);
-        this.setSession(uploadFicherOffreStageDTO.getSession());
-        this.setAnnee(uploadFicherOffreStageDTO.getAnnee());
     }
 
     @Override
