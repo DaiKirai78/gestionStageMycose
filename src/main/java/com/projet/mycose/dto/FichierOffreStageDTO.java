@@ -82,6 +82,24 @@ public class FichierOffreStageDTO extends OffreStageDTO{
         );
     }
 
+    public static FichierOffreStageDTO toDTONoData(FichierOffreStage fichierOffreStage) {
+        return new FichierOffreStageDTO(
+                fichierOffreStage.getId(),
+                fichierOffreStage.getFilename(),
+                null,
+                fichierOffreStage.getTitle(),
+                fichierOffreStage.getEntrepriseName(),
+                fichierOffreStage.getCreatedAt(),
+                fichierOffreStage.getUpdatedAt(),
+                fichierOffreStage.getCreateur().getId(),
+                fichierOffreStage.getStatus(),
+                fichierOffreStage.getVisibility(),
+                fichierOffreStage.getProgramme(),
+                fichierOffreStage.getSession(),
+                fichierOffreStage.getAnnee().getValue()
+        );
+    }
+
     public FichierOffreStageDTO(UploadFicherOffreStageDTO uploadFicherOffreStageDTO, Long createur_id) throws IOException {
         this.filename = uploadFicherOffreStageDTO.getFile().getOriginalFilename();
         this.fileData = Base64.getEncoder().encodeToString(uploadFicherOffreStageDTO.getFile().getBytes());

@@ -59,13 +59,24 @@ public class OffreStageDTO {
         this.annee = annee;
     }
 
-    public static OffreStageDTO toOffreStageInstaceDTOAll(OffreStage offreStage) {
+    public static OffreStageDTO toOffreStageInstanceDTOAll(OffreStage offreStage) {
         OffreStageDTO offreStageDTO = null;
         if(offreStage instanceof FormulaireOffreStage) {
             offreStageDTO = FormulaireOffreStageDTO.toDTO((FormulaireOffreStage) offreStage);
         }
         else if(offreStage instanceof FichierOffreStage) {
             offreStageDTO = FichierOffreStageDTO.toDTOAll((FichierOffreStage) offreStage);
+        }
+        return offreStageDTO;
+    }
+
+    public static OffreStageDTO toOffreStageInstanceDTONoData(OffreStage offreStage) {
+        OffreStageDTO offreStageDTO = null;
+        if(offreStage instanceof FormulaireOffreStage) {
+            offreStageDTO = FormulaireOffreStageDTO.toDTO((FormulaireOffreStage) offreStage);
+        }
+        else if(offreStage instanceof FichierOffreStage) {
+            offreStageDTO = FichierOffreStageDTO.toDTONoData((FichierOffreStage) offreStage);
         }
         return offreStageDTO;
     }

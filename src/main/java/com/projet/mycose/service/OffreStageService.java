@@ -19,6 +19,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -228,7 +229,7 @@ public class OffreStageService {
     }
 
     public List<OffreStageAvecUtilisateurInfoDTO> getWaitingOffreStage(int page) {
-        Optional<List<OffreStage>> optionalOffreStageList = offreStageRepository.getOffreStageByStatusEquals(OffreStage.Status.WAITING,
+        Optional<List<OffreStage>> optionalOffreStageList = offreStageRepository.getOffreStageWithStudentInfoByStatusEquals(OffreStage.Status.WAITING,
                 PageRequest.of(page - 1, LIMIT_PER_PAGE));
         if (optionalOffreStageList.isEmpty()) {
             return new ArrayList<>();
@@ -309,9 +310,30 @@ public class OffreStageService {
         return nombrePages;
     }
 
-    public long getTotalWaitingOffreStages() {
+    public List<OffreStageDTO> getWaitingOffreStage() {
+        Optional<List<OffreStage>> optionalOffreStageList = offreStageRepository.getOffreStagesByStatusEquals(OffreStage.Status.WAITING);
+        if (optionalOffreStageList.isEmpty()) {
+            return new ArrayList<>();
+        }
+        List<OffreStage> offreStages = optionalOffreStageList.get();
+
+        return offreStages.stream().map(OffreStageDTO::toOffreStageInstanceDTONoData).toList();
+    }
+
+    public List<OffreStageDTO> getAcceptedOffreStage() {
+        Optional<List<OffreStage>> optionalOffreStageList = offreStageRepository.getOffreStagesByStatusEquals(OffreStage.Status.ACCEPTED);
+        if (optionalOffreStageList.isEmpty()) {
+            return new ArrayList<>();
+        }
+        List<OffreStage> offreStages = optionalOffreStageList.get();
+
+        return offreStages.stream().map(OffreStageDTO::toOffreStageInstanceDTONoData).toList();
+    }
+
+    public long getTotalWaitingOffresStage() {
         return offreStageRepository.countByStatus(OffreStage.Status.WAITING);
     }
+
     public void refuseOffreDeStage(Long id, String description) {
         if (!utilisateurService.checkRole(Role.GESTIONNAIRE_STAGE)) {
             throw new AuthenticationException(HttpStatus.FORBIDDEN, "Vous n'avez pas les droits pour refuser une offre de stage");
@@ -364,11 +386,9 @@ public class OffreStageService {
     public List<EtudiantDTO> getEtudiantsQuiOntAppliquesAUneOffre(List<ApplicationStageAvecInfosDTO> applicationStageDTOList) {
         List<EtudiantDTO> etudiantDTOList = new ArrayList<>();
         if (!applicationStageDTOList.isEmpty()) {
-            System.out.println("is not empty");
             for (ApplicationStageAvecInfosDTO applicationStageDTO : applicationStageDTOList)
                 etudiantDTOList.add(EtudiantDTO.toDTO(etudiantRepository.findEtudiantById(applicationStageDTO.getEtudiant_id())));
         } else {
-            System.out.println("is empty");
             return null;
             }
         return etudiantDTOList;
@@ -389,11 +409,12 @@ public class OffreStageService {
     private List<OffreStageDTO> listeOffreStageToDTO(List<OffreStage> listeAMapper) {
         List<OffreStageDTO> listeMappee = new ArrayList<>();
         for(OffreStage offreStage : listeAMapper) {
-            listeMappee.add(OffreStageDTO.toOffreStageInstaceDTOAll(offreStage));
+            listeMappee.add(OffreStageDTO.toOffreStageInstanceDTOAll(offreStage));
         }
         return listeMappee;
     }
 
+    @PreAuthorize("hasAuthority('EMPLOYEUR') or hasAuthority('GESTIONNAIRE_STAGE')")
     public List<OffreStageDTO> getStagesFiltered(int page, Integer annee, OffreStage.SessionEcole session) {
         Long idCreateur = utilisateurService.getMyUserId();
         PageRequest pageRequest = PageRequest.of(page, LIMIT_PER_PAGE);
@@ -408,6 +429,7 @@ public class OffreStageService {
         return listeOffreStageToDTO(offresRetourneesEnPages.getContent());
     }
 
+    @PreAuthorize("hasAuthority('EMPLOYEUR') or hasAuthority('GESTIONNAIRE_STAGE')")
     public Integer getAmountOfPagesForCreateurFiltered(Integer annee, OffreStage.SessionEcole session) {
         Long createurId = utilisateurService.getMyUserId();
         long amountOfRows = 0;

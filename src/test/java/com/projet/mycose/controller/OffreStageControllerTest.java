@@ -223,7 +223,7 @@ public class OffreStageControllerTest {
     void getTotalWaitingOffres_Success() {
         // Arrange
         Long totalWaitingOffres = 10L;
-        when(offreStageService.getTotalWaitingOffreStages()).thenReturn(totalWaitingOffres);
+        when(offreStageService.getTotalWaitingOffresStage()).thenReturn(totalWaitingOffres);
 
         // Act
         ResponseEntity<Long> response = offreStageController.getTotalWaitingOffres();
@@ -232,7 +232,7 @@ public class OffreStageControllerTest {
         assertNotNull(response, "Response should not be null");
         assertEquals(HttpStatus.OK, response.getStatusCode(), "Status code should be OK");
         assertEquals(totalWaitingOffres, response.getBody(), "Body should contain the correct total waiting offers count");
-        verify(offreStageService, times(1)).getTotalWaitingOffreStages();
+        verify(offreStageService, times(1)).getTotalWaitingOffresStage();
     }
 
 

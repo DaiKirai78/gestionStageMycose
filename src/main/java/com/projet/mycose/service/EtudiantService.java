@@ -109,6 +109,11 @@ public class EtudiantService {
         return etudiants.stream().map(EtudiantDTO::toDTO).collect(Collectors.toList());
     }
 
+    public List<EtudiantDTO> getAllEtudiants() {
+        List<Etudiant> etudiants = etudiantRepository.findAll();
+        return etudiants.stream().map(EtudiantDTO::toDTO).collect(Collectors.toList());
+    }
+
     public Integer getEtudiantsSansContratPages() {
         long amountOfRows = etudiantRepository.countByContractStatusEquals(Etudiant.ContractStatus.PENDING);
 
@@ -176,5 +181,30 @@ public class EtudiantService {
         }
 
         return nombrePages;
+    }
+
+    public List<EtudiantDTO> getEtudiantsSansFichierCV() {
+        List<Etudiant> etudiants = etudiantRepository.findAllByFichiersCVIsEmpty();
+        return etudiants.stream().map(EtudiantDTO::toDTO).collect(Collectors.toList());
+    }
+
+    public List<EtudiantDTO> getEtudiantsWithFichierCVWaiting() {
+        List<Etudiant> etudiants = etudiantRepository.findEtudiantsWithFichierCVStatus(FichierCV.Status.WAITING);
+        return etudiants.stream().map(EtudiantDTO::toDTO).collect(Collectors.toList());
+    }
+
+    public List<EtudiantDTO> getEtudiantsSansConvocation() {
+        List<Etudiant> etudiants = etudiantRepository.findEtudiantsWithApplicationStatusNotEquals(ApplicationStage.ApplicationStatus.SUMMONED);
+        return etudiants.stream().map(EtudiantDTO::toDTO).collect(Collectors.toList());
+    }
+
+    public List<EtudiantDTO> getEtudiantsAvecConvocation() {
+        List<Etudiant> etudiants = etudiantRepository.findEtudiantsWithApplicationStatusEquals(ApplicationStage.ApplicationStatus.SUMMONED);
+        return etudiants.stream().map(EtudiantDTO::toDTO).collect(Collectors.toList());
+    }
+
+    public List<EtudiantDTO> getEtudiantsInterviewed() {
+        List<Etudiant> etudiants = etudiantRepository.findEtudiantsWithApplicationStatusEquals(ApplicationStage.ApplicationStatus.INTERVIEWED);
+        return etudiants.stream().map(EtudiantDTO::toDTO).collect(Collectors.toList());
     }
 }

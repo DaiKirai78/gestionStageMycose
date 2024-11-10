@@ -50,7 +50,8 @@ public class ApplicationStage {
         PENDING,
         ACCEPTED,
         REJECTED,
-        SUMMONED
+        SUMMONED,
+        INTERVIEWED
     }
 
     @PrePersist

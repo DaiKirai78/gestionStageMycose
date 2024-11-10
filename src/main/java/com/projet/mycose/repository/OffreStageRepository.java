@@ -4,7 +4,6 @@ import com.projet.mycose.modele.Employeur;
 import com.projet.mycose.modele.OffreStage;
 import com.projet.mycose.modele.Programme;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -17,7 +16,15 @@ import java.util.Optional;
 
 @Repository
 public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
-    Optional<List<OffreStage>> getOffreStageByStatusEquals(OffreStage.Status status, Pageable pageable);
+
+    Optional<List<OffreStage>> getOffreStageWithStudentInfoByStatusEquals(OffreStage.Status status, Pageable pageable);
+
+    @Query("SELECT o FROM OffreStage o" +
+            " WHERE o.status = :status " +
+            " ORDER BY o.createdAt")
+    Optional<List<OffreStage>> getOffreStagesByStatusEquals(OffreStage.Status status);
+
+
     @Query("SELECT o FROM OffreStage o LEFT JOIN EtudiantOffreStagePrivee eop ON o.id = eop.offreStage.id " +
             "WHERE (eop.etudiant.id = :etudiantId OR eop.id IS NULL) " +
             "AND o.status = 'ACCEPTED' " +
@@ -45,8 +52,6 @@ public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
             "OR LOWER(o.entrepriseName) LIKE LOWER(concat('%', :rechercheValue, '%'))) " +
             "ORDER BY o.createdAt")
     Page<OffreStage> findOffresByEtudiantIdWithSearch(@Param("etudiantId") long etudiantId, @Param("rechercheValue") String rechercheValue, Pageable pageable);
-
-    int countByCreateurId(Long employeurId);
 
     @Query("SELECT o FROM OffreStage o " +
             "WHERE (o.createur.id = :idEmployeur) " +
