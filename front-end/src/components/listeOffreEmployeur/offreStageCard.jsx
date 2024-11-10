@@ -6,8 +6,6 @@ const OffreStageCard = ({offre, getColorOffreStatus, activeOffer, setActiveOffer
 
     const { t } = useTranslation();
 
-    const format = offre.fileData ? "file" : "form";
-
     function isLaMemeOffre() {
         return JSON.stringify(activeOffer) === JSON.stringify(offre);
     }
@@ -23,7 +21,7 @@ const OffreStageCard = ({offre, getColorOffreStatus, activeOffer, setActiveOffer
                 <div className={isLaMemeOffre() ? "" : "group-hover:opacity-20"}>
                     <div className='flex flex-col gap-1 items-center justify-center'>
                         <h3
-                            className="text-black text-xl text-center font-bold">{offre.title} - {t(format)}</h3>
+                            className="text-black text-xl text-center font-bold">{offre.title}</h3>
                         <h3
                             className={`text-black text-sm text-center ${getColorOffreStatus(offre.status)}`}>{t(offre.status)}</h3>
                         <h3
