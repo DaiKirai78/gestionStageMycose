@@ -24,7 +24,7 @@ const AttribuerContrat = () => {
     const apiUrlGetEtudiantFromApplicationId = "api/application-stage/getEtudiant/";
     const apiUrlGetEmployeurFromOffreStageId = "api/offres-stages/getEmployeur/";
     const apiUrlGetOffreStageFromApplicationId = "api/application-stage/getOffreStage/";
-    const apiUrlGetGestionnaire = "utilisateur/getMe/";
+    const apiUrlGetGestionnaire = "utilisateur/me";
     const apiUrlGetApplicationsAccepted = "api/application-stage/status/ACCEPTED";
     const apiUrlUploadContract = "contrat/upload"
     const token = localStorage.getItem("token");
