@@ -45,8 +45,6 @@ public class ContratDTO {
             message = "Must be a number.")
     private Long gestionnaireStageId;
 
-    private Contrat.Status status;
-
     public static ContratDTO toDTO(Contrat contrat) {
         return new ContratDTO(
                 contrat.getId(),
@@ -55,8 +53,7 @@ public class ContratDTO {
                 contrat.getSignatureEmployeur() != null ? Base64.getEncoder().encodeToString(contrat.getSignatureEmployeur()) : null,
                 contrat.getEtudiant() != null ? contrat.getEtudiant().getId() : null,
                 contrat.getEmployeur() != null ? contrat.getEmployeur().getId() : null,
-                contrat.getGestionnaireStage() != null ? contrat.getGestionnaireStage().getId() : null,
-                contrat.getStatus() != null ? contrat.getStatus() : null
+                contrat.getGestionnaireStage() != null ? contrat.getGestionnaireStage().getId() : null
         );
     }
 }

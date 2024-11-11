@@ -73,7 +73,6 @@ public class ContratControllerTest {
         contrat = new Contrat();
         contrat.setEtudiant(etudiant);
         contrat.setEmployeur(employeur);
-        contrat.setStatus(Contrat.Status.INACTIVE);
     }
 
     @Test

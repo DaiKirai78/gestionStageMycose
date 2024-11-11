@@ -9,9 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @NoArgsConstructor
 @DiscriminatorValue("Etudiant")
@@ -42,8 +40,7 @@ public class Etudiant extends Utilisateur {
     public enum ContractStatus {
         ACTIVE,
         NO_CONTRACT,
-        PENDING,
-        SIGNING
+        PENDING
     }
 
     @PrePersist

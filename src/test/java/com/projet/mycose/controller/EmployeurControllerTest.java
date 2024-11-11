@@ -105,8 +105,7 @@ public class EmployeurControllerTest {
                 null,
                 null,
                 2L,
-                3L,
-                Contrat.Status.ACTIVE
+                3L
         );
 
         List<ContratDTO> listeContratsMock = new ArrayList<>();
