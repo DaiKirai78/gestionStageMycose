@@ -1,18 +1,18 @@
 package com.projet.mycose.service;
 
 import com.projet.mycose.dto.ContratDTO;
+import com.projet.mycose.dto.EmployeurDTO;
 import com.projet.mycose.dto.EtudiantDTO;
+import com.projet.mycose.dto.GestionnaireStageDTO;
 import com.projet.mycose.exceptions.ResourceConflictException;
-import com.projet.mycose.exceptions.ResourceNotFoundException;
-import com.projet.mycose.modele.Contrat;
-import com.projet.mycose.modele.Employeur;
-import com.projet.mycose.modele.Etudiant;
-import com.projet.mycose.modele.Programme;
+import com.projet.mycose.exceptions.UserNotFoundException;
+import com.projet.mycose.modele.*;
 import com.projet.mycose.modele.auth.Credentials;
 import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.repository.ContratRepository;
 import com.projet.mycose.repository.EmployeurRepository;
 import com.projet.mycose.repository.EtudiantRepository;
+import com.projet.mycose.repository.GestionnaireStageRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,12 +21,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.io.IOException;
-import java.util.Base64;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -40,13 +34,16 @@ public class ContratServiceTest {
     private Contrat contrat;
     private Employeur employeur;
     private Etudiant etudiant;
-    private MultipartFile multipartFile;
+    private GestionnaireStage gestionnaireStage;
 
     @Mock
     private ContratRepository contratRepository;
 
     @Mock
     private EtudiantRepository etudiantRepository;
+
+    @Mock
+    private GestionnaireStageRepository gestionnaireStageRepository;
 
     @Mock
     private EmployeurRepository employeurRepository;
@@ -80,62 +77,57 @@ public class ContratServiceTest {
         employeur.setCredentials(credentials2);
         employeur.setNumeroDeTelephone("450-374-3783");
 
-        String fileName = "testfile.txt";
-        String contentType = "text/plain";
-        String content = "Ceci est un contenu de test";
+        gestionnaireStage = new GestionnaireStage();
+        gestionnaireStage.setId(3L);
+        gestionnaireStage.setPrenom("Patrice");
+        gestionnaireStage.setNom("Brodeur");
+        Credentials credentials3 = new Credentials("patrice@gmail.com", "passw0rd", Role.GESTIONNAIRE_STAGE);
+        gestionnaireStage.setCredentials(credentials3);
+        gestionnaireStage.setNumeroDeTelephone("438-646-3245");
 
         contrat = new Contrat();
         contrat.setEtudiant(etudiant);
         contrat.setEmployeur(employeur);
         contrat.setStatus(Contrat.Status.INACTIVE);
-        contrat.setPdf(content.getBytes());
-
-        multipartFile = new MockMultipartFile(
-                "file",
-                fileName,
-                contentType,
-                content.getBytes()
-        );
     }
 
     @Test
-    void saveContrat_Success() throws IOException {
+    void saveContrat_Success() {
         // Arrange
         when(contratRepository.save(contrat)).thenReturn(contrat);
         when(etudiantRepository.findById(anyLong())).thenReturn(Optional.ofNullable(etudiant));
         when(employeurRepository.findById(anyLong())).thenReturn(Optional.ofNullable(employeur));
+        when(gestionnaireStageRepository.findById(anyLong())).thenReturn(Optional.ofNullable(gestionnaireStage));
         when(etudiantRepository.findEtudiantById(anyLong())).thenReturn(etudiant);
         when(modelMapper.map(any(Contrat.class), eq(ContratDTO.class))).thenReturn(ContratDTO.toDTO(contrat));
         when(modelMapper.map(any(ContratDTO.class), eq(Contrat.class))).thenReturn(contrat);
         when(utilisateurService.getEtudiantDTO(etudiant.getId())).thenReturn(EtudiantDTO.toDTO(etudiant));
+        when(utilisateurService.getEmployeurDTO(employeur.getId())).thenReturn(EmployeurDTO.toDTO(employeur));
+        when(utilisateurService.getGestionnaireDTO(gestionnaireStage.getId())).thenReturn(GestionnaireStageDTO.toDTO(gestionnaireStage));
 
         // Act
-        ContratDTO contratSaved = contratService.save(multipartFile, etudiant.getId(), employeur.getId());
+        ContratDTO contratSaved = contratService.save(etudiant.getId(), employeur.getId(), gestionnaireStage.getId());
 
         // Assert
-        String expectedPdfBase64 = Base64.getEncoder().encodeToString(contrat.getPdf());
-        assertEquals(expectedPdfBase64, contratSaved.getPdf());
-        assertEquals("roby@gmail.com", contrat.getEtudiant().getCourriel());
-        assertEquals("jean@gmail.com", contrat.getEmployeur().getCourriel());
+        assertEquals(1L, contratSaved.getEtudiantId());
+        assertEquals(2L, contratSaved.getEmployeurId());
+        assertEquals(3L, contratSaved.getGestionnaireStageId());
     }
 
     @Test
     void saveContrat_EtudiantNotFound() {
         // Arrange
         Long invalidEtudiantId = 99L;
-        when(etudiantRepository.findById(anyLong())).thenReturn(Optional.ofNullable(etudiant));
-        when(employeurRepository.findById(anyLong())).thenReturn(Optional.ofNullable(employeur));
-        when(modelMapper.map(any(ContratDTO.class), eq(Contrat.class))).thenReturn(contrat);
         when(utilisateurService.getEtudiantDTO(invalidEtudiantId)).thenReturn(null);
 
         // Act & Assert
-        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () ->
-                contratService.save(multipartFile, invalidEtudiantId, employeur.getId())
+        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () ->
+                contratService.save(invalidEtudiantId, employeur.getId(), gestionnaireStage.getId())
         );
 
         // Assert
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
-        assertEquals("L'étudiant avec l'ID " + invalidEtudiantId + " est inexistant", exception.getMessage());
+        assertEquals("Utilisateur not found", exception.getMessage());
     }
 
     @Test
@@ -143,14 +135,13 @@ public class ContratServiceTest {
         // Arrange
         etudiant.setContractStatus(Etudiant.ContractStatus.ACTIVE);
         when(utilisateurService.getEtudiantDTO(etudiant.getId())).thenReturn(EtudiantDTO.toDTO(etudiant));
-        when(employeurRepository.findById(anyLong())).thenReturn(Optional.ofNullable(employeur));
-        when(etudiantRepository.findById(anyLong())).thenReturn(Optional.ofNullable(etudiant));
-        when(modelMapper.map(any(ContratDTO.class), eq(Contrat.class))).thenReturn(contrat);
+        when(utilisateurService.getEmployeurDTO(employeur.getId())).thenReturn(EmployeurDTO.toDTO(employeur));
+        when(utilisateurService.getGestionnaireDTO(gestionnaireStage.getId())).thenReturn(GestionnaireStageDTO.toDTO(gestionnaireStage));
         when(etudiantRepository.findEtudiantById(etudiant.getId())).thenReturn(etudiant);
 
         // Act & Assert
         ResourceConflictException exception = assertThrows(ResourceConflictException.class, () ->
-                contratService.save(multipartFile, etudiant.getId(), employeur.getId())
+                contratService.save(etudiant.getId(), employeur.getId(), gestionnaireStage.getId())
         );
 
         // Assert

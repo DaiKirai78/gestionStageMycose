@@ -25,8 +25,8 @@ public class ContratController {
     private final ContratService contratService;
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> upload(@RequestParam MultipartFile contratPDF, @RequestParam Long etudiantId, @RequestParam Long employeurId) {
-        ContratDTO contratDTO = contratService.save(contratPDF, etudiantId, employeurId);
+    public ResponseEntity<?> upload(@RequestParam Long etudiantId, @RequestParam Long employeurId, @RequestParam Long gestionnaireStageId) {
+        ContratDTO contratDTO = contratService.save(etudiantId, employeurId, gestionnaireStageId);
         return ResponseEntity.status(HttpStatus.CREATED).body(contratDTO);
     }
 }

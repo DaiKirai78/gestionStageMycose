@@ -8,12 +8,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @NoArgsConstructor
 @DiscriminatorValue("GestionnaireStage")
 @Getter
 @Setter
 @Entity
 public class GestionnaireStage extends Utilisateur {
+
+    @OneToMany(mappedBy = "gestionnaireStage", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Contrat> contrat;
 
     @Builder
     public GestionnaireStage(Long id, String prenom, String nom, String numeroDeTelephone, String courriel, String motDePasse) {

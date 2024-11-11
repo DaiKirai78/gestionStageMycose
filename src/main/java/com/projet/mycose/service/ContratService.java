@@ -1,29 +1,20 @@
 package com.projet.mycose.service;
 
 import com.projet.mycose.dto.ContratDTO;
-import com.projet.mycose.dto.EtudiantDTO;
-import com.projet.mycose.dto.FichierCVDTO;
 import com.projet.mycose.exceptions.ResourceConflictException;
 import com.projet.mycose.exceptions.ResourceNotFoundException;
+import com.projet.mycose.exceptions.UserNotFoundException;
 import com.projet.mycose.modele.Contrat;
 import com.projet.mycose.modele.Etudiant;
-import com.projet.mycose.modele.FichierCV;
-import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.repository.ContratRepository;
 import com.projet.mycose.repository.EmployeurRepository;
 import com.projet.mycose.repository.EtudiantRepository;
-import jakarta.persistence.PersistenceException;
+import com.projet.mycose.repository.GestionnaireStageRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.io.IOException;
-import java.util.Base64;
 
 @Service
 @RequiredArgsConstructor
@@ -33,28 +24,28 @@ public class ContratService {
     private final ModelMapper modelMapper;
     private final EtudiantRepository etudiantRepository;
     private final EmployeurRepository employeurRepository;
+    private final GestionnaireStageRepository gestionnaireStageRepository;
     private final UtilisateurService utilisateurService;
 
     @Transactional
     @PreAuthorize("hasAuthority('GESTIONNAIRE_STAGE')")
-    public ContratDTO save(MultipartFile contratPDF, Long etudiantId, Long employeurId) {
+    public ContratDTO save(Long etudiantId, Long employeurId, Long gestionnaireStageId) {
+        if (utilisateurService.getEtudiantDTO(etudiantId) == null
+                || utilisateurService.getEmployeurDTO(employeurId) == null
+                || utilisateurService.getGestionnaireDTO(gestionnaireStageId) == null)
+            throw new UserNotFoundException();
 
         ContratDTO contratDTO = new ContratDTO();
-        try {
-            contratDTO.setPdf(Base64.getEncoder().encodeToString(contratPDF.getBytes()));
-        } catch (IOException e) {
-            throw new PersistenceException("Erreur lors de la lecture du fichier PDF");
-        }
         contratDTO.setEtudiantId(etudiantId);
         contratDTO.setEmployeurId(employeurId);
-        Contrat contrat = convertToEntity(contratDTO);
+        contratDTO.setGestionnaireStageId(gestionnaireStageId);
         changeContractStatusToActive(etudiantId);
-        return convertToDTO(contratRepository.save(contrat));
+        return convertToDTO(contratRepository.save(convertToEntity(contratDTO)));
     }
 
     public void changeContractStatusToActive(Long etudiantId) {
         if (utilisateurService.getEtudiantDTO(etudiantId) == null)
-            throw new ResourceNotFoundException("L'étudiant avec l'ID " + etudiantId + " est inexistant");
+            throw new UserNotFoundException();
 
         Etudiant etudiant = etudiantRepository.findEtudiantById(etudiantId);
 
@@ -68,10 +59,9 @@ public class ContratService {
     public ContratDTO convertToDTO(Contrat contrat) {
         ContratDTO contratDTO = modelMapper.map(contrat, ContratDTO.class);
 
-        contratDTO.setPdf(Base64.getEncoder().encodeToString(contrat.getPdf()));
-
         contratDTO.setEtudiantId(contrat.getEtudiant().getId());
         contratDTO.setEmployeurId(contrat.getEmployeur().getId());
+        contratDTO.setGestionnaireStageId(contrat.getGestionnaireStage().getId());
 
         return contratDTO;
     }
@@ -79,10 +69,9 @@ public class ContratService {
     public Contrat convertToEntity(ContratDTO dto) {
         Contrat contrat = modelMapper.map(dto, Contrat.class);
 
-        contrat.setPdf(Base64.getDecoder().decode(dto.getPdf()));
-
         contrat.setEtudiant(etudiantRepository.findById(dto.getEtudiantId()).orElseThrow(() -> new ResourceNotFoundException("Étudiant non trouvé")));
         contrat.setEmployeur(employeurRepository.findById(dto.getEmployeurId()).orElseThrow(() -> new ResourceNotFoundException("Employeur non trouvé")));
+        contrat.setGestionnaireStage(gestionnaireStageRepository.findById(dto.getGestionnaireStageId()).orElseThrow(() -> new ResourceNotFoundException("Gestionnaire de stage non trouvé")));
 
         return contrat;
     }

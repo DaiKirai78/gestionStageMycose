@@ -509,33 +509,33 @@ public class GestionnaireStageControllerTest {
                 .andExpect(jsonPath("$").isEmpty());
     }
 
-    @Test
-    void testImprimerContrat_Success() throws Exception {
-        long contratId = 1L;
-        String pdfBase64 = "JVBERi0xLjQKJcTl8uXrp/Og0MTGCjEgMCBvYmoKPDwvTGluZWFyaXpl";
-
-        when(gestionnaireStageService.getContratSignee(contratId)).thenReturn(pdfBase64);
-
-        mockMvc.perform(get("/gestionnaire/contrat/print")
-                        .param("id", String.valueOf(contratId))
-                        .accept(MediaType.TEXT_PLAIN))
-                .andExpect(status().isOk())
-                .andExpect(content().string(pdfBase64));
-    }
-
-    @Test
-    void testImprimerContrat_Failure() throws Exception {
-        long contratId = 1L;
-
-        when(gestionnaireStageService.getContratSignee(contratId)).thenThrow(new RuntimeException("Une erreur est surevenue de notre coté"));
-
-        mockMvc.perform(get("/gestionnaire/contrat/print")
-                        .param("id", String.valueOf(contratId)))
-                .andExpect(status().isInternalServerError())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message").value("Une erreur est surevenue de notre coté"))
-                .andExpect(jsonPath("$.status").value(500))
-                .andExpect(jsonPath("$.timestamp").isNumber());
-    }
+//    @Test
+//    void testImprimerContrat_Success() throws Exception {
+//        long contratId = 1L;
+//        String pdfBase64 = "JVBERi0xLjQKJcTl8uXrp/Og0MTGCjEgMCBvYmoKPDwvTGluZWFyaXpl";
+//
+//        when(gestionnaireStageService.getContratSignee(contratId)).thenReturn(pdfBase64);
+//
+//        mockMvc.perform(get("/gestionnaire/contrat/print")
+//                        .param("id", String.valueOf(contratId))
+//                        .accept(MediaType.TEXT_PLAIN))
+//                .andExpect(status().isOk())
+//                .andExpect(content().string(pdfBase64));
+//    }
+//
+//    @Test
+//    void testImprimerContrat_Failure() throws Exception {
+//        long contratId = 1L;
+//
+//        when(gestionnaireStageService.getContratSignee(contratId)).thenThrow(new RuntimeException("Une erreur est surevenue de notre coté"));
+//
+//        mockMvc.perform(get("/gestionnaire/contrat/print")
+//                        .param("id", String.valueOf(contratId)))
+//                .andExpect(status().isInternalServerError())
+//                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(jsonPath("$.message").value("Une erreur est surevenue de notre coté"))
+//                .andExpect(jsonPath("$.status").value(500))
+//                .andExpect(jsonPath("$.timestamp").isNumber());
+//    }
 
 }

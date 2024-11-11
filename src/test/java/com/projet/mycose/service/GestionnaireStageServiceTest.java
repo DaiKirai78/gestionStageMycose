@@ -565,58 +565,58 @@ class GestionnaireStageServiceTest {
         verify(contratRepository, never()).save(any(Contrat.class));
     }
 
-    @Test
-    void testGetContratSignee_Success() throws IOException {
-        // Arrange
-        Contrat contrat = new Contrat();
-        contrat.setPdf(createTemporaryPdf());
-        contrat.setSignatureGestionnaire(createTemporaryPng());
-        contrat.setSignatureEtudiant(createTemporaryPng());
-        contrat.setSignatureEmployeur(createTemporaryPng());
-        long contratId = 1L;
-        when(contratRepository.findById(contratId)).thenReturn(Optional.of(contrat));
-
-        // Act
-        String result = gestionnaireStageService.getContratSignee(contratId);
-
-        // Assert
-        assertNotNull(result);
-    }
-
-    @Test
-    void testGetContratSignee_ContractNotFound() {
-        // Arrange
-        long contratId = 1L;
-        when(contratRepository.findById(contratId)).thenReturn(Optional.empty());
-
-        // Act & Assert
-        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
-            gestionnaireStageService.getContratSignee(contratId);
-        });
-
-        assertEquals("Contrat not found", exception.getMessage());
-    }
-
-    @Test
-    void testGetContratSignee_MissingSignatures() throws IOException {
-        // Arrange
-        Contrat contrat = new Contrat();
-        contrat.setPdf(createTemporaryPdf());
-        contrat.setSignatureGestionnaire(createTemporaryPng());
-        contrat.setSignatureEtudiant(createTemporaryPng());
-        contrat.setSignatureEmployeur(createTemporaryPng());
-
-        long contratId = 1L;
-        contrat.setSignatureGestionnaire(null);
-        when(contratRepository.findById(contratId)).thenReturn(Optional.of(contrat));
-
-        // Act & Assert
-        ResourceNotAvailableException exception = assertThrows(ResourceNotAvailableException.class, () -> {
-            gestionnaireStageService.getContratSignee(contratId);
-        });
-
-        assertEquals("Les signatures ne sont pas complètes sur le contrat", exception.getMessage());
-    }
+//    @Test
+//    void testGetContratSignee_Success() throws IOException {
+//        // Arrange
+//        Contrat contrat = new Contrat();
+//        contrat.setPdf(createTemporaryPdf());
+//        contrat.setSignatureGestionnaire(createTemporaryPng());
+//        contrat.setSignatureEtudiant(createTemporaryPng());
+//        contrat.setSignatureEmployeur(createTemporaryPng());
+//        long contratId = 1L;
+//        when(contratRepository.findById(contratId)).thenReturn(Optional.of(contrat));
+//
+//        // Act
+//        String result = gestionnaireStageService.getContratSignee(contratId);
+//
+//        // Assert
+//        assertNotNull(result);
+//    }
+//
+//    @Test
+//    void testGetContratSignee_ContractNotFound() {
+//        // Arrange
+//        long contratId = 1L;
+//        when(contratRepository.findById(contratId)).thenReturn(Optional.empty());
+//
+//        // Act & Assert
+//        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+//            gestionnaireStageService.getContratSignee(contratId);
+//        });
+//
+//        assertEquals("Contrat not found", exception.getMessage());
+//    }
+//
+//    @Test
+//    void testGetContratSignee_MissingSignatures() throws IOException {
+//        // Arrange
+//        Contrat contrat = new Contrat();
+//        contrat.setPdf(createTemporaryPdf());
+//        contrat.setSignatureGestionnaire(createTemporaryPng());
+//        contrat.setSignatureEtudiant(createTemporaryPng());
+//        contrat.setSignatureEmployeur(createTemporaryPng());
+//
+//        long contratId = 1L;
+//        contrat.setSignatureGestionnaire(null);
+//        when(contratRepository.findById(contratId)).thenReturn(Optional.of(contrat));
+//
+//        // Act & Assert
+//        ResourceNotAvailableException exception = assertThrows(ResourceNotAvailableException.class, () -> {
+//            gestionnaireStageService.getContratSignee(contratId);
+//        });
+//
+//        assertEquals("Les signatures ne sont pas complètes sur le contrat", exception.getMessage());
+//    }
 
     private byte[] createTemporaryPdf() throws IOException {
         File tempFile = File.createTempFile("test-document-", ".pdf");

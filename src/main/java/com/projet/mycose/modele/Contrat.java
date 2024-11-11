@@ -2,10 +2,7 @@ package com.projet.mycose.modele;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -20,9 +17,6 @@ public class Contrat {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(columnDefinition = "BYTEA")
-    private byte[] pdf;
 
     @Column(columnDefinition = "BYTEA")
     private byte[] signatureGestionnaire;
@@ -50,6 +44,12 @@ public class Contrat {
     @JoinColumn(name = "employeur_id")
     private Employeur employeur;
 
+    @ManyToOne
+    @JsonManagedReference
+    @JoinColumn(name = "gestionnaire_id")
+    private GestionnaireStage gestionnaireStage;
+
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Status status;
@@ -72,8 +72,9 @@ public class Contrat {
                 "id=" + id +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
-                ", etudiant=" + etudiant.getPrenom() + " " + etudiant.getNom() +
-                ", employeur=" + employeur.getPrenom() + " " + employeur.getNom() +
+                ", etudiant=" + etudiant +
+                ", employeur=" + employeur +
+                ", gestionnaireStage=" + gestionnaireStage +
                 ", status=" + status +
                 '}';
     }

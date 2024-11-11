@@ -110,8 +110,8 @@ public class GestionnaireController {
                 .body(responseMessage);
     }
 
-    @GetMapping("/contrat/print")
-    public ResponseEntity<?> imprimerContrat(@RequestParam long id) {
-        return ResponseEntity.ok(gestionnaireStageService.getContratSignee(id));
-    }
+//    @GetMapping("/contrat/print")
+//    public ResponseEntity<?> imprimerContrat(@RequestParam long id) {
+//        return ResponseEntity.ok(gestionnaireStageService.getContratSignee(id));
+//    }
 }
