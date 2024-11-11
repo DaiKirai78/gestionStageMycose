@@ -16,6 +16,7 @@ const AttribuerContrat = () => {
     const [applications, setApplications] = useState([]);
     const [etudiant, setEtudiant] = useState(null);
     const [employeur, setEmployeur] = useState(null);
+    const [gestionnaire, setGestionnaire] = useState(null);
     const [offresStage, setOffreStage] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
@@ -24,6 +25,7 @@ const AttribuerContrat = () => {
     const apiUrlGetEtudiantFromApplicationId = "api/application-stage/getEtudiant/";
     const apiUrlGetEmployeurFromOffreStageId = "api/offres-stages/getEmployeur/";
     const apiUrlGetOffreStageFromApplicationId = "api/application-stage/getOffreStage/";
+    const apiUrlGetGestionnaire = "utilisateur/me";
     const apiUrlGetApplicationsAccepted = "api/application-stage/status/ACCEPTED";
     const apiUrlUploadContract = "contrat/upload"
     const token = localStorage.getItem("token");
@@ -31,6 +33,7 @@ const AttribuerContrat = () => {
     useEffect(() => {
         isLoading();
         fetchApplicationsAccepted();
+        fetchGestionnaire();
     }, []);
 
     const fetchApplicationsAccepted = async () => {
@@ -108,6 +111,23 @@ const AttribuerContrat = () => {
         }
     };
 
+    const fetchGestionnaire = async () => {
+        try {
+            setLoading(true);
+            const response = await axios.get(localhost + apiUrlGetGestionnaire, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            setGestionnaire(response.data);
+            setLoading(false);
+        } catch (e) {
+            setLoading(false);
+            console.error(`Erreur lors de la récupération du gestionnaire de stage : `, e);
+        }
+    };
+
 
     const fetchOffresStage = async (applicationId) => {
         try {
@@ -130,9 +150,9 @@ const AttribuerContrat = () => {
 
     const handleFileUpload = async () => {
         const formData = new FormData();
-        formData.append("contratPDF", file);
         formData.append("etudiantId", applications[currentPage - 1].etudiant_id);
         formData.append("employeurId", offresStage.createur_id);
+        formData.append("gestionnaireId", gestionnaire.id);
 
         try {
             setLoading(true);
