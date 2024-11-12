@@ -3,9 +3,12 @@ package com.projet.mycose.controller;
 import com.projet.mycose.dto.ContratDTO;
 import com.projet.mycose.dto.EnseignantDTO;
 import com.projet.mycose.dto.EtudiantDTO;
+import com.projet.mycose.dto.UtilisateurDTO;
 import com.projet.mycose.modele.Programme;
 import com.projet.mycose.service.EtudiantService;
 import com.projet.mycose.service.GestionnaireStageService;
+import com.projet.mycose.service.UtilisateurService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,17 +18,14 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Set;
 
+@RequiredArgsConstructor
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("/gestionnaire")
 public class GestionnaireController {
     private final GestionnaireStageService gestionnaireStageService;
     private final EtudiantService etudiantService;
-
-    public GestionnaireController(GestionnaireStageService gestionnaireStageService, EtudiantService etudiantService) {
-        this.gestionnaireStageService = gestionnaireStageService;
-        this.etudiantService = etudiantService;
-    }
+    private final UtilisateurService utilisateurService;
 
     @PostMapping("/getEtudiants")
     public ResponseEntity<List<EtudiantDTO>> getEtudiantsSansEnseignant(@RequestParam int pageNumber, @RequestParam Programme programme) {
@@ -110,8 +110,9 @@ public class GestionnaireController {
                 .body(responseMessage);
     }
 
-//    @GetMapping("/contrat/print")
-//    public ResponseEntity<?> imprimerContrat(@RequestParam long id) {
-//        return ResponseEntity.ok(gestionnaireStageService.getContratSignee(id));
-//    }
+    @GetMapping("/getUtilisateurById")
+    public ResponseEntity<UtilisateurDTO> getUtilisateurById(@RequestParam Long id) {
+        UtilisateurDTO utilisateurDTO = utilisateurService.getUtilisateurById(id);
+        return ResponseEntity.status(HttpStatus.OK).body(utilisateurDTO);
+    }
 }

@@ -16,6 +16,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class ContratService {
@@ -76,4 +78,10 @@ public class ContratService {
         return contrat;
     }
 
+    public ContratDTO getContractById(Long contractId) {
+        Optional<Contrat> contrat = contratRepository.findById(contractId);
+        if (contrat.isPresent())
+            return ContratDTO.toDTO(contrat.get());
+        else throw new ResourceNotFoundException("Contract with id " + contractId + " not found");
+    }
 }

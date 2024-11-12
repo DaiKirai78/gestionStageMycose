@@ -159,4 +159,6 @@ public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
             "  ELSE 4 " +
             "END ASC")
     List<SessionInfoDTO> findDistinctSemesterAndYearAll();
+
+    OffreStage findOffreStageByCreateurId(Long employeurId);
 }

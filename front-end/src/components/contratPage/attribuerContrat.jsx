@@ -27,7 +27,6 @@ const AttribuerContrat = () => {
     const apiUrlGetGestionnaire = "utilisateur/me";
     const apiUrlGetApplicationsAccepted = "api/application-stage/status/ACCEPTED";
     const apiUrlUploadContract = "contrat/upload"
-    const token = localStorage.getItem("token");
 
     useEffect(() => {
         isLoading();
@@ -37,6 +36,7 @@ const AttribuerContrat = () => {
 
     const fetchApplicationsAccepted = async () => {
         try {
+            const token = localStorage.getItem("token");
             setLoading(true);
             const response = await axios.get(localhost + apiUrlGetApplicationsAccepted, {
                 headers: {
@@ -78,6 +78,7 @@ const AttribuerContrat = () => {
 
     const fetchEtudiant = async (applicationId) => {
         try {
+            const token = localStorage.getItem("token");
             setLoading(true);
             const response = await axios.get(localhost + apiUrlGetEtudiantFromApplicationId + applicationId, {
                 headers: {
@@ -95,6 +96,7 @@ const AttribuerContrat = () => {
 
     const fetchEmployeur = async (offreStageId) => {
         try {
+            const token = localStorage.getItem("token");
             setLoading(true);
             const response = await axios.get(localhost + apiUrlGetEmployeurFromOffreStageId + offreStageId, {
                 headers: {
@@ -112,8 +114,9 @@ const AttribuerContrat = () => {
 
     const fetchGestionnaire = async () => {
         try {
+            const token = localStorage.getItem("token");
             setLoading(true);
-            const response = await axios.get(localhost + apiUrlGetGestionnaire, {
+            const response = await axios.post(localhost + apiUrlGetGestionnaire, null, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -130,6 +133,7 @@ const AttribuerContrat = () => {
 
     const fetchOffresStage = async (applicationId) => {
         try {
+            const token = localStorage.getItem("token");
             const response = await axios.get(localhost + apiUrlGetOffreStageFromApplicationId + applicationId, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -149,11 +153,13 @@ const AttribuerContrat = () => {
 
     const handleFileUpload = async () => {
         const formData = new FormData();
+        console.log(gestionnaire);
         formData.append("etudiantId", applications[currentPage - 1].etudiant_id);
         formData.append("employeurId", offresStage.createur_id);
         formData.append("gestionnaireStageId", gestionnaire.id);
 
         try {
+            const token = localStorage.getItem("token");
             setLoading(true);
             const response = await axios.post(localhost + apiUrlUploadContract, formData,
                 {

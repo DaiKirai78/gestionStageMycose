@@ -29,4 +29,10 @@ public class ContratController {
         ContratDTO contratDTO = contratService.save(etudiantId, employeurId, gestionnaireStageId);
         return ResponseEntity.status(HttpStatus.CREATED).body(contratDTO);
     }
+
+    @GetMapping("/getContractById")
+    public ResponseEntity<ContratDTO> getContract(@RequestParam Long contratId) {
+        ContratDTO contratDTO = contratService.getContractById(contratId);
+        return ResponseEntity.status(HttpStatus.OK).body(contratDTO);
+    }
 }

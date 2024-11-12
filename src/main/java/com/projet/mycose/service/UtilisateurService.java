@@ -37,8 +37,11 @@ public class UtilisateurService {
     }
 
     public UtilisateurDTO getMe() throws AccessDeniedException {
+        System.out.println("allo1");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("allo2");
         if (authentication != null && authentication.isAuthenticated()) {
+            System.out.println("allo3");
             CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
             Utilisateur utilisateur = utilisateurRepository.findUtilisateurById(userDetails.getId()).orElseThrow(UserNotFoundException::new);
@@ -108,6 +111,11 @@ public class UtilisateurService {
 
     public UtilisateurDTO getUtilisateurByTelephone(String numero) {
         Optional<Utilisateur> optionalUtilisateur = utilisateurRepository.findUtilisateurByNumeroDeTelephone(numero);
+        return optionalUtilisateur.map(UtilisateurDTO::toDTO).orElse(null);
+    }
+
+    public UtilisateurDTO getUtilisateurById(Long id) {
+        Optional<Utilisateur> optionalUtilisateur = utilisateurRepository.findUtilisateurById(id);
         return optionalUtilisateur.map(UtilisateurDTO::toDTO).orElse(null);
     }
 

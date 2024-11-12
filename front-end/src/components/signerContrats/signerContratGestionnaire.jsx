@@ -4,6 +4,8 @@ import PageIsLoading from "../pageIsLoading";
 import SignerContratCard from "./signerContratCard";
 import BoutonAvancerReculer from "../listeOffreEmployeur/boutonAvancerReculer";
 import printJS from "print-js";
+import { PDFDocument } from 'pdf-lib';
+import axios from "axios";
 
 
 function SignerContratGestionnaire({setSelectedContract}) {
@@ -11,7 +13,11 @@ function SignerContratGestionnaire({setSelectedContract}) {
     const [pages, setPages] = useState({minPages: 1, maxPages: null, currentPage: 1});
     const [isFetching, setIsFetching] = useState(true);
     const [contrats, setContrats] = useState([]);
+    const [contrat, setContrat] = useState(null);
     const [nomPrenom, setNomPrenom] = useState([]);
+    const [employeur, setEmployeur] = useState(null);
+    const [gestionnaire, setGestionnaire] = useState(null);
+    const [offreStage, setOffreStage] = useState(null);
     const [isContratsSignesView, setIsContratsSignesView] = useState(true);
     const [listeAnneesDispo, setListeAnneesDispo] = useState([]);
     const [filtreAnnee, setFiltreAnnee] = useState();
@@ -34,6 +40,24 @@ function SignerContratGestionnaire({setSelectedContract}) {
         fetchPrenomNomEtudiants();
         fetchMinimumAnneeDisponible();
     }, [contrats])
+
+    useEffect(() => {
+        if (contrat) {
+            if (contrat.employeurId) fetchEmployeur(contrat.employeurId);
+            if (contrat.gestionnaireStageId) fetchGestionnaire(contrat.gestionnaireStageId);
+        }
+    }, [contrat]);
+
+
+    useEffect(() => {
+        if (employeur && employeur.id) {
+            fetchOffreStage(employeur.id);
+        }
+    }, [employeur]);
+
+    useEffect(() => {
+        imprimer(contrat);
+    }, [offreStage]);
 
     async function fetchMinimumAnneeDisponible() {
         const token = localStorage.getItem("token");
@@ -195,46 +219,93 @@ function SignerContratGestionnaire({setSelectedContract}) {
         return etudiant ? etudiant.nom : '';
     }
 
-    async function imprimer(contrat) {
-
-        const contratToPrint = await fetchFullContrat(contrat.id);
-
-        console.log(contratToPrint);
-        
-        printJS({
-            printable: contratToPrint,
-            type: 'pdf',
-            base64: true,
-        });
-    }
-
-    async function fetchFullContrat(contratId) {
-        const token = localStorage.getItem("token");
-        
+    const fetchEmployeur = async (employeurId) => {
         try {
-            const response = await fetch(`http://localhost:8080/gestionnaire/contrat/print?id=${contratId}`, {
-                method: 'GET',
-                headers: {Authorization: `Bearer ${token}`}
+            const token = localStorage.getItem("token");
+            const response = await axios.get(`http://localhost:8080/gestionnaire/getUtilisateurById?id=${employeurId}`,  {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
             });
-
-
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-
-            const data = await response.text();
-            
-
-            if (!data) {
-                throw new Error('No data');
-            }
-
-            return data;
-
+            console.log("ges2 : " + JSON.stringify(response.data));
+            setEmployeur(response.data);
         } catch (e) {
-            console.log("Une erreur est survenue " + e);       
-            setContrats([]);
-            setIsFetching(false);
+            console.error(`Erreur lors de la récupération de l'employeur : `, e);
+        }
+    };
+
+    const fetchGestionnaire = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            const response = await axios.post("http://localhost:8080/utilisateur/me", null, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            setGestionnaire(response.data);
+        } catch (e) {
+            console.error(`Erreur lors de la récupération du gestionnaire de stage : `, e);
+        }
+    };
+
+    const fetchOffreStage = async (employeurId) => {
+        try {
+            const token = localStorage.getItem("token");
+            const response = await axios.get(`http://localhost:8080/api/offres-stages/getOffreStage/${employeurId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            setOffreStage(response.data);
+        } catch (e) {
+            console.error(`Erreur lors de la récupération de l'offre de stage : `, e);
+        }
+    };
+
+    async function imprimer(contrat) {
+        try {
+            setContrat(contrat);
+            const pdfDoc = await PDFDocument.create();
+            const page = pdfDoc.addPage();
+
+            console.log("employeur : " + JSON.stringify(employeur));
+            console.log("gestionnaire : " + JSON.stringify(gestionnaire));
+
+            page.drawText(`Nom de l'étudiant: ${getNomEtudiant(contrat)}`, { x: 50, y: 700, size: 12 });
+            page.drawText(`Nom de l'employeur: ${employeur.prenom + " " + employeur.nom}`, { x: 50, y: 680, size: 12 });
+            page.drawText(`Nom du gestionnaire: ${gestionnaire.prenom + " " + gestionnaire.nom}`, { x: 50, y: 660, size: 12 });
+
+            page.drawText(`Adresse: ${offreStage.location ? offreStage.location : "Non spécifiée"}`, { x: 50, y: 640, size: 12 });
+            // page.drawText(`Date de début: ${contrat.dateDebut}`, { x: 50, y: 620, size: 12 });
+            // page.drawText(`Date de fin: ${contrat.dateFin}`, { x: 50, y: 600, size: 12 });
+
+            if (contrat.signatureEtudiant) {
+                const signatureEtudiant = await pdfDoc.embedPng(contrat.signatureEtudiant);
+                page.drawText(`Signature de l'étudiant : `, { x: 50, y: 520, size: 12 });
+                page.drawImage(signatureEtudiant, { x: 175, y: 500, width: 150, height: 50 });
+            }
+
+            if (contrat.signatureEmployeur) {
+                const signatureEmployeur = await pdfDoc.embedPng(contrat.signatureEmployeur);
+                page.drawText(`Signature de l'employeur : `, { x: 50, y: 470, size: 12 });
+                page.drawImage(signatureEmployeur, { x: 190, y: 450, width: 150, height: 50 });
+            }
+
+            if (contrat.signatureGestionnaire) {
+                const signatureGestionnaire = await pdfDoc.embedPng(contrat.signatureGestionnaire);
+                page.drawText(`Gestionnaire de stage : `, { x: 50, y: 420, size: 12 });
+                page.drawImage(signatureGestionnaire, { x: 175, y: 400, width: 150, height: 50 });
+            }
+
+            // Convert PDF document to base64 and print
+            const pdfBytes = await pdfDoc.saveAsBase64();
+
+            printJS({ printable: pdfBytes, type: 'pdf', base64: true });
+        } catch (error) {
+            console.log("An error occurred: ", error);
         }
     }
     
@@ -285,7 +356,7 @@ function SignerContratGestionnaire({setSelectedContract}) {
                                     <div className='flex w-full justify-between items-center p-4 shadow mb-4 rounded bg-white'>
                                         <p className='text-lg'>{getNomEtudiant(contrat)}</p>
                                         <button className='bg-orange rounded p-2 text-white hover:bg-opacity-90'
-                                            onClick={() => imprimer(contrat)}>
+                                            onClick={() =>  setContrat(contrat) }>
                                             {t("imprimer")}
                                         </button>
                                     </div>

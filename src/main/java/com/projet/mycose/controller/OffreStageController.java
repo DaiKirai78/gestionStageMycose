@@ -182,4 +182,10 @@ public class OffreStageController {
         EmployeurDTO employeurDTO = offreStageService.getEmployeurByOffreStageId(offreStageId);
         return ResponseEntity.ok(employeurDTO);
     }
+
+    @GetMapping("/getOffreStage/{employeurId}")
+    public ResponseEntity<OffreStageDTO> getOffreStageFromEmployeurId(@PathVariable Long employeurId) {
+        OffreStageDTO offreStageDTO = offreStageService.getOffreStageByEmployeurId(employeurId);
+        return ResponseEntity.status(HttpStatus.OK).body(offreStageDTO);
+    }
 }
