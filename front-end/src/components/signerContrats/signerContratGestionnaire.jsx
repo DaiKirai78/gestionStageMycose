@@ -4,7 +4,8 @@ import PageIsLoading from "../pageIsLoading";
 import SignerContratCard from "./signerContratCard";
 import BoutonAvancerReculer from "../listeOffreEmployeur/boutonAvancerReculer";
 import printJS from "print-js";
-import { PDFDocument } from 'pdf-lib';
+import { PDFDocument, rgb } from 'pdf-lib';
+import fontkit from '@pdf-lib/fontkit';
 import axios from "axios";
 
 
@@ -269,35 +270,100 @@ function SignerContratGestionnaire({setSelectedContract}) {
         try {
             setContrat(contrat);
             const pdfDoc = await PDFDocument.create();
-            const page = pdfDoc.addPage();
+            pdfDoc.registerFontkit(fontkit);
+            const boldFontBytes = await fetch('/fonts/arialceb.ttf').then(res => res.arrayBuffer());
+            const boldFont = await pdfDoc.embedFont(boldFontBytes);
 
-            console.log("employeur : " + JSON.stringify(employeur));
-            console.log("gestionnaire : " + JSON.stringify(gestionnaire));
+            const page1 = pdfDoc.addPage();
+            const page2 = pdfDoc.addPage();
+            const page3 = pdfDoc.addPage();
 
-            page.drawText(`Nom de l'étudiant: ${getNomEtudiant(contrat)}`, { x: 50, y: 700, size: 12 });
-            page.drawText(`Nom de l'employeur: ${employeur.prenom + " " + employeur.nom}`, { x: 50, y: 680, size: 12 });
-            page.drawText(`Nom du gestionnaire: ${gestionnaire.prenom + " " + gestionnaire.nom}`, { x: 50, y: 660, size: 12 });
+            const sections = [
+                { title: 'ENDROIT DU STAGE', content: `Adresse: ${contrat.location || "Non spécifiée"}` },
+                {
+                    title: 'DURÉE DU STAGE',
+                    content: `Date de début: \nDate de fin: \nNombre total de semaines:`,
+                },
+                {
+                    title: 'HORAIRE DE TRAVAIL',
+                    content: `Horaire de travail: \nNombre total d’heures par semaine:`,
+                },
+                {
+                    title: 'SALAIRE',
+                    content: `Salaire horaire:`,
+                },
+            ];
 
-            page.drawText(`Adresse: ${offreStage.location ? offreStage.location : "Non spécifiée"}`, { x: 50, y: 640, size: 12 });
-            // page.drawText(`Date de début: ${contrat.dateDebut}`, { x: 50, y: 620, size: 12 });
-            // page.drawText(`Date de fin: ${contrat.dateFin}`, { x: 50, y: 600, size: 12 });
+            const startX = 50;
+            let startY = 400;
+            const cellWidth = 500;
+            const headerHeight = 25;
+            const contentHeight = 50;
+
+            sections.forEach((section) => {
+                page2.drawRectangle({
+                    x: startX,
+                    y: startY,
+                    width: cellWidth,
+                    height: headerHeight,
+                    color: rgb(0.85, 0.85, 0.85),
+                });
+
+                page2.drawText(section.title, {
+                    x: startX + 5,
+                    y: startY + 8,
+                    size: 12,
+                    font: boldFont,
+                });
+
+                startY -= headerHeight;
+
+                page2.drawText(section.content, {
+                    x: startX + 5,
+                    y: startY + 10,
+                    size: 10,
+                });
+
+                page2.drawLine({
+                    start: { x: startX, y: startY - contentHeight },
+                    end: { x: startX + cellWidth, y: startY - contentHeight },
+                    thickness: 1,
+                    color: rgb(0.75, 0.75, 0.75),
+                });
+
+                startY -= contentHeight;
+            });
+
+            page1.drawText("CONTRAT DE STAGE", {x: 155, y: 450, size: 30, font: boldFont});
+
+            page2.drawText("ENTENTE DE STAGE INTERVENUE ENTRE LES PARTIES SUIVANTES", {x: 105, y: 770, size: 12, font: boldFont});
+            page2.drawText("Dans le cadre de la formule ATE, les parties citées ci-dessous :", {x: 135, y: 720, size: 12})
+
+            page2.drawText(`Le gestionnaire de stage : ${gestionnaire.prenom + " " + gestionnaire.nom}`, { x: 175, y: 690, size: 12 });
+            page2.drawText("et", { x: 300, y: 640, size: 12, font: boldFont })
+            page2.drawText(`L'employeur : ${employeur.prenom + " " + employeur.nom}`, { x: 235, y: 595, size: 12 });
+            page2.drawText("et", { x: 300, y: 550, size: 12, font: boldFont })
+            page2.drawText(`L'étudiant : ${getNomEtudiant(contrat)}`, { x: 235, y: 510, size: 12 });
+            page2.drawText("Conviennent des conditions de stage suivantes :", { x: 180, y: 460, size: 12 });
+
+            page3.drawText(`Adresse: ${offreStage.location ? offreStage.location : "Non spécifiée"}`, { x: 50, y: 640, size: 12 });
 
             if (contrat.signatureEtudiant) {
                 const signatureEtudiant = await pdfDoc.embedPng(contrat.signatureEtudiant);
-                page.drawText(`Signature de l'étudiant : `, { x: 50, y: 520, size: 12 });
-                page.drawImage(signatureEtudiant, { x: 175, y: 500, width: 150, height: 50 });
+                page3.drawText(`Signature de l'étudiant : `, { x: 50, y: 520, size: 12 });
+                page3.drawImage(signatureEtudiant, { x: 175, y: 500, width: 150, height: 50 });
             }
 
             if (contrat.signatureEmployeur) {
                 const signatureEmployeur = await pdfDoc.embedPng(contrat.signatureEmployeur);
-                page.drawText(`Signature de l'employeur : `, { x: 50, y: 470, size: 12 });
-                page.drawImage(signatureEmployeur, { x: 190, y: 450, width: 150, height: 50 });
+                page3.drawText(`Signature de l'employeur : `, { x: 50, y: 470, size: 12 });
+                page3.drawImage(signatureEmployeur, { x: 190, y: 450, width: 150, height: 50 });
             }
 
             if (contrat.signatureGestionnaire) {
                 const signatureGestionnaire = await pdfDoc.embedPng(contrat.signatureGestionnaire);
-                page.drawText(`Gestionnaire de stage : `, { x: 50, y: 420, size: 12 });
-                page.drawImage(signatureGestionnaire, { x: 175, y: 400, width: 150, height: 50 });
+                page3.drawText(`Gestionnaire de stage : `, { x: 50, y: 420, size: 12 });
+                page3.drawImage(signatureGestionnaire, { x: 175, y: 400, width: 150, height: 50 });
             }
 
             // Convert PDF document to base64 and print
