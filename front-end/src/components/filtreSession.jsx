@@ -1,102 +1,66 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Checkbox } from '@material-tailwind/react';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import {useTranslation} from "react-i18next";
 
-const FiltreSession = ({ annee, setAnnee, session, setSession}) => {
-    const { t } = useTranslation();
+const FiltreSession = ({ setAnnee, setSession }) => {
     const [sessions, setSessions] = useState([]);
-    const [annees, setAnnees] = useState([]);
-    const [showFilters, setShowFilters] = useState(false);
+    const [selectedSession, setSelectedSession] = useState(null);
+
+    const {t} = useTranslation();
 
     useEffect(() => {
         const fetchSessions = async () => {
             try {
-                const response = await fetch("http://localhost:8080/api/offres-stages/sessions");
-                const data = await response.json();
-                setSessions(data);
-            } catch (error) {
-                console.error('Erreur lors du chargement des sessions:', error);
-            }
-        };
+                // Récupère toutes les sessions disponibles
+                const allSessionsResponse = await axios.get("http://localhost:8080/api/offres-stages/get-all-sessions");
+                const allSessions = allSessionsResponse.data;
 
-        const fetchYears = async () => {
-            try {
-                const response = await fetch("http://localhost:8080/api/offres-stages/years");
-                const data = await response.json();
-                setAnnees(data);
+                // Récupère la prochaine session et la sélectionne par défaut
+                const nextSessionResponse = await axios.get("http://localhost:8080/api/offres-stages/get-next-session");
+                const nextSession = nextSessionResponse.data;
+
+                // Ajoute la prochaine session à la liste si elle n'est pas déjà incluse
+                const sessionsList = allSessions.some(
+                    session => session.session === nextSession.session && session.annee === nextSession.annee
+                ) ? allSessions : [...allSessions, nextSession];
+
+                setSessions(sessionsList);
+                setSelectedSession(nextSession);
+
+                // Met à jour les filtres dans le composant parent
+                setAnnee(nextSession.annee);
+                setSession(nextSession.session);
             } catch (error) {
-                console.error('Erreur lors du chargement des années:', error);
+                console.error("Erreur lors de la récupération des sessions:", error);
             }
         };
 
         fetchSessions();
-        fetchYears();
-    }, []);
+    }, [setAnnee, setSession]);
 
-    const clearFilters = () => {
-        setAnnee("");
-        setSession("");
-    }
+    const handleSessionChange = (event) => {
+        const selected = sessions.find(
+            session => `${session.session} ${session.annee}` === event.target.value
+        );
+        setSelectedSession(selected);
+        setAnnee(selected.annee);
+        setSession(selected.session);
+    };
 
     return (
-        <div className="p-4 text-right">
-            {/* Bouton pour afficher ou masquer les filtres */}
-            <button
-                onClick={() => setShowFilters(!showFilters)}
-                className="text-black-500 font-bold mb-4"
+        <div className="dropdown">
+            <select
+                id="sessionDropdown"
+                value={`${selectedSession?.session || ""} ${selectedSession?.annee || ""}`}
+                onChange={handleSessionChange}
+                className="dropdown-select"
             >
-                {showFilters ? t("masquerFiltres") : t("afficherFiltres")}
-                <span className="ml-1 text-xl">
-                    {showFilters ? '🠕' : '🠗'} {/* Flèche vers le haut ou vers le bas */}
-                </span>
-            </button>
-
-            {/* Contenu des filtres, masqué ou affiché selon l'état */}
-            {showFilters && (
-                <div>
-                    <div className="mb-4 justify-items-start">
-                        <h3 className="font-semibold">{t("annees")}</h3>
-                        {annees.map((year) => (
-                            <Checkbox
-                                key={year}
-                                label={year}
-                                checked={annee === year.toString()}
-                                onChange={() => {
-                                    // Toggle the selection of the year
-                                    setAnnee(annee === year.toString() ? "" : year.toString());
-                                }}
-                            />
-                        ))}
-                    </div>
-
-                    <div className="mb-4 justify-items-start">
-                        <h3 className="font-semibold">{t("sessions")}</h3>
-                        {sessions.map((sess) => (
-                            <Checkbox
-                                key={sess}
-                                label={t(sess)}
-                                checked={session === sess}
-                                onChange={() => {
-                                    // Toggle the selection of the session
-                                    setSession(session === sess ? "" : sess);
-                                }}
-                            />
-                        ))}
-                    </div>
-
-                    {/* Bouton pour effacer tous les filtres */}
-                    {(annee || session) && (
-                        <div className="text-left mb-4">
-                            <Button
-                                onClick={clearFilters}
-                                className="bg-gray-300 hover:bg-gray-400 text-black py-2 px-3 text-sm normal-case shadow-none rounded-md"
-                            >
-                                {t("eraseFilters")}
-                            </Button>
-                        </div>
-                    )}
-                </div>
-            )}
+                {sessions.map((session, index) => (
+                    <option key={index} value={`${session.session} ${session.annee}`}>
+                        {t(session.session)} {session.annee}
+                    </option>
+                ))}
+            </select>
         </div>
     );
 };
