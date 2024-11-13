@@ -278,5 +278,9 @@
     "creerContrat": "Create a contract",
     "creerContratDescription": "Create a contract with just one click",
     "stage": "Internship",
-    "employeurInconnu" : "Unknown employer"
+    "employeurInconnu" : "Unknown employer",
+    "evaluerEtudiant": "Evaluate student",
+    "noStudentToEvaluate": "No student to evaluate",
+    "evaluer": "Evalutate",
+    "remplirFormulaireDe": "Remplir le formulaire de "
 }

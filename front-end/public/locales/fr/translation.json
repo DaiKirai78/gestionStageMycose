@@ -278,5 +278,9 @@
     "creerContrat": "Créer un contrat",
     "creerContratDescription": "Créer un contrat en un seul clique",
     "stage": "Stage",
-    "employeurInconnu" : "Employeur inconnu"
+    "employeurInconnu" : "Employeur inconnu",
+    "evaluerEtudiant": "Évaluer étudiant",
+    "noStudentToEvaluate": "Aucun étudiant à évaluer",
+    "evaluer": "Évaluer",
+    "remplirFormulaireDe": "Remplir le formulaire de "
 }
