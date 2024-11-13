@@ -1,7 +1,7 @@
 import React from 'react';
 import { useOutletContext } from 'react-router-dom';
 import TokenPageContainer from './tokenPageContainer';
-import EvaluerEtudiantFormulaires from '../components/evaluer/evaluerEtudiantFormulaires';
+import EvaluerEtudiantFormulairesList from '../components/evaluer/evaluerEtudiantFormulairesList';
 
 const evaluerEtudiantFormulairePage = () => {
     const {setUserInfo, selectedStudent, setSelectedStudent} = useOutletContext();
@@ -9,7 +9,7 @@ const evaluerEtudiantFormulairePage = () => {
     return (
         
         <TokenPageContainer role={["EMPLOYEUR", "ENSEIGNANT"]} setUserInfo={setUserInfo}>
-            <EvaluerEtudiantFormulaires selectedStudent={selectedStudent} setSelectedStudent={setSelectedStudent}/>
+            <EvaluerEtudiantFormulairesList selectedStudent={selectedStudent} setSelectedStudent={setSelectedStudent}/>
         </TokenPageContainer>
     );
 };

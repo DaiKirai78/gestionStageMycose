@@ -7,7 +7,7 @@ const EvaluerListEtudiantCard = ({ student, setSelectedStudent, nomPrenom }) => 
     const navigator = useNavigate();
 
     function selectStudent() {
-        setSelectedStudent({student})
+        setSelectedStudent(student)
         navigator("/evaluer/formulaire");
     }
 

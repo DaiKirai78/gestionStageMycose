@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import EvaluerListEtudiant from './evaluerListEtudiant';
+import PageTitle from '../pageTitle';
 
 const students = [
     {
@@ -22,7 +23,7 @@ const EvaluerEtudiantEmployeur = ({ selectedStudent, setSelectedStudent }) => {
 
     return (
         <div className='flex flex-1 flex-col items-center bg-orange-light p-8'>
-            <h1 className='text-3xl md:text-4xl font-bold text-center mb-10'>{t("evaluerEtudiant")}</h1>
+            <PageTitle title={t("evaluerEtudiant")} />
             {
                 students && students.length <= 0 ? <p>{t("noStudentToEvaluate")}</p> 
                 : 
