@@ -29,6 +29,9 @@ import EtudiantConvocationPage from "./pages/etudiantConvocationPage.jsx";
 import SignerContratPage from './pages/SignerContratPage.jsx';
 import SignerContratPageLayout from './pages/signerContratPageLayout.jsx';
 import SignerUnContratPage from './pages/SignerUnContratPage.jsx';
+import EvaluerPage from './pages/evaluerPage.jsx';
+import EvaluerPageLayout from './pages/evaluerPageLayout.jsx';
+import EvaluerEtudiantFormulairePage from './pages/evaluerEtudiantFormulairePage.jsx';
 
 const router = createBrowserRouter([
   { path: "/", element: <ConnectionPage /> },
@@ -51,6 +54,15 @@ const router = createBrowserRouter([
       // { path: "/attribuerContrat/:id", element: <AttribuerContratPage/> },
       { path: "/attribuerContrat/:id", element: <AttribuerContratPage/> },
       { path: "/convocations", element: <EtudiantConvocationPage /> },
+
+      {
+        path: "/evaluer", 
+        element: <EvaluerPageLayout />, 
+        children: [
+          {path: "", element: <EvaluerPage />},
+          {path: "formulaire", element: <EvaluerEtudiantFormulairePage />}
+        ]
+      },
 
       {
         path: "/contrats",
