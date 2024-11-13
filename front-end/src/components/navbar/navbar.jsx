@@ -29,6 +29,11 @@ const navLinks = {
             "titre": "signerContrats",
             "lien": "/contrats",
             "autreLiens": ["/contrats/signer"]
+        },
+        {
+            "titre": "evaluerEtudiant",
+            "lien": "/evaluer",
+            "autreLiens": ["/evaluer/formulaire"]
         }
     ],
     "GESTIONNAIRE_STAGE": [
