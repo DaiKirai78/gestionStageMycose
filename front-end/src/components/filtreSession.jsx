@@ -11,15 +11,12 @@ const FiltreSession = ({ setAnnee, setSession }) => {
     useEffect(() => {
         const fetchSessions = async () => {
             try {
-                // Récupère toutes les sessions disponibles
                 const allSessionsResponse = await axios.get("http://localhost:8080/api/offres-stages/get-all-sessions");
                 const allSessions = allSessionsResponse.data;
 
-                // Récupère la prochaine session et la sélectionne par défaut
                 const nextSessionResponse = await axios.get("http://localhost:8080/api/offres-stages/get-next-session");
                 const nextSession = nextSessionResponse.data;
 
-                // Ajoute la prochaine session à la liste si elle n'est pas déjà incluse
                 const sessionsList = allSessions.some(
                     session => session.session === nextSession.session && session.annee === nextSession.annee
                 ) ? allSessions : [...allSessions, nextSession];
@@ -27,7 +24,6 @@ const FiltreSession = ({ setAnnee, setSession }) => {
                 setSessions(sessionsList);
                 setSelectedSession(nextSession);
 
-                // Met à jour les filtres dans le composant parent
                 setAnnee(nextSession.annee);
                 setSession(nextSession.session);
             } catch (error) {
@@ -48,12 +44,12 @@ const FiltreSession = ({ setAnnee, setSession }) => {
     };
 
     return (
-        <div className="dropdown">
+        <div className="dropdown text-right mb-4">
             <select
                 id="sessionDropdown"
                 value={`${selectedSession?.session || ""} ${selectedSession?.annee || ""}`}
                 onChange={handleSessionChange}
-                className="dropdown-select"
+                className="dropdown-select bg-orange-light border-2 border-gray-600 font-bold py-2 px-4 rounded-lg"
             >
                 {sessions.map((session, index) => (
                     <option key={index} value={`${session.session} ${session.annee}`}>
