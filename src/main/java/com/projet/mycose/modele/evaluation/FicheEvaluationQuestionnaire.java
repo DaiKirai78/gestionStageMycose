@@ -11,22 +11,16 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class Question {
+public class FicheEvaluationQuestionnaire {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String questionKey;
-    private String question;
+    @ManyToOne
+    @JoinColumn(name = "fiche_evaluation_stagiraire_id", nullable = false)
+    private FicheEvaluationStagiaire ficheEvaluationStagiaire;
 
-    @Enumerated(EnumType.STRING)
-    private Resultat resultat;
-
-    public enum Resultat {
-        TOTALEMENT_EN_ACCORD,
-        PLUTOT_EN_ACCORD,
-        PLUTOT_EN_DESACCORD,
-        TOTALEMENT_EN_DESACCORD,
-        NA
-    }
+    @ManyToOne
+    @JoinColumn(name = "questionnaire_id", nullable = false)
+    private Questionnaire questionnaire;
 }

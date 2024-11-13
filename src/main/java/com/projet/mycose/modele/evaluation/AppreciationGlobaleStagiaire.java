@@ -1,9 +1,25 @@
 package com.projet.mycose.modele.evaluation;
 
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Embeddable
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class AppreciationGlobaleStagiaire {
 
-    private ReponseHabilitesAttentes reponse;
+    @Enumerated(EnumType.STRING)
+    private ReponseHabilitesAttentes reponseAppreciationGlobale;
+
     private boolean evaluationDiscutee;
+    private String nombreHeuresParSemaineAccordeStagiaire;
 
     public enum ReponseHabilitesAttentes {
         HABILITES_DEPASSENT_BEAUCOUP_ATTENTES,
