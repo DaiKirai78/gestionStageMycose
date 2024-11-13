@@ -32,94 +32,58 @@ const listeStage = () => {
     let navigate = useNavigate();
 
     let localhost = "http://localhost:8080/";
-    let urlGetFormulaireStage = "etudiant/getStages?pageNumber=";
-    let urlGetNombreDePage = "api/offres-stages/my-offres-pages";
-    let urlRechercheOffres = "api/offres-stages/my-offres";
     let urlGetOffresFiltre = "api/offres-stages/my-offres";
     let urlGetPagesFiltre = "api/offres-stages/my-offres-pages";
 
     let token = localStorage.getItem("token");
 
     useEffect(() => {
-        if (annee || session) {
-            fetchStages(0);
-            fetchNombrePages();
-        } else if (!annee || !session) {
+        if (annee && session) {
             fetchStages(0);
             fetchNombrePages();
         }
     }, [annee, session]);
 
-    useEffect(() => {
-        if (!recherche && !isSearching) {
-            fetchStages(0);
-        }
-    }, [recherche, isSearching]);
-
-    useEffect(() => {
-        fetchNombrePages();
-    }, []);
-
-    useEffect(() => {
-        isThereANextPage(false);
-        isItTheFirstPage(false);
-    }, [nombreDePage]);
-
-
     const fetchNombrePages = async () => {
         try {
-            let endpoint = annee || session ? urlGetPagesFiltre : urlGetNombreDePage;
-            const response = await axios.get(localhost + endpoint, {
+            const response = await axios.get(localhost + urlGetPagesFiltre, {
                 headers: { Authorization: `Bearer ${token}` },
-                params: { year: annee, sessionEcole: session, title: recherche || "" }
+                params: { year: annee, sessionEcole: session, title: recherche || "" },
             });
-            setNombreDePage(response.data);
+            setNombreDePage(response.data + 1);
+            mettreAJourEtatBoutons(0, response.data);
         } catch (error) {
             console.error("Erreur lors de la récupération du nombre de pages:", error);
         }
     };
 
-
     const fetchStages = async (pageNumber) => {
         setLoading(true);
         try {
-            let endpoint = annee || session ? urlGetOffresFiltre : urlGetFormulaireStage + pageNumber;
-            const response = await axios.get(localhost + endpoint, {
+            const response = await axios.get(localhost + urlGetOffresFiltre, {
                 headers: { Authorization: `Bearer ${token}` },
-                params: { pageNumber: pageNumber, year: annee, sessionEcole: session, title: recherche || "" }
+                params: { pageNumber, year: annee, sessionEcole: session, title: recherche || "" },
             });
             setStages(response.data);
             setLoading(false);
-            return response.data;
         } catch (error) {
             console.error("Erreur lors de la récupération des stages:", error);
             setLoading(false);
         }
     };
 
+    const mettreAJourEtatBoutons = (page, totalPages) => {
+        setPreviousPageDisabled(page === 0);
+        setNextPageDisabled(page >= totalPages - 1);
+    };
 
-    const fetchStagesByRecherche = async (pageNumber, doesItComeFromUseEffect) => {
-        setLoading(true);
-        try {
-            const responseRecherche = await axios.get(localhost + urlRechercheOffres, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                params: {
-                    pageNumber: pageNumber,
-                    year: annee,
-                    sessionEcole: session,
-                    title: recherche || ""
-                }
-            });
-            if (!doesItComeFromUseEffect)
-                setStages(responseRecherche.data);
-            setLoading(false);
-            return responseRecherche.data;
-        } catch (error) {
-            console.error("Erreur lors de la récupération des stages recherchés:", error);
-            setLoading(false);
+    const rechercher = async (e) => {
+        e.preventDefault();
+        if (recherche !== "") {
+            setIsSearching(true);
+            setRecherchePageActuelle(0);
+            await fetchStages(0);
+            await fetchNombrePages();
         }
     };
 
@@ -139,160 +103,35 @@ const listeStage = () => {
         setRecherche(e.target.value)
     }
 
-    async function rechercher(e) {
-        e.preventDefault();
-
-        if (recherche !== "") {
-            setUneRechercheEstFaite(true);
-            setIsSearching(true);
-            setRecherchePageActuelle(0);
-            setStages([]);
-            if(annee || session) {
-                await fetchStages(0);
-                await fetchNombrePages();
-            } else {
-                await fetchStagesByRecherche(0, false);
-            }
-        }
-    }
-
-    useEffect(() => {
-        if (isSearching) {
-            isThereANextPage(false);
-            isItTheFirstPage(false);
-        }
-    }, [isSearching]);
-
     const handleKeyDown = (e) => {
         if (e.key === 'Enter' && recherche !== "") {
             rechercher(e);
         }
     }
 
-    function supprimerRecherche() {
-        setUneRechercheEstFaite(false);
+    const supprimerRecherche = () => {
         setRecherche('');
         setIsSearching(false);
-        setRecherchePageActuelle(0);
-        setPageActuelle(0);
         fetchStages(0);
-    }
+    };
 
-    async function isThereANextPage(doesItComeFromNextPage) {
-        if (isSearching) {
-            if (annee || session) {
-                const response = await fetchStages(recherchePageActuelle + 1);
-                if (!doesItComeFromNextPage)
-                    await fetchStages(recherchePageActuelle);
-                return !(response === undefined || response === null || response.length === 0);
-            } else {
-                const response = await fetchStagesByRecherche(recherchePageActuelle + 1, false);
-                if (!doesItComeFromNextPage)
-                    await fetchStagesByRecherche(recherchePageActuelle, false);
-                return response.length !== 0;
-            }
-        } else {
-            if (!doesItComeFromNextPage)
-                await fetchStages(recherchePageActuelle);
-            return pageActuelle < nombreDePage - 1;
+    const nextPage = async () => {
+        if (pageActuelle < nombreDePage - 1) {
+            const newPage = pageActuelle + 1;
+            setPageActuelle(newPage);
+            fetchStages(newPage);
+            mettreAJourEtatBoutons(newPage, nombreDePage);
         }
-    }
+    };
 
-    async function isItTheFirstPage(doesItComeFromPreviousPage) {
-        if (isSearching) {
-            if (annee || session) {
-                return recherchePageActuelle < 0;
-            } else {
-                const response = await fetchStagesByRecherche(recherchePageActuelle - 1, false)
-                if (!doesItComeFromPreviousPage)
-                    await fetchStagesByRecherche(recherchePageActuelle, false);
-                return response.length === 0;
-            }
-        } else {
-            if (!doesItComeFromPreviousPage)
-                await fetchStages(recherchePageActuelle);
-            return pageActuelle === 0;
+    const previousPage = async () => {
+        if (pageActuelle > 0) {
+            const newPage = pageActuelle - 1;
+            setPageActuelle(newPage);
+            fetchStages(newPage);
+            mettreAJourEtatBoutons(newPage, nombreDePage);
         }
-    }
-
-    async function nextPage() {
-        let nextPage = true;
-        const hasNextPage = await isThereANextPage(nextPage);
-        if (hasNextPage) {
-            if (isSearching) {
-                setRecherchePageActuelle((prevPage) => {
-                    const newPage = prevPage + 1;
-                    if (annee || session) {
-                        fetchStages(newPage);
-                    } else {
-                        fetchStagesByRecherche(newPage, false);
-                    }
-
-                    return newPage;
-                });
-            } else {
-                setPageActuelle((prevPage) => {
-                    const newPage = prevPage + 1;
-                    fetchStages(newPage);
-                    return newPage;
-                });
-            }
-        }
-    }
-
-    async function previousPage() {
-        let previousPage = true;
-        let isFirstPage = await isItTheFirstPage(previousPage);
-        if (!isFirstPage) {
-            if (isSearching) {
-                setRecherchePageActuelle((prevPage) => {
-                    const newPage = prevPage - 1;
-                    if (annee || session) {
-                        fetchStages(newPage);
-                    } else {
-                        fetchStagesByRecherche(newPage, false);
-                    }
-
-                    return newPage;
-                });
-            } else {
-                setPageActuelle((prevPage) => {
-                    const newPage = prevPage - 1;
-                    fetchStages(newPage);
-                    return newPage;
-                });
-            }
-        }
-    }
-
-    useEffect(() => {
-        const verifierBoutonsPagination = async () => {
-            if (isSearching) {
-                if (annee || session) {
-                    const hasNextPage = await fetchStages(recherchePageActuelle + 1);
-                    console.log("recherchePageActuelle:", recherchePageActuelle);
-                    console.log("hasNextPage:", hasNextPage);
-                    if (hasNextPage === undefined || hasNextPage === null || hasNextPage.length === 0) {
-                        setNextPageDisabled(true);
-                    } else {
-                        setNextPageDisabled(false);
-                    }
-                    setPreviousPageDisabled(recherchePageActuelle <= 0);
-                } else {
-                    const hasNextPage = await fetchStagesByRecherche(recherchePageActuelle + 1, true);
-                    console.log("recherchePageActuelle:", recherchePageActuelle);
-                    console.log("hasNextPage:", hasNextPage);
-                    setNextPageDisabled(hasNextPage.length === 0);
-                    setPreviousPageDisabled(recherchePageActuelle <= 0);
-                }
-            } else {
-                setNextPageDisabled(pageActuelle >= nombreDePage - 1);
-                setPreviousPageDisabled(pageActuelle <= 0);
-            }
-        };
-
-        verifierBoutonsPagination();
-    }, [pageActuelle, recherchePageActuelle, nombreDePage, isSearching]);
+    };
 
     function formaterDate(dateAFormater) {
         return new Date(dateAFormater).toISOString().split('T')[0];
@@ -332,11 +171,7 @@ const listeStage = () => {
                         )
                     }
                 </div>
-                <FiltreSession annee={annee} 
-                                session={session} t
-                                setAnnee={setAnnee} 
-                                setSession={setSession} />
-
+                <FiltreSession setAnnee={setAnnee} setSession={setSession} />
                 <div className="mb-7">
                     <hr/>
                     {

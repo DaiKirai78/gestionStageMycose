@@ -2,7 +2,6 @@ package com.projet.mycose.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.projet.mycose.dto.*;
-import com.projet.mycose.modele.Employeur;
 import com.projet.mycose.modele.OffreStage;
 import com.projet.mycose.service.ApplicationStageService;
 import com.projet.mycose.service.OffreStageService;
@@ -112,14 +111,32 @@ public class OffreStageController {
         }
     }
 
+    @Deprecated
     @GetMapping("/sessions")
     public List<String> getSessions() {
         return offreStageService.getSessions();
     }
 
+    @Deprecated
     @GetMapping("/years")
     public List<Integer> getYears() {
         return offreStageService.getFutureYears();
+    }
+
+    //Pourra être utiliser pour que les étudiants regardent automatiquement la bonne session (la prochaine)
+    @GetMapping("/get-next-session")
+    public ResponseEntity<SessionInfoDTO> getNextSession() {
+        return ResponseEntity.status(HttpStatus.OK).body(offreStageService.getNextSession());
+    }
+
+    @GetMapping("get-all-sessions")
+    public ResponseEntity<List<SessionInfoDTO>> getAllSessions() {
+        return ResponseEntity.status(HttpStatus.OK).body(offreStageService.getAllSessions());
+    }
+
+    @GetMapping("/get-sessions-for-createur")
+    public ResponseEntity<List<SessionInfoDTO>> getSessionsForCreateur() {
+        return ResponseEntity.status(HttpStatus.OK).body(offreStageService.getSessionsForCreateur());
     }
 
     @GetMapping("/my-offres")
