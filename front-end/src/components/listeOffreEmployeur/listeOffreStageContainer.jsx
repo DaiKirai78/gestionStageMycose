@@ -20,7 +20,7 @@ const ListeOffreStageContainer = () => {
 
     useEffect(() => {
         window.onkeydown = (e) => {
-            if (e.key == "Escape")
+            if (e.key === "Escape")
                 setVoirPdf(false)
         }
     }, [])
