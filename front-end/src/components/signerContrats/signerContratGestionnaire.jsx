@@ -346,27 +346,165 @@ function SignerContratGestionnaire({setSelectedContract}) {
             page2.drawText(`L'étudiant : ${getNomEtudiant(contrat)}`, { x: 235, y: 510, size: 12 });
             page2.drawText("Conviennent des conditions de stage suivantes :", { x: 180, y: 460, size: 12 });
 
-            page3.drawText(`Adresse: ${offreStage.location ? offreStage.location : "Non spécifiée"}`, { x: 50, y: 640, size: 12 });
+            startY = 750;
 
-            if (contrat.signatureEtudiant) {
-                const signatureEtudiant = await pdfDoc.embedPng(contrat.signatureEtudiant);
-                page3.drawText(`Signature de l'étudiant : `, { x: 50, y: 520, size: 12 });
-                page3.drawImage(signatureEtudiant, { x: 175, y: 500, width: 150, height: 50 });
-            }
+            page3.drawText('TACHES ET RESPONSABILITES DU STAGIAIRE', {
+                x: startX,
+                y: startY,
+                size: 12,
+                font: boldFont,
+            });
 
-            if (contrat.signatureEmployeur) {
-                const signatureEmployeur = await pdfDoc.embedPng(contrat.signatureEmployeur);
-                page3.drawText(`Signature de l'employeur : `, { x: 50, y: 470, size: 12 });
-                page3.drawImage(signatureEmployeur, { x: 190, y: 450, width: 150, height: 50 });
-            }
+            startY -= 20;
+            page3.drawRectangle({
+                x: startX,
+                y: startY - 40,
+                width: 500,
+                height: 40,
+                borderColor: rgb(0, 0, 0),
+                borderWidth: 1,
+            });
+            page3.drawText(`[${contrat.offre_description || 'offre_description'}]`, {
+                x: startX + 5,
+                y: startY - 25,
+                size: 10,
+            });
 
-            if (contrat.signatureGestionnaire) {
-                const signatureGestionnaire = await pdfDoc.embedPng(contrat.signatureGestionnaire);
-                page3.drawText(`Gestionnaire de stage : `, { x: 50, y: 420, size: 12 });
-                page3.drawImage(signatureGestionnaire, { x: 175, y: 400, width: 150, height: 50 });
-            }
+            // RESPONSABILITES Section
+            startY -= 70;
+            page3.drawText('RESPONSABILITES', {
+                x: startX + 190,
+                y: startY,
+                size: 12,
+                font: boldFont,
+            });
 
-            // Convert PDF document to base64 and print
+            const responsibilities = [
+                "Le Collège s'engage à :",
+                "L’entreprise s’engage à :",
+                "L’étudiant s’engage à :"
+            ];
+
+            responsibilities.forEach((text, index) => {
+                startY -= 30;
+                page3.drawText(text, {
+                    x: startX,
+                    y: startY,
+                    size: 10,
+                });
+                startY -= 20;
+                page3.drawText("...", {
+                    x: startX + 20,
+                    y: startY,
+                    size: 10,
+                });
+                startY -= 10;
+            });
+
+            // Signatures Section Title
+            startY -= 40;
+            page3.drawRectangle({
+                x: startX,
+                y: startY,
+                width: 500,
+                height: 20,
+                color: rgb(0.85, 0.85, 0.85),
+            });
+            page3.drawText('SIGNATURES', {
+                x: startX + 5,
+                y: startY + 5,
+                size: 12,
+                font: boldFont,
+            });
+
+            // Main Signature Agreement Text
+            startY -= 30;
+            page3.drawText("Les parties s’engagent à respecter cette entente de stage", {
+                x: startX + 10,
+                y: startY + 12,
+                size: 10,
+                font: boldFont,
+            });
+            startY -= 15;
+            page3.drawText("En foi de quoi les parties ont signé,", {
+                x: startX + 10,
+                y: startY + 12,
+                size: 10,
+            });
+
+            // Signature Table
+            const signatureSections = [
+                { title: "L’étudiant(e) :", signature: "signature_etudiant", date: "date_signature_etudiant", name: "nom_etudiant" },
+                { title: "L’employeur :", signature: "signature_employeur", date: "date_signature_employeur", name: "nom_employeur" },
+                { title: "Le gestionnaire de stage :", signature: "signature_gestionnaire", date: "date_signature_gestionnaire", name: "nom_gestionnaire" },
+            ];
+
+            startY -= 25;
+            signatureSections.forEach((section) => {
+                // Section Title
+                page3.drawRectangle({ x: startX, y: startY+10, width: 500, height: 15, borderColor: rgb(0, 0, 0), borderWidth: 1 });
+                page3.drawText(section.title, {
+                    x: startX + 5,
+                    y: startY + 14,
+                    size: 10,
+                    font: boldFont,
+                });
+
+                // Signature and Date Cells
+                startY -= 15;
+                page3.drawRectangle({ x: startX, y: startY - 55, width: 250, height: 80, borderColor: rgb(0, 0, 0), borderWidth: 1 });
+                page3.drawRectangle({ x: startX + 250, y: startY - 55, width: 250, height: 80, borderColor: rgb(0, 0, 0), borderWidth: 1 });
+                page3.drawRectangle({ x: startX, y: startY - 55, width: 500, height: 20, borderColor: rgb(0, 0, 0), borderWidth: 1 });
+
+                page3.drawText(`[${section.signature}]`, {
+                    x: startX + 5,
+                    y: startY-15,
+                    size: 10,
+                });
+                page3.drawText(`[${section.date}]`, {
+                    x: startX + 255,
+                    y: startY-15,
+                    size: 10,
+                });
+
+                // Name and Date Labels
+                startY -= 15;
+                page3.drawText(`[${section.name}]`, {
+                    x: startX + 5,
+                    y: startY - 33,
+                    size: 10,
+                });
+                page3.drawText("Date", {
+                    x: startX + 255,
+                    y: startY - 33,
+                    size: 10,
+                });
+
+                // Move down for the next signature section
+                startY -= 65;
+            });
+
+
+            // page3.drawText(`Adresse: ${offreStage.location ? offreStage.location : "Non spécifiée"}`, { x: 50, y: 640, size: 12 });
+            //
+            // if (contrat.signatureEtudiant) {
+            //     const signatureEtudiant = await pdfDoc.embedPng(contrat.signatureEtudiant);
+            //     page3.drawText(`Signature de l'étudiant : `, { x: 50, y: 520, size: 12 });
+            //     page3.drawImage(signatureEtudiant, { x: 175, y: 500, width: 150, height: 50 });
+            // }
+            //
+            // if (contrat.signatureEmployeur) {
+            //     const signatureEmployeur = await pdfDoc.embedPng(contrat.signatureEmployeur);
+            //     page3.drawText(`Signature de l'employeur : `, { x: 50, y: 470, size: 12 });
+            //     page3.drawImage(signatureEmployeur, { x: 190, y: 450, width: 150, height: 50 });
+            // }
+            //
+            // if (contrat.signatureGestionnaire) {
+            //     const signatureGestionnaire = await pdfDoc.embedPng(contrat.signatureGestionnaire);
+            //     page3.drawText(`Gestionnaire de stage : `, { x: 50, y: 420, size: 12 });
+            //     page3.drawImage(signatureGestionnaire, { x: 175, y: 400, width: 150, height: 50 });
+            // }
+
             const pdfBytes = await pdfDoc.saveAsBase64();
 
             printJS({ printable: pdfBytes, type: 'pdf', base64: true });
