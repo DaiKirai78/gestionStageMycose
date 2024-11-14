@@ -7,6 +7,7 @@ import com.projet.mycose.service.ApplicationStageService;
 import com.projet.mycose.service.OffreStageService;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -157,6 +158,17 @@ public class OffreStageController {
             @RequestParam(value = "title", required = false, defaultValue = "") String title
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(offreStageService.getAmountOfPagesForEtudiantFiltered(year, sessionEcole, title));
+    }
+
+    @GetMapping("/my-offres-all")
+    public ResponseEntity<Page<OffreStageDTO>> getMyOffresByYearAndSessionEcoleAll(
+            @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) OffreStage.SessionEcole sessionEcole,
+            @RequestParam int pageNumber,
+            @RequestParam(value = "title", required = false, defaultValue = "") String title
+    ) {
+        Page<OffreStageDTO> offreStageDTOList = offreStageService.getAllOffreStagesForEtudiantFiltered(pageNumber, year, sessionEcole, title);
+        return ResponseEntity.status(HttpStatus.OK).body(offreStageDTOList);
     }
 
     //Offres postées par un Gestionnaire ou un Employeur
