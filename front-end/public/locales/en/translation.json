@@ -278,5 +278,16 @@
     "creerContrat": "Create a contract",
     "creerContratDescription": "Create a contract with just one click",
     "stage": "Internship",
-    "employeurInconnu" : "Unknown employer"
+    "employeurInconnu" : "Unknown employer",
+    "entrerHoraireJournee": "Intern's daily schedule",
+    "entrerHeuresParSemaine": "Number of working hours per week",
+    "horaireJourneeRequired": "Intern daily schedule is required.",
+    "heuresParSemaineRequired": "The number of hours to be worked per week is required.",
+    "entrerHeureValide" : "Please enter a valid time between 00:00 - 23:59",
+    "21aout": "August 21 ",
+    "27decembre": "December 27 ",
+    "25janvier": "January 25 ",
+    "30mai": "May 30 ",
+    "31mai": "May 31 ",
+    "20aout": "August 20 "
 }

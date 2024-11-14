@@ -1,9 +1,10 @@
-import {useState, useEffect } from "react";
+import {useState, useEffect} from "react";
 import axios from "axios";
-import { useTranslation } from "react-i18next";
+import {useTranslation} from "react-i18next";
+import InputMask from 'react-input-mask';
 
 function FormOffreStage() {
-    const { t } = useTranslation();
+    const {t} = useTranslation();
 
     const [formData, setFormData] = useState({
         entrepriseName: "",
@@ -16,7 +17,9 @@ function FormOffreStage() {
         description: "",
         programme: "",
         annee: "",
-        session: ""
+        session: "",
+        horaireJournee: "",
+        heuresParSemaine: ""
     });
 
     const [error, setError] = useState({
@@ -30,7 +33,9 @@ function FormOffreStage() {
         description: "",
         programme: "",
         annee: "",
-        session: ""
+        session: "",
+        horaireJournee: "",
+        heuresParSemaine: ""
     });
 
     const [programmes, setProgrammes] = useState([]);
@@ -81,7 +86,7 @@ function FormOffreStage() {
             const token = localStorage.getItem("token");
             try {
                 const response = await axios.post("http://localhost:8080/utilisateur/me", {}, {
-                    headers: { Authorization: `Bearer ${token}` },
+                    headers: {Authorization: `Bearer ${token}`},
                 });
                 const userData = response.data;
                 setRole(userData.role);
@@ -101,7 +106,7 @@ function FormOffreStage() {
                     const response = await axios.get(
                         `http://localhost:8080/gestionnaire/getEtudiantsParProgramme?programme=${formData.programme}`,
                         {
-                            headers: { Authorization: `Bearer ${token}` },
+                            headers: {Authorization: `Bearer ${token}`},
                         }
                     );
                     const sortedStudents = response.data.sort((a, b) => {
@@ -139,7 +144,8 @@ function FormOffreStage() {
 
 
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
+        const {name, value} = e.target;
+
         setFormData({
             ...formData,
             [e.target.name]: e.target.value,
@@ -156,6 +162,8 @@ function FormOffreStage() {
     const handleSubmitForm = async (e) => {
         let token = localStorage.getItem("token");
         e.preventDefault();
+        const [startHour, startMinute, endHour, endMinute] = formData.horaireJournee.split(/h| - |h/).map(Number);
+        console.log("dife : " + startHour + " " + startMinute + " " + endHour + " " + endMinute);
 
         let valid = true;
         let errors = {
@@ -169,7 +177,9 @@ function FormOffreStage() {
             description: "",
             programme: "",
             annee: "",
-            session: ""
+            session: "",
+            horaireJournee: "",
+            heuresParSemaine: ""
         };
 
         if (role === "GESTIONNAIRE_STAGE" && !formData.programme) {
@@ -261,6 +271,26 @@ function FormOffreStage() {
             valid = false;
         }
 
+        if (!formData.horaireJournee) {
+            errors.horaireJournee = t("horaireJourneeRequired");
+            valid = false;
+        }
+
+        if (
+            (startHour < 0 && startHour > 23) &&
+            (startMinute < 0 && startMinute > 59) &&
+            (endHour < 0 && endHour > 23) &&
+            (endMinute < 0 && endMinute > 59)
+        ) {
+            errors.horaireJournee = t("entrerHeureValide");
+            valid = false;
+        }
+
+        if (!formData.heuresParSemaine) {
+            errors.heuresParSemaine = t("heuresParSemaineRequired");
+            valid = false;
+        }
+
         setError(errors);
 
         if (!valid) {
@@ -273,7 +303,7 @@ function FormOffreStage() {
                 {
                     ...formData,
                     etudiantsPrives: isPrivate ? selectedStudents : null,
-                    programme: !formData.programme ? "NOT_SPECIFIED" : formData.programme 
+                    programme: !formData.programme ? "NOT_SPECIFIED" : formData.programme
                 },
                 {
                     headers: {
@@ -296,7 +326,9 @@ function FormOffreStage() {
                 description: "",
                 programme: "",
                 annee: "",
-                session: ""
+                session: "",
+                horaireJournee: "",
+                heuresParSemaine: ""
             });
             setSelectedStudents([]);
             setIsPrivate(false);
@@ -367,7 +399,7 @@ function FormOffreStage() {
 
 
             <div className="space-y-2">
-            <label htmlFor="website" className="block text-sm font-medium text-black mt-4">
+                <label htmlFor="website" className="block text-sm font-medium text-black mt-4">
                     {t("website")}
                 </label>
                 <input
@@ -471,7 +503,8 @@ function FormOffreStage() {
 
             {/* Input et label pour la session */}
             <div>
-                <label htmlFor="session" className="block text-sm font-medium text-black mt-4">{t("choisirSession")}</label>
+                <label htmlFor="session"
+                       className="block text-sm font-medium text-black mt-4">{t("choisirSession")}</label>
                 <select
                     id="session"
                     name="session"
@@ -488,6 +521,40 @@ function FormOffreStage() {
                 </select>
                 {error.session && <p className="text-red-500 text-sm">{error.session}</p>}
             </div>
+            <div>
+                <label htmlFor="horaireJournee" className="block text-sm font-medium text-black mt-4">
+                    {t("entrerHoraireJournee")}
+                </label>
+                <InputMask
+                    mask="99h99 - 99h99"
+                    placeholder="__h__ - __h__"
+                    alwaysShowMask={false}
+                    name="horaireJournee"
+                    value={formData.horaireJournee}
+                    onChange={handleInputChange}
+                    className={`mt-1 p-2 block w-full border ${error.title ? 'border-red-500' : 'border-black'} rounded-md bg-transparent`}
+                >
+                    {(inputProps) => <input {...inputProps} type="text"/>}
+                </InputMask>
+            </div>
+            {error.horaireJournee && <p className="text-red-500 text-sm">{error.horaireJournee}</p>}
+            <div>
+                <label htmlFor="heuresParSemaine" className="block text-sm font-medium text-black mt-4">
+                    {t("entrerHeuresParSemaine")}
+                </label>
+                <InputMask
+                    mask="99h"
+                    placeholder="__h"
+                    alwaysShowMask={false}
+                    name="heuresParSemaine"
+                    value={formData.heuresParSemaine}
+                    onChange={handleInputChange}
+                    className={`mt-1 p-2 block w-full border ${error.title ? 'border-red-500' : 'border-black'} rounded-md bg-transparent`}
+                >
+                    {(inputProps) => <input {...inputProps} type="text"/>}
+                </InputMask>
+            </div>
+            {error.heuresParSemaine && <p className="text-red-500 text-sm">{error.heuresParSemaine}</p>}
 
             {role === "GESTIONNAIRE_STAGE" && (
                 <div className="space-y-2">

@@ -49,10 +49,16 @@ public class FormulaireOffreStageDTO extends OffreStageDTO {
 
     private List<Long> etudiantsPrives;
 
+    @NotBlank(message = "Daily schedule is required.")
+    private String horaireJournee;
+
+    @NotBlank(message = "Hours per week is required.")
+    private String heuresParSemaine;
+
 
     //Avec étudiants privées
     @Builder
-    public FormulaireOffreStageDTO(Long id, String entrepriseName, String employerName, String email, String website, String title, String location, String salary, String description, LocalDateTime createdAt, LocalDateTime updatedAt, Long createur_id, OffreStage.Status status, Programme programme, OffreStage.Visibility visibility, List<Long> etudiantsPrives, OffreStage.SessionEcole session, int annee) {
+    public FormulaireOffreStageDTO(Long id, String entrepriseName, String employerName, String email, String website, String title, String location, String salary, String description, LocalDateTime createdAt, LocalDateTime updatedAt, Long createur_id, OffreStage.Status status, Programme programme, OffreStage.Visibility visibility, List<Long> etudiantsPrives, OffreStage.SessionEcole session, int annee, String horaireJournee, String heuresParSemaine) {
         super(id);
         this.employerName = employerName;
         this.email = email;
@@ -63,6 +69,8 @@ public class FormulaireOffreStageDTO extends OffreStageDTO {
         this.programme = programme;
         this.visibility = visibility;
         this.etudiantsPrives = etudiantsPrives;
+        this.horaireJournee = horaireJournee;
+        this.heuresParSemaine = heuresParSemaine;
         this.setCreatedAt(createdAt);
         this.setUpdatedAt(updatedAt);
         this.setCreateur_id(createur_id);
@@ -74,7 +82,7 @@ public class FormulaireOffreStageDTO extends OffreStageDTO {
     }
 
     @Builder
-    public FormulaireOffreStageDTO(Long id, String entrepriseName, String employerName, String email, String website, String title, String location, String salary, String description, LocalDateTime createdAt, LocalDateTime updatedAt, Long createur_id, OffreStage.Status status, Programme programme, OffreStage.Visibility visibility, OffreStage.SessionEcole session, int annee) {
+    public FormulaireOffreStageDTO(Long id, String entrepriseName, String employerName, String email, String website, String title, String location, String salary, String description, LocalDateTime createdAt, LocalDateTime updatedAt, Long createur_id, OffreStage.Status status, Programme programme, OffreStage.Visibility visibility, OffreStage.SessionEcole session, int annee, String horaireJournee, String heuresParSemaine) {
         super(id);
         this.employerName = employerName;
         this.email = email;
@@ -84,6 +92,8 @@ public class FormulaireOffreStageDTO extends OffreStageDTO {
         this.description = description;
         this.programme = programme;
         this.visibility = visibility;
+        this.horaireJournee = horaireJournee;
+        this.heuresParSemaine = heuresParSemaine;
         this.setCreatedAt(createdAt);
         this.setUpdatedAt(updatedAt);
         this.setCreateur_id(createur_id);
@@ -113,7 +123,9 @@ public class FormulaireOffreStageDTO extends OffreStageDTO {
                 formulaireOffreStage.getVisibility(),
                 Collections.emptyList(),
                 formulaireOffreStage.getSession(),
-                formulaireOffreStage.getAnnee().getValue()
+                formulaireOffreStage.getAnnee().getValue(),
+                formulaireOffreStage.getHoraireJournee(),
+                formulaireOffreStage.getHeuresParSemaine()
         );
     }
 }

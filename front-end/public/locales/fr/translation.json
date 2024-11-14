@@ -278,5 +278,16 @@
     "creerContrat": "Créer un contrat",
     "creerContratDescription": "Créer un contrat en un seul clique",
     "stage": "Stage",
-    "employeurInconnu" : "Employeur inconnu"
+    "employeurInconnu" : "Employeur inconnu",
+    "entrerHoraireJournee": "Horaire quotidien du stagiaire",
+    "entrerHeuresParSemaine": "Nombre d'heures de travail par semaine",
+    "horaireJourneeRequired": "L'horaire quotidien du stagiaire est requis.",
+    "heuresParSemaineRequired": "Le nombre d'heures à travailler par semaine est requis.",
+    "entrerHeureValide" : "Veuillez entrer une heure valide entre 00h00 - 23h59",
+    "21aout": "21 août ",
+    "27decembre": "27 décembre ",
+    "25janvier": "25 janvier ",
+    "30mai": "30 mai ",
+    "31mai": "31 mai ",
+    "20aout": "20 août "
 }

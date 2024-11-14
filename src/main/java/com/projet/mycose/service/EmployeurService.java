@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -90,6 +91,7 @@ public class EmployeurService {
         Contrat contratDispo = contrat.get();
         try {
             contratDispo.setSignatureEmployeur(signature.getBytes());
+            contratDispo.setDateSignatureEmployeur(LocalDateTime.now());
         } catch (IOException e) {
             throw new SignaturePersistenceException("Error while saving signature");
         }

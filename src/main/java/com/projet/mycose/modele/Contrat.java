@@ -27,6 +27,12 @@ public class Contrat {
     @Column(columnDefinition = "BYTEA")
     private byte[] signatureEmployeur;
 
+    private LocalDateTime dateSignatureEtudiant;
+
+    private LocalDateTime dateSignatureEmployeur;
+
+    private LocalDateTime dateSignatureGestionnaire;
+
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;
@@ -54,6 +60,9 @@ public class Contrat {
     public String toString() {
         return "Contrat{" +
                 "id=" + id +
+                ", dateSignatureEtudiant=" + dateSignatureEtudiant +
+                ", dateSignatureEmployeur=" + dateSignatureEmployeur +
+                ", dateSignatureGestionnaire=" + dateSignatureGestionnaire +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 ", etudiant=" + etudiant +

@@ -266,6 +266,22 @@ function SignerContratGestionnaire({setSelectedContract}) {
         }
     };
 
+    const dureeStage = (session, year) => {
+        if (session == "AUTOMNE")
+            return `${t("21aout") + year} - ${t("27decembre") + year}`;
+        if (session == "HIVER")
+            return `${t("25janvier") + year} - ${t("30mai") + year}`;
+        if (session == "ETE")
+            return `${t("31mai") + year} - ${t("20aout") + year}`;
+    }
+
+    const nombreDeSemaine = (session) => {
+        if (session == "AUTOMNE" || session == "HIVER")
+            return "18";
+        if (session == "ETE")
+            return "11";
+    }
+
     async function imprimer(contrat) {
         try {
             setContrat(contrat);
@@ -273,6 +289,9 @@ function SignerContratGestionnaire({setSelectedContract}) {
             pdfDoc.registerFontkit(fontkit);
             const boldFontBytes = await fetch('/fonts/arialceb.ttf').then(res => res.arrayBuffer());
             const boldFont = await pdfDoc.embedFont(boldFontBytes);
+            const signatureEtudiant = await pdfDoc.embedPng(contrat.signatureEtudiant);
+            const signatureEmployeur = await pdfDoc.embedPng(contrat.signatureEmployeur);
+            const signatureGestionnaire = await pdfDoc.embedPng(contrat.signatureGestionnaire);
 
             const page1 = pdfDoc.addPage();
             const page2 = pdfDoc.addPage();
@@ -282,15 +301,15 @@ function SignerContratGestionnaire({setSelectedContract}) {
                 { title: 'ENDROIT DU STAGE', content: `Adresse: ${contrat.location || "Non spécifiée"}` },
                 {
                     title: 'DURÉE DU STAGE',
-                    content: `Date de début: \nDate de fin: \nNombre total de semaines:`,
+                    content: `Dates: ${dureeStage(offreStage.session, offreStage.year)} \nNombre total de semaines: ${nombreDeSemaine(offreStage.session)}`,
                 },
                 {
                     title: 'HORAIRE DE TRAVAIL',
-                    content: `Horaire de travail: \nNombre total d’heures par semaine:`,
+                    content: `Horaire de travail: ${offreStage.horaireJournee} \nNombre total d’heures par semaine: ${offreStage.heuresParSemaine}`,
                 },
                 {
                     title: 'SALAIRE',
-                    content: `Salaire horaire:`,
+                    content: `Salaire horaire: ${offreStage.salary}`,
                 },
             ];
 
@@ -364,13 +383,12 @@ function SignerContratGestionnaire({setSelectedContract}) {
                 borderColor: rgb(0, 0, 0),
                 borderWidth: 1,
             });
-            page3.drawText(`[${contrat.offre_description || 'offre_description'}]`, {
+            page3.drawText(`[${offreStage.description || 'Pas de description'}]`, {
                 x: startX + 5,
                 y: startY - 25,
                 size: 10,
             });
 
-            // RESPONSABILITES Section
             startY -= 70;
             page3.drawText('RESPONSABILITES', {
                 x: startX + 190,
@@ -401,7 +419,6 @@ function SignerContratGestionnaire({setSelectedContract}) {
                 startY -= 10;
             });
 
-            // Signatures Section Title
             startY -= 40;
             page3.drawRectangle({
                 x: startX,
@@ -417,9 +434,8 @@ function SignerContratGestionnaire({setSelectedContract}) {
                 font: boldFont,
             });
 
-            // Main Signature Agreement Text
             startY -= 30;
-            page3.drawText("Les parties s’engagent à respecter cette entente de stage", {
+            page3.drawText(`Les parties s’engagent a respecter cette entente de stage`, {
                 x: startX + 10,
                 y: startY + 12,
                 size: 10,
@@ -432,16 +448,14 @@ function SignerContratGestionnaire({setSelectedContract}) {
                 size: 10,
             });
 
-            // Signature Table
             const signatureSections = [
-                { title: "L’étudiant(e) :", signature: "signature_etudiant", date: "date_signature_etudiant", name: "nom_etudiant" },
-                { title: "L’employeur :", signature: "signature_employeur", date: "date_signature_employeur", name: "nom_employeur" },
-                { title: "Le gestionnaire de stage :", signature: "signature_gestionnaire", date: "date_signature_gestionnaire", name: "nom_gestionnaire" },
+                { title: "L’étudiant(e) :", signature: signatureEtudiant, date: contrat.dateSignatureEtudiant, name: nomPrenom },
+                { title: "L’employeur :", signature: signatureEmployeur, date: contrat.dateSignatureEmployeur, name: employeur.prenom + " " + employeur.nom },
+                { title: "Le gestionnaire de stage :", signature: signatureGestionnaire, date: contrat.dateSignatureGestionnaire, name: gestionnaire.prenom + " " + gestionnaire.nom },
             ];
 
             startY -= 25;
             signatureSections.forEach((section) => {
-                // Section Title
                 page3.drawRectangle({ x: startX, y: startY+10, width: 500, height: 15, borderColor: rgb(0, 0, 0), borderWidth: 1 });
                 page3.drawText(section.title, {
                     x: startX + 5,
@@ -450,24 +464,25 @@ function SignerContratGestionnaire({setSelectedContract}) {
                     font: boldFont,
                 });
 
-                // Signature and Date Cells
                 startY -= 15;
                 page3.drawRectangle({ x: startX, y: startY - 55, width: 250, height: 80, borderColor: rgb(0, 0, 0), borderWidth: 1 });
                 page3.drawRectangle({ x: startX + 250, y: startY - 55, width: 250, height: 80, borderColor: rgb(0, 0, 0), borderWidth: 1 });
                 page3.drawRectangle({ x: startX, y: startY - 55, width: 500, height: 20, borderColor: rgb(0, 0, 0), borderWidth: 1 });
 
-                page3.drawText(`[${section.signature}]`, {
-                    x: startX + 5,
-                    y: startY-15,
-                    size: 10,
-                });
+                if (section.signature) {
+                    page3.drawImage(section.signature, {
+                        x: startX + 45,
+                        y: startY - 30,
+                        width: 150, height: 50,
+
+                    });
+                }
                 page3.drawText(`[${section.date}]`, {
                     x: startX + 255,
                     y: startY-15,
                     size: 10,
                 });
 
-                // Name and Date Labels
                 startY -= 15;
                 page3.drawText(`[${section.name}]`, {
                     x: startX + 5,
@@ -480,7 +495,6 @@ function SignerContratGestionnaire({setSelectedContract}) {
                     size: 10,
                 });
 
-                // Move down for the next signature section
                 startY -= 65;
             });
 

@@ -58,7 +58,7 @@ public class MycoseApplication implements CommandLineRunner {
 		enseignantService.creationDeCompte("François", "Lacousière", "514-024-0174", "francoislacoursiere@gmail.com", "Password10");
 		enseignantService.creationDeCompte("Didier", "Tremblay", "438-589-4792", "didiertremblay@gmail.com", "Password10");
 		//FormulaireOffreStageDTO formulaireOffreStageDTO = new FormulaireOffreStageDTO(1L, "Chco Factory", "Willy Wonka", "wonka@mail.com", "wonka.com", "Master Chocolatier", "New York", "100 000", "Make Chocolate", 4L, OffreStage.Status.WAITING);
-		FormulaireOffreStageDTO formulaireOffreStageDTO = new FormulaireOffreStageDTO(1L, "SUUPER", "Vicente", "vicen@mail.com", "www.vicen.ca", "Software Engineer Java Expert boy", "Montrèal", "95 000", "J'adore ingénieur!",LocalDateTime.now(), LocalDateTime.now(), 1L, OffreStage.Status.WAITING, Programme.GENIE_LOGICIEL, OffreStage.Visibility.PUBLIC, null, OffreStage.SessionEcole.AUTOMNE, 2022);
+		FormulaireOffreStageDTO formulaireOffreStageDTO = new FormulaireOffreStageDTO(1L, "SUUPER", "Vicente", "vicen@mail.com", "www.vicen.ca", "Software Engineer Java Expert boy", "Montrèal", "95 000", "J'adore ingénieur!",LocalDateTime.now(), LocalDateTime.now(), 1L, OffreStage.Status.WAITING, Programme.GENIE_LOGICIEL, OffreStage.Visibility.PUBLIC, null, OffreStage.SessionEcole.AUTOMNE, 2022, "9h - 17h", "40");
 
 		try{
 			//offreStageService.saveForm(formulaireOffreStageDTO, "Bearer " + token);

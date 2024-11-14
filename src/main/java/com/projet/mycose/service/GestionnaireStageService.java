@@ -29,6 +29,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -197,6 +198,7 @@ public class GestionnaireStageService {
         Contrat contratDispo = contrat.get();
         try {
             contratDispo.setSignatureGestionnaire(signature.getBytes());
+            contratDispo.setDateSignatureGestionnaire(LocalDateTime.now());
         } catch (IOException e) {
             throw new SignaturePersistenceException("Error while saving signature");
         }

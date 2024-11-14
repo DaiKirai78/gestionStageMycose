@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -148,6 +149,7 @@ public class EtudiantService {
                 .orElseThrow(() -> new ResourceNotFoundException("Contrat non trouvé"));
         try {
             contratDispo.setSignatureEtudiant(signature.getBytes());
+            contratDispo.setDateSignatureEtudiant(LocalDateTime.now());
         } catch (IOException e) {
             throw new SignaturePersistenceException("Error while saving signature");
         }
