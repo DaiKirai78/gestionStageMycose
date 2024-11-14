@@ -44,6 +44,7 @@ public class OffreStageService {
     private static final int LIMIT_PER_PAGE = 10;
     private final EtudiantRepository etudiantRepository;
     private final EtudiantOffreStagePriveeRepository etudiantOffreStagePriveeRepository;
+    private final FichierOffreStageRepository fichierOffreStageRepository;
 
     public OffreStageDTO convertToDTO(OffreStage offreStage){
         if (offreStage instanceof FormulaireOffreStage) {
@@ -483,5 +484,81 @@ public class OffreStageService {
             title = "";
         }
         return offreStageRepository.findAllByEtudiantFilteredWithTitle(etudiantDTO.getId(), etudiantDTO.getProgramme(), year, sessionEcole, title, pageRequest).map(this::convertToDTO);
+    }
+
+    public FichierOffreStageDTO updateOffreStage(UploadFicherOffreStageDTO uploadFicherOffreStageDTO, Long offreStageId) throws IOException {
+        UtilisateurDTO utilisateurDTO = utilisateurService.getMe();
+        Long createur_id = utilisateurDTO.getId();
+
+        Optional<FichierOffreStage> optionalFichierOffreStage = ficherOffreStageRepository.findById(offreStageId);
+       FichierOffreStage fichierOffreStage = optionalFichierOffreStage.orElseThrow(() -> new ResourceNotFoundException("FichierOffreStage not found with ID: " + offreStageId));
+
+        if (!fichierOffreStage.getCreateur().getId().equals(createur_id)) {
+            throw new AccessDeniedException("Vous n'avez pas les droits pour modifier cette offre de stage");
+        }
+
+        if (uploadFicherOffreStageDTO.getEntrepriseName() != null) {
+            fichierOffreStage.setEntrepriseName(uploadFicherOffreStageDTO.getEntrepriseName());
+        }
+
+        if (uploadFicherOffreStageDTO.getTitle() != null) {
+            fichierOffreStage.setTitle(uploadFicherOffreStageDTO.getTitle());
+        }
+
+        if (uploadFicherOffreStageDTO.getFile() != null) {
+            fichierOffreStage.setData(uploadFicherOffreStageDTO.getFile().getBytes());
+            fichierOffreStage.setFilename(Base64.getEncoder().encodeToString(uploadFicherOffreStageDTO.getFile().getBytes()));
+        }
+
+        return convertToDTO(fichierOffreStageRepository.save(fichierOffreStage));
+    }
+
+    public FormulaireOffreStageDTO updateOffreStage(FormulaireOffreStageDTO formulaireOffreStageDTO, Long offreStageId) throws AccessDeniedException {
+        UtilisateurDTO utilisateurDTO = utilisateurService.getMe();
+        Long createur_id = utilisateurDTO.getId();
+
+        Optional<FormulaireOffreStage> optionalFormulaireOffreStage = formulaireOffreStageRepository.findById(offreStageId);
+        FormulaireOffreStage formulaireOffreStage = optionalFormulaireOffreStage.orElseThrow(() -> new ResourceNotFoundException("FormulaireOffreStage not found with ID: " + offreStageId));
+
+        if (!formulaireOffreStage.getCreateur().getId().equals(createur_id)) {
+            throw new AccessDeniedException("Vous n'avez pas les droits pour modifier cette offre de stage");
+        }
+
+        if (formulaireOffreStageDTO.getEntrepriseName() != null) {
+            formulaireOffreStage.setEntrepriseName(formulaireOffreStageDTO.getEntrepriseName());
+        }
+
+        if (formulaireOffreStageDTO.getEmployerName() != null) {
+            formulaireOffreStage.setEmployerName(formulaireOffreStageDTO.getEmployerName());
+        }
+
+        if (formulaireOffreStageDTO.getEmail() != null) {
+            formulaireOffreStage.setEmail(formulaireOffreStageDTO.getEmail());
+        }
+
+        if (formulaireOffreStageDTO.getWebsite() != null) {
+            formulaireOffreStage.setWebsite(formulaireOffreStageDTO.getWebsite());
+        }
+
+
+        if (formulaireOffreStageDTO.getTitle() != null) {
+            formulaireOffreStage.setTitle(formulaireOffreStageDTO.getTitle());
+        }
+
+        if (formulaireOffreStageDTO.getLocation() != null) {
+            formulaireOffreStage.setLocation(formulaireOffreStageDTO.getLocation());
+        }
+
+        if (formulaireOffreStageDTO.getSalary() != null) {
+            formulaireOffreStage.setSalary(formulaireOffreStageDTO.getSalary());
+        }
+
+        if (formulaireOffreStageDTO.getDescription() != null) {
+            formulaireOffreStage.setDescription(formulaireOffreStageDTO.getDescription());
+        }
+
+        //TODO: Ajouter les nouvelles variables de Sam
+
+        return convertToDTO(formulaireOffreStageRepository.save(formulaireOffreStage));
     }
 }
