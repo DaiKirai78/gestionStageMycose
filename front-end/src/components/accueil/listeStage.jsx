@@ -44,13 +44,20 @@ const listeStage = () => {
         }
     }, [annee, session]);
 
+    useEffect(() => {
+        if (recherche === "" && !uneRechercheEstFaite) {
+            fetchStages(0);
+            fetchNombrePages();
+        }
+    }, [recherche]);
+
     const fetchNombrePages = async () => {
         try {
             const response = await axios.get(localhost + urlGetPagesFiltre, {
                 headers: { Authorization: `Bearer ${token}` },
                 params: { year: annee, sessionEcole: session, title: recherche || "" },
             });
-            setNombreDePage(response.data + 1);
+            setNombreDePage(response.data > 0 ? response.data : 1);
             mettreAJourEtatBoutons(0, response.data);
         } catch (error) {
             console.error("Erreur lors de la récupération du nombre de pages:", error);
@@ -81,6 +88,7 @@ const listeStage = () => {
         e.preventDefault();
         if (recherche !== "") {
             setIsSearching(true);
+            setUneRechercheEstFaite(true);
             setRecherchePageActuelle(0);
             await fetchStages(0);
             await fetchNombrePages();
@@ -110,9 +118,13 @@ const listeStage = () => {
     }
 
     const supprimerRecherche = () => {
-        setRecherche('');
         setIsSearching(false);
+        setUneRechercheEstFaite(false);
+        setRecherche('');
+        setPageActuelle(0);
+
         fetchStages(0);
+        fetchNombrePages();
     };
 
     const nextPage = async () => {
