@@ -15,8 +15,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
@@ -340,7 +338,7 @@ public class ApplicationStageServiceTest {
         when(utilisateurService.getMyUserId()).thenReturn(etudiantId);
         when(applicationStageRepository.findByEtudiantIdAndOffreStageId(etudiantId, applicationId)).thenReturn(Optional.of(applicationStage));
 
-        ApplicationStageAvecInfosDTO result = applicationStageService.getApplicationById(applicationId);
+        ApplicationStageAvecInfosDTO result = applicationStageService.getMyApplicationByOffreStageID(applicationId);
 
         assertNotNull(result, "The returned ApplicationStageAvecInfosDTO should not be null.");
         assertEquals(applicationStageAvecInfosDTO.getId(), result.getId(), "DTO ID should match.");
@@ -361,7 +359,7 @@ public class ApplicationStageServiceTest {
         when(applicationStageRepository.findByEtudiantIdAndOffreStageId(etudiantId, applicationId)).thenReturn(Optional.empty());
 
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
-            applicationStageService.getApplicationById(applicationId);
+            applicationStageService.getMyApplicationByOffreStageID(applicationId);
         }, "Expected NotFoundException to be thrown.");
 
         assertNotNull(exception, "Exception should not be null.");

@@ -11,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @RestController
@@ -42,9 +41,10 @@ public class ApplicationStageController {
         return new ResponseEntity<>(applicationStageService.getApplicationsByEtudiantWithStatus(status), HttpStatus.OK);
     }
 
+    //ID représente l'ID de l'offre de stage et non de l'application
     @GetMapping("/my-applications/{id}")
-    public ResponseEntity<ApplicationStageAvecInfosDTO> getMyApplication(@PathVariable Long id) {
-        return new ResponseEntity<>(applicationStageService.getApplicationById(id), HttpStatus.OK);
+    public ResponseEntity<ApplicationStageAvecInfosDTO> getMyApplicationByOffreStageID(@PathVariable Long id) {
+        return new ResponseEntity<>(applicationStageService.getMyApplicationByOffreStageID(id), HttpStatus.OK);
     }
 
     @PatchMapping("/application/{id}/accepter")
