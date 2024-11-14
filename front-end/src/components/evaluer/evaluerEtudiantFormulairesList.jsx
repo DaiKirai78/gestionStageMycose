@@ -97,7 +97,7 @@ const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent })
     ];
     
 
-    function handleRadioChange(formId, criterionId, value) {
+    function handleRadioChange(formId, criterionId, value) {        
         setFormData(prev => ({
             ...prev,
             [formId]: {
@@ -118,31 +118,73 @@ const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent })
     };
 
     function sendForm() {
-        if (!allChampsValide()) {
-            
+        let [hasError, firstToHaveAnErrorId] = allChampsValide();
+        
+        if (hasError) {
+            scrollToId(firstToHaveAnErrorId)
+            console.log("Erreur");
             return;
         }
-        console.log(formData);
+        console.log("Succes");
+        
         
     }
 
-    // function allChampsValide() {
-    //     let hasError = false;
-    //     let modifiedFormData = {...formData}
-    //     for(const form in formData) {
-    //         for (const champ in form) {
-    //             if (!(value.trim())) {
-    //                 hasError = true;
-    //                 modifiedFormData = {
-    //                     ...modifiedFormData,
-    //                     [champ.id]: {hasError: true, value: champ.value}
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
+    function allChampsValide() {
+        let hasError = false;
+        let modifiedFormData = {...formData}
+        let firstToHaveAnErrorId = null;
 
+        for (const [formKey, form] of Object.entries(formData)) {
+            let newForm = {}
+            for (const [key, value] of Object.entries(form)) {
+                if (key === "commentaires") {
+                    continue;
+                }
 
+                let newValue = value;
+                if (!value.value.trim()) {
+                    if (!firstToHaveAnErrorId) {
+                        firstToHaveAnErrorId = key
+                    }                    
+                    hasError = true;
+                    newValue = {
+                        hasError: true,
+                        value: ""
+                    }
+                }
+
+                newForm = {
+                    ...newForm,
+                    [key]: newValue
+                }
+            }
+            modifiedFormData = {
+                ...modifiedFormData,
+                [formKey]: {...newForm}
+            }
+        }
+
+        setFormData(modifiedFormData);
+        return [hasError, firstToHaveAnErrorId];
+    }
+
+    function scrollToId(id) {
+        const element = document.getElementById(id);
+    
+        if (!element) {
+            return;
+        }
+    
+        const elementRect = element.getBoundingClientRect();
+        const offset = (window.innerHeight / 2) - (elementRect.height / 2);
+    
+        window.scrollTo({
+            top: window.scrollY + elementRect.top - offset,
+            behavior: "smooth"
+        });
+    }
+    
 
     return (
         <div className='flex flex-col flex-1 items-center bg-orange-light p-8'>
