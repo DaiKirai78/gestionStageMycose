@@ -31,47 +31,31 @@ const listeStage = () => {
 
     let navigate = useNavigate();
 
-    let localhost = "http://localhost:8080/";
-    let urlGetOffresFiltre = "api/offres-stages/my-offres";
-    let urlGetPagesFiltre = "api/offres-stages/my-offres-pages";
-
     let token = localStorage.getItem("token");
 
     useEffect(() => {
         if (annee && session) {
             fetchStages(0);
-            fetchNombrePages();
         }
     }, [annee, session]);
 
     useEffect(() => {
         if (recherche === "" && !uneRechercheEstFaite) {
             fetchStages(0);
-            fetchNombrePages();
         }
     }, [recherche]);
-
-    const fetchNombrePages = async () => {
-        try {
-            const response = await axios.get(localhost + urlGetPagesFiltre, {
-                headers: { Authorization: `Bearer ${token}` },
-                params: { year: annee, sessionEcole: session, title: recherche || "" },
-            });
-            setNombreDePage(response.data > 0 ? response.data : 1);
-            mettreAJourEtatBoutons(0, response.data);
-        } catch (error) {
-            console.error("Erreur lors de la récupération du nombre de pages:", error);
-        }
-    };
 
     const fetchStages = async (pageNumber) => {
         setLoading(true);
         try {
-            const response = await axios.get(localhost + urlGetOffresFiltre, {
+            const response = await axios.get("http://localhost:8080/api/offres-stages/my-offres-all", {
                 headers: { Authorization: `Bearer ${token}` },
                 params: { pageNumber, year: annee, sessionEcole: session, title: recherche || "" },
             });
-            setStages(response.data);
+            setStages(response.data.content);
+            setPageActuelle(response.data.pageable.pageNumber);
+            setNombreDePage(response.data.totalPages);
+            mettreAJourEtatBoutons(response.data.pageable.pageNumber, response.data.totalPages);
             setLoading(false);
         } catch (error) {
             console.error("Erreur lors de la récupération des stages:", error);
@@ -91,7 +75,6 @@ const listeStage = () => {
             setUneRechercheEstFaite(true);
             setRecherchePageActuelle(0);
             await fetchStages(0);
-            await fetchNombrePages();
         }
     };
 
@@ -124,7 +107,6 @@ const listeStage = () => {
         setPageActuelle(0);
 
         fetchStages(0);
-        fetchNombrePages();
     };
 
     const nextPage = async () => {

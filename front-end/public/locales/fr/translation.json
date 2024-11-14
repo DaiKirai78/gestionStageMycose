@@ -304,5 +304,7 @@
     "studentsWithSummon": "Étudiants avec convocation",
     "interviewedStudents": "Étudiants interviewés",
     "unapprovedInternships": "Stages non validées",
-    "approvedInternships": "Stages validées"
+    "approvedInternships": "Stages validées",
+    "StatutCandidature": "Statut de la candidature",
+    "INTERVIEWED": "Interviewé"
 }
