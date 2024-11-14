@@ -54,8 +54,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<Map<String, String>> handleConstraintViolationException(ConstraintViolationException ex) {
         Map<String, String> errors = new HashMap<>();
-        ex.getConstraintViolations().forEach(violation ->
-                errors.put(violation.getPropertyPath().toString(), violation.getMessage()));
+        ex.getConstraintViolations().forEach(violation -> {
+            String fieldPath = violation.getPropertyPath().toString();
+            // Extract only the last part of the path (the actual field name)
+            String fieldName = fieldPath.contains(".") ? fieldPath.substring(fieldPath.lastIndexOf('.') + 1) : fieldPath;
+            errors.put(fieldName, violation.getMessage());
+        });
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
     }
 }
