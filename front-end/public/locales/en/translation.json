@@ -306,5 +306,6 @@
     "unapprovedInternships": "Unapproved internships",
     "approvedInternships": "Approved internships",
     "StatutCandidature": "Application status",
-    "INTERVIEWED": "Interviewed"
+    "INTERVIEWED": "Interviewed",
+    "noDataAvailable": "No data available"
 }

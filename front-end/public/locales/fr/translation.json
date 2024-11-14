@@ -306,5 +306,6 @@
     "unapprovedInternships": "Stages non validées",
     "approvedInternships": "Stages validées",
     "StatutCandidature": "Statut de la candidature",
-    "INTERVIEWED": "Interviewé"
+    "INTERVIEWED": "Interviewé",
+    "noDataAvailable": "Aucune donnée disponible"
 }

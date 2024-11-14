@@ -53,7 +53,7 @@ const Rapports = () => {
 
                 <div className="report-data">
                     {data.length === 0 ? (
-                        <p>{t("No data available")}</p>
+                        <p>{t("noDataAvailable")}</p>
                     ) : (
                         data.map((item) => (
                             <div key={item.id} className="border-b border-gray-300 py-2">
