@@ -5,7 +5,7 @@ import BoutonAvancerReculer from '../listeOffreEmployeur/boutonAvancerReculer.js
 
 
 
-const ListOffreStageEmployeur = ({data, voirPdf, setVoirPdf, activeOffer, setActiveOffer, pages, setPages}) => {
+const ListeOffreStageEmployeurEtGestionnaire = ({data, voirPdf, setVoirPdf, activeOffer, setActiveOffer, pages, setPages}) => {
 
     useEffect(() => {
         if (data && data.length > 0) {
@@ -54,4 +54,4 @@ const ListOffreStageEmployeur = ({data, voirPdf, setVoirPdf, activeOffer, setAct
     );
 }
 
-export default ListOffreStageEmployeur;
+export default ListeOffreStageEmployeurEtGestionnaire;
