@@ -16,7 +16,7 @@ const EvaluerFormulaire = ({ form, ratingOptions, handleRadioChange, handleComme
 
     return (
         (
-            <div className="w-full max-w-4xl bg-white rounded-lg shadow-md p-6 mb-8">
+            <div className="max-w-4xl bg-white rounded-lg shadow-md p-6 mb-8">
                 <h2 className="text-xl font-bold">{form.title}</h2>
                 <hr className='mt-3 mb-4' />
                 <p className="mb-4 text-gray-700">{form.description}</p>

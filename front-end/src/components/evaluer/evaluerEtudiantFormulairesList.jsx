@@ -187,7 +187,7 @@ const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent })
     
 
     return (
-        <div className='flex flex-col flex-1 items-center bg-orange-light p-8'>
+        <div className='flex flex-col flex-1 items-start sm:items-center bg-orange-light p-8 overflow-x-auto'>
             <PageTitle title={t("remplirFormulaireDe") + getNomPrenom()} />
 
             {forms.map((form) => 
