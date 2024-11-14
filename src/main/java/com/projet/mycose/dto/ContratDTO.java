@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.Base64;
 
 @Getter
@@ -30,6 +31,12 @@ public class ContratDTO {
             message = "Invalid file data. Should be Base64 encoded.")
     private String signatureEmployeur;
 
+    private LocalDateTime dateSignatureEtudiant;
+
+    private LocalDateTime dateSignatureEmployeur;
+
+    private LocalDateTime dateSignatureGestionnaire;
+
     @NotBlank(message = "Student is required.")
     @Pattern(regexp = "^[0-9]*$",
             message = "Must be a number.")
@@ -51,6 +58,9 @@ public class ContratDTO {
                 contrat.getSignatureGestionnaire() != null ? Base64.getEncoder().encodeToString(contrat.getSignatureGestionnaire()) : null,
                 contrat.getSignatureEtudiant() != null ? Base64.getEncoder().encodeToString(contrat.getSignatureEtudiant()) : null,
                 contrat.getSignatureEmployeur() != null ? Base64.getEncoder().encodeToString(contrat.getSignatureEmployeur()) : null,
+                contrat.getDateSignatureEtudiant() != null ? contrat.getDateSignatureEtudiant() : null,
+                contrat.getDateSignatureEmployeur() != null ? contrat.getDateSignatureEmployeur() : null,
+                contrat.getDateSignatureGestionnaire() != null ? contrat.getDateSignatureGestionnaire() : null,
                 contrat.getEtudiant() != null ? contrat.getEtudiant().getId() : null,
                 contrat.getEmployeur() != null ? contrat.getEmployeur().getId() : null,
                 contrat.getGestionnaireStage() != null ? contrat.getGestionnaireStage().getId() : null

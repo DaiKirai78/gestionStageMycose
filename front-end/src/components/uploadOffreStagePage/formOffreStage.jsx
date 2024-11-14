@@ -163,7 +163,6 @@ function FormOffreStage() {
         let token = localStorage.getItem("token");
         e.preventDefault();
         const [startHour, startMinute, endHour, endMinute] = formData.horaireJournee.split(/h| - |h/).map(Number);
-        console.log("dife : " + startHour + " " + startMinute + " " + endHour + " " + endMinute);
 
         let valid = true;
         let errors = {
@@ -275,12 +274,12 @@ function FormOffreStage() {
             errors.horaireJournee = t("horaireJourneeRequired");
             valid = false;
         }
-
+        console.log(Number(startHour));
         if (
-            (startHour < 0 && startHour > 23) &&
-            (startMinute < 0 && startMinute > 59) &&
-            (endHour < 0 && endHour > 23) &&
-            (endMinute < 0 && endMinute > 59)
+            (Number(startHour) < 0 || Number(startHour) > 23) ||
+            (Number(startMinute) < 0 || Number(startMinute) > 59) ||
+            (Number(endHour) < 0 || Number(endHour) > 23) ||
+            (Number(endMinute) < 0 || Number(endMinute) > 59)
         ) {
             errors.horaireJournee = t("entrerHeureValide");
             valid = false;
