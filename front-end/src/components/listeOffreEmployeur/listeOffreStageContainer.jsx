@@ -20,7 +20,7 @@ const ListeOffreStageContainer = () => {
 
     useEffect(() => {
         window.onkeydown = (e) => {
-            if (e.key == "Escape")
+            if (e.key === "Escape")
                 setVoirPdf(false)
         }
     }, [])
@@ -145,7 +145,7 @@ const ListeOffreStageContainer = () => {
     }
 
     return (
-        <div>
+        <>
             <div className={`bg-orange-light w-full min-h-full flex-1 flex flex-col items-center gap-10 p-5`}>
                 <div className='w-4/5'>
                     <FiltreSession
@@ -175,7 +175,7 @@ const ListeOffreStageContainer = () => {
                 </div>
             </div>
         {   voirPdf && <AfficherPdf setVoirPdf={setVoirPdf} activePdf={activeOffer.fileData} />}
-        </div>
+        </>
     )
 }
 
