@@ -147,7 +147,7 @@ const AppliquerStage = ({idStage}) => {
                             <p className="text-gray-500 mt-4 break-words">{t("publieLe") + formaterDate(unStage.createdAt) || t("DateNonDisponible")}</p>
 
                             {status && (
-                                <p className="text-gray-700 text-lg font-bold mt-6">
+                                <p className="text-gray-700 text-lg font-bold mt-6 text-center">
                                     {t("StatutCandidature")}: {t(status)}
                                 </p>
                             )}
