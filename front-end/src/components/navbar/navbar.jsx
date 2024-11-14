@@ -72,6 +72,10 @@ const navLinks = {
                 }
             ]
         },
+        {
+            "titre": "rapports",
+            "lien": "/rapports"
+        }
     ],
     "ENSEIGNANT": []
 }
