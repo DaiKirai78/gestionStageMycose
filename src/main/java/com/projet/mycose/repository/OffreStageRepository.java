@@ -106,8 +106,7 @@ public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
             "LEFT JOIN EtudiantOffreStagePrivee eop ON o.id = eop.offreStage.id " +
             "LEFT JOIN o.applicationStages a ON a.etudiant.id = :etudiantId " +
             "LEFT JOIN FichierOffreStage f ON o.id = f.id " + // Left join with subclass
-            "WHERE a.id IS NOT NULL " +
-            "AND (:annee IS NULL OR o.annee = :annee) " +
+            "WHERE (:annee IS NULL OR o.annee = :annee) " +
             "AND (:session IS NULL OR o.session = :session) " +
             "AND (" +
             "(o.visibility = 'PUBLIC' AND o.programme = :programme) " +
