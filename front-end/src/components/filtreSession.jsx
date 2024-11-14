@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import {useTranslation} from "react-i18next";
+import { useTranslation } from "react-i18next";
 
 const FiltreSession = ({ setAnnee, setSession }) => {
     const [sessions, setSessions] = useState([]);
     const [selectedSession, setSelectedSession] = useState(null);
     const [role, setRole] = useState("");
 
-    const {t} = useTranslation();
+    const { t } = useTranslation();
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -40,7 +40,6 @@ const FiltreSession = ({ setAnnee, setSession }) => {
                         }
                     );
                 } else {
-                    // Endpoint pour récupérer les sessions pour les créateurs
                     sessionsResponse = await axios.get(
                         "http://localhost:8080/api/offres-stages/get-sessions-for-createur",
                         {
@@ -59,11 +58,20 @@ const FiltreSession = ({ setAnnee, setSession }) => {
                 );
                 const nextSession = nextSessionResponse.data;
 
-                const sessionsList = allSessions.some(
-                    session => session.session === nextSession.session && session.annee === nextSession.annee
-                ) ? allSessions : [...allSessions, nextSession];
+                const sessionOrder = ["Hiver", "Été", "Automne"];
+                const sortedSessions = [...allSessions, nextSession].filter(
+                    (session, index, self) =>
+                        index === self.findIndex(
+                            (s) => s.session === session.session && s.annee === session.annee
+                        )
+                ).sort((a, b) => {
+                    if (a.annee === b.annee) {
+                        return sessionOrder.indexOf(a.session) - sessionOrder.indexOf(b.session);
+                    }
+                    return a.annee - b.annee;
+                });
 
-                setSessions(sessionsList);
+                setSessions(sortedSessions);
                 setSelectedSession(nextSession);
 
                 setAnnee(nextSession.annee);
