@@ -22,7 +22,9 @@ const EvaluerFormulaire = ({ form, ratingOptions, handleRadioChange, handleComme
                         <div key={criterion.id} className="grid grid-cols-[2fr,repeat(5,1fr)] gap-4 items-center py-2 border-t">
                             <div>{criterion.label}</div>
                             {ratingOptions.map((option) => (
-                                <div key={option.value} className="flex justify-center">
+                                <label key={option.value} 
+                                    htmlFor={`${form.id}-${criterion.id}-${option.value}`} 
+                                    className="flex justify-center h-full cursor-pointer hover:ring hover:ring-gray-300 rounded">
                                     <input
                                         type="radio"
                                         id={`${form.id}-${criterion.id}-${option.value}`}
@@ -31,7 +33,7 @@ const EvaluerFormulaire = ({ form, ratingOptions, handleRadioChange, handleComme
                                         checked={formData[form.id][criterion.id] === option.value}
                                         onChange={() => handleRadioChange(form.id, criterion.id, option.value)}
                                     />
-                                </div>
+                                </label>
                             ))}
                         </div>
                     ))}

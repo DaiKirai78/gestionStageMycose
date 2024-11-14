@@ -75,7 +75,7 @@ const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent })
             formDataTemp[form.id] = {};
             
             for (let critere of form.criteria) {
-                formDataTemp[form.id][critere.id] = "";
+                formDataTemp[form.id][critere.id] = {hasError: false, value: ""};
             }
         }        
         
@@ -97,25 +97,52 @@ const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent })
     ];
     
 
-    const handleRadioChange = (formId, criterionId, value) => {
+    function handleRadioChange(formId, criterionId, value) {
         setFormData(prev => ({
             ...prev,
             [formId]: {
                 ...prev[formId],
-                [criterionId]: value
+                [criterionId]: {hasError: false, value: value}
             }
         }));
     };
 
-    const handleCommentChange = (formId, value) => {
+    function handleCommentChange(formId, value) {
         setFormData(prev => ({
             ...prev,
             [formId]: {
                 ...prev[formId],
-                commentaires: value
+                commentaires: {hasError: false, value: value}
             }
         }));
     };
+
+    function sendForm() {
+        if (!allChampsValide()) {
+            
+            return;
+        }
+        console.log(formData);
+        
+    }
+
+    // function allChampsValide() {
+    //     let hasError = false;
+    //     let modifiedFormData = {...formData}
+    //     for(const form in formData) {
+    //         for (const champ in form) {
+    //             if (!(value.trim())) {
+    //                 hasError = true;
+    //                 modifiedFormData = {
+    //                     ...modifiedFormData,
+    //                     [champ.id]: {hasError: true, value: champ.value}
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
+
+
 
     return (
         <div className='flex flex-col flex-1 items-center bg-orange-light p-8'>
@@ -128,6 +155,11 @@ const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent })
                     ratingOptions={ratingOptions}
                     formData={formData} />
                 )}
+            <button 
+                onClick={sendForm}
+                className='bg-orange py-3 px-5 rounded text-white'>
+                {t("sendForm")}
+            </button>
         </div>
     );
 };

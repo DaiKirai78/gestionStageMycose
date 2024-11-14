@@ -282,5 +282,6 @@
     "evaluerEtudiant": "Évaluer étudiant",
     "noStudentToEvaluate": "Aucun étudiant à évaluer",
     "evaluer": "Évaluer",
-    "remplirFormulaireDe": "Remplir le formulaire de "
+    "remplirFormulaireDe": "Remplir le formulaire de ",
+    "sendForm": "Envoyer formulaire"
 }
