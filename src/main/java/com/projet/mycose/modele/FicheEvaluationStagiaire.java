@@ -1,9 +1,6 @@
 package com.projet.mycose.modele;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,6 +15,14 @@ public class FicheEvaluationStagiaire {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
+    @ManyToOne
+    @JoinColumn(name = "etudiant_id", nullable = false)
+    private Etudiant etudiant;
+
+    @ManyToOne
+    @JoinColumn(name = "etudiant_id", nullable = false)
+    private Employeur employeur;
 
     private String nomEtudiant;
     private Programme programmeEtude;
