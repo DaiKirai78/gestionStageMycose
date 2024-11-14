@@ -103,7 +103,7 @@ public class ApplicationStageService {
         return applicationStageRepository.findByEtudiantIdAndStatusEquals(etudiantId, status).stream().map(this::convertToDTOAvecInfos).toList();
     }
 
-    public ApplicationStageAvecInfosDTO getApplicationById(Long applicationId) {
+    public ApplicationStageAvecInfosDTO getMyApplicationByOffreStageID(Long applicationId) {
         Long etudiantId = utilisateurService.getMyUserId();
         return applicationStageRepository.findByEtudiantIdAndOffreStageId(etudiantId, applicationId)
                 .map(this::convertToDTOAvecInfos)

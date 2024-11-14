@@ -466,4 +466,22 @@ public class OffreStageService {
         Long createurId = utilisateurService.getMyUserId();
         return offreStageRepository.findDistinctSemesterAndYearByCreateurId(createurId);
     }
+
+    public Page<OffreStageDTO> getAllOffreStagesForEtudiantFiltered(int pageNumber, Integer annee, OffreStage.SessionEcole sessionEcole, String title) {
+        checkAnneeAndSessionTogether(annee, sessionEcole);
+        EtudiantDTO etudiantDTO;
+        try {
+            etudiantDTO = (EtudiantDTO) utilisateurService.getMe();
+        } catch (AccessDeniedException e) {
+            throw new AuthenticationException(HttpStatus.FORBIDDEN, "Authentication error");
+        }
+        PageRequest pageRequest = PageRequest.of(pageNumber, LIMIT_PER_PAGE);
+
+        Year year = (annee != null) ? Year.of(annee) : null;
+
+        if (title == null) {
+            title = "";
+        }
+        return offreStageRepository.findAllByEtudiantFilteredWithTitle(etudiantDTO.getId(), etudiantDTO.getProgramme(), year, sessionEcole, title, pageRequest).map(this::convertToDTO);
+    }
 }
