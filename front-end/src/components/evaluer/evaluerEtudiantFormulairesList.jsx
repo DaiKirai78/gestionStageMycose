@@ -190,14 +190,14 @@ const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent })
         <div className='flex flex-col flex-1 items-start sm:items-center bg-orange-light p-8 overflow-x-auto'>
             <PageTitle title={t("remplirFormulaireDe") + getNomPrenom()} />
 
-            {forms.map((form) => 
+            {forms.map((form) =>
                 <EvaluerFormulaire key={form.id} form={form} 
                     handleCommentChange={handleCommentChange} 
                     handleRadioChange={handleRadioChange}
                     ratingOptions={ratingOptions}
                     formData={formData} />
                 )}
-            <button 
+            <button
                 onClick={sendForm}
                 className='bg-orange py-3 px-5 rounded text-white'>
                 {t("sendForm")}
