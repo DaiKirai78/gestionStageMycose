@@ -1,23 +1,15 @@
 package com.projet.mycose.service;
 
-import com.projet.mycose.dto.ContratDTO;
-import com.projet.mycose.dto.LoginDTO;
+import com.projet.mycose.dto.*;
 import com.projet.mycose.exceptions.AuthenticationException;
 import com.projet.mycose.exceptions.ResourceNotFoundException;
 import com.projet.mycose.exceptions.SignaturePersistenceException;
 import com.projet.mycose.exceptions.UserNotFoundException;
-import com.projet.mycose.modele.Contrat;
-import com.projet.mycose.modele.Employeur;
-import com.projet.mycose.modele.OffreStage;
-import com.projet.mycose.modele.Utilisateur;
-import com.projet.mycose.repository.ContratRepository;
-import com.projet.mycose.repository.EmployeurRepository;
-import com.projet.mycose.repository.OffreStageRepository;
-import com.projet.mycose.dto.EmployeurDTO;
-import com.projet.mycose.dto.OffreStageDTO;
-import com.projet.mycose.repository.UtilisateurRepository;
+import com.projet.mycose.modele.*;
+import com.projet.mycose.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.User;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -30,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -45,6 +38,8 @@ public class EmployeurService {
     private final OffreStageRepository offreStageRepository;
     private final ContratRepository contratRepository;
     private final AuthenticationManager authenticationManager;
+    private final ModelMapper modelMapper;
+    private final FicheEvaluationStagiaireRepository ficheEvaluationStagiaireRepository;
     private final int LIMIT_PER_PAGE = 10;
 
     public EmployeurDTO creationDeCompte(String prenom, String nom, String numeroTelephone, String courriel, String motDePasse, String nomOrganisation) {
@@ -113,6 +108,46 @@ public class EmployeurService {
         }
 
         return nombrePages;
+    }
+
+    @Transactional
+    public void enregistrerFicheEvaluationStagiaire(FicheEvaluationStagiaireDTO ficheEvaluationStagiaireDTO, Long etudiantId) {
+        Utilisateur utilisateur = null;
+
+        try {
+            utilisateur = utilisateurService.getMeUtilisateur();
+        } catch (AccessDeniedException e) {
+            throw new AuthenticationException(HttpStatus.UNAUTHORIZED, "Problème d'authentification");
+        }
+
+        Employeur employeur = getValidatedEmployeur(utilisateur);
+        Optional<Utilisateur> etudiantOpt = utilisateurRepository.findUtilisateurById(etudiantId);
+
+        if(etudiantOpt.isEmpty())
+            throw new UserNotFoundException();
+
+        Etudiant etudiant = getValidatedEtudiant(etudiantOpt.get());
+
+        FicheEvaluationStagiaire ficheEvaluationStagiaire = modelMapper.map(ficheEvaluationStagiaireDTO, FicheEvaluationStagiaire.class);
+
+        ficheEvaluationStagiaire.setEmployeur(employeur);
+        ficheEvaluationStagiaire.setEtudiant(etudiant);
+
+        ficheEvaluationStagiaireRepository.save(ficheEvaluationStagiaire);
+    }
+
+    private Employeur getValidatedEmployeur(Utilisateur utilisateur) {
+        if (!(utilisateur instanceof Employeur employeur)) {
+            throw new AuthenticationException(HttpStatus.FORBIDDEN, "User is not an Employeur.");
+        }
+        return employeur;
+    }
+
+    private Etudiant getValidatedEtudiant(Utilisateur utilisateur) {
+        if (!(utilisateur instanceof Etudiant etudiant)) {
+            throw new AuthenticationException(HttpStatus.FORBIDDEN, "User is not an Etudiant.");
+        }
+        return etudiant;
     }
 
 }

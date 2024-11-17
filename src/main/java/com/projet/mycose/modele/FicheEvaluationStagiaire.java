@@ -21,7 +21,7 @@ public class FicheEvaluationStagiaire {
     private Etudiant etudiant;
 
     @ManyToOne
-    @JoinColumn(name = "etudiant_id", nullable = false)
+    @JoinColumn(name = "employeur_id", nullable = false)
     private Employeur employeur;
 
     private String nomEtudiant;
