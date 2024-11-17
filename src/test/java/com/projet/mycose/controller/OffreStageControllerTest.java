@@ -18,7 +18,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import com.fasterxml.jackson.databind.JsonNode;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -29,8 +31,8 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -101,15 +103,28 @@ public class OffreStageControllerTest {
 
     @Test
     void uploadFile_ConstraintViolationException() throws Exception {
+        MockMultipartFile mockFile = new MockMultipartFile("file", "validFile.pdf",
+                MediaType.APPLICATION_PDF_VALUE, "Some content".getBytes());
         ConstraintViolationException exception = mock(ConstraintViolationException.class);
-        when(exception.getConstraintViolations()).thenReturn(new HashSet<>());
-        when(offreStageService.saveFile(uploadFicherOffreStageDTO)).thenThrow(exception);
+        when(offreStageService.saveFile(any(UploadFicherOffreStageDTO.class))).thenThrow(exception);
 
-        ResponseEntity<?> response = offreStageController.uploadFile(uploadFicherOffreStageDTO);
+        MvcResult result = mockMvc.perform(multipart("/api/offres-stages/upload-file")
+                        .file(mockFile)
+                        .param("title", "Title")
+                        .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
 
-        assertNotNull(response);
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        verify(offreStageService, times(1)).saveFile(uploadFicherOffreStageDTO);
+        Exception resolvedException = result.getResolvedException();
+
+        // Assert that the resolved exception is not null
+        assertNotNull(resolvedException, "Resolved exception should not be null");
+
+        // Assert that the resolved exception is of type ConstraintViolationException
+        assertTrue(resolvedException instanceof ConstraintViolationException,
+                "Resolved exception should be an instance of ConstraintViolationException");
     }
 
     @Test

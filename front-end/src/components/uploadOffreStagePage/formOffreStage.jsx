@@ -15,8 +15,6 @@ function FormOffreStage() {
         salary: "",
         description: "",
         programme: "",
-        annee: "",
-        session: ""
     });
 
     const [error, setError] = useState({
@@ -29,8 +27,6 @@ function FormOffreStage() {
         salary: "",
         description: "",
         programme: "",
-        annee: "",
-        session: ""
     });
 
     const [programmes, setProgrammes] = useState([]);
@@ -39,8 +35,6 @@ function FormOffreStage() {
     const [role, setRole] = useState("");
     const [students, setStudents] = useState([]);
     const [selectedStudents, setSelectedStudents] = useState([]);
-    const [sessions, setSessions] = useState([]);
-    const [years, setYears] = useState([]);
     const [isPrivate, setIsPrivate] = useState(false);
 
     useEffect(() => {
@@ -53,27 +47,6 @@ function FormOffreStage() {
             }
         };
         fetchProgrammes();
-    }, []);
-
-    useEffect(() => {
-        const fetchYears = async () => {
-            try {
-                const response = await axios.get("http://localhost:8080/api/offres-stages/years");
-                setYears(response.data);
-            } catch (error) {
-                console.error("Erreur lors de la récupération des années :", error);
-            }
-        };
-        const fetchSessions = async () => {
-            try {
-                const response = await axios.get("http://localhost:8080/api/offres-stages/sessions");
-                setSessions(response.data);
-            } catch (error) {
-                console.error("Erreur lors de la récupération des sessions :", error);
-            }
-        };
-        fetchYears();
-        fetchSessions();
     }, []);
 
     useEffect(() => {
@@ -168,8 +141,6 @@ function FormOffreStage() {
             salary: "",
             description: "",
             programme: "",
-            annee: "",
-            session: ""
         };
 
         if (role === "GESTIONNAIRE_STAGE" && !formData.programme) {
@@ -251,16 +222,6 @@ function FormOffreStage() {
             valid = false;
         }
 
-        if (!formData.annee) {
-            errors.annee = t("yearRequired");
-            valid = false;
-        }
-
-        if (!formData.session) {
-            errors.session = t("sessionRequired");
-            valid = false;
-        }
-
         setError(errors);
 
         if (!valid) {
@@ -295,8 +256,6 @@ function FormOffreStage() {
                 salary: "",
                 description: "",
                 programme: "",
-                annee: "",
-                session: ""
             });
             setSelectedStudents([]);
             setIsPrivate(false);
@@ -447,46 +406,6 @@ function FormOffreStage() {
                     rows={10}
                 />
                 {error.description && <p className="text-red-500 text-sm mt-1">{error.description}</p>}
-            </div>
-
-            {/* Input et label pour l'année */}
-            <div>
-                <label htmlFor="annee" className="block text-sm font-medium text-black mt-4">{t("choisirAnnee")}</label>
-                <select
-                    id="annee"
-                    name="annee"
-                    className={`block w-full p-2 border border-black rounded-md ${error.annee ? 'border-red-500' : 'border-black'} bg-transparent`}
-                    value={formData.annee}
-                    onChange={handleInputChange}
-                >
-                    <option value="" className={"text-center"}>-- {t("choisirAnnee")} --</option>
-                    {years.map((year, index) => (
-                        <option key={index} value={year}>
-                            {year}
-                        </option>
-                    ))}
-                </select>
-                {error.annee && <p className="text-red-500 text-sm">{error.annee}</p>}
-            </div>
-
-            {/* Input et label pour la session */}
-            <div>
-                <label htmlFor="session" className="block text-sm font-medium text-black mt-4">{t("choisirSession")}</label>
-                <select
-                    id="session"
-                    name="session"
-                    className={`block w-full p-2 border border-black rounded-md ${error.session ? 'border-red-500' : 'border-black'} bg-transparent`}
-                    value={formData.session}
-                    onChange={handleInputChange}
-                >
-                    <option value="" className={"text-center"}>-- {t("choisirSession")} --</option>
-                    {sessions.map((session, index) => (
-                        <option key={index} value={session}>
-                            {t(session)}
-                        </option>
-                    ))}
-                </select>
-                {error.session && <p className="text-red-500 text-sm">{error.session}</p>}
             </div>
 
             {role === "GESTIONNAIRE_STAGE" && (

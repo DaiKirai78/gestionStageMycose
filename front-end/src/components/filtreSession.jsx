@@ -1,27 +1,77 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import {useTranslation} from "react-i18next";
+import { useTranslation } from "react-i18next";
 
 const FiltreSession = ({ setAnnee, setSession }) => {
     const [sessions, setSessions] = useState([]);
     const [selectedSession, setSelectedSession] = useState(null);
+    const [role, setRole] = useState("");
 
-    const {t} = useTranslation();
+    const { t } = useTranslation();
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            const token = localStorage.getItem("token");
+            try {
+                const response = await axios.post("http://localhost:8080/utilisateur/me", {}, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                const userData = response.data;
+                setRole(userData.role);
+            } catch (error) {
+                console.error("Erreur lors de la récupération des informations de l'utilisateur :", error);
+            }
+        };
+
+        fetchUserData();
+    }, []);
 
     useEffect(() => {
         const fetchSessions = async () => {
+            const token = localStorage.getItem("token");
             try {
-                const allSessionsResponse = await axios.get("http://localhost:8080/api/offres-stages/get-all-sessions");
-                const allSessions = allSessionsResponse.data;
+                let sessionsResponse;
 
-                const nextSessionResponse = await axios.get("http://localhost:8080/api/offres-stages/get-next-session");
+                if (role === "ETUDIANT") {
+                    sessionsResponse = await axios.get(
+                        "http://localhost:8080/api/offres-stages/get-all-sessions",
+                        {
+                            headers: { Authorization: `Bearer ${token}` },
+                        }
+                    );
+                } else {
+                    sessionsResponse = await axios.get(
+                        "http://localhost:8080/api/offres-stages/get-sessions-for-createur",
+                        {
+                            headers: { Authorization: `Bearer ${token}` },
+                        }
+                    );
+                }
+
+                const allSessions = sessionsResponse.data;
+
+                const nextSessionResponse = await axios.get(
+                    "http://localhost:8080/api/offres-stages/get-next-session",
+                    {
+                        headers: { Authorization: `Bearer ${token}` },
+                    }
+                );
                 const nextSession = nextSessionResponse.data;
 
-                const sessionsList = allSessions.some(
-                    session => session.session === nextSession.session && session.annee === nextSession.annee
-                ) ? allSessions : [...allSessions, nextSession];
+                const sessionOrder = ["Hiver", "Été", "Automne"];
+                const sortedSessions = [...allSessions, nextSession].filter(
+                    (session, index, self) =>
+                        index === self.findIndex(
+                            (s) => s.session === session.session && s.annee === session.annee
+                        )
+                ).sort((a, b) => {
+                    if (a.annee === b.annee) {
+                        return sessionOrder.indexOf(a.session) - sessionOrder.indexOf(b.session);
+                    }
+                    return a.annee - b.annee;
+                });
 
-                setSessions(sessionsList);
+                setSessions(sortedSessions);
                 setSelectedSession(nextSession);
 
                 setAnnee(nextSession.annee);
@@ -31,8 +81,10 @@ const FiltreSession = ({ setAnnee, setSession }) => {
             }
         };
 
-        fetchSessions();
-    }, [setAnnee, setSession]);
+        if (role) {
+            fetchSessions();
+        }
+    }, [role, setAnnee, setSession]);
 
     const handleSessionChange = (event) => {
         const selected = sessions.find(
