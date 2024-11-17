@@ -55,7 +55,7 @@ public class EmployeurController {
     }
 
     @PostMapping("/saveFicheEvaluation")
-    public ResponseEntity<FicheEvaluationStagiaireDTO> enregistrerFicheEvaluationStagiaire(
+    public ResponseEntity<HttpStatus> enregistrerFicheEvaluationStagiaire(
             @RequestBody FicheEvaluationStagiaireDTO ficheEvaluationStagiaireDTO,
             @RequestParam Long etudiantId
     ) {
