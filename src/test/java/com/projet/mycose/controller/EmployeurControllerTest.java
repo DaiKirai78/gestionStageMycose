@@ -206,4 +206,45 @@ public class EmployeurControllerTest {
                 .enregistrerSignature(any(), eq(password), eq(contratId));
     }
 
+    @Test
+    public void testEnregistrerFicheEvaluationStagiaire_Success() throws Exception {
+        // Arrange
+        Long etudiantId = 2L;
+
+        FicheEvaluationStagiaireDTO ficheEvaluationStagiaireDTOMock = new FicheEvaluationStagiaireDTO();
+        ficheEvaluationStagiaireDTOMock.setId(1L);
+        ficheEvaluationStagiaireDTOMock.setNumeroTelephone("555-444-3333");
+        ficheEvaluationStagiaireDTOMock.setFonctionSuperviseur("Manager");
+
+        doNothing().when(employeurService).enregistrerFicheEvaluationStagiaire(any(FicheEvaluationStagiaireDTO.class), eq(etudiantId));
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String ficheEvaluationJson = objectMapper.writeValueAsString(ficheEvaluationStagiaireDTOMock);
+
+        // Act & Assert
+        mockMvc.perform(post("/entreprise/saveFicheEvaluation")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(ficheEvaluationJson)
+                        .param("etudiantId", etudiantId.toString()))
+                .andExpect(status().isOk());
+        verify(employeurService, times(1)).enregistrerFicheEvaluationStagiaire(any(FicheEvaluationStagiaireDTO.class), eq(etudiantId));
+    }
+
+    @Test
+    public void testEnregistrerFicheEvaluationStagiaire_Error() throws Exception {
+        //Arrange
+        FicheEvaluationStagiaireDTO ficheEvaluationStagiaireDTOMock = new FicheEvaluationStagiaireDTO();
+
+        doNothing().when(employeurService).enregistrerFicheEvaluationStagiaire(ficheEvaluationStagiaireDTOMock, 2L);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String ficheEvaluationJson = objectMapper.writeValueAsString(ficheEvaluationStagiaireDTOMock);
+
+        //Act & Assert
+        mockMvc.perform(post("/entreprise/saveFicheEvaluation")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ficheEvaluationJson)
+                .param("etudiantId", String.valueOf(2L)))
+                .andExpect(status().isInternalServerError());
+    }
+
 }
