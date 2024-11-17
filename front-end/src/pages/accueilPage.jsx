@@ -8,11 +8,12 @@ import UploadCvPage from '../pages/UploadCvPage';
 import VoirMonCVPage from "./voirMonCVPage.jsx";
 import PageIsLoading from '../components/pageIsLoading.jsx';
 import AccueilGestionnaire from "../components/accueil/accueilGestionnaire.jsx";
+import AccueilEnseignant from '../components/accueil/accueilEnseignant.jsx';
 
 const AccueilPage = () => {
     const [cvStatus, setCvStatus] = useState(null);
     const navigate = useNavigate();
-    const [userInfo, setUserInfo] = useOutletContext();
+    const { userInfo, setUserInfo } = useOutletContext();
     const [isFetching, setIsFetching] = useState(true);
 
     useEffect(() => {
@@ -74,7 +75,7 @@ const AccueilPage = () => {
             case "GESTIONNAIRE_STAGE":
                 return <AccueilGestionnaire />;
             case "ENSEIGNANT":
-                return <p>Enseignant</p>;
+                return <AccueilEnseignant />;
             default:
                 navigate("/");
                 break;

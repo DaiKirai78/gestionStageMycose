@@ -4,7 +4,7 @@ import React from "react";
 import AttribuerContratPage from "./attribuerContratPage.jsx";
 
 const ContratPage = () => {
-    const [userInfo, setUserInfo] = useOutletContext();
+    const { setUserInfo } = useOutletContext();
     return (
         <TokenPageContainer role={["GESTIONNAIRE_STAGE"]} setUserInfo={setUserInfo}>
             <AttribuerContratPage/>

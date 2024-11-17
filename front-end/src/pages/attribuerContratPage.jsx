@@ -4,7 +4,7 @@ import React from "react";
 import AttribuerContrat from "../components/contratPage/attribuerContrat.jsx";
 
 const AttribuerContratPage = () => {
-    const [userInfo, setUserInfo] = useOutletContext();
+    const { setUserInfo } = useOutletContext();
     const location = useLocation();
     const { etudiant } = location.state || {};
     return (

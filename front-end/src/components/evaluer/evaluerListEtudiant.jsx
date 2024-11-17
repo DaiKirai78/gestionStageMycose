@@ -1,7 +1,7 @@
 import React from 'react';
 import EvaluerListEtudiantCard from './evaluerListEtudiantCard';
 
-const EvaluerListEtudiant = ({ students, setSelectedStudent }) => {
+const EvaluerListEtudiant = ({ students, setSelectedStudent, destination }) => {
 
     function getNomPrenom(student) {
         return student.prenom + " " + student.nom;
@@ -9,7 +9,12 @@ const EvaluerListEtudiant = ({ students, setSelectedStudent }) => {
 
     return (
         
-        students.map((student, index) => <EvaluerListEtudiantCard key={index} student={student} nomPrenom={getNomPrenom(student)} setSelectedStudent={setSelectedStudent} />)
+        students.map((student, index) => <EvaluerListEtudiantCard 
+                                                    key={index} 
+                                                    student={student} 
+                                                    nomPrenom={getNomPrenom(student)} 
+                                                    setSelectedStudent={setSelectedStudent}
+                                                    destination={destination} />)
         
     );
 };

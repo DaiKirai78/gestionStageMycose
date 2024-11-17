@@ -4,7 +4,7 @@ import {useOutletContext} from "react-router-dom";
 import Rapports from "../components/rapportsPage/rapports.jsx";
 
 const RapportsPage = () => {
-    const [userInfo, setUserInfo] = useOutletContext();
+    const { setUserInfo } = useOutletContext();
 
   return (
       <TokenPageContainer role={["GESTIONNAIRE_STAGE"]} setUserInfo={setUserInfo}>

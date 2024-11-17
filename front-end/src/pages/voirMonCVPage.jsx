@@ -7,7 +7,7 @@ import {useTranslation} from "react-i18next";
 
 const VoirMonCVPage = () => {
 
-    const [userInfo, setUserInfo] = useOutletContext();
+    const { setUserInfo } = useOutletContext();
     const [hasCv, setHasCv] = useState(null);
     const navigate = useNavigate();
     const {t} = useTranslation();

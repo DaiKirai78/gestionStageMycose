@@ -4,7 +4,7 @@ import EmployeursOffreStage from "../components/validerOffreStagePage/employeurs
 import { useOutletContext } from 'react-router-dom';
 
 const ValiderOffreStagePage = () => {
-    const [userInfo, setUserInfo] = useOutletContext();
+    const { setUserInfo } = useOutletContext();
     return (
         <TokenPageContainer role={["GESTIONNAIRE_STAGE"]} setUserInfo={setUserInfo}>
             <EmployeursOffreStage />
