@@ -5,14 +5,17 @@ import PageTitle from '../pageTitle';
 
 const students = [
     {
+        id: 1,
         prenom: "Jason prof",
         nom: "Jody",
     },
     {
+        id: 1,
         prenom: "Vicente prof",
         nom: "Cabezas",
     },
     {
+        id: 1,
         prenom: "Roberto prof",
         nom: "Berrios",
     }
