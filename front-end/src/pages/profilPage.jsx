@@ -4,7 +4,7 @@ import TokenPageContainer from './tokenPageContainer';
 import Profil from '../components/profil/profil';
 
 const ProfilPage = () => {
-    const [userInfo, setUserInfo] = useOutletContext();
+    const { setUserInfo } = useOutletContext();
 
     return (
         <TokenPageContainer role={["ETUDIANT", "EMPLOYEUR", "GESTIONNAIRE_STAGE", "ENSEIGNANT"]} setUserInfo={setUserInfo}>

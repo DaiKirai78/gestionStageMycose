@@ -9,7 +9,7 @@ const Profil = () => {
     const [isFetching, setIsFetching] = useState(true);
     const [cvInfo, setCvInfo] = useState();
     const { t } = useTranslation();
-    const [userInfo, setUserInfo] = useOutletContext();
+    const { userInfo } = useOutletContext();
     const [role, setRole] = useState("");
 
     const cards = [

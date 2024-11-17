@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Outlet, useOutletContext } from 'react-router-dom';
 
 const EvaluerPageLayout = () => {
-    const [userInfo, setUserInfo] = useOutletContext();
+    const { userInfo, setUserInfo } = useOutletContext();
     const [selectedStudent, setSelectedStudent] = useState();
 
     return (

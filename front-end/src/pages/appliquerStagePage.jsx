@@ -5,7 +5,7 @@ import {useLocation, useOutletContext} from "react-router-dom";
 
 const AppliquerStagePage = () => {
 
-    const [userInfo, setUserInfo] = useOutletContext();
+    const { setUserInfo } = useOutletContext();
     const location = useLocation();
     const { idStage } = location.state || {};
 

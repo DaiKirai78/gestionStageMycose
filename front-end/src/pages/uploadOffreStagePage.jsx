@@ -4,7 +4,7 @@ import UploadOffreStage from "../components/uploadOffreStagePage/uploadOffreStag
 import { useOutletContext } from 'react-router-dom';
 
 const UploadOffreStagePage = () => {
-    const [userInfo, setUserInfo] = useOutletContext();
+    const { setUserInfo } = useOutletContext();
 
     return (
         <TokenPageContainer role={["EMPLOYEUR", "GESTIONNAIRE_STAGE"]} setUserInfo={setUserInfo}>

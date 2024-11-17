@@ -1,31 +1,43 @@
 import React from 'react';
 import TokenPageContainer from './tokenPageContainer';
-import { useNavigate } from 'react-router-dom';
 import { useOutletContext } from "react-router-dom";
-import EvaluerEtudiantEmployeur from '../components/evaluer/evaluerEtudiantEmployeur';
-import EvaluerEtudiantEnseignant from '../components/evaluer/evaluerEtudiantEnseigant';
+import EvaluerEtudiant from '../components/evaluer/evaluerEtudiant';
+import { useTranslation } from 'react-i18next';
+
+const students = [
+    {
+        prenom: "Jason prof",
+        nom: "Jody",
+    },
+    {
+        prenom: "Vicente prof",
+        nom: "Cabezas",
+    },
+    {
+        prenom: "Roberto prof",
+        nom: "Berrios",
+    }
+]
 
 const EvaluerPage = () => {
-    const navigate = useNavigate();
     const {userInfo, setUserInfo, selectedStudent, setSelectedStudent} = useOutletContext();
 
-    function getPageContrat() {
+    function getUriStartString() {
         if (!userInfo) return;
              
         switch (userInfo.role) {
             case "EMPLOYEUR":
-                return <EvaluerEtudiantEmployeur selectedStudent={selectedStudent} setSelectedStudent={setSelectedStudent} />;
+                return "employeur";
             case "ENSEIGNANT":
-                return <EvaluerEtudiantEnseignant selectedStudent={selectedStudent} setSelectedStudent={setSelectedStudent} />;
+                return "enseignant";
             default:
-                navigate("/accueil");
-                break;
+                Error("Mauvais role")
         }
     }
 
     return (
         <TokenPageContainer role={["EMPLOYEUR", "ENSEIGNANT"]} setUserInfo={setUserInfo}>
-            {getPageContrat()}
+            <EvaluerEtudiant setSelectedStudent={setSelectedStudent} />
         </TokenPageContainer>
     );
 };
