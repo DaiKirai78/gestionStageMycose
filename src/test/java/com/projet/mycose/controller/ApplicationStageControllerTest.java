@@ -143,25 +143,25 @@ public class ApplicationStageControllerTest {
 
     @Test
     void getMyApplication_Success() {
-        when(applicationStageService.getApplicationById(id)).thenReturn(applicationStageAvecInfosDTO);
+        when(applicationStageService.getMyApplicationByOffreStageID(id)).thenReturn(applicationStageAvecInfosDTO);
 
-        ResponseEntity<ApplicationStageAvecInfosDTO> response = applicationStageController.getMyApplication(id);
+        ResponseEntity<ApplicationStageAvecInfosDTO> response = applicationStageController.getMyApplicationByOffreStageID(id);
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(applicationStageAvecInfosDTO, response.getBody());
-        verify(applicationStageService, times(1)).getApplicationById(id);
+        verify(applicationStageService, times(1)).getMyApplicationByOffreStageID(id);
     }
 
     @Test
     void getMyApplication_NotFoundException() {
-        when(applicationStageService.getApplicationById(id)).thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Application not found"));
+        when(applicationStageService.getMyApplicationByOffreStageID(id)).thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Application not found"));
 
         assertThrows(ResponseStatusException.class, () -> {
-            applicationStageController.getMyApplication(id);
+            applicationStageController.getMyApplicationByOffreStageID(id);
         });
 
-        verify(applicationStageService, times(1)).getApplicationById(id);
+        verify(applicationStageService, times(1)).getMyApplicationByOffreStageID(id);
     }
 
     @Test

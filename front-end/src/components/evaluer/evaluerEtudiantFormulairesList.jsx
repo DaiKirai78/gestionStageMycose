@@ -75,7 +75,7 @@ const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent })
             formDataTemp[form.id] = {};
             
             for (let critere of form.criteria) {
-                formDataTemp[form.id][critere.id] = "";
+                formDataTemp[form.id][critere.id] = {hasError: false, value: ""};
             }
         }        
         
@@ -97,37 +97,111 @@ const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent })
     ];
     
 
-    const handleRadioChange = (formId, criterionId, value) => {
+    function handleRadioChange(formId, criterionId, value) {        
         setFormData(prev => ({
             ...prev,
             [formId]: {
                 ...prev[formId],
-                [criterionId]: value
+                [criterionId]: {hasError: false, value: value}
             }
         }));
     };
 
-    const handleCommentChange = (formId, value) => {
+    function handleCommentChange(formId, value) {
         setFormData(prev => ({
             ...prev,
             [formId]: {
                 ...prev[formId],
-                commentaires: value
+                commentaires: {hasError: false, value: value}
             }
         }));
     };
+
+    function sendForm() {
+        let [hasError, firstToHaveAnErrorId] = allChampsValide();
+        
+        if (hasError) {
+            scrollToId(firstToHaveAnErrorId)
+            console.log("Erreur");
+            return;
+        }
+        console.log("Succes");
+        
+        
+    }
+
+    function allChampsValide() {
+        let hasError = false;
+        let modifiedFormData = {...formData}
+        let firstToHaveAnErrorId = null;
+
+        for (const [formKey, form] of Object.entries(formData)) {
+            let newForm = {}
+            for (const [key, value] of Object.entries(form)) {
+                if (key === "commentaires") {
+                    continue;
+                }
+
+                let newValue = value;
+                if (!value.value.trim()) {
+                    if (!firstToHaveAnErrorId) {
+                        firstToHaveAnErrorId = key
+                    }                    
+                    hasError = true;
+                    newValue = {
+                        hasError: true,
+                        value: ""
+                    }
+                }
+
+                newForm = {
+                    ...newForm,
+                    [key]: newValue
+                }
+            }
+            modifiedFormData = {
+                ...modifiedFormData,
+                [formKey]: {...newForm}
+            }
+        }
+
+        setFormData(modifiedFormData);
+        return [hasError, firstToHaveAnErrorId];
+    }
+
+    function scrollToId(id) {
+        const element = document.getElementById(id);
+    
+        if (!element) {
+            return;
+        }
+    
+        const elementRect = element.getBoundingClientRect();
+        const offset = (window.innerHeight / 2) - (elementRect.height / 2);
+    
+        window.scrollTo({
+            top: window.scrollY + elementRect.top - offset,
+            behavior: "smooth"
+        });
+    }
+    
 
     return (
-        <div className='flex flex-col flex-1 items-center bg-orange-light p-8'>
+        <div className='flex flex-col flex-1 items-start sm:items-center bg-orange-light p-8 overflow-x-auto'>
             <PageTitle title={t("remplirFormulaireDe") + getNomPrenom()} />
 
-            {forms.map((form) => 
+            {forms.map((form) =>
                 <EvaluerFormulaire key={form.id} form={form} 
                     handleCommentChange={handleCommentChange} 
                     handleRadioChange={handleRadioChange}
                     ratingOptions={ratingOptions}
                     formData={formData} />
                 )}
+            <button
+                onClick={sendForm}
+                className='bg-orange py-3 px-5 rounded text-white'>
+                {t("sendForm")}
+            </button>
         </div>
     );
 };

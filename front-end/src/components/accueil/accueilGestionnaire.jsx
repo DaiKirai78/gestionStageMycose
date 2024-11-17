@@ -1,18 +1,13 @@
 import React from 'react';
-import { useTranslation } from "react-i18next";
+import ListeOffreStageContainer from "../listeOffreEmployeur/listeOffreStageContainer.jsx";
 
-const AccueilEtudiant = () => {
-    const { t } = useTranslation();
 
+
+const AccueilGestionnaire = () => {
 
     return (
-        <div className='w-full flex-1 min-h-full bg-orange-light flex flex-col items-center p-6 gap-y-8 h-72'>
-            <h1 className='text-3xl md:text-4xl font-bold text-center'>{t("accueil")}</h1>
-            <div className="flex h-3/5 justify-center">
-                <p>Bienvenue aux gestionnaires!</p>
-            </div>
-        </div>
+            <ListeOffreStageContainer/>
     );
 };
 
-export default AccueilEtudiant;
+export default AccueilGestionnaire;

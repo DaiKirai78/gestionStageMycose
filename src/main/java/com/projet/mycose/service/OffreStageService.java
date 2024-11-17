@@ -5,6 +5,7 @@ import com.projet.mycose.exceptions.AuthenticationException;
 import com.projet.mycose.exceptions.ResourceNotFoundException;
 import com.projet.mycose.modele.*;
 import com.projet.mycose.modele.auth.Role;
+import com.projet.mycose.modele.utils.SessionEcoleUtil;
 import com.projet.mycose.repository.*;
 import com.projet.mycose.modele.FichierOffreStage;
 import com.projet.mycose.modele.FormulaireOffreStage;
@@ -25,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
+import java.time.LocalDateTime;
 import java.time.Year;
 import java.util.*;
 import java.util.stream.Stream;
@@ -42,6 +44,7 @@ public class OffreStageService {
     private static final int LIMIT_PER_PAGE = 10;
     private final EtudiantRepository etudiantRepository;
     private final EtudiantOffreStagePriveeRepository etudiantOffreStagePriveeRepository;
+    private final FichierOffreStageRepository fichierOffreStageRepository;
 
     public OffreStageDTO convertToDTO(OffreStage offreStage){
         if (offreStage instanceof FormulaireOffreStage) {
@@ -124,8 +127,6 @@ public class OffreStageService {
 
         FichierOffreStageDTO fichierOffreStageDTO = new FichierOffreStageDTO(uploadFicherOffreStageDTO, createur_id);
 
-        checkYear(fichierOffreStageDTO);
-
         // Si l'utilisateur est un employeur, on prend directement le champ entrepriseName de son entité
         // Sinon, s'il s'agit d'un gestionnaire de stage, on prend le champ entrepriseName du formulaire
         // Sinon, on renvoit une erreur
@@ -173,8 +174,6 @@ public class OffreStageService {
         UtilisateurDTO utilisateurDTO = utilisateurService.getMe();
         Long createur_id = utilisateurDTO.getId();
 
-        checkYear(formulaireOffreStageDTO);
-
         if (utilisateurDTO.getRole() != Role.EMPLOYEUR && utilisateurDTO.getRole() != Role.GESTIONNAIRE_STAGE) {
             throw new AccessDeniedException("Utilisateur n'est pas un employeur");
         }
@@ -183,7 +182,7 @@ public class OffreStageService {
             formulaireOffreStageDTO.setEntrepriseName(((EmployeurDTO) utilisateurDTO).getEntrepriseName());
             formulaireOffreStageDTO.setEmployerName(((EmployeurDTO) utilisateurDTO).getPrenom() + " " + ((EmployeurDTO) utilisateurDTO).getNom());
             formulaireOffreStageDTO.setVisibility(OffreStage.Visibility.UNDEFINED);
-        } else if (utilisateurDTO.getRole() == Role.GESTIONNAIRE_STAGE) {
+        } else {
             formulaireOffreStageDTO.setStatus(OffreStage.Status.ACCEPTED);
             formulaireOffreStageDTO.setVisibility(OffreStage.Visibility.UNDEFINED);
             if (formulaireOffreStageDTO.getProgramme() != Programme.NOT_SPECIFIED) {
@@ -209,12 +208,6 @@ public class OffreStageService {
         }
 
         return convertToDTO(savedForm);
-    }
-
-    private void checkYear(OffreStageDTO offreStageDTO) {
-        if (!getFutureYears().contains(offreStageDTO.getAnnee())) {
-            throw new IllegalArgumentException("Annee must be in the future");
-        }
     }
 
     private OffreStage associateEtudiantsPrives(OffreStage offreStage, List<Long> etudiantsPrives) {
@@ -252,17 +245,9 @@ public class OffreStageService {
         OffreStage offreStage = offreStageRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("OffreStage not found with ID: " + id));
         return OffreStageAvecUtilisateurInfoDTO.toDto(offreStage);
     }
-    public List<OffreStageDTO> getAvailableOffreStagesForEtudiant() {
-        EtudiantDTO etudiantDTO;
-        try {
-            etudiantDTO = (EtudiantDTO) utilisateurService.getMe();
-        } catch (AccessDeniedException e) {
-            throw new AuthenticationException(HttpStatus.FORBIDDEN, "Authentication error");
-        }
-        return offreStageRepository.findAllByEtudiantNotApplied(etudiantDTO.getId(), etudiantDTO.getProgramme()).stream().map(this::convertToDTO).toList();
-    }
 
     public List<OffreStageDTO> getAvailableOffreStagesForEtudiantFiltered(int page, Integer annee, OffreStage.SessionEcole session, String title) {
+        checkAnneeAndSessionTogether(annee, session);
         EtudiantDTO etudiantDTO;
         try {
             etudiantDTO = (EtudiantDTO) utilisateurService.getMe();
@@ -281,6 +266,7 @@ public class OffreStageService {
     }
 
     public Integer getAmountOfPagesForEtudiantFiltered(Integer annee, OffreStage.SessionEcole sessionEcole, String title) {
+        checkAnneeAndSessionTogether(annee, sessionEcole);
         EtudiantDTO etudiantDTO;
         try {
             etudiantDTO = (EtudiantDTO) utilisateurService.getMe();
@@ -394,12 +380,14 @@ public class OffreStageService {
         return etudiantDTOList;
     }
 
+    @Deprecated
     public List<String> getSessions() {
         return new ArrayList<>(Arrays.stream(OffreStage.SessionEcole.values())
                 .map(OffreStage.SessionEcole::toString)
                 .toList());
     }
 
+    @Deprecated
     public List<Integer> getFutureYears() {
         return Stream.of(Year.now(), Year.now().plusYears(1), Year.now().plusYears(2), Year.now().plusYears(3), Year.now().plusYears(4))
                 .map(Year::getValue)
@@ -416,6 +404,8 @@ public class OffreStageService {
 
     @PreAuthorize("hasAuthority('EMPLOYEUR') or hasAuthority('GESTIONNAIRE_STAGE')")
     public List<OffreStageDTO> getStagesFiltered(int page, Integer annee, OffreStage.SessionEcole session) {
+        checkAnneeAndSessionTogether(annee, session);
+
         Long idCreateur = utilisateurService.getMyUserId();
         PageRequest pageRequest = PageRequest.of(page, LIMIT_PER_PAGE);
 
@@ -431,6 +421,7 @@ public class OffreStageService {
 
     @PreAuthorize("hasAuthority('EMPLOYEUR') or hasAuthority('GESTIONNAIRE_STAGE')")
     public Integer getAmountOfPagesForCreateurFiltered(Integer annee, OffreStage.SessionEcole session) {
+        checkAnneeAndSessionTogether(annee, session);
         Long createurId = utilisateurService.getMyUserId();
         long amountOfRows = 0;
         amountOfRows = offreStageRepository.countOffreStageByCreateurIdFiltered(createurId, (annee != null) ? Year.of(annee) : null, session);
@@ -449,10 +440,125 @@ public class OffreStageService {
         return nombrePages;
     }
 
+    private static void checkAnneeAndSessionTogether(Integer annee, OffreStage.SessionEcole session) {
+        if ((annee != null && session == null) || (annee == null && session != null)) {
+            throw new IllegalArgumentException("Session and year must be provided together");
+        }
+    }
+
+
     public EmployeurDTO getEmployeurByOffreStageId(Long offreStageId) {
         Employeur employeur = offreStageRepository.findEmployeurByOffreStageId(offreStageId);
         if (employeur == null)
             throw new ResourceNotFoundException("Aucun employeur associé à l'offre de stage id " + offreStageId + " n'existe.");
         return EmployeurDTO.toDTO(employeur);
+    }
+
+    public SessionInfoDTO getNextSession() {
+        return SessionEcoleUtil.getSessionInfo(LocalDateTime.now());
+    }
+
+    public List<SessionInfoDTO> getAllSessions() {
+        return offreStageRepository.findDistinctSemesterAndYearAll();
+    }
+
+    @PreAuthorize("hasAuthority('EMPLOYEUR') or hasAuthority('GESTIONNAIRE_STAGE')")
+    public List<SessionInfoDTO> getSessionsForCreateur() {
+        Long createurId = utilisateurService.getMyUserId();
+        return offreStageRepository.findDistinctSemesterAndYearByCreateurId(createurId);
+    }
+
+    public Page<OffreStageDTO> getAllOffreStagesForEtudiantFiltered(int pageNumber, Integer annee, OffreStage.SessionEcole sessionEcole, String title) {
+        checkAnneeAndSessionTogether(annee, sessionEcole);
+        EtudiantDTO etudiantDTO;
+        try {
+            etudiantDTO = (EtudiantDTO) utilisateurService.getMe();
+        } catch (AccessDeniedException e) {
+            throw new AuthenticationException(HttpStatus.FORBIDDEN, "Authentication error");
+        }
+        PageRequest pageRequest = PageRequest.of(pageNumber, LIMIT_PER_PAGE);
+
+        Year year = (annee != null) ? Year.of(annee) : null;
+
+        if (title == null) {
+            title = "";
+        }
+        return offreStageRepository.findAllByEtudiantFilteredWithTitle(etudiantDTO.getId(), etudiantDTO.getProgramme(), year, sessionEcole, title, pageRequest).map(this::convertToDTO);
+    }
+
+    public FichierOffreStageDTO updateOffreStage(UploadFicherOffreStageDTO uploadFicherOffreStageDTO, Long offreStageId) throws IOException {
+        UtilisateurDTO utilisateurDTO = utilisateurService.getMe();
+        Long createur_id = utilisateurDTO.getId();
+
+        Optional<FichierOffreStage> optionalFichierOffreStage = ficherOffreStageRepository.findById(offreStageId);
+       FichierOffreStage fichierOffreStage = optionalFichierOffreStage.orElseThrow(() -> new ResourceNotFoundException("FichierOffreStage not found with ID: " + offreStageId));
+
+        if (!fichierOffreStage.getCreateur().getId().equals(createur_id)) {
+            throw new AccessDeniedException("Vous n'avez pas les droits pour modifier cette offre de stage");
+        }
+
+        if (uploadFicherOffreStageDTO.getEntrepriseName() != null) {
+            fichierOffreStage.setEntrepriseName(uploadFicherOffreStageDTO.getEntrepriseName());
+        }
+
+        if (uploadFicherOffreStageDTO.getTitle() != null) {
+            fichierOffreStage.setTitle(uploadFicherOffreStageDTO.getTitle());
+        }
+
+        if (uploadFicherOffreStageDTO.getFile() != null) {
+            fichierOffreStage.setData(uploadFicherOffreStageDTO.getFile().getBytes());
+            fichierOffreStage.setFilename(Base64.getEncoder().encodeToString(uploadFicherOffreStageDTO.getFile().getBytes()));
+        }
+
+        return convertToDTO(fichierOffreStageRepository.save(fichierOffreStage));
+    }
+
+    public FormulaireOffreStageDTO updateOffreStage(FormulaireOffreStageDTO formulaireOffreStageDTO, Long offreStageId) throws AccessDeniedException {
+        UtilisateurDTO utilisateurDTO = utilisateurService.getMe();
+        Long createur_id = utilisateurDTO.getId();
+
+        Optional<FormulaireOffreStage> optionalFormulaireOffreStage = formulaireOffreStageRepository.findById(offreStageId);
+        FormulaireOffreStage formulaireOffreStage = optionalFormulaireOffreStage.orElseThrow(() -> new ResourceNotFoundException("FormulaireOffreStage not found with ID: " + offreStageId));
+
+        if (!formulaireOffreStage.getCreateur().getId().equals(createur_id)) {
+            throw new AccessDeniedException("Vous n'avez pas les droits pour modifier cette offre de stage");
+        }
+
+        if (formulaireOffreStageDTO.getEntrepriseName() != null) {
+            formulaireOffreStage.setEntrepriseName(formulaireOffreStageDTO.getEntrepriseName());
+        }
+
+        if (formulaireOffreStageDTO.getEmployerName() != null) {
+            formulaireOffreStage.setEmployerName(formulaireOffreStageDTO.getEmployerName());
+        }
+
+        if (formulaireOffreStageDTO.getEmail() != null) {
+            formulaireOffreStage.setEmail(formulaireOffreStageDTO.getEmail());
+        }
+
+        if (formulaireOffreStageDTO.getWebsite() != null) {
+            formulaireOffreStage.setWebsite(formulaireOffreStageDTO.getWebsite());
+        }
+
+
+        if (formulaireOffreStageDTO.getTitle() != null) {
+            formulaireOffreStage.setTitle(formulaireOffreStageDTO.getTitle());
+        }
+
+        if (formulaireOffreStageDTO.getLocation() != null) {
+            formulaireOffreStage.setLocation(formulaireOffreStageDTO.getLocation());
+        }
+
+        if (formulaireOffreStageDTO.getSalary() != null) {
+            formulaireOffreStage.setSalary(formulaireOffreStageDTO.getSalary());
+        }
+
+        if (formulaireOffreStageDTO.getDescription() != null) {
+            formulaireOffreStage.setDescription(formulaireOffreStageDTO.getDescription());
+        }
+
+        //TODO: Ajouter les nouvelles variables de Sam
+
+        return convertToDTO(formulaireOffreStageRepository.save(formulaireOffreStage));
     }
 }

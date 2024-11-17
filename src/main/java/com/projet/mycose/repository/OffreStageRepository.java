@@ -1,5 +1,6 @@
 package com.projet.mycose.repository;
 
+import com.projet.mycose.dto.SessionInfoDTO;
 import com.projet.mycose.modele.Employeur;
 import com.projet.mycose.modele.OffreStage;
 import com.projet.mycose.modele.Programme;
@@ -101,6 +102,32 @@ public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
             Pageable pageable
     );
 
+    @Query("SELECT o FROM OffreStage o " +
+            "LEFT JOIN EtudiantOffreStagePrivee eop ON o.id = eop.offreStage.id " +
+            "LEFT JOIN o.applicationStages a ON a.etudiant.id = :etudiantId " +
+            "LEFT JOIN FichierOffreStage f ON o.id = f.id " + // Left join with subclass
+            "WHERE (:annee IS NULL OR o.annee = :annee) " +
+            "AND (:session IS NULL OR o.session = :session) " +
+            "AND (" +
+            "(o.visibility = 'PUBLIC' AND o.programme = :programme) " +
+            "OR " +
+            "(o.visibility = 'PRIVATE' AND eop.etudiant.id = :etudiantId)" +
+            ") " +
+            "AND LOWER(o.title) LIKE LOWER(CONCAT('%', :title, '%')) " +
+            "AND (" +
+            "f.id IS NULL " + // Not a Fichier
+            "OR " +
+            "f.data IS NOT NULL" + // If Fichier, data must not be null
+            ")")
+    Page<OffreStage> findAllByEtudiantFilteredWithTitle(
+            @Param("etudiantId") Long id,
+            @Param("programme") Programme programme,
+            @Param("annee") Year annee,
+            @Param("session") OffreStage.SessionEcole session,
+            @Param("title") String title,
+            Pageable pageable
+    );
+
 
 
 
@@ -133,4 +160,29 @@ public interface OffreStageRepository extends JpaRepository<OffreStage, Long> {
     @Query("SELECT e FROM OffreStage o JOIN Employeur e ON o.createur.id = e.id " +
             "WHERE o.id = :offreStageId")
     Employeur findEmployeurByOffreStageId(@Param("offreStageId") Long offreStageId);
+
+    @Query("SELECT new com.projet.mycose.dto.SessionInfoDTO(o.session, o.annee) " +
+            "FROM OffreStage o " +
+            "WHERE o.createur.id = :createurId " +
+            "GROUP BY o.session, o.annee " +
+            "ORDER BY o.annee ASC, " +
+            "CASE " +
+            "  WHEN o.session = com.projet.mycose.modele.OffreStage.SessionEcole.HIVER THEN 1 " +
+            "  WHEN o.session = com.projet.mycose.modele.OffreStage.SessionEcole.ETE THEN 2 " +
+            "  WHEN o.session = com.projet.mycose.modele.OffreStage.SessionEcole.AUTOMNE THEN 3 " +
+            "  ELSE 4 " +
+            "END ASC")
+    List<SessionInfoDTO> findDistinctSemesterAndYearByCreateurId(@Param("createurId") Long createurId);
+
+    @Query("SELECT new com.projet.mycose.dto.SessionInfoDTO(o.session, o.annee) " +
+            "FROM OffreStage o " +
+            "GROUP BY o.session, o.annee " +
+            "ORDER BY o.annee ASC, " +
+            "CASE " +
+            "  WHEN o.session = com.projet.mycose.modele.OffreStage.SessionEcole.HIVER THEN 1 " +
+            "  WHEN o.session = com.projet.mycose.modele.OffreStage.SessionEcole.ETE THEN 2 " +
+            "  WHEN o.session = com.projet.mycose.modele.OffreStage.SessionEcole.AUTOMNE THEN 3 " +
+            "  ELSE 4 " +
+            "END ASC")
+    List<SessionInfoDTO> findDistinctSemesterAndYearAll();
 }

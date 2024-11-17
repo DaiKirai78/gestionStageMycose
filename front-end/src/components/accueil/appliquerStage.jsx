@@ -15,13 +15,10 @@ const AppliquerStage = ({idStage}) => {
     const [error, setError] = useState(null);
     const [successMessage, setSuccessMessage] = useState(null);
     const [errorMessage, setErrorMessage] = useState(null);
+    const [status, setStatus] = useState(null);
     const defaultLayoutPluginInstance = defaultLayoutPlugin();
     const navigate = useNavigate();
     const {t} = useTranslation();
-
-    const localhost = "http://localhost:8080/";
-    const urlApplicationStageAPI = "api/application-stage";
-    const urlOffreStageAPI = "api/offres-stages";
 
     const togglePDF = () => {
         setShowPDF(!showPDF);
@@ -30,13 +27,14 @@ const AppliquerStage = ({idStage}) => {
     useEffect(() => {
         if (idStage) {
             fetchStage();
+            fetchApplicationStatus();
         }
     }, [idStage]);
 
     const fetchStage = async () => {
         try {
             const token = localStorage.getItem("token");
-            const response = await axios.get(localhost + urlOffreStageAPI + "/id/" + idStage, {
+            const response = await axios.get("http://localhost:8080/api/offres-stages/id/" + idStage, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -58,13 +56,28 @@ const AppliquerStage = ({idStage}) => {
         }
     };
 
+    const fetchApplicationStatus = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            const response = await axios.get(`http://localhost:8080/api/application-stage/my-applications/${idStage}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            setStatus(response.data.status);
+        } catch (error) {
+            console.error("Erreur lors de la récupération du statut de l'application:", error);
+            setStatus(null);
+        }
+    };
+
     const applyForStage = async () => {
         const token = localStorage.getItem("token");
         setSuccessMessage(null);
         setErrorMessage(null);
 
         try {
-            const response = await axios.post(localhost + urlApplicationStageAPI + "/apply", null, {
+            const response = await axios.post("http://localhost:8080/api/application-stage/apply", null, {
                 params: {id: idStage},
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -132,10 +145,16 @@ const AppliquerStage = ({idStage}) => {
                             <h2 className="text-3xl font-bold mb-4 break-words text-center">{unStage.title || t("offreDeStage")}</h2>
                             <p className="text-gray-700 text-2xl break-words">{unStage.entrepriseName || t("EntrepriseInconnue")}</p>
                             <p className="text-gray-500 mt-4 break-words">{t("publieLe") + formaterDate(unStage.createdAt) || t("DateNonDisponible")}</p>
+
+                            {status && (
+                                <p className="text-gray-700 text-lg font-bold mt-6 text-center">
+                                    {t("StatutCandidature")}: {t(status)}
+                                </p>
+                            )}
                             <button
                                 onClick={applyForStage}
                                 className="mt-20 lg:mt-8 bg-deep-orange-300 w-52 lg:w-48 text-white px-12 py-3 center rounded-lg hover:bg-orange-dark disabled:opacity-65 disabled:hover:bg-deep-orange-300"
-                                disabled={successMessage}
+                                disabled={!!status}
                             >
                                 {t("boutonAppliquerAUnStage")}
                             </button>

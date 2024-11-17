@@ -3,12 +3,14 @@ import CardStatusDuCv from './cardStatusDuCv'
 import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
 import CardInfoUser from './cardInfoUser';
+import axios from "axios";
 
 const Profil = () => {
     const [isFetching, setIsFetching] = useState(true);
     const [cvInfo, setCvInfo] = useState();
     const { t } = useTranslation();
     const [userInfo, setUserInfo] = useOutletContext();
+    const [role, setRole] = useState("");
 
     const cards = [
         {
@@ -22,8 +24,29 @@ const Profil = () => {
     ]
 
     useEffect(() => {
-        fetchInfoCv();        
+        const fetchUserData = async () => {
+            const token = localStorage.getItem("token");
+            try {
+                const response = await axios.post("http://localhost:8080/utilisateur/me", {}, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                const userData = response.data;
+                setRole(userData.role);
+            } catch (error) {
+                console.error("Erreur lors de la récupération des informations de l'utilisateur :", error);
+            }
+        };
+
+        fetchUserData();
     }, []);
+
+    useEffect(() => {
+        if (role === "ETUDIANT") {
+            fetchInfoCv();
+        } else {
+            setIsFetching(false);
+        }
+    }, [role]);
 
     async function fetchInfoCv() {
         const token = localStorage.getItem("token");

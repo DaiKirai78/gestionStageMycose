@@ -1,5 +1,7 @@
 package com.projet.mycose.modele;
 
+import com.projet.mycose.dto.SessionInfoDTO;
+import com.projet.mycose.modele.utils.SessionEcoleUtil;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,7 +13,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 import java.time.Year;
 import java.util.List;
-import java.util.Set;
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -60,10 +62,8 @@ public abstract class OffreStage {
     private List<ApplicationStage> applicationStages;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private SessionEcole session;
 
-    @Column(nullable = false)
     private Year annee;
 
     @PrePersist
@@ -78,6 +78,10 @@ public abstract class OffreStage {
         if (programme == null) {
             programme = Programme.NOT_SPECIFIED;
         }
+        SessionInfoDTO sessionInfo;
+        sessionInfo = SessionEcoleUtil.getSessionInfo(Objects.requireNonNullElseGet(createdAt, LocalDateTime::now));
+        this.session = sessionInfo.session();
+        this.annee = sessionInfo.annee();
     }
 
     public enum Status {
@@ -98,4 +102,5 @@ public abstract class OffreStage {
         HIVER,
         ETE
     }
+
 }
