@@ -3,7 +3,7 @@ import { Outlet, useOutletContext } from 'react-router-dom';
 import TokenPageContainer from './tokenPageContainer';
 
 const AttributionPage = () => {
-    const [userInfo, setUserInfo] = useOutletContext();
+    const { setUserInfo } = useOutletContext();
     const [selectedStudent, setSelectedStudent] = useState(null);
     const [programme, setProgramme] = useState("NOT_SPECIFIED");
 

@@ -5,20 +5,20 @@ import PageTitle from '../pageTitle';
 
 const students = [
     {
-        prenom: "Jason",
+        prenom: "Jason prof",
         nom: "Jody",
     },
     {
-        prenom: "Vicente",
+        prenom: "Vicente prof",
         nom: "Cabezas",
     },
     {
-        prenom: "Roberto",
+        prenom: "Roberto prof",
         nom: "Berrios",
     }
 ]
 
-const EvaluerEtudiantEmployeur = ({ selectedStudent, setSelectedStudent }) => {
+const EvaluerEtudiant = ({ setSelectedStudent }) => {
     const { t } = useTranslation();
 
     return (
@@ -27,10 +27,10 @@ const EvaluerEtudiantEmployeur = ({ selectedStudent, setSelectedStudent }) => {
             {
                 students && students.length <= 0 ? <p>{t("noStudentToEvaluate")}</p> 
                 : 
-                <EvaluerListEtudiant students={students} setSelectedStudent={setSelectedStudent} />
+                <EvaluerListEtudiant students={students} setSelectedStudent={setSelectedStudent} destination={"/evaluer/formulaire"} />
             }
         </div>
     );
 };
 
-export default EvaluerEtudiantEmployeur;
+export default EvaluerEtudiant;

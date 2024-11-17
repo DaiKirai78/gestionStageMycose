@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Outlet, useOutletContext } from 'react-router-dom';
 
 const SignerContratPageLayout = () => {
-    const [userInfo, setUserInfo] = useOutletContext();
+    const { userInfo, setUserInfo } = useOutletContext();
     const [selectedContract, setSelectedContract] = useState();
 
     return (

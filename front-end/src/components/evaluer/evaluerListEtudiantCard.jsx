@@ -2,13 +2,13 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
-const EvaluerListEtudiantCard = ({ student, setSelectedStudent, nomPrenom }) => {
+const EvaluerListEtudiantCard = ({ student, setSelectedStudent, nomPrenom, destination }) => {
     const { t } = useTranslation();
     const navigator = useNavigate();
 
     function selectStudent() {
         setSelectedStudent(student)
-        navigator("/evaluer/formulaire");
+        navigator(destination);
     }
 
     return (
