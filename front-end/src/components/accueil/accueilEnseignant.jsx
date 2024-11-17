@@ -18,9 +18,8 @@ const students = [
     }
 ]
 
-const AccueilEnseignant = () => {
+const AccueilEnseignant = ({ setSelectedStudent }) => {
     const { t } = useTranslation();
-    const [selectedStudent, setSelectedStudent] = useState();
 
     return (
         <div className='flex-1 flex flex-col bg-orange-light p-10'>

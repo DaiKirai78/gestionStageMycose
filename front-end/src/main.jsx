@@ -56,7 +56,7 @@ const router = createBrowserRouter([
       { path: "/attribuerContrat/:id", element: <AttribuerContratPage/> },
       { path: "/convocations", element: <EtudiantConvocationPage /> },
       { path: "rapports", element: <Rapports /> },
-      { path: "/ens/formulaire", element: <p>hello</p> },
+      { path: "/ens/formulaire", element: <EvaluerEtudiantFormulairePage /> },
 
       {
         path: "/evaluer", 
