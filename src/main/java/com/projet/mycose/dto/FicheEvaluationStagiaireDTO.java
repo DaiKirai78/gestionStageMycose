@@ -79,6 +79,8 @@ public class FicheEvaluationStagiaireDTO {
 
     @NotBlank(message = "Response for qualRelQE is required.")
     private FicheEvaluationStagiaire.ComportementReponses qualRelQE;
+    @NotBlank(message = "Response for qualRelQF is required.")
+    private FicheEvaluationStagiaire.ComportementReponses qualRelQF;
     private String qualRelCommentaires;
 
     @NotBlank(message = "Response for habPersQA is required.")
@@ -95,6 +97,9 @@ public class FicheEvaluationStagiaireDTO {
 
     @NotBlank(message = "Response for habPersQE is required.")
     private FicheEvaluationStagiaire.ComportementReponses habPersQE;
+
+    @NotBlank(message = "Response for habPersQF is required.")
+    private FicheEvaluationStagiaire.ComportementReponses habPersQF;
     private String habPersCommentaires;
 
     @NotBlank(message = "Global appreciation is required.")

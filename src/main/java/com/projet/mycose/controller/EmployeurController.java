@@ -62,5 +62,12 @@ public class EmployeurController {
         employeurService.enregistrerFicheEvaluationStagiaire(ficheEvaluationStagiaireDTO, etudiantId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @GetMapping("/getAllEtudiantsNonEvalues")
+    public ResponseEntity<List<EtudiantDTO>> getAllEtudiantsNonEvalues(@RequestParam Long employeurId) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(employeurService.getAllEtudiantsNonEvalues(employeurId));
+    }
 }
 

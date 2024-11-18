@@ -1,6 +1,7 @@
 package com.projet.mycose.service;
 
 import com.projet.mycose.dto.ContratDTO;
+import com.projet.mycose.dto.FicheEvaluationStagiaireDTO;
 import com.projet.mycose.exceptions.AuthenticationException;
 import com.projet.mycose.exceptions.ResourceNotFoundException;
 import com.projet.mycose.exceptions.UserNotFoundException;
@@ -10,6 +11,7 @@ import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.repository.ContratRepository;
 import com.projet.mycose.repository.EmployeurRepository;
 import com.projet.mycose.dto.EmployeurDTO;
+import com.projet.mycose.repository.FicheEvaluationStagiaireRepository;
 import com.projet.mycose.repository.UtilisateurRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -17,6 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -28,6 +31,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -57,6 +61,12 @@ public class EmployeurServiceTest {
 
     @Mock
     AuthenticationManager authenticationManager;
+
+    @Mock
+    FicheEvaluationStagiaireRepository ficheEvaluationStagiaireRepositoryMock;
+
+    @Mock
+    ModelMapper modelMapperMock;
     @InjectMocks
     private EmployeurService employeurService;
 
@@ -360,6 +370,86 @@ public class EmployeurServiceTest {
         assertEquals("Utilisateur not found", exception.getMessage());
         verify(contratRepositoryMock, never()).save(any(Contrat.class));
     }
+
+    @Test
+    public void testEnregistrerFicheEvaluationStagiaire_Success() throws AccessDeniedException {
+        // Arrange
+        Long employeurId = 1L;
+        Long etudiantId = 2L;
+
+        Employeur employeur = new Employeur();
+        employeur.setId(employeurId);
+        Etudiant etudiant = new Etudiant();
+        etudiant.setId(etudiantId);
+
+        FicheEvaluationStagiaireDTO ficheEvaluationStagiaireDTO = new FicheEvaluationStagiaireDTO();
+        ficheEvaluationStagiaireDTO.setId(3L);
+        ficheEvaluationStagiaireDTO.setNumeroTelephone("555-444-3333");
+        ficheEvaluationStagiaireDTO.setFonctionSuperviseur("Manager");
+
+        when(utilisateurService.getMeUtilisateur()).thenReturn(employeur);
+        when(utilisateurRepository.findUtilisateurById(etudiantId)).thenReturn(Optional.of(etudiant));
+        when(modelMapperMock.map(ficheEvaluationStagiaireDTO, FicheEvaluationStagiaire.class))
+                .thenReturn(new FicheEvaluationStagiaire());
+
+        // Act
+        employeurService.enregistrerFicheEvaluationStagiaire(ficheEvaluationStagiaireDTO, etudiantId);
+
+        // Assert
+        verify(utilisateurService, times(1)).getMeUtilisateur();
+        verify(utilisateurRepository, times(1)).findUtilisateurById(etudiantId);
+        verify(ficheEvaluationStagiaireRepositoryMock, times(1)).save(any(FicheEvaluationStagiaire.class));
+    }
+
+    @Test
+    public void testEnregistrerFicheEvaluationStagiaire_AccessDenied() throws AccessDeniedException {
+        // Arrange
+        Long etudiantId = 2L;
+        FicheEvaluationStagiaireDTO ficheEvaluationStagiaireDTO = new FicheEvaluationStagiaireDTO();
+        ficheEvaluationStagiaireDTO.setId(3L);
+        ficheEvaluationStagiaireDTO.setNumeroTelephone("555-444-3333");
+        ficheEvaluationStagiaireDTO.setFonctionSuperviseur("Manager");
+
+        when(utilisateurService.getMeUtilisateur()).thenThrow(new AccessDeniedException("Access Denied"));
+
+        // Act
+        AuthenticationException exception = assertThrows(AuthenticationException.class, () ->
+                employeurService.enregistrerFicheEvaluationStagiaire(ficheEvaluationStagiaireDTO, etudiantId)
+        );
+
+        // Assert
+        assertEquals("Problème d'authentification", exception.getMessage());
+        verify(utilisateurRepository, never()).findUtilisateurById(anyLong());
+        verify(ficheEvaluationStagiaireRepositoryMock, never()).save(any(FicheEvaluationStagiaire.class));
+    }
+
+    @Test
+    public void testEnregistrerFicheEvaluationStagiaire_UserNotFound() throws AccessDeniedException {
+        // Arrange
+        Long etudiantId = 2L;
+        Employeur employeur = new Employeur();
+        employeur.setId(1L);
+
+        FicheEvaluationStagiaireDTO ficheEvaluationStagiaireDTO = new FicheEvaluationStagiaireDTO();
+        ficheEvaluationStagiaireDTO.setId(3L);
+        ficheEvaluationStagiaireDTO.setNumeroTelephone("555-444-3333");
+        ficheEvaluationStagiaireDTO.setFonctionSuperviseur("Manager");
+
+        when(utilisateurService.getMeUtilisateur()).thenReturn(employeur);
+        when(utilisateurRepository.findUtilisateurById(etudiantId)).thenReturn(Optional.empty());
+
+        // Act
+        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () ->
+                employeurService.enregistrerFicheEvaluationStagiaire(ficheEvaluationStagiaireDTO, etudiantId)
+        );
+
+        // Assert
+        assertEquals("Utilisateur not found", exception.getMessage());
+        verify(ficheEvaluationStagiaireRepositoryMock, never()).save(any(FicheEvaluationStagiaire.class));
+    }
+
+
+
 
 
 }
