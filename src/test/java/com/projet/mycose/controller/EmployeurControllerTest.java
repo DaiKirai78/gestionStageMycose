@@ -245,6 +245,7 @@ public class EmployeurControllerTest {
                 .content(ficheEvaluationJson)
                 .param("etudiantId", String.valueOf(2L)))
                 .andExpect(status().isInternalServerError());
+        verify(employeurService, times(0)).enregistrerFicheEvaluationStagiaire(ficheEvaluationStagiaireDTOMock, 2L);
     }
 
 }
