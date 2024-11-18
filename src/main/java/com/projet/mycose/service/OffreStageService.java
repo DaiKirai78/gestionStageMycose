@@ -507,7 +507,7 @@ public class OffreStageService {
 
         if (uploadFicherOffreStageDTO.getFile() != null) {
             fichierOffreStage.setData(uploadFicherOffreStageDTO.getFile().getBytes());
-            fichierOffreStage.setFilename(Base64.getEncoder().encodeToString(uploadFicherOffreStageDTO.getFile().getBytes()));
+            fichierOffreStage.setFilename(uploadFicherOffreStageDTO.getFile().getOriginalFilename());
         }
 
         return convertToDTO(fichierOffreStageRepository.save(fichierOffreStage));
