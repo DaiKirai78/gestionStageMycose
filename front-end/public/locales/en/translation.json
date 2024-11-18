@@ -308,5 +308,9 @@
     "StatutCandidature": "Application status",
     "INTERVIEWED": "Interviewed",
     "noDataAvailable": "No data available",
-    "sendForm": "Send form"
+    "sendForm": "Send form",
+    "modifyInternshipOffer": "Modify internship offer",
+    "filePDF": "PDF file",
+    "openPDF": "Open PDF",
+    "saveModifications": "Save modifications"
 }

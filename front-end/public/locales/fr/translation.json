@@ -307,5 +307,9 @@
     "approvedInternships": "Stages validées",
     "StatutCandidature": "Statut de la candidature",
     "INTERVIEWED": "Interviewé",
-    "noDataAvailable": "Aucune donnée disponible"
+    "noDataAvailable": "Aucune donnée disponible",
+    "modifyInternshipOffer": "Modifier l'offre de stage",
+    "filePDF": "Fichier PDF",
+    "openPDF": "Ouvrir le PDF",
+    "saveModifications": "Sauvegarder les modifications"
 }
