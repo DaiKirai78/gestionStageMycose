@@ -13,10 +13,11 @@ import java.util.Optional;
 public interface FicheEvaluationStagiaireRepository extends JpaRepository<FicheEvaluationStagiaire, Long> {
 
     @Query("SELECT e FROM Etudiant e " +
-            "WHERE e.contractStatus = Etudiant.ContractStatus.ACTIVE " +
+            "WHERE e.contractStatus = :contractStatus " +
             "AND e IN (" +
             "SELECT c.etudiant FROM Contrat c " +
             "WHERE c.employeur.id = :employeurId " +
             "AND c NOT IN (SELECT f.contrat FROM FicheEvaluationStagiaire f))")
-    Optional<List<Etudiant>> findAllEtudiantWhereNotEvaluated(Long employeurId);
+    Optional<List<Etudiant>> findAllEtudiantWhereNotEvaluated(Long employeurId, Etudiant.ContractStatus contractStatus);
+
 }

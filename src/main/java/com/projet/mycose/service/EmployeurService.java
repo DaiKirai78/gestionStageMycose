@@ -158,7 +158,7 @@ public class EmployeurService {
             throw new AuthenticationException(HttpStatus.UNAUTHORIZED, "Problème d'authentification");
         }
 
-        Optional<List<Etudiant>> listeEtudiantsOpt = ficheEvaluationStagiaireRepository.findAllEtudiantWhereNotEvaluated(employeurId);
+        Optional<List<Etudiant>> listeEtudiantsOpt = ficheEvaluationStagiaireRepository.findAllEtudiantWhereNotEvaluated(employeurId, Etudiant.ContractStatus.ACTIVE);
 
         if(listeEtudiantsOpt.isEmpty())
             throw new ResourceNotFoundException("Aucun Étudiant Trouvé");
