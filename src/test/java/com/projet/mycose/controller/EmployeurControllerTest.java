@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.projet.mycose.dto.*;
 import com.projet.mycose.exceptions.GlobalExceptionHandler;
 import com.projet.mycose.exceptions.SignaturePersistenceException;
+import com.projet.mycose.exceptions.UserNotFoundException;
 import com.projet.mycose.modele.Contrat;
 import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.service.EmployeurService;
@@ -248,4 +249,48 @@ public class EmployeurControllerTest {
         verify(employeurService, times(0)).enregistrerFicheEvaluationStagiaire(ficheEvaluationStagiaireDTOMock, 2L);
     }
 
+    @Test
+    public void testGetAllEtudiantsNonEvalues_Success() throws Exception {
+        // Arrange
+        Long employeurId = 1L;
+        EtudiantDTO etudiant1 = new EtudiantDTO();
+        etudiant1.setId(2L);
+        etudiant1.setNom("Potter");
+
+        EtudiantDTO etudiant2 = new EtudiantDTO();
+        etudiant2.setId(3L);
+        etudiant2.setNom("Sheldon");
+
+        List<EtudiantDTO> listeRetourne = new ArrayList<>();
+        listeRetourne.add(etudiant1);
+        listeRetourne.add(etudiant2);
+
+        when(employeurService.getAllEtudiantsNonEvalues(employeurId)).thenReturn(listeRetourne);
+
+        // Act & Assert
+        mockMvc.perform(get("/entreprise/getAllEtudiantsNonEvalues")
+                .param("employeurId", String.valueOf(employeurId)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].id").value(2L))
+                .andExpect(jsonPath("$[0].nom").value("Potter"))
+                .andExpect(jsonPath("$[1].id").value(3L))
+                .andExpect(jsonPath("$[1].nom").value("Sheldon"));
+    }
+
+    @Test
+    public void testGetAllEtudiantsNonEvalues_UserNotFound() throws Exception {
+        // Arrange
+        Long employeurId = 1L;
+
+        when(employeurService.getAllEtudiantsNonEvalues(employeurId)).thenThrow(new UserNotFoundException());
+
+        // Act & Assert
+        mockMvc.perform(get("/entreprise/getAllEtudiantsNonEvalues")
+                        .param("employeurId", String.valueOf(employeurId)))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Utilisateur not found"))
+                .andExpect(jsonPath("$.status").value(404));
+    }
 }

@@ -150,4 +150,20 @@ public class EmployeurService {
         return etudiant;
     }
 
+    public List<EtudiantDTO> getAllEtudiantsNonEvalues(Long employeurId) {
+
+        try {
+            utilisateurService.getMeUtilisateur();
+        } catch (AccessDeniedException e) {
+            throw new AuthenticationException(HttpStatus.UNAUTHORIZED, "Problème d'authentification");
+        }
+
+        Optional<List<Etudiant>> listeEtudiantsOpt = ficheEvaluationStagiaireRepository.findAllEtudiantWhereNotEvaluated(employeurId);
+
+        if(listeEtudiantsOpt.isEmpty())
+            throw new ResourceNotFoundException("Aucun Étudiant Trouvé");
+
+        return listeEtudiantsOpt.get().stream().map(EtudiantDTO::toDTO).toList();
+    }
+
 }

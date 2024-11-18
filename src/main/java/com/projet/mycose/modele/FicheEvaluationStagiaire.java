@@ -24,6 +24,10 @@ public class FicheEvaluationStagiaire {
     @JoinColumn(name = "employeur_id", nullable = false)
     private Employeur employeur;
 
+    @OneToOne
+    @JoinColumn(name = "contrat_id")
+    private Contrat contrat;
+
     private String nomEtudiant;
     private Programme programmeEtude;
     private String nomEntreprise;
