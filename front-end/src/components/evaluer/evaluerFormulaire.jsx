@@ -59,7 +59,7 @@ const EvaluerFormulaire = ({ form, ratingOptions, handleRadioChange, handleComme
                     <label htmlFor={`${form.id}-commentaires`} className="block font-medium">Commentaires :</label>
                     <textarea
                         id={`${form.id}-commentaires`}
-                        value={formData[form.id].commentaires ? formData[form.id].commentaires.value : ""}
+                        value={formData[form.id][form.id + "Commentaires"].value}
                         onChange={(e) => handleCommentChange(form.id, e.target.value)}
                         className="w-full min-h-[100px] p-2 border rounded resize-none"
                     />
