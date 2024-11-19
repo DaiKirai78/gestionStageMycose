@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import PageTitle from '../pageTitle';
 import { useTranslation } from 'react-i18next';
 import EvaluerFormulaire from './evaluerFormulaire';
+import AppreciacionFormulaire from './autreInformationsFormulaire';
 
 const forms = [
     {
@@ -63,11 +64,22 @@ const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent, u
     const [formData, setFormData] = useState(getAllFormCritere());
     const [isFetching, setIsFetching] = useState(false);
 
+    const [rating, setRating] = useState(getFormValue())
+    const [discussion, setDiscussion] = useState(getFormValue())
+    const [appreciation, setAppreciation] = useState(getFormValue())
+    const [hoursTotal, setHoursTotal] = useState(getFormValue())
+    const [futureInternship, setFutureInternship] = useState(getFormValue())
+    const [formationGoodEnough, setFormationGoodEnough] = useState(getFormValue())
+
     useEffect(() => {
         if (!selectedStudent) {
             navigate("/evaluer");
         }
     }, [selectedStudent, navigate]);
+
+    function getFormValue(value = "", hasError = false) {
+        return {value: value, hasError: hasError};
+    }
 
     function getAllFormCritere() {
         const formDataTemp = {};
@@ -76,9 +88,9 @@ const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent, u
             formDataTemp[form.id] = {};
             
             for (let critere of form.criteria) {
-                formDataTemp[form.id][critere.id] = {hasError: false, value: ""};
+                formDataTemp[form.id][critere.id] = getFormValue();
             }
-            formDataTemp[form.id][form.id + "Commentaires"] = {hasError: false, value: ""};
+            formDataTemp[form.id][form.id + "Commentaires"] = getFormValue();
         }
         
         return formDataTemp;
@@ -104,7 +116,7 @@ const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent, u
             ...prev,
             [formId]: {
                 ...prev[formId],
-                [criterionId]: {hasError: false, value: value}
+                [criterionId]: getFormValue(value)
             }
         }));
     };
@@ -114,7 +126,7 @@ const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent, u
             ...prev,
             [formId]: {
                 ...prev[formId],
-                [formId + "Commentaires"]: {hasError: false, value: value}
+                [formId + "Commentaires"]: getFormValue(value)
             }
         }));
     };
@@ -158,7 +170,6 @@ const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent, u
         
         if (hasError) {
             scrollToId(firstToHaveAnErrorId)
-            console.log("Erreur");
             return;
         }
 
@@ -169,6 +180,21 @@ const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent, u
             const token = localStorage.getItem("token");
 
             const body = getFormsWithOnlyValue();
+            body.appreciationGlobale = rating.value;
+            body.precisionAppreciationReponse = appreciation.value;
+            body.discuteeStagiaireReponse = discussion.value;
+            body.heuresAccordeStagiaireReponse = hoursTotal.value;
+            body.aimeraitAccueillirProchainStage = futureInternship.value;
+            body.formationSuffisanteReponse = formationGoodEnough.value;
+
+            
+
+            body.nomEtudiant = selectedStudent.prenom + " " + selectedStudent.nom;
+            body.programmeEtude = selectedStudent.programme;
+            body.nomEntreprise = userInfo.entrepriseName;
+            body.numeroTelephone = userInfo.numeroDeTelephone.replaceAll("-", "");
+            body.nomSuperviseur = userInfo.prenom + " " + userInfo.nom;
+            body.fonctionSuperviseur = "Employeur";
 
             const response = await fetch(
                 `http://localhost:8080/${getUriStartString()}/saveFicheEvaluation?etudiantId=${selectedStudent.id}`,
@@ -220,12 +246,9 @@ const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent, u
                 if (!value.value.trim()) {
                     if (!firstToHaveAnErrorId) {
                         firstToHaveAnErrorId = key
-                    }                    
-                    hasError = true;
-                    newValue = {
-                        hasError: true,
-                        value: ""
                     }
+                    hasError = true;
+                    newValue = getFormValue("", true)
                 }
 
                 newForm = {
@@ -236,6 +259,25 @@ const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent, u
             modifiedFormData = {
                 ...modifiedFormData,
                 [formKey]: {...newForm}
+            }
+        }
+
+        const allOtherChamps = [
+            {getter: rating, setter: setRating, id: "input_ratings"},
+            {getter: appreciation, setter: setAppreciation, id: "input_appreciation"},
+            {getter: discussion, setter: setDiscussion, id: "input_discussion"},
+            {getter: hoursTotal, setter: setHoursTotal, id: "input_hourTotal"},
+            {getter: futureInternship, setter: setFutureInternship, id: "input_futureInternship"},
+            {getter: formationGoodEnough, setter: setFormationGoodEnough, id: "input_goodEnough"},
+        ];
+
+        for (const champ of allOtherChamps) {            
+            if (!champ.getter.value) {
+                if (!firstToHaveAnErrorId) {
+                    firstToHaveAnErrorId = champ.id
+                }
+                hasError = true;
+                champ.setter(getFormValue("", true))
             }
         }
 
@@ -270,7 +312,26 @@ const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent, u
                     handleRadioChange={handleRadioChange}
                     ratingOptions={ratingOptions}
                     formData={formData} />
-                )}
+            )}
+
+            <AppreciacionFormulaire 
+                rating={rating} 
+                appreciation={appreciation} 
+                discussion={discussion} 
+                setRating={setRating} 
+                setAppreciation={setAppreciation} 
+                setDiscussion={setDiscussion} 
+                hoursTotal={hoursTotal}
+                setHoursTotal={setHoursTotal}
+                futureInternship={futureInternship}
+                setFutureInternship={setFutureInternship}
+                formationGoodEnough={formationGoodEnough}
+                setFormationGoodEnough={setFormationGoodEnough}
+                getFormValue={getFormValue}
+            />
+
+            
+            
             <button
                 onClick={sendForm}
                 className='bg-orange py-3 px-5 rounded text-white disabled:bg-deep-orange-500 disabled:cursor-default'
