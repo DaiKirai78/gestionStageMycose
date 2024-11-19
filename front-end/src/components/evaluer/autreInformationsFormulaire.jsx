@@ -1,5 +1,6 @@
 import { Input } from '@material-tailwind/react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const AppreciacionFormulaire = ({ 
   setRating, 
@@ -16,19 +17,20 @@ const AppreciacionFormulaire = ({
   setFormationGoodEnough,
   getFormValue
 }) => {
+  const { t } = useTranslation();
 
     const ratings = [
-        {id: "HABILITES_DEPASSENT_BEAUCOUP_ATTENTES", label: 'Les habiletés démontrées dépassent de beaucoup les attentes'},
-        {id: "HABILITES_DEPASSENT_ATTENTES", label: 'Les habiletés démontrées dépassent les attentes'},
-        {id: "HABILITES_REPONDENT_PLEINEMENT_ATTENTES", label: 'Les habiletés démontrées répondent pleinement aux attentes'},
-        {id: "HABILITES_REPONDENT_PARTIELLEMENT_ATTENTES", label: 'Les habiletés démontrées répondent partiellement aux attentes'},
-        {id: "HABILITES_REPONDENT_PAS_ATTENTES", label: 'Les habiletés démontrées ne répondent pas aux attentes'}
+        "HABILITES_DEPASSENT_BEAUCOUP_ATTENTES",
+        "HABILITES_DEPASSENT_ATTENTES",
+        "HABILITES_REPONDENT_PLEINEMENT_ATTENTES",
+        "HABILITES_REPONDENT_PARTIELLEMENT_ATTENTES",
+        "HABILITES_REPONDENT_PAS_ATTENTES"
       ]
 
     return (
         <div className="w-full max-w-4xl bg-white rounded-lg shadow-md p-6 mb-8">
       <h2 className="text-xl font-bold text-center mb-6">
-        APPRÉCIATION GLOBALE DU STAGIAIRE
+        {t("appreciationGlobaleDuStagiaire").toUpperCase()}
       </h2>
       <form>
         <fieldset id='input_ratings'>
@@ -37,18 +39,18 @@ const AppreciacionFormulaire = ({
               <input
                 type="radio"
                 name="rating"
-                value={ratingObj.id}
-                checked={rating.value === ratingObj.id}
-                onChange={() => setRating(getFormValue(ratingObj.id))}
+                value={ratingObj}
+                checked={rating.value === ratingObj}
+                onChange={() => setRating(getFormValue(ratingObj))}
                 className="w-5 h-5"
               />
-              <span className={`${rating.hasError ? "text-red-500" : ""}`}>{ratingObj.label}</span>
+              <span className={`${rating.hasError ? "text-red-500" : ""}`}>{t(ratingObj)}</span>
             </label>
           ))}
         </fieldset>
 
         <div className="mt-6 space-y-2" id='input_appreciation'>
-          <label htmlFor="appreciation" className={`font-bold block ${appreciation.hasError ? "text-red-500" : ""}`}>PRÉCISEZ VOTRE APPRÉCIATION:</label>
+          <label htmlFor="appreciation" className={`font-bold block ${appreciation.hasError ? "text-red-500" : ""}`}>{t("preciserVotreAppreciation").toUpperCase()} :</label>
           <textarea
             id="appreciation"
             value={appreciation.value}
@@ -61,7 +63,7 @@ const AppreciacionFormulaire = ({
 
         <div className="">
           <p className={`font-medium mb-2 ${discussion.hasError ? "text-red-500" : ""}`}>
-            Cette évaluation a été discutée avec le stagiaire :
+            {t("cetteEvaluationAEteDiscutee")} :
           </p>
           <div className="flex space-x-4" id="input_discussion">
             {[true,  false].map((option) => (
@@ -74,7 +76,7 @@ const AppreciacionFormulaire = ({
                   onChange={(e) => setDiscussion(getFormValue(option))}
                   className="w-5 h-5 text-blue-600 border-gray-300 focus:ring-blue-500"
                 />
-                <span>{option ? "Oui" : "Non"}</span>
+                <span>{t(option ? "OUI" : "NON")}</span>
               </label>
             ))}
           </div>
@@ -84,7 +86,7 @@ const AppreciacionFormulaire = ({
 
         <div id="input_hourTotalhoursTotal">
           <label className="block">
-            <span className={`block ${hoursTotal.hasError ? "text-red-500" : ""}`}>Veuillez indiquer le nombre d'heures réel par semaine d'encadrement accordé au stagiaire :</span>
+            <span className={`block ${hoursTotal.hasError ? "text-red-500" : ""}`}>{t("nombreDheureReelDencadrement")} :</span>
             <Input
               type="text"
               labelProps={{
@@ -100,7 +102,7 @@ const AppreciacionFormulaire = ({
         <hr className='my-4' />
 
         <div className="space-y-4">
-          <p className={`text-base ${futureInternship.hasError ? "text-red-500" : ""}`}>L'ENTREPRISE AIMERAIT ACCUEILLIR CET ÉLÈVE POUR SON PROCHAIN STAGE :</p>
+          <p className={`text-base ${futureInternship.hasError ? "text-red-500" : ""}`}>{t("entrepriseVoudraisAccueillirDautreStagiereProchaineFois")} :</p>
           <div className="flex space-x-4" id="input_futureInternship">
             {['OUI', 'NON', 'PEUT_ETRE'].map((option) => (
               <label key={option} className="flex items-center space-x-2 cursor-pointer">
@@ -112,11 +114,11 @@ const AppreciacionFormulaire = ({
                   onChange={(e) => setFutureInternship(getFormValue(e.target.value))}
                   className="w-5 h-5 text-blue-600 border-gray-300 focus:ring-blue-500"
                 />
-                <span>{option}</span>
+                <span>{t(option)}</span>
               </label>
             ))}
           </div>
-          <p className={`text-sm ${formationGoodEnough.hasError ? "text-red-500" : ""}`}>La formation technique du stagiaire était-elle suffisante pour accomplir le mandat de stage?</p>
+          <p className={`text-sm ${formationGoodEnough.hasError ? "text-red-500" : ""}`}>{t("formationTechniqueSuvisantePourMandaStage")}?</p>
           <textarea
             id="input_goodEnough"
             value={formationGoodEnough.value}
