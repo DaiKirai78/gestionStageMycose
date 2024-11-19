@@ -1,6 +1,7 @@
 package com.projet.mycose.service;
 
 import com.projet.mycose.dto.ContratDTO;
+import com.projet.mycose.dto.EtudiantDTO;
 import com.projet.mycose.dto.FicheEvaluationStagiaireDTO;
 import com.projet.mycose.exceptions.AuthenticationException;
 import com.projet.mycose.exceptions.ResourceNotFoundException;
@@ -448,7 +449,90 @@ public class EmployeurServiceTest {
         verify(ficheEvaluationStagiaireRepositoryMock, never()).save(any(FicheEvaluationStagiaire.class));
     }
 
+    @Test
+    public void testGetAllEtudiantsNonEvalues_Success() throws AccessDeniedException {
+        // Arrange
+        Long employeurId = 1L;
+        Employeur employeur = new Employeur();
+        employeur.setId(employeurId);
 
+        List<Etudiant> listeFind = new ArrayList<>();
+        Etudiant etudiant1 = new Etudiant();
+        etudiant1.setId(2L);
+        etudiant1.setNom("Albert");
+
+        Etudiant etudiant2 = new Etudiant();
+        etudiant2.setId(3L);
+        etudiant2.setNom("Newton");
+
+        listeFind.add(etudiant1);
+        listeFind.add(etudiant2);
+
+        EtudiantDTO dto1 = new EtudiantDTO();
+        dto1.setId(etudiant1.getId());
+        dto1.setNom(etudiant1.getNom());
+
+        EtudiantDTO dto2 = new EtudiantDTO();
+        dto2.setId(etudiant2.getId());
+        dto2.setNom(etudiant2.getNom());
+
+        when(utilisateurService.getMeUtilisateur()).thenReturn(employeur);
+        when(ficheEvaluationStagiaireRepositoryMock.findAllEtudiantWhereNotEvaluated(employeurId, Etudiant.ContractStatus.ACTIVE)).thenReturn(Optional.of(listeFind));
+
+        when(modelMapperMock.map(etudiant1, EtudiantDTO.class))
+                .thenReturn(dto1);
+        when(modelMapperMock.map(etudiant2, EtudiantDTO.class))
+                .thenReturn(dto2);
+
+        // Act
+        List<EtudiantDTO> listeRetourne = employeurService.getAllEtudiantsNonEvalues(employeurId);
+
+        //Assert
+        verify(ficheEvaluationStagiaireRepositoryMock, times(1)).findAllEtudiantWhereNotEvaluated(employeurId, Etudiant.ContractStatus.ACTIVE);
+        assertEquals(listeRetourne.size(), 2);
+        assertEquals(listeRetourne.get(0).getId(), 2L);
+        assertEquals(listeRetourne.get(0).getNom(), "Albert");
+        assertEquals(listeRetourne.get(1).getId(), 3L);
+        assertEquals(listeRetourne.get(1).getNom(), "Newton");
+    }
+
+    @Test
+    public void testGetAllEtudiantsNonEvalues_AccessDenied() throws AccessDeniedException {
+        // Arrange
+        Long employeurId = 1L;
+
+        when(utilisateurService.getMeUtilisateur()).thenThrow(new AccessDeniedException("Problème d'authentification"));
+
+        // Act
+
+        AuthenticationException exception = assertThrows(AuthenticationException.class, () ->
+                employeurService.getAllEtudiantsNonEvalues(employeurId)
+        );
+
+        // Assert
+        assertEquals("Problème d'authentification", exception.getMessage());
+        verify(ficheEvaluationStagiaireRepositoryMock, never()).save(any(FicheEvaluationStagiaire.class));
+    }
+
+    @Test
+    public void testGetAllEtudiantsNonEvalues_ListeNotFound() throws AccessDeniedException {
+        // Arrange
+        Long employeurId = 1L;
+        Employeur employeur = new Employeur();
+        employeur.setId(employeurId);
+
+        when(utilisateurService.getMeUtilisateur()).thenReturn(employeur);
+        when(ficheEvaluationStagiaireRepositoryMock.findAllEtudiantWhereNotEvaluated(employeurId, Etudiant.ContractStatus.ACTIVE)).thenReturn(Optional.empty());
+
+        // Act
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () ->
+                employeurService.getAllEtudiantsNonEvalues(employeurId)
+        );
+
+        // Assert
+        assertEquals("Aucun Étudiant Trouvé", exception.getMessage());
+        verify(ficheEvaluationStagiaireRepositoryMock, never()).save(any(FicheEvaluationStagiaire.class));
+    }
 
 
 

@@ -163,7 +163,9 @@ public class EmployeurService {
         if(listeEtudiantsOpt.isEmpty())
             throw new ResourceNotFoundException("Aucun Étudiant Trouvé");
 
-        return listeEtudiantsOpt.get().stream().map(EtudiantDTO::toDTO).toList();
+        List<Etudiant> listeAEnvoyer = listeEtudiantsOpt.get();
+        return listeAEnvoyer.stream().map(
+                etudiant -> modelMapper.map(etudiant, EtudiantDTO.class)).toList();
     }
 
 }

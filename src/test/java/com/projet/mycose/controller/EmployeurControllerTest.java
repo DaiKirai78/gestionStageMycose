@@ -3,6 +3,7 @@ package com.projet.mycose.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.projet.mycose.dto.*;
 import com.projet.mycose.exceptions.GlobalExceptionHandler;
+import com.projet.mycose.exceptions.ResourceNotFoundException;
 import com.projet.mycose.exceptions.SignaturePersistenceException;
 import com.projet.mycose.exceptions.UserNotFoundException;
 import com.projet.mycose.modele.Contrat;
