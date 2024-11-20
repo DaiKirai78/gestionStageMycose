@@ -39,7 +39,7 @@ public class EnseignantService {
     }
 
     public Page<EtudiantDTO> getAllEtudiantsAEvaluerParProf(Long enseignantId, int page) {
-        PageRequest pageRequest = PageRequest.of(1, LIMIT_PER_PAGE);
+        PageRequest pageRequest = PageRequest.of(page, LIMIT_PER_PAGE);
 
         try {
             utilisateurService.getMeUtilisateur();
