@@ -1,10 +1,7 @@
 package com.projet.mycose.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.projet.mycose.dto.EtudiantDTO;
-import com.projet.mycose.dto.FormulaireOffreStageDTO;
-import com.projet.mycose.dto.OffreStageDTO;
-import com.projet.mycose.dto.RegisterEtudiantDTO;
+import com.projet.mycose.dto.*;
 import com.projet.mycose.exceptions.AuthenticationException;
 import com.projet.mycose.exceptions.GlobalExceptionHandler;
 import com.projet.mycose.exceptions.SignaturePersistenceException;
@@ -25,16 +22,13 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.bind.MissingServletRequestParameterException;
-import org.springframework.web.multipart.support.MissingServletRequestPartException;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -507,5 +501,55 @@ public class EtudiantControllerTest {
         // Verify that the service was called once
         verify(etudiantService, times(1))
                 .enregistrerSignature(any(), eq(password), eq(contratId));
+    }
+
+    @Test
+    public void testGetAllContratsNonSignes() throws Exception {
+        int page = 1;
+        // Arrange
+        ContratDTO contrat1 = new ContratDTO();
+        contrat1.setId(1L);
+
+        ContratDTO contrat2 = new ContratDTO();
+        contrat2.setId(2L);
+
+        List<ContratDTO> contrats = Arrays.asList(contrat1, contrat2);
+
+        when(etudiantService.getAllContratsNonSignes(page)).thenReturn(contrats);
+
+        // Act & Assert
+        mockMvc.perform(get("/etudiant/getContratsNonSignees")
+                        .param("page", String.valueOf(page))
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].id", is(1)))
+                .andExpect(jsonPath("$[1].id", is(2)));
+    }
+
+    @Test
+    public void testGetAmountOfPagesOfCandidaturesNonSignees_Success() throws Exception {
+        int expectedPages = 5;
+        // Arrange
+        when(etudiantService.getAmountOfPagesOfContractNonSignees()).thenReturn(expectedPages);
+
+        // Act & Assert
+        mockMvc.perform(get("/etudiant/pagesContrats")
+                        .with(csrf()))
+                .andExpect(status().isAccepted())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().string(String.valueOf(expectedPages)));
+    }
+
+    @Test
+    public void testGetAmountOfPagesOfCandidaturesNonSignees_Exception() throws Exception {
+        // Arrange
+        when(etudiantService.getAmountOfPagesOfContractNonSignees()).thenThrow(new RuntimeException("Some exception"));
+
+        // Act & Assert
+        mockMvc.perform(get("/etudiant/pagesContrats")
+                        .with(csrf()))
+                .andExpect(status().isNoContent());
     }
 }
