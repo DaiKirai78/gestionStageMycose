@@ -42,7 +42,7 @@ public class EnseignantService {
             throw new AuthenticationException(HttpStatus.UNAUTHORIZED, "Problème d'authentification");
         }
 
-        Optional<List<Etudiant>> listeEtudiantsOpt = ficheEvaluationMilieuStageRepository.findAllEtudiantsNonEvaluesByProf(enseignantId);
+        Optional<List<Etudiant>> listeEtudiantsOpt = ficheEvaluationMilieuStageRepository.findAllEtudiantsNonEvaluesByProf(enseignantId, Etudiant.ContractStatus.ACTIVE);
 
         if(listeEtudiantsOpt.isEmpty())
             throw new ResourceNotFoundException("Aucun Étudiant Trouvé");
