@@ -486,6 +486,7 @@ public class OffreStageService {
         return offreStageRepository.findAllByEtudiantFilteredWithTitle(etudiantDTO.getId(), etudiantDTO.getProgramme(), year, sessionEcole, title, pageRequest).map(this::convertToDTO);
     }
 
+    @Transactional
     public FichierOffreStageDTO updateOffreStage(UploadFicherOffreStageDTO uploadFicherOffreStageDTO, Long offreStageId) throws IOException {
         UtilisateurDTO utilisateurDTO = utilisateurService.getMe();
         Long createur_id = utilisateurDTO.getId();
@@ -504,8 +505,7 @@ public class OffreStageService {
         if (uploadFicherOffreStageDTO.getTitle() != null) {
             fichierOffreStage.setTitle(uploadFicherOffreStageDTO.getTitle());
         }
-
-        if (uploadFicherOffreStageDTO.getFile() != null) {
+        if (uploadFicherOffreStageDTO.getFile() != null && !uploadFicherOffreStageDTO.getFile().isEmpty()) {
             fichierOffreStage.setData(uploadFicherOffreStageDTO.getFile().getBytes());
             fichierOffreStage.setFilename(uploadFicherOffreStageDTO.getFile().getOriginalFilename());
         }
