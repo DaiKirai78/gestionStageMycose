@@ -15,6 +15,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
@@ -212,42 +215,57 @@ public class EmployeurControllerTest {
     public void testEnregistrerFicheEvaluationStagiaire_Success() throws Exception {
         // Arrange
         Long etudiantId = 2L;
+        MockMultipartFile signatureFile = new MockMultipartFile(
+                "signature",
+                "signature.png",
+                MediaType.IMAGE_PNG_VALUE,
+                "Dummy Image Content".getBytes()
+        );
 
         FicheEvaluationStagiaireDTO ficheEvaluationStagiaireDTOMock = new FicheEvaluationStagiaireDTO();
         ficheEvaluationStagiaireDTOMock.setId(1L);
         ficheEvaluationStagiaireDTOMock.setNumeroTelephone("555-444-3333");
         ficheEvaluationStagiaireDTOMock.setFonctionSuperviseur("Manager");
 
-        doNothing().when(employeurService).enregistrerFicheEvaluationStagiaire(any(FicheEvaluationStagiaireDTO.class), eq(etudiantId));
+        doNothing().when(employeurService).enregistrerFicheEvaluationStagiaire(any(FicheEvaluationStagiaireDTO.class), eq(etudiantId), eq(signatureFile));
 
         ObjectMapper objectMapper = new ObjectMapper();
         String ficheEvaluationJson = objectMapper.writeValueAsString(ficheEvaluationStagiaireDTOMock);
 
         // Act & Assert
-        mockMvc.perform(post("/entreprise/saveFicheEvaluation")
+        mockMvc.perform(multipart("/entreprise/saveFicheEvaluation")
+                        .file(signatureFile)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(ficheEvaluationJson)
                         .param("etudiantId", etudiantId.toString()))
                 .andExpect(status().isOk());
-        verify(employeurService, times(1)).enregistrerFicheEvaluationStagiaire(any(FicheEvaluationStagiaireDTO.class), eq(etudiantId));
+        verify(employeurService, times(1)).enregistrerFicheEvaluationStagiaire(any(FicheEvaluationStagiaireDTO.class), eq(etudiantId), eq(signatureFile));
     }
 
     @Test
     public void testEnregistrerFicheEvaluationStagiaire_Error() throws Exception {
         //Arrange
+        MockMultipartFile signatureFile = new MockMultipartFile(
+                "signature",
+                "signature.png",
+                MediaType.IMAGE_PNG_VALUE,
+                "Dummy Image Content".getBytes()
+        );
+
         FicheEvaluationStagiaireDTO ficheEvaluationStagiaireDTOMock = new FicheEvaluationStagiaireDTO();
 
-        doNothing().when(employeurService).enregistrerFicheEvaluationStagiaire(ficheEvaluationStagiaireDTOMock, 2L);
+        doNothing().when(employeurService).enregistrerFicheEvaluationStagiaire(ficheEvaluationStagiaireDTOMock, 2L, signatureFile);
         ObjectMapper objectMapper = new ObjectMapper();
         String ficheEvaluationJson = objectMapper.writeValueAsString(ficheEvaluationStagiaireDTOMock);
 
         //Act & Assert
-        mockMvc.perform(post("/entreprise/saveFicheEvaluation")
+        mockMvc.perform(multipart("/entreprise/saveFicheEvaluation")
+                        .file(signatureFile)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ficheEvaluationJson)
                 .param("etudiantId", String.valueOf(2L)))
                 .andExpect(status().isInternalServerError());
-        verify(employeurService, times(0)).enregistrerFicheEvaluationStagiaire(ficheEvaluationStagiaireDTOMock, 2L);
+        verify(employeurService, times(0)).enregistrerFicheEvaluationStagiaire(ficheEvaluationStagiaireDTOMock, 2L, signatureFile);
     }
 
     @Test
@@ -266,17 +284,21 @@ public class EmployeurControllerTest {
         listeRetourne.add(etudiant1);
         listeRetourne.add(etudiant2);
 
-        when(employeurService.getAllEtudiantsNonEvalues(employeurId)).thenReturn(listeRetourne);
+        PageRequest pageRequest = PageRequest.of(1, 10);
+        Page<EtudiantDTO> pageEtudiants = new PageImpl<>(listeRetourne, pageRequest, 2);
+
+        when(employeurService.getAllEtudiantsNonEvalues(employeurId, 1)).thenReturn(pageEtudiants);
 
         // Act & Assert
         mockMvc.perform(get("/entreprise/getAllEtudiantsNonEvalues")
-                .param("employeurId", String.valueOf(employeurId)))
+                .param("employeurId", String.valueOf(employeurId))
+                        .param("pageNumber", "1"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$[0].id").value(2L))
-                .andExpect(jsonPath("$[0].nom").value("Potter"))
-                .andExpect(jsonPath("$[1].id").value(3L))
-                .andExpect(jsonPath("$[1].nom").value("Sheldon"));
+                .andExpect(jsonPath("$.content[0].id").value(2L))
+                .andExpect(jsonPath("$.content[0].nom").value("Potter"))
+                .andExpect(jsonPath("$.content[1].id").value(3L))
+                .andExpect(jsonPath("$.content[1].nom").value("Sheldon"));
     }
 
     @Test
@@ -284,11 +306,12 @@ public class EmployeurControllerTest {
         // Arrange
         Long employeurId = 1L;
 
-        when(employeurService.getAllEtudiantsNonEvalues(employeurId)).thenThrow(new UserNotFoundException());
+        when(employeurService.getAllEtudiantsNonEvalues(employeurId,1)).thenThrow(new UserNotFoundException());
 
         // Act & Assert
         mockMvc.perform(get("/entreprise/getAllEtudiantsNonEvalues")
-                        .param("employeurId", String.valueOf(employeurId)))
+                        .param("employeurId", String.valueOf(employeurId))
+                        .param("pageNumber", "1"))
                 .andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.message").value("Utilisateur not found"))
