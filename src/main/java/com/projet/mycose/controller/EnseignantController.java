@@ -38,7 +38,7 @@ public class EnseignantController {
 
     @PostMapping("/saveFicheEvaluationMilieuStage")
     public ResponseEntity<HttpStatus> enregistrerFicheEvaluationStagiaire(
-            @RequestBody FicheEvaluationMilieuStageDTO ficheEvaluationMilieuStageDTO,
+            @Valid @RequestBody FicheEvaluationMilieuStageDTO ficheEvaluationMilieuStageDTO,
             @RequestParam Long etudiantId
     ) {
         enseignantService.enregistrerFicheEvaluationMilieuStage(ficheEvaluationMilieuStageDTO, etudiantId);

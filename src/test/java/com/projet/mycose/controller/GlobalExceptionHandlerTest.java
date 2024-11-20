@@ -1,5 +1,6 @@
 package com.projet.mycose.controller;
 
+import com.projet.mycose.exceptions.ErrorResponse;
 import com.projet.mycose.exceptions.GlobalExceptionHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,14 +43,12 @@ public class GlobalExceptionHandlerTest {
         when(bindingResult.getFieldErrors()).thenReturn(List.of(fieldError1, fieldError2));
 
         // Act
-        ResponseEntity<Map<String, String>> response = globalExceptionHandler.handleValidationExceptions(exception);
+        ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleValidationExceptions(exception);
 
         // Assert
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals(2, response.getBody().size());
-        assertEquals("Field1 is invalid", response.getBody().get("field1"));
-        assertEquals("Field2 is invalid", response.getBody().get("field2"));
+        assertEquals("{field1=Field1 is invalid, field2=Field2 is invalid}", response.getBody().getMessage());
 
         verify(bindingResult, times(1)).getFieldErrors();
     }
