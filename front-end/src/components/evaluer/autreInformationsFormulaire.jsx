@@ -1,6 +1,9 @@
 import { Input } from '@material-tailwind/react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import SignerContratCanvas from '../signerContrats/signerContratCanvas';
+import InputErrorMessage from '../inputErrorMesssage';
+import { IoCloseSharp } from 'react-icons/io5';
 
 const AppreciacionFormulaire = ({ 
   setRating, 
@@ -15,7 +18,11 @@ const AppreciacionFormulaire = ({
   setFutureInternship,
   formationGoodEnough,
   setFormationGoodEnough,
-  getFormValue
+  getFormValue,
+  setErrorKeySignature,
+  errorKeySignature,
+  setDrewSomething,
+  canvasRef
 }) => {
   const { t } = useTranslation();
 
@@ -125,6 +132,28 @@ const AppreciacionFormulaire = ({
             onChange={(e) => setFormationGoodEnough(getFormValue(e.target.value))}
             className="w-full h-32 p-2 border rounded-md resize-none"
           />
+        </div>
+        <div className='flex flex-col items-center mt-5'>
+        <h1 className='mb-2'>{t("signature")} :</h1>
+        <SignerContratCanvas
+                canvasRef={canvasRef} 
+                setDrewSomething={setDrewSomething} 
+                errorKeySignature={errorKeySignature} 
+                setErrorKeySignature={setErrorKeySignature}/>
+            <div className='w-full'>
+                <InputErrorMessage messageKey={errorKeySignature} />
+            </div>
+            <button
+                className="p-2 bg-orange hover:bg-opacity-90 text-white rounded mt-3 mb-5"
+                onClick={(e) => {
+                    e.preventDefault()
+                    canvasRef.current.clearCanvas();
+                    setDrewSomething(false);
+                    setErrorKeySignature("");
+                }}
+            >
+                <IoCloseSharp />
+            </button>
         </div>
       </form>
     </div>

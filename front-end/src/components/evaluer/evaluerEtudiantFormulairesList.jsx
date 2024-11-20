@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PageTitle from '../pageTitle';
 import { useTranslation } from 'react-i18next';
@@ -71,6 +71,10 @@ const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent, u
     const [hoursTotal, setHoursTotal] = useState(getFormValue())
     const [futureInternship, setFutureInternship] = useState(getFormValue())
     const [formationGoodEnough, setFormationGoodEnough] = useState(getFormValue())
+
+    const canvasRef = useRef();
+    const [errorKeySignature, setErrorKeySignature]= useState("");
+    const [drewSomething, setDrewSomething] = useState(false);
 
     useEffect(() => {
         if (!selectedStudent) {
@@ -166,20 +170,30 @@ const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent, u
         return modifiedFormData;
     }
 
+    function getBase64CanvasPng() {
+        return canvasRef.current
+            .exportImage("png")
+            .then(data => {
+                return data
+            })
+            .catch(e => {
+                console.log(e);
+            });
+    }
+
     async function sendForm() {
         let [hasError, firstToHaveAnErrorId] = allChampsValide();
-        
+    
         if (hasError) {
-            scrollToId(firstToHaveAnErrorId)
+            scrollToId(firstToHaveAnErrorId);
             return;
         }
-
+    
         setIsFetching(true);
-        
+    
         try {
-            
             const token = localStorage.getItem("token");
-
+    
             const body = getFormsWithOnlyValue();
             body.appreciationGlobale = rating.value;
             body.precisionAppreciationReponse = appreciation.value;
@@ -187,41 +201,43 @@ const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent, u
             body.heuresAccordeStagiaireReponse = hoursTotal.value;
             body.aimeraitAccueillirProchainStage = futureInternship.value;
             body.formationSuffisanteReponse = formationGoodEnough.value;
-
-            
-
+    
             body.nomEtudiant = selectedStudent.prenom + " " + selectedStudent.nom;
             body.programmeEtude = selectedStudent.programme;
             body.nomEntreprise = userInfo.entrepriseName;
             body.numeroTelephone = userInfo.numeroDeTelephone.replaceAll("-", "");
             body.nomSuperviseur = userInfo.prenom + " " + userInfo.nom;
             body.fonctionSuperviseur = "Employeur";
-
+    
+            const signaturePngBase64 = await getBase64CanvasPng();
+    
+            const signatureBlob = await fetch(signaturePngBase64).then(res => res.blob());
+    
+            const formData = new FormData();
+            formData.append("ficheEvaluationStagiaireDTO", JSON.stringify(body));
+            formData.append("signature", signatureBlob, "signature.png");
+    
             const response = await fetch(
                 `http://localhost:8080/${getUriStartString()}/saveFicheEvaluation?etudiantId=${selectedStudent.id}`,
-                    {
-                        method: "POST",
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify(body)
-                    }
+                {
+                    method: "POST",
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    },
+                    body: formData
+                }
             );
     
             if (response.ok) {
                 setSelectedStudent(null);
             } else {
-                console.log("erreur");
+                console.log("Erreur lors de l'envoi.");
             }
-            
         } catch (e) {
-            console.log("Une erreur est survenu lors de l'envoie du formulaire: " + e);
+            console.log("Une erreur est survenue lors de l'envoi du formulaire : " + e);
         } finally {
             setIsFetching(false);
         }
-        
-        
     }
 
     function allChampsValide() {
@@ -288,6 +304,14 @@ const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent, u
             hasError = true;
             setDiscussion(getFormValue("", true))
         }
+
+        if (!drewSomething) {
+            if (!firstToHaveAnErrorId) {
+                firstToHaveAnErrorId = ""
+            }
+            hasError = true;
+            setErrorKeySignature("erreurNoSignature");
+        }
         
         setFormData(modifiedFormData);
         return [hasError, firstToHaveAnErrorId];
@@ -322,7 +346,7 @@ const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent, u
                     formData={formData} />
             )}
 
-            <AppreciacionFormulaire 
+            <AppreciacionFormulaire
                 rating={rating} 
                 appreciation={appreciation} 
                 discussion={discussion} 
@@ -336,6 +360,10 @@ const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent, u
                 formationGoodEnough={formationGoodEnough}
                 setFormationGoodEnough={setFormationGoodEnough}
                 getFormValue={getFormValue}
+                canvasRef={canvasRef}
+                errorKeySignature={errorKeySignature}
+                setDrewSomething={setDrewSomething}
+                setErrorKeySignature={setErrorKeySignature}
             />
 
             
