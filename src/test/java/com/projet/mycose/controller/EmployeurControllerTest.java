@@ -215,42 +215,57 @@ public class EmployeurControllerTest {
     public void testEnregistrerFicheEvaluationStagiaire_Success() throws Exception {
         // Arrange
         Long etudiantId = 2L;
+        MockMultipartFile signatureFile = new MockMultipartFile(
+                "signature",
+                "signature.png",
+                MediaType.IMAGE_PNG_VALUE,
+                "Dummy Image Content".getBytes()
+        );
 
         FicheEvaluationStagiaireDTO ficheEvaluationStagiaireDTOMock = new FicheEvaluationStagiaireDTO();
         ficheEvaluationStagiaireDTOMock.setId(1L);
         ficheEvaluationStagiaireDTOMock.setNumeroTelephone("555-444-3333");
         ficheEvaluationStagiaireDTOMock.setFonctionSuperviseur("Manager");
 
-        doNothing().when(employeurService).enregistrerFicheEvaluationStagiaire(any(FicheEvaluationStagiaireDTO.class), eq(etudiantId));
+        doNothing().when(employeurService).enregistrerFicheEvaluationStagiaire(any(FicheEvaluationStagiaireDTO.class), eq(etudiantId), eq(signatureFile));
 
         ObjectMapper objectMapper = new ObjectMapper();
         String ficheEvaluationJson = objectMapper.writeValueAsString(ficheEvaluationStagiaireDTOMock);
 
         // Act & Assert
-        mockMvc.perform(post("/entreprise/saveFicheEvaluation")
+        mockMvc.perform(multipart("/entreprise/saveFicheEvaluation")
+                        .file(signatureFile)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(ficheEvaluationJson)
                         .param("etudiantId", etudiantId.toString()))
                 .andExpect(status().isOk());
-        verify(employeurService, times(1)).enregistrerFicheEvaluationStagiaire(any(FicheEvaluationStagiaireDTO.class), eq(etudiantId));
+        verify(employeurService, times(1)).enregistrerFicheEvaluationStagiaire(any(FicheEvaluationStagiaireDTO.class), eq(etudiantId), eq(signatureFile));
     }
 
     @Test
     public void testEnregistrerFicheEvaluationStagiaire_Error() throws Exception {
         //Arrange
+        MockMultipartFile signatureFile = new MockMultipartFile(
+                "signature",
+                "signature.png",
+                MediaType.IMAGE_PNG_VALUE,
+                "Dummy Image Content".getBytes()
+        );
+
         FicheEvaluationStagiaireDTO ficheEvaluationStagiaireDTOMock = new FicheEvaluationStagiaireDTO();
 
-        doNothing().when(employeurService).enregistrerFicheEvaluationStagiaire(ficheEvaluationStagiaireDTOMock, 2L);
+        doNothing().when(employeurService).enregistrerFicheEvaluationStagiaire(ficheEvaluationStagiaireDTOMock, 2L, signatureFile);
         ObjectMapper objectMapper = new ObjectMapper();
         String ficheEvaluationJson = objectMapper.writeValueAsString(ficheEvaluationStagiaireDTOMock);
 
         //Act & Assert
-        mockMvc.perform(post("/entreprise/saveFicheEvaluation")
+        mockMvc.perform(multipart("/entreprise/saveFicheEvaluation")
+                        .file(signatureFile)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ficheEvaluationJson)
                 .param("etudiantId", String.valueOf(2L)))
                 .andExpect(status().isInternalServerError());
-        verify(employeurService, times(0)).enregistrerFicheEvaluationStagiaire(ficheEvaluationStagiaireDTOMock, 2L);
+        verify(employeurService, times(0)).enregistrerFicheEvaluationStagiaire(ficheEvaluationStagiaireDTOMock, 2L, signatureFile);
     }
 
     @Test

@@ -111,7 +111,7 @@ public class EmployeurService {
     }
 
     @Transactional
-    public void enregistrerFicheEvaluationStagiaire(FicheEvaluationStagiaireDTO ficheEvaluationStagiaireDTO, Long etudiantId) {
+    public void enregistrerFicheEvaluationStagiaire(FicheEvaluationStagiaireDTO ficheEvaluationStagiaireDTO, Long etudiantId, MultipartFile signatureEmployeur) {
         Utilisateur utilisateur = null;
 
         try {
@@ -140,6 +140,12 @@ public class EmployeurService {
         ficheEvaluationStagiaire.setEmployeur(employeur);
         ficheEvaluationStagiaire.setEtudiant(etudiant);
         ficheEvaluationStagiaire.setContrat(contrat);
+
+        try {
+            ficheEvaluationStagiaire.setSignatureSuperviseur(signatureEmployeur.getBytes());
+        } catch (IOException e) {
+            throw new SignaturePersistenceException("Error while saving employeur signature");
+        }
 
         ficheEvaluationStagiaireRepository.save(ficheEvaluationStagiaire);
     }

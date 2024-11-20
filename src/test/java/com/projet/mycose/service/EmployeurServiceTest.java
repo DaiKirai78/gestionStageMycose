@@ -386,6 +386,9 @@ public class EmployeurServiceTest {
 
         Contrat contrat =  new Contrat();
 
+        byte[] signatureBytes = "dummySignature".getBytes();
+        MockMultipartFile signature = new MockMultipartFile("signature", "signature.jpg", "image/jpeg", signatureBytes);
+
         FicheEvaluationStagiaireDTO ficheEvaluationStagiaireDTO = new FicheEvaluationStagiaireDTO();
         ficheEvaluationStagiaireDTO.setId(3L);
         ficheEvaluationStagiaireDTO.setNumeroTelephone("555-444-3333");
@@ -400,7 +403,7 @@ public class EmployeurServiceTest {
         ArgumentCaptor<FicheEvaluationStagiaire> ficheCaptor = ArgumentCaptor.forClass(FicheEvaluationStagiaire.class);
 
         // Act
-        employeurService.enregistrerFicheEvaluationStagiaire(ficheEvaluationStagiaireDTO, etudiantId);
+        employeurService.enregistrerFicheEvaluationStagiaire(ficheEvaluationStagiaireDTO, etudiantId, signature);
 
         // Assert
         verify(utilisateurService, times(1)).getMeUtilisateur();
@@ -423,11 +426,14 @@ public class EmployeurServiceTest {
         ficheEvaluationStagiaireDTO.setNumeroTelephone("555-444-3333");
         ficheEvaluationStagiaireDTO.setFonctionSuperviseur("Manager");
 
+        byte[] signatureBytes = "dummySignature".getBytes();
+        MockMultipartFile signature = new MockMultipartFile("signature", "signature.jpg", "image/jpeg", signatureBytes);
+
         when(utilisateurService.getMeUtilisateur()).thenThrow(new AccessDeniedException("Access Denied"));
 
         // Act
         AuthenticationException exception = assertThrows(AuthenticationException.class, () ->
-                employeurService.enregistrerFicheEvaluationStagiaire(ficheEvaluationStagiaireDTO, etudiantId)
+                employeurService.enregistrerFicheEvaluationStagiaire(ficheEvaluationStagiaireDTO, etudiantId, signature)
         );
 
         // Assert
@@ -443,6 +449,9 @@ public class EmployeurServiceTest {
         Employeur employeur = new Employeur();
         employeur.setId(1L);
 
+        byte[] signatureBytes = "dummySignature".getBytes();
+        MockMultipartFile signature = new MockMultipartFile("signature", "signature.jpg", "image/jpeg", signatureBytes);
+
         FicheEvaluationStagiaireDTO ficheEvaluationStagiaireDTO = new FicheEvaluationStagiaireDTO();
         ficheEvaluationStagiaireDTO.setId(3L);
         ficheEvaluationStagiaireDTO.setNumeroTelephone("555-444-3333");
@@ -453,7 +462,7 @@ public class EmployeurServiceTest {
 
         // Act
         UserNotFoundException exception = assertThrows(UserNotFoundException.class, () ->
-                employeurService.enregistrerFicheEvaluationStagiaire(ficheEvaluationStagiaireDTO, etudiantId)
+                employeurService.enregistrerFicheEvaluationStagiaire(ficheEvaluationStagiaireDTO, etudiantId, signature)
         );
 
         // Assert
@@ -470,6 +479,9 @@ public class EmployeurServiceTest {
         Employeur employeur = new Employeur();
         employeur.setId(1L);
 
+        byte[] signatureBytes = "dummySignature".getBytes();
+        MockMultipartFile signature = new MockMultipartFile("signature", "signature.jpg", "image/jpeg", signatureBytes);
+
         FicheEvaluationStagiaireDTO ficheEvaluationStagiaireDTO = new FicheEvaluationStagiaireDTO();
         ficheEvaluationStagiaireDTO.setId(3L);
         ficheEvaluationStagiaireDTO.setNumeroTelephone("555-444-3333");
@@ -483,7 +495,7 @@ public class EmployeurServiceTest {
 
         // Act
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () ->
-                employeurService.enregistrerFicheEvaluationStagiaire(ficheEvaluationStagiaireDTO, etudiantId)
+                employeurService.enregistrerFicheEvaluationStagiaire(ficheEvaluationStagiaireDTO, etudiantId, signature)
         );
 
         // Assert

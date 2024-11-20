@@ -32,6 +32,10 @@ public class FicheEvaluationStagiaire {
     private Programme programmeEtude;
     private String nomEntreprise;
     private String nomSuperviseur;
+
+    @Column(columnDefinition = "BYTEA")
+    private byte[] signatureSuperviseur;
+
     private String fonctionSuperviseur;
     private String numeroTelephone;
 

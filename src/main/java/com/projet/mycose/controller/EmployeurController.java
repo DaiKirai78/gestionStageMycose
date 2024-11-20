@@ -58,9 +58,10 @@ public class EmployeurController {
     @PostMapping("/saveFicheEvaluation")
     public ResponseEntity<HttpStatus> enregistrerFicheEvaluationStagiaire(
             @RequestBody FicheEvaluationStagiaireDTO ficheEvaluationStagiaireDTO,
-            @RequestParam Long etudiantId
+            @RequestParam Long etudiantId,
+            @RequestParam("signature") MultipartFile signatureEmployeur
     ) {
-        employeurService.enregistrerFicheEvaluationStagiaire(ficheEvaluationStagiaireDTO, etudiantId);
+        employeurService.enregistrerFicheEvaluationStagiaire(ficheEvaluationStagiaireDTO, etudiantId, signatureEmployeur);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
