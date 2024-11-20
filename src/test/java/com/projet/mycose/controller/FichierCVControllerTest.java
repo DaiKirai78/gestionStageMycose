@@ -31,8 +31,11 @@ import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.hamcrest.Matchers.*;
 
 @ExtendWith(MockitoExtension.class)
 public class FichierCVControllerTest {
@@ -325,6 +328,29 @@ public class FichierCVControllerTest {
     }
 
     @Test
+    void test_acceptCv_DescriptionIsNull() throws Exception {
+        // Act & Assert
+        mockMvc.perform(patch("/api/cv/accept?id=1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"commentaire\": null}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Description field is missing"));
+    }
+
+    @Test
+    void test_acceptCv_NoBody() throws Exception {
+        // Act & Assert
+        mockMvc.perform(patch("/api/cv/accept?id=1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message", containsString("Required request body is missing:")))
+                .andExpect(jsonPath("$.status", is(500)))
+                .andExpect(jsonPath("$.timestamp").isNumber());
+    }
+
+    @Test
     void test_refuseCv_OK() throws Exception {
         // Act
         doNothing().when(fichierCVService).changeStatus(1L, FichierCV.Status.REFUSED, "asd");
@@ -383,5 +409,75 @@ public class FichierCVControllerTest {
         mockMvc.perform(get("/api/cv/pages"))
                 .andExpect(content().string("4"))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testGetCV_Success() throws Exception {
+        Long etudiantId = 1L;
+        FichierCVDTO fichierCVDTO = new FichierCVDTO();
+        fichierCVDTO.setId(100L);
+        fichierCVDTO.setEtudiant_id(etudiantId);
+        fichierCVDTO.setFilename("cv_john_doe.pdf");
+
+        when(fichierCVService.getCurrentCVByEtudiantID(etudiantId)).thenReturn(fichierCVDTO);
+
+        mockMvc.perform(get("/api/cv/get-cv-by-etudiant-id/{id}", etudiantId)
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id", is(100)))
+                .andExpect(jsonPath("$.etudiant_id", is(etudiantId.intValue())))
+                .andExpect(jsonPath("$.filename", is("cv_john_doe.pdf")));
+    }
+
+    @Test
+    public void testGetCV_ServiceException() throws Exception {
+        Long etudiantId = 2L;
+
+        when(fichierCVService.getCurrentCVByEtudiantID(etudiantId))
+                .thenThrow(new RuntimeException("Fichier non trouvé"));
+
+        mockMvc.perform(get("/api/cv/get-cv-by-etudiant-id/{id}", etudiantId)
+                        .with(csrf()))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().string("Fichier non trouvé"));
+    }
+
+    @Test
+    public void testGetCV_InvalidId_ReturnsBadRequest() throws Exception {
+        String invalidId = "abc";
+
+        mockMvc.perform(get("/api/cv/get-cv-by-etudiant-id/{id}", invalidId)
+                        .with(csrf()))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message", is("Failed to convert value of type 'java.lang.String' to required type 'java.lang.Long'; For input string: \"abc\"")))
+                .andExpect(jsonPath("$.status", is(500)))
+                .andExpect(jsonPath("$.timestamp").isNumber());
+    }
+
+    @Test
+    public void testGetCV_NullId_ReturnsBadRequest() throws Exception {
+        // Assuming the ID is required and cannot be null
+        mockMvc.perform(get("/api/cv/get-cv-by-etudiant-id/{id}", (Object) null)
+                        .with(csrf()))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message", is("An unexpected error occurred: No endpoint GET /api/cv/get-cv-by-etudiant-id/.")))
+                .andExpect(jsonPath("$.status", is(500)))
+                .andExpect(jsonPath("$.timestamp").isNumber());
+    }
+
+    @Test
+    public void testGetCV_DifferentException() throws Exception {
+        Long etudiantId = 4L;
+
+        when(fichierCVService.getCurrentCVByEtudiantID(etudiantId))
+                .thenThrow(new IllegalArgumentException("Invalid argument"));
+
+        mockMvc.perform(get("/api/cv/get-cv-by-etudiant-id/{id}", etudiantId)
+                        .with(csrf()))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().string("Fichier non trouvé")); // As per controller's catch block
     }
 }
