@@ -36,10 +36,6 @@ public class FicheEvaluationMilieuStage {
     @JoinColumn(name = "employeur_id", nullable = false)
     private Employeur employeur;
 
-    @OneToOne
-    @JoinColumn(name = "contrat_id")
-    private Contrat contrat;
-
     //Section sur l'identification de l'entreprise
     private String nomEntreprise;
     private String nomPersonneContact;
