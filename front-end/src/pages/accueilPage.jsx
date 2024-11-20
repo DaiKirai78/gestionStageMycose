@@ -37,8 +37,6 @@ const AccueilPage = () => {
 
             if (res.ok) {
                 const cvData = await res.json();
-                console.log(cvData);
-                console.log("data");
                 
                 setCvStatus(cvData.status);
             } else {
@@ -75,7 +73,7 @@ const AccueilPage = () => {
             case "GESTIONNAIRE_STAGE":
                 return <AccueilGestionnaire />;
             case "ENSEIGNANT":
-                return <AccueilEnseignant setSelectedStudent={setSelectedStudent} />;
+                return <AccueilEnseignant setSelectedStudent={setSelectedStudent} userInfo={userInfo} />;
             default:
                 navigate("/");
                 break;

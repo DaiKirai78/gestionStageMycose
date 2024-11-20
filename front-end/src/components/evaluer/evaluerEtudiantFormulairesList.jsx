@@ -266,7 +266,6 @@ const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent, u
         const allOtherChamps = [
             {getter: rating, setter: setRating, id: "input_ratings"},
             {getter: appreciation, setter: setAppreciation, id: "input_appreciation"},
-            {getter: discussion, setter: setDiscussion, id: "input_discussion"},
             {getter: hoursTotal, setter: setHoursTotal, id: "input_hourTotal"},
             {getter: futureInternship, setter: setFutureInternship, id: "input_futureInternship"},
             {getter: formationGoodEnough, setter: setFormationGoodEnough, id: "input_goodEnough"},
@@ -282,6 +281,14 @@ const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent, u
             }
         }
 
+        if (discussion.value !== true && discussion.value !== false) {
+            if (!firstToHaveAnErrorId) {
+                firstToHaveAnErrorId = "input_discussion"
+            }
+            hasError = true;
+            setDiscussion(getFormValue("", true))
+        }
+        
         setFormData(modifiedFormData);
         return [hasError, firstToHaveAnErrorId];
     }

@@ -26,28 +26,22 @@ const ListeOffreStageContainer = () => {
     }, [])
 
     useEffect(() => {
-        fetchAll()
-        window.scrollTo({
-            top: 0,
-        });
+        const fetchData = async () => {
+            setIsFetching(true);
 
-    }, [pages]);
+            await fetchNombrePage();
+
+            await fetchOffreStage();
+
+            setIsFetching(false);
+        };
+
+        fetchData();
+    }, [annee, session, pages.currentPage]);
 
     useEffect(() => {
         if (annee || session) {
-            setPages(prevState => ({
-                ...prevState,
-                currentPage: 1
-            }));
-            fetchOffreStage();
-            fetchNombrePage();
-        } else if (!annee || !session) {
-            setPages(prevState => ({
-                ...prevState,
-                currentPage: 1
-            }));
-            fetchOffreStage();
-            fetchNombrePage();
+            setPages(prev => ({ ...prev, currentPage: 1 }));
         }
     }, [annee, session]);
 
@@ -56,45 +50,35 @@ const ListeOffreStageContainer = () => {
     }, [voirPdf])
 
     async function fetchOffreStage() {
+        if (isFetching) return;
+
+        setIsFetching(true);
         const token = localStorage.getItem("token");
         const baseUrl = `http://localhost:8080/api/offres-stages`;
 
         try {
             let url = `${baseUrl}/getOffresPosted?pageNumber=${pages.currentPage - 1}`;
 
-            if (annee && session) {
-                url += `&annee=${annee}&session=${session}`;
-            } else if (annee && !session) {
-                url += `&annee=${annee}`;
-            } else if (!annee && session) {
-                url += `&session=${session}`;
-            }
+            if (annee) url += `&annee=${annee}`;
+            if (session) url += `&session=${session}`;
 
             const response = await fetch(url, {
                 method: "GET",
                 headers: { Authorization: `Bearer ${token}` },
             });
 
-            if (response.status === STATUS_CODE_ACCEPTED) {
-                const text = await response.text();
-                if (text) {
-                    const fetchedData = JSON.parse(text);
-                    setData(fetchedData);
-
-                    if (fetchedData && fetchedData.length > 0) {
-                        setActiveOffer(fetchedData[0]);
-                    }
-                } else {
-                    setData(null);
-                    console.log("Nothing found");
-                }
-            } else if (response.status === STATUS_CODE_NO_CONTENT) {
-                setData(null);
-                console.log("Nothing found");
+            if (response.ok) {
+                const data = await response.json();
+                setData(data);
+                setActiveOffer(data[0] || null);
+            } else {
+                setData([]);
             }
         } catch (e) {
-            console.log(e);
-            setData(null);
+            console.error("Erreur lors de la récupération des offres :", e);
+            setData([]);
+        } finally {
+            setIsFetching(false);
         }
     }
 
@@ -132,16 +116,6 @@ const ListeOffreStageContainer = () => {
         } catch (e) {
             console.log(e);
         }
-    }
-
-    async function fetchAll() {
-        setIsFetching(true);
-
-        if (!pages.maxPages)
-            await fetchNombrePage();
-        await fetchOffreStage();
-
-        setIsFetching(false);
     }
 
     return (
