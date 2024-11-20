@@ -1,9 +1,7 @@
 package com.projet.mycose.controller;
 
-import com.projet.mycose.dto.EtudiantDTO;
+import com.projet.mycose.dto.*;
 import com.projet.mycose.service.EnseignantService;
-import com.projet.mycose.dto.EnseignantDTO;
-import com.projet.mycose.dto.RegisterEnseignantDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -36,5 +34,14 @@ public class EnseignantController {
         return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(enseignantService.getAllEtudiantsAEvaluerParProf(enseignantId, pageNumber));
+    }
+
+    @PostMapping("/saveFicheEvaluationMilieuStage")
+    public ResponseEntity<HttpStatus> enregistrerFicheEvaluationStagiaire(
+            @RequestBody FicheEvaluationMilieuStageDTO ficheEvaluationMilieuStageDTO,
+            @RequestParam Long etudiantId
+    ) {
+        enseignantService.enregistrerFicheEvaluationMilieuStage(ficheEvaluationMilieuStageDTO, etudiantId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

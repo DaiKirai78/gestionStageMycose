@@ -1,12 +1,14 @@
 package com.projet.mycose.service;
 
 import com.projet.mycose.dto.EtudiantDTO;
+import com.projet.mycose.dto.FicheEvaluationMilieuStageDTO;
 import com.projet.mycose.exceptions.AuthenticationException;
 import com.projet.mycose.exceptions.ResourceNotFoundException;
-import com.projet.mycose.modele.Enseignant;
-import com.projet.mycose.modele.Etudiant;
+import com.projet.mycose.exceptions.UserNotFoundException;
+import com.projet.mycose.modele.*;
 import com.projet.mycose.repository.EnseignantRepository;
 import com.projet.mycose.dto.EnseignantDTO;
+import com.projet.mycose.repository.EtudiantRepository;
 import com.projet.mycose.repository.FicheEvaluationMilieuStageRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -15,6 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.file.AccessDeniedException;
 import java.util.List;
@@ -30,6 +33,7 @@ public class EnseignantService {
     private final ModelMapper modelMapper;
 
     private final int LIMIT_PER_PAGE = 10;
+    private final EtudiantRepository etudiantRepository;
 
     public EnseignantDTO creationDeCompte(String prenom, String nom, String numeroTelephone, String courriel, String motDePasse) {
         if (!utilisateurService.credentialsDejaPris(courriel, numeroTelephone))
@@ -55,5 +59,36 @@ public class EnseignantService {
         return listeEtudiants.map(
                 etudiant -> modelMapper.map(etudiant, EtudiantDTO.class)
         );
+    }
+
+    private Enseignant getValidatedEnseignant(Utilisateur utilisateur) {
+        if (!(utilisateur instanceof Enseignant enseignant)) {
+            throw new AuthenticationException(HttpStatus.FORBIDDEN, "User is not an Enseignant.");
+        }
+        return enseignant;
+    }
+
+    @Transactional
+    public void enregistrerFicheEvaluationMilieuStage(FicheEvaluationMilieuStageDTO ficheEvaluationMilieuStageDTO, Long etudiantId) {
+        Utilisateur utilisateur;
+
+        try {
+            utilisateur = utilisateurService.getMeUtilisateur();
+        } catch (AccessDeniedException e) {
+            throw new AuthenticationException(HttpStatus.UNAUTHORIZED, "Problème d'authentification");
+        }
+
+        Enseignant enseignant = getValidatedEnseignant(utilisateur);
+
+        Etudiant etudiant = etudiantRepository.findById(etudiantId).orElseThrow(UserNotFoundException::new);
+
+        FicheEvaluationMilieuStage ficheEvaluationMilieuStage = modelMapper.map(ficheEvaluationMilieuStageDTO, FicheEvaluationMilieuStage.class);
+
+        ficheEvaluationMilieuStage.setEnseignant(enseignant);
+        ficheEvaluationMilieuStage.setEtudiant(etudiant);
+
+        ficheEvaluationMilieuStageRepository.save(ficheEvaluationMilieuStage);
+
+        //TODO: AJOUTER LE CONTRAT POUR ASSOCIER L'ÉTUDIANT ET L'ENSEIGNANT À UN STAGE
     }
 }
