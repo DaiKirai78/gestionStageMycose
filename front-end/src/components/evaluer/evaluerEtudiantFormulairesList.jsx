@@ -3,59 +3,61 @@ import { useNavigate } from 'react-router-dom';
 import PageTitle from '../pageTitle';
 import { useTranslation } from 'react-i18next';
 import EvaluerFormulaire from './evaluerFormulaire';
+import AppreciacionFormulaire from './autreInformationsFormulaire';
 
 const forms = [
     {
         id: 'prod',
-        title: 'PRODUCTIVITÉ',
-        description: 'Capacité d\'optimiser son rendement au travail',
+        title: 'productivite',
+        description: 'prodDescription',
         criteria: [
-            { id: 'prodQA', label: 'Planifier et organiser son travail de façon efficace' },
-            { id: 'prodQB', label: 'Comprendre rapidement les directives relatives à son travail' },
-            { id: 'prodQC', label: 'Maintenir un rythme de travail soutenu' },
-            { id: 'prodQD', label: 'Établir ses priorités' },
-            { id: 'prodQE', label: 'Respecter ses échéanciers' }
+            { id: 'prodQA', label: 'prodQA' },
+            { id: 'prodQB', label: 'prodQB' },
+            { id: 'prodQC', label: 'prodQC' },
+            { id: 'prodQD', label: 'prodQD' },
+            { id: 'prodQE', label: 'prodQE' }
         ]
     },
     {
         id: 'qualTravail',
-        title: 'QUALITÉ DU TRAVAIL',
-        description: 'Capacité de s’acquitter des tâches sous sa responsabilité en s’imposant personnellement des normes de qualité',
+        title: 'qualiteDuTravail',
+        description: 'qualTravailDescription',
         criteria: [
-            { id: 'qualTravailQA', label: 'Respecter les mandats qui lui ont été confiés' },
-            { id: 'qualTravailQB', label: 'Porter attention aux détails dans la réalisation de ses tâches' },
-            { id: 'qualTravailQC', label: 'Vérifier son travail, s’assurer que rien n’a été oublié' },
-            { id: 'qualTravailQD', label: 'Rechercher des occasions de se perfectionner' },
-            { id: 'qualTravailQE', label: 'Faire une bonne analyse des problèmes rencontrés' }
+            { id: 'qualTravailQA', label: 'qualTravailQA' },
+            { id: 'qualTravailQB', label: 'qualTravailQB' },
+            { id: 'qualTravailQC', label: 'qualTravailQC' },
+            { id: 'qualTravailQD', label: 'qualTravailQD' },
+            { id: 'qualTravailQE', label: 'qualTravailQE' }
         ]
     },
     {
         id: 'qualRel',
-        title: 'QUALITÉS DES RELATIONS INTERPERSONNELLES',
-        description: 'Capacité d’établir des interrelations harmonieuses dans son milieu de travail',
+        title: 'qualiteRelationInterperso',
+        description: 'qualRelDescription',
         criteria: [
-            { id: 'qualRelQA', label: 'Établir facilement des contacts avec les gens' },
-            { id: 'qualRelQB', label: 'Contribuer activement au travail d’équipe' },
-            { id: 'qualRelQC', label: 'S’adapter facilement à la culture de l’entreprise' },
-            { id: 'qualRelQD', label: 'Accepter les critiques constructives' },
-            { id: 'qualRelQE', label: 'Être respectueux envers les gens' },
-            { id: 'qualRelQF', label: 'Faire preuve d’écoute active en essayant de comprendre le point de vue de l’autre' }
+            { id: 'qualRelQA', label: 'qualRelQA' },
+            { id: 'qualRelQB', label: 'qualRelQB' },
+            { id: 'qualRelQC', label: 'qualRelQC' },
+            { id: 'qualRelQD', label: 'qualRelQD' },
+            { id: 'qualRelQE', label: 'qualRelQE' },
+            { id: 'qualRelQF', label: 'qualRelQF' }
         ]
     },
     {
         id: 'habPers',
-        title: 'HABILITÉS PERSONNELLES',
-        description: 'Capacité de faire preuve d’attitudes ou de comportements matures et responsables',
+        title: 'habilitePerso',
+        description: 'habPersDescription',
         criteria: [
-            { id: 'habPersQA', label: 'Démontrer de l’intérêt et de la motivation au travail' },
-            { id: 'habPersQB', label: 'Exprimer clairement ses idées' },
-            { id: 'habPersQC', label: 'Faire preuve d’initiative' },
-            { id: 'habPersQD', label: 'Travailler de façon sécuritaire' },
-            { id: 'habPersQE', label: 'Démontrer un bon sens des responsabilités ne requérant qu’un minimum de supervision' },
-            { id: 'habPersQF', label: 'Être ponctuel et assidu à son travail' }
+            { id: 'habPersQA', label: 'habPersQA' },
+            { id: 'habPersQB', label: 'habPersQB' },
+            { id: 'habPersQC', label: 'habPersQC' },
+            { id: 'habPersQD', label: 'habPersQD' },
+            { id: 'habPersQE', label: 'habPersQE' },
+            { id: 'habPersQF', label: 'habPersQF' }
         ]
     }
 ];
+
 
 const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent, userInfo }) => {
     const navigate = useNavigate();
@@ -63,11 +65,22 @@ const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent, u
     const [formData, setFormData] = useState(getAllFormCritere());
     const [isFetching, setIsFetching] = useState(false);
 
+    const [rating, setRating] = useState(getFormValue())
+    const [discussion, setDiscussion] = useState(getFormValue())
+    const [appreciation, setAppreciation] = useState(getFormValue())
+    const [hoursTotal, setHoursTotal] = useState(getFormValue())
+    const [futureInternship, setFutureInternship] = useState(getFormValue())
+    const [formationGoodEnough, setFormationGoodEnough] = useState(getFormValue())
+
     useEffect(() => {
         if (!selectedStudent) {
             navigate("/evaluer");
         }
     }, [selectedStudent, navigate]);
+
+    function getFormValue(value = "", hasError = false) {
+        return {value: value, hasError: hasError};
+    }
 
     function getAllFormCritere() {
         const formDataTemp = {};
@@ -76,9 +89,9 @@ const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent, u
             formDataTemp[form.id] = {};
             
             for (let critere of form.criteria) {
-                formDataTemp[form.id][critere.id] = {hasError: false, value: ""};
+                formDataTemp[form.id][critere.id] = getFormValue();
             }
-            formDataTemp[form.id][form.id + "Commentaires"] = {hasError: false, value: ""};
+            formDataTemp[form.id][form.id + "Commentaires"] = getFormValue();
         }
         
         return formDataTemp;
@@ -91,11 +104,11 @@ const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent, u
     if (!selectedStudent) return null;
 
     const ratingOptions = [
-        { value: 'TOTALEMENT_EN_ACCORD', label: 'Totalement en accord' },
-        { value: 'PLUTOT_EN_ACCORD', label: 'Plutôt en accord' },
-        { value: 'PLUTOT_EN_DESACCORD', label: 'Plutôt en désaccord' },
-        { value: 'TOTALEMENT_EN_DESACCORD', label: 'Totalement en désaccord' },
-        { value: 'NA', label: 'N/A' }
+        "TOTALEMENT_EN_ACCORD",
+        "PLUTOT_EN_ACCORD",
+        "PLUTOT_EN_DESACCORD",
+        "TOTALEMENT_EN_DESACCORD",
+        "NA"
     ];
     
 
@@ -104,7 +117,7 @@ const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent, u
             ...prev,
             [formId]: {
                 ...prev[formId],
-                [criterionId]: {hasError: false, value: value}
+                [criterionId]: getFormValue(value)
             }
         }));
     };
@@ -114,7 +127,7 @@ const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent, u
             ...prev,
             [formId]: {
                 ...prev[formId],
-                [formId + "Commentaires"]: {hasError: false, value: value}
+                [formId + "Commentaires"]: getFormValue(value)
             }
         }));
     };
@@ -158,7 +171,6 @@ const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent, u
         
         if (hasError) {
             scrollToId(firstToHaveAnErrorId)
-            console.log("Erreur");
             return;
         }
 
@@ -169,6 +181,21 @@ const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent, u
             const token = localStorage.getItem("token");
 
             const body = getFormsWithOnlyValue();
+            body.appreciationGlobale = rating.value;
+            body.precisionAppreciationReponse = appreciation.value;
+            body.discuteeStagiaireReponse = discussion.value;
+            body.heuresAccordeStagiaireReponse = hoursTotal.value;
+            body.aimeraitAccueillirProchainStage = futureInternship.value;
+            body.formationSuffisanteReponse = formationGoodEnough.value;
+
+            
+
+            body.nomEtudiant = selectedStudent.prenom + " " + selectedStudent.nom;
+            body.programmeEtude = selectedStudent.programme;
+            body.nomEntreprise = userInfo.entrepriseName;
+            body.numeroTelephone = userInfo.numeroDeTelephone.replaceAll("-", "");
+            body.nomSuperviseur = userInfo.prenom + " " + userInfo.nom;
+            body.fonctionSuperviseur = "Employeur";
 
             const response = await fetch(
                 `http://localhost:8080/${getUriStartString()}/saveFicheEvaluation?etudiantId=${selectedStudent.id}`,
@@ -220,12 +247,9 @@ const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent, u
                 if (!value.value.trim()) {
                     if (!firstToHaveAnErrorId) {
                         firstToHaveAnErrorId = key
-                    }                    
-                    hasError = true;
-                    newValue = {
-                        hasError: true,
-                        value: ""
                     }
+                    hasError = true;
+                    newValue = getFormValue("", true)
                 }
 
                 newForm = {
@@ -236,6 +260,25 @@ const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent, u
             modifiedFormData = {
                 ...modifiedFormData,
                 [formKey]: {...newForm}
+            }
+        }
+
+        const allOtherChamps = [
+            {getter: rating, setter: setRating, id: "input_ratings"},
+            {getter: appreciation, setter: setAppreciation, id: "input_appreciation"},
+            {getter: discussion, setter: setDiscussion, id: "input_discussion"},
+            {getter: hoursTotal, setter: setHoursTotal, id: "input_hourTotal"},
+            {getter: futureInternship, setter: setFutureInternship, id: "input_futureInternship"},
+            {getter: formationGoodEnough, setter: setFormationGoodEnough, id: "input_goodEnough"},
+        ];
+
+        for (const champ of allOtherChamps) {            
+            if (!champ.getter.value) {
+                if (!firstToHaveAnErrorId) {
+                    firstToHaveAnErrorId = champ.id
+                }
+                hasError = true;
+                champ.setter(getFormValue("", true))
             }
         }
 
@@ -270,7 +313,26 @@ const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent, u
                     handleRadioChange={handleRadioChange}
                     ratingOptions={ratingOptions}
                     formData={formData} />
-                )}
+            )}
+
+            <AppreciacionFormulaire 
+                rating={rating} 
+                appreciation={appreciation} 
+                discussion={discussion} 
+                setRating={setRating} 
+                setAppreciation={setAppreciation} 
+                setDiscussion={setDiscussion} 
+                hoursTotal={hoursTotal}
+                setHoursTotal={setHoursTotal}
+                futureInternship={futureInternship}
+                setFutureInternship={setFutureInternship}
+                formationGoodEnough={formationGoodEnough}
+                setFormationGoodEnough={setFormationGoodEnough}
+                getFormValue={getFormValue}
+            />
+
+            
+            
             <button
                 onClick={sendForm}
                 className='bg-orange py-3 px-5 rounded text-white disabled:bg-deep-orange-500 disabled:cursor-default'
