@@ -1,5 +1,7 @@
 package com.projet.mycose.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.projet.mycose.dto.*;
 import com.projet.mycose.modele.OffreStage;
 import com.projet.mycose.service.EmployeurService;
@@ -55,12 +57,16 @@ public class EmployeurController {
                     employeurService.getAmountOfPagesOfContractNonSignees());
     }
 
-    @PostMapping("/saveFicheEvaluation")
+    @PostMapping(value = "/saveFicheEvaluation", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<HttpStatus> enregistrerFicheEvaluationStagiaire(
-            @RequestBody FicheEvaluationStagiaireDTO ficheEvaluationStagiaireDTO,
+            @RequestParam("ficheEvaluationStagiaireDTO") String  ficheEvaluationStagiaireDTOJson,
             @RequestParam Long etudiantId,
             @RequestParam("signature") MultipartFile signatureEmployeur
-    ) {
+    ) throws JsonProcessingException {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        FicheEvaluationStagiaireDTO ficheEvaluationStagiaireDTO = objectMapper.readValue(ficheEvaluationStagiaireDTOJson, FicheEvaluationStagiaireDTO.class);
+
         employeurService.enregistrerFicheEvaluationStagiaire(ficheEvaluationStagiaireDTO, etudiantId, signatureEmployeur);
         return new ResponseEntity<>(HttpStatus.OK);
     }
