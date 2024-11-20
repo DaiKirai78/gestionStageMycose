@@ -145,8 +145,4 @@ public class FicheEvaluationMilieuStageDTO {
     private LocalDateTime quartTravailDebut3;
 
     private LocalDateTime quartTravailFin3;
-
-    // Date d'évaluation
-    @NotNull(message = "La date d'évaluation ne peut pas être nulle.")
-    private LocalDate dateEvaluation;
 }
