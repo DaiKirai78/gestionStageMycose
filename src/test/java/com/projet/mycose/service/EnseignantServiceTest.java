@@ -1,21 +1,36 @@
 package com.projet.mycose.service;
 
-import com.projet.mycose.modele.Enseignant;
+import com.projet.mycose.dto.EtudiantDTO;
+import com.projet.mycose.exceptions.AuthenticationException;
+import com.projet.mycose.exceptions.ResourceNotFoundException;
+import com.projet.mycose.modele.*;
 import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.repository.EnseignantRepository;
 import com.projet.mycose.dto.EnseignantDTO;
+import com.projet.mycose.repository.FicheEvaluationMilieuStageRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.nio.file.AccessDeniedException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
 public class EnseignantServiceTest {
@@ -30,6 +45,12 @@ public class EnseignantServiceTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private ModelMapper modelMapperMock;
+
+    @Mock
+    private FicheEvaluationMilieuStageRepository ficheEvaluationMilieuStageRepository;
 
     @InjectMocks
     private EnseignantService enseignantService;
@@ -160,4 +181,94 @@ public class EnseignantServiceTest {
         // Assert
         Assertions.assertNull(result);
     }
+
+
+    @Test
+    public void testGetAllEtudiantsAEvaluerParProf_Success() throws AccessDeniedException {
+        // Arrange
+        Long enseignantId = 1L;
+        Employeur employeur = new Employeur();
+        employeur.setId(enseignantId);
+
+        List<Etudiant> listeFind = new ArrayList<>();
+        Etudiant etudiant1 = new Etudiant();
+        etudiant1.setId(2L);
+        etudiant1.setNom("Albert");
+
+        Etudiant etudiant2 = new Etudiant();
+        etudiant2.setId(3L);
+        etudiant2.setNom("Newton");
+
+        listeFind.add(etudiant1);
+        listeFind.add(etudiant2);
+
+        EtudiantDTO dto1 = new EtudiantDTO();
+        dto1.setId(etudiant1.getId());
+        dto1.setNom(etudiant1.getNom());
+
+        EtudiantDTO dto2 = new EtudiantDTO();
+        dto2.setId(etudiant2.getId());
+        dto2.setNom(etudiant2.getNom());
+
+        PageRequest pageRequest = PageRequest.of(1, 10);
+        Page<Etudiant> pageFind = new PageImpl<>(listeFind, pageRequest, 2);
+
+        when(utilisateurService.getMeUtilisateur()).thenReturn(employeur);
+        when(ficheEvaluationMilieuStageRepository.findAllEtudiantsNonEvaluesByProf(enseignantId, Etudiant.ContractStatus.ACTIVE, pageRequest)).thenReturn(pageFind);
+
+        when(modelMapperMock.map(etudiant1, EtudiantDTO.class))
+                .thenReturn(dto1);
+        when(modelMapperMock.map(etudiant2, EtudiantDTO.class))
+                .thenReturn(dto2);
+
+        // Act
+        Page<EtudiantDTO> listeRetourne = enseignantService.getAllEtudiantsAEvaluerParProf(enseignantId, 1);
+
+        //Assert
+        verify(ficheEvaluationMilieuStageRepository, times(1)).findAllEtudiantsNonEvaluesByProf(enseignantId, Etudiant.ContractStatus.ACTIVE, pageRequest);
+        assertEquals(listeRetourne.getContent().size(), 2);
+        assertEquals(listeRetourne.getContent().get(0).getId(), 2L);
+        assertEquals(listeRetourne.getContent().get(0).getNom(), "Albert");
+        assertEquals(listeRetourne.getContent().get(1).getId(), 3L);
+        assertEquals(listeRetourne.getContent().get(1).getNom(), "Newton");
+    }
+
+    @Test
+    public void testGetAllEtudiantsNonEvalues_AccessDenied() throws AccessDeniedException {
+        // Arrange
+        Long employeurId = 1L;
+
+        when(utilisateurService.getMeUtilisateur()).thenThrow(new AccessDeniedException("Problème d'authentification"));
+
+        // Act
+
+        AuthenticationException exception = assertThrows(AuthenticationException.class, () ->
+                enseignantService.getAllEtudiantsAEvaluerParProf(employeurId, 1)
+        );
+
+        // Assert
+        assertEquals("Problème d'authentification", exception.getMessage());
+        verify(ficheEvaluationMilieuStageRepository, never()).save(any(FicheEvaluationMilieuStage.class));
+    }
+
+    @Test
+    public void testGetAllEtudiantsNonEvalues_ListeNotFound() throws AccessDeniedException {
+        // Arrange
+        Long employeurId = 1L;
+        Employeur employeur = new Employeur();
+        employeur.setId(employeurId);
+
+        when(utilisateurService.getMeUtilisateur()).thenReturn(employeur);
+        when(ficheEvaluationMilieuStageRepository.findAllEtudiantsNonEvaluesByProf(eq(employeurId), eq(Etudiant.ContractStatus.ACTIVE), any(PageRequest.class))).thenReturn(Page.empty());
+
+        // Act
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () ->
+                enseignantService.getAllEtudiantsAEvaluerParProf(employeurId, 1)
+        );
+
+        // Assert
+        assertEquals("Aucun Étudiant Trouvé", exception.getMessage());
+        verify(ficheEvaluationMilieuStageRepository, never()).save(any(FicheEvaluationMilieuStage.class));
+    }
+
 }
