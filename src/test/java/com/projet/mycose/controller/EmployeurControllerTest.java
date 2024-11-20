@@ -15,6 +15,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
@@ -266,17 +269,21 @@ public class EmployeurControllerTest {
         listeRetourne.add(etudiant1);
         listeRetourne.add(etudiant2);
 
-        when(employeurService.getAllEtudiantsNonEvalues(employeurId)).thenReturn(listeRetourne);
+        PageRequest pageRequest = PageRequest.of(1, 10);
+        Page<EtudiantDTO> pageEtudiants = new PageImpl<>(listeRetourne, pageRequest, 2);
+
+        when(employeurService.getAllEtudiantsNonEvalues(employeurId, 1)).thenReturn(pageEtudiants);
 
         // Act & Assert
         mockMvc.perform(get("/entreprise/getAllEtudiantsNonEvalues")
-                .param("employeurId", String.valueOf(employeurId)))
+                .param("employeurId", String.valueOf(employeurId))
+                        .param("pageNumber", "1"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$[0].id").value(2L))
-                .andExpect(jsonPath("$[0].nom").value("Potter"))
-                .andExpect(jsonPath("$[1].id").value(3L))
-                .andExpect(jsonPath("$[1].nom").value("Sheldon"));
+                .andExpect(jsonPath("$.content[0].id").value(2L))
+                .andExpect(jsonPath("$.content[0].nom").value("Potter"))
+                .andExpect(jsonPath("$.content[1].id").value(3L))
+                .andExpect(jsonPath("$.content[1].nom").value("Sheldon"));
     }
 
     @Test
@@ -284,11 +291,12 @@ public class EmployeurControllerTest {
         // Arrange
         Long employeurId = 1L;
 
-        when(employeurService.getAllEtudiantsNonEvalues(employeurId)).thenThrow(new UserNotFoundException());
+        when(employeurService.getAllEtudiantsNonEvalues(employeurId,1)).thenThrow(new UserNotFoundException());
 
         // Act & Assert
         mockMvc.perform(get("/entreprise/getAllEtudiantsNonEvalues")
-                        .param("employeurId", String.valueOf(employeurId)))
+                        .param("employeurId", String.valueOf(employeurId))
+                        .param("pageNumber", "1"))
                 .andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.message").value("Utilisateur not found"))

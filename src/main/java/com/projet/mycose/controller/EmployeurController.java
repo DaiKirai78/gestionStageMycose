@@ -5,6 +5,7 @@ import com.projet.mycose.modele.OffreStage;
 import com.projet.mycose.service.EmployeurService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -64,10 +65,10 @@ public class EmployeurController {
     }
 
     @GetMapping("/getAllEtudiantsNonEvalues")
-    public ResponseEntity<List<EtudiantDTO>> getAllEtudiantsNonEvalues(@RequestParam Long employeurId) {
+    public ResponseEntity<Page<EtudiantDTO>> getAllEtudiantsNonEvalues(@RequestParam Long employeurId, @RequestParam int pageNumber) {
         return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(employeurService.getAllEtudiantsNonEvalues(employeurId));
+                .body(employeurService.getAllEtudiantsNonEvalues(employeurId, pageNumber));
     }
 }
 

@@ -518,8 +518,11 @@ public class EmployeurServiceTest {
         dto2.setId(etudiant2.getId());
         dto2.setNom(etudiant2.getNom());
 
+        PageRequest pageRequest = PageRequest.of(1, 10);
+        Page<Etudiant> pageFind = new PageImpl<>(listeFind, pageRequest, 2);
+
         when(utilisateurService.getMeUtilisateur()).thenReturn(employeur);
-        when(ficheEvaluationStagiaireRepositoryMock.findAllEtudiantWhereNotEvaluated(employeurId, Etudiant.ContractStatus.ACTIVE)).thenReturn(Optional.of(listeFind));
+        when(ficheEvaluationStagiaireRepositoryMock.findAllEtudiantWhereNotEvaluated(employeurId, Etudiant.ContractStatus.ACTIVE, pageRequest)).thenReturn(pageFind);
 
         when(modelMapperMock.map(etudiant1, EtudiantDTO.class))
                 .thenReturn(dto1);
@@ -527,15 +530,15 @@ public class EmployeurServiceTest {
                 .thenReturn(dto2);
 
         // Act
-        List<EtudiantDTO> listeRetourne = employeurService.getAllEtudiantsNonEvalues(employeurId);
+        Page<EtudiantDTO> listeRetourne = employeurService.getAllEtudiantsNonEvalues(employeurId, 1);
 
         //Assert
-        verify(ficheEvaluationStagiaireRepositoryMock, times(1)).findAllEtudiantWhereNotEvaluated(employeurId, Etudiant.ContractStatus.ACTIVE);
-        assertEquals(listeRetourne.size(), 2);
-        assertEquals(listeRetourne.get(0).getId(), 2L);
-        assertEquals(listeRetourne.get(0).getNom(), "Albert");
-        assertEquals(listeRetourne.get(1).getId(), 3L);
-        assertEquals(listeRetourne.get(1).getNom(), "Newton");
+        verify(ficheEvaluationStagiaireRepositoryMock, times(1)).findAllEtudiantWhereNotEvaluated(employeurId, Etudiant.ContractStatus.ACTIVE, pageRequest);
+        assertEquals(listeRetourne.getContent().size(), 2);
+        assertEquals(listeRetourne.getContent().get(0).getId(), 2L);
+        assertEquals(listeRetourne.getContent().get(0).getNom(), "Albert");
+        assertEquals(listeRetourne.getContent().get(1).getId(), 3L);
+        assertEquals(listeRetourne.getContent().get(1).getNom(), "Newton");
     }
 
     @Test
@@ -548,7 +551,7 @@ public class EmployeurServiceTest {
         // Act
 
         AuthenticationException exception = assertThrows(AuthenticationException.class, () ->
-                employeurService.getAllEtudiantsNonEvalues(employeurId)
+                employeurService.getAllEtudiantsNonEvalues(employeurId, 1)
         );
 
         // Assert
@@ -564,11 +567,11 @@ public class EmployeurServiceTest {
         employeur.setId(employeurId);
 
         when(utilisateurService.getMeUtilisateur()).thenReturn(employeur);
-        when(ficheEvaluationStagiaireRepositoryMock.findAllEtudiantWhereNotEvaluated(employeurId, Etudiant.ContractStatus.ACTIVE)).thenReturn(Optional.empty());
+        when(ficheEvaluationStagiaireRepositoryMock.findAllEtudiantWhereNotEvaluated(eq(employeurId), eq(Etudiant.ContractStatus.ACTIVE), any(PageRequest.class))).thenReturn(Page.empty());
 
         // Act
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () ->
-                employeurService.getAllEtudiantsNonEvalues(employeurId)
+                employeurService.getAllEtudiantsNonEvalues(employeurId, 1)
         );
 
         // Assert
