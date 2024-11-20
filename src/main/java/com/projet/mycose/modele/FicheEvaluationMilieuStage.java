@@ -24,14 +24,17 @@ public class FicheEvaluationMilieuStage {
     @JoinColumn(name = "etudiant_id", nullable = false)
     private Etudiant etudiant;
 
+    @ManyToOne
+    @JoinColumn(name = "enseigant_id", nullable = false)
+    private Enseignant enseignant;
+
+    @OneToOne
+    @JoinColumn(name = "contrat_id", unique = true)
+    private Contrat contrat;
     //Pourrait être nul dans le futur si on veut permettre des stages créés par les gestionnaires de stage d'être évalués
     @ManyToOne
     @JoinColumn(name = "employeur_id", nullable = false)
     private Employeur employeur;
-
-    @OneToOne
-    @JoinColumn(name = "contrat_id")
-    private Contrat contrat;
 
     //Section sur l'identification de l'entreprise
     private String nomEntreprise;

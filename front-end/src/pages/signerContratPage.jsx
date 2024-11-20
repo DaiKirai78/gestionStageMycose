@@ -34,8 +34,6 @@ const AccueilPage = () => {
 
             if (res.ok) {
                 const cvData = await res.json();
-                console.log(cvData);
-                console.log("data");
                 
                 setCvStatus(cvData.status);
             } else {
