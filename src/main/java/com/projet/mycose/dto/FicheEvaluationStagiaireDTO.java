@@ -26,6 +26,11 @@ public class FicheEvaluationStagiaireDTO {
     @NotBlank(message = "Supervisor name is required.")
     private String nomSuperviseur;
 
+    @NotBlank(message = "Employer's signature is required.")
+    @Pattern(regexp = "^[A-Za-z0-9+/=]+$",
+            message = "Invalid file data. Should be Base64 encoded.")
+    private String signatureSuperviseur;
+
     @NotBlank(message = "Supervisor position is required.")
     private String fonctionSuperviseur;
 

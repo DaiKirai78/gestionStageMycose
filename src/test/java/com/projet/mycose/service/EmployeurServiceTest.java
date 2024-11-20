@@ -17,6 +17,7 @@ import com.projet.mycose.repository.UtilisateurRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -383,6 +384,11 @@ public class EmployeurServiceTest {
         Etudiant etudiant = new Etudiant();
         etudiant.setId(etudiantId);
 
+        Contrat contrat =  new Contrat();
+
+        byte[] signatureBytes = "dummySignature".getBytes();
+        MockMultipartFile signature = new MockMultipartFile("signature", "signature.jpg", "image/jpeg", signatureBytes);
+
         FicheEvaluationStagiaireDTO ficheEvaluationStagiaireDTO = new FicheEvaluationStagiaireDTO();
         ficheEvaluationStagiaireDTO.setId(3L);
         ficheEvaluationStagiaireDTO.setNumeroTelephone("555-444-3333");
@@ -392,14 +398,23 @@ public class EmployeurServiceTest {
         when(utilisateurRepository.findUtilisateurById(etudiantId)).thenReturn(Optional.of(etudiant));
         when(modelMapperMock.map(ficheEvaluationStagiaireDTO, FicheEvaluationStagiaire.class))
                 .thenReturn(new FicheEvaluationStagiaire());
+        when(contratRepositoryMock.findContratActiveOfEtudiantAndEmployeur(etudiantId, employeurId, Etudiant.ContractStatus.ACTIVE)).thenReturn(Optional.of(contrat));
+
+        ArgumentCaptor<FicheEvaluationStagiaire> ficheCaptor = ArgumentCaptor.forClass(FicheEvaluationStagiaire.class);
 
         // Act
-        employeurService.enregistrerFicheEvaluationStagiaire(ficheEvaluationStagiaireDTO, etudiantId);
+        employeurService.enregistrerFicheEvaluationStagiaire(ficheEvaluationStagiaireDTO, etudiantId, signature);
 
         // Assert
         verify(utilisateurService, times(1)).getMeUtilisateur();
         verify(utilisateurRepository, times(1)).findUtilisateurById(etudiantId);
-        verify(ficheEvaluationStagiaireRepositoryMock, times(1)).save(any(FicheEvaluationStagiaire.class));
+        verify(ficheEvaluationStagiaireRepositoryMock, times(1)).save(ficheCaptor.capture());
+
+        FicheEvaluationStagiaire ficheSaved = ficheCaptor.getValue();
+        assertNotNull(ficheSaved);
+        assertEquals(employeur, ficheSaved.getEmployeur());
+        assertEquals(etudiant, ficheSaved.getEtudiant());
+        assertEquals(contrat, ficheSaved.getContrat());
     }
 
     @Test
@@ -411,11 +426,14 @@ public class EmployeurServiceTest {
         ficheEvaluationStagiaireDTO.setNumeroTelephone("555-444-3333");
         ficheEvaluationStagiaireDTO.setFonctionSuperviseur("Manager");
 
+        byte[] signatureBytes = "dummySignature".getBytes();
+        MockMultipartFile signature = new MockMultipartFile("signature", "signature.jpg", "image/jpeg", signatureBytes);
+
         when(utilisateurService.getMeUtilisateur()).thenThrow(new AccessDeniedException("Access Denied"));
 
         // Act
         AuthenticationException exception = assertThrows(AuthenticationException.class, () ->
-                employeurService.enregistrerFicheEvaluationStagiaire(ficheEvaluationStagiaireDTO, etudiantId)
+                employeurService.enregistrerFicheEvaluationStagiaire(ficheEvaluationStagiaireDTO, etudiantId, signature)
         );
 
         // Assert
@@ -431,6 +449,9 @@ public class EmployeurServiceTest {
         Employeur employeur = new Employeur();
         employeur.setId(1L);
 
+        byte[] signatureBytes = "dummySignature".getBytes();
+        MockMultipartFile signature = new MockMultipartFile("signature", "signature.jpg", "image/jpeg", signatureBytes);
+
         FicheEvaluationStagiaireDTO ficheEvaluationStagiaireDTO = new FicheEvaluationStagiaireDTO();
         ficheEvaluationStagiaireDTO.setId(3L);
         ficheEvaluationStagiaireDTO.setNumeroTelephone("555-444-3333");
@@ -441,11 +462,44 @@ public class EmployeurServiceTest {
 
         // Act
         UserNotFoundException exception = assertThrows(UserNotFoundException.class, () ->
-                employeurService.enregistrerFicheEvaluationStagiaire(ficheEvaluationStagiaireDTO, etudiantId)
+                employeurService.enregistrerFicheEvaluationStagiaire(ficheEvaluationStagiaireDTO, etudiantId, signature)
         );
 
         // Assert
         assertEquals("Utilisateur not found", exception.getMessage());
+        verify(ficheEvaluationStagiaireRepositoryMock, never()).save(any(FicheEvaluationStagiaire.class));
+    }
+
+    @Test
+    public void testEnregistrerFicheEvaluationStagiaire_ContratNotFound() throws AccessDeniedException {
+        // Arrange
+        Long etudiantId = 2L;
+        Etudiant etudiant = new Etudiant();
+        etudiant.setId(etudiantId);
+        Employeur employeur = new Employeur();
+        employeur.setId(1L);
+
+        byte[] signatureBytes = "dummySignature".getBytes();
+        MockMultipartFile signature = new MockMultipartFile("signature", "signature.jpg", "image/jpeg", signatureBytes);
+
+        FicheEvaluationStagiaireDTO ficheEvaluationStagiaireDTO = new FicheEvaluationStagiaireDTO();
+        ficheEvaluationStagiaireDTO.setId(3L);
+        ficheEvaluationStagiaireDTO.setNumeroTelephone("555-444-3333");
+        ficheEvaluationStagiaireDTO.setFonctionSuperviseur("Manager");
+
+        when(utilisateurService.getMeUtilisateur()).thenReturn(employeur);
+        when(utilisateurRepository.findUtilisateurById(etudiantId)).thenReturn(Optional.of(etudiant));
+        when(modelMapperMock.map(ficheEvaluationStagiaireDTO, FicheEvaluationStagiaire.class))
+                .thenReturn(new FicheEvaluationStagiaire());
+        when(contratRepositoryMock.findContratActiveOfEtudiantAndEmployeur(etudiantId, employeur.getId(), Etudiant.ContractStatus.ACTIVE)).thenReturn(Optional.empty());
+
+        // Act
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () ->
+                employeurService.enregistrerFicheEvaluationStagiaire(ficheEvaluationStagiaireDTO, etudiantId, signature)
+        );
+
+        // Assert
+        assertEquals("Contrat de l'étudiant non trouvé", exception.getMessage());
         verify(ficheEvaluationStagiaireRepositoryMock, never()).save(any(FicheEvaluationStagiaire.class));
     }
 
@@ -476,8 +530,11 @@ public class EmployeurServiceTest {
         dto2.setId(etudiant2.getId());
         dto2.setNom(etudiant2.getNom());
 
+        PageRequest pageRequest = PageRequest.of(1, 10);
+        Page<Etudiant> pageFind = new PageImpl<>(listeFind, pageRequest, 2);
+
         when(utilisateurService.getMeUtilisateur()).thenReturn(employeur);
-        when(ficheEvaluationStagiaireRepositoryMock.findAllEtudiantWhereNotEvaluated(employeurId, Etudiant.ContractStatus.ACTIVE)).thenReturn(Optional.of(listeFind));
+        when(ficheEvaluationStagiaireRepositoryMock.findAllEtudiantWhereNotEvaluated(employeurId, Etudiant.ContractStatus.ACTIVE, pageRequest)).thenReturn(pageFind);
 
         when(modelMapperMock.map(etudiant1, EtudiantDTO.class))
                 .thenReturn(dto1);
@@ -485,15 +542,15 @@ public class EmployeurServiceTest {
                 .thenReturn(dto2);
 
         // Act
-        List<EtudiantDTO> listeRetourne = employeurService.getAllEtudiantsNonEvalues(employeurId);
+        Page<EtudiantDTO> listeRetourne = employeurService.getAllEtudiantsNonEvalues(employeurId, 1);
 
         //Assert
-        verify(ficheEvaluationStagiaireRepositoryMock, times(1)).findAllEtudiantWhereNotEvaluated(employeurId, Etudiant.ContractStatus.ACTIVE);
-        assertEquals(listeRetourne.size(), 2);
-        assertEquals(listeRetourne.get(0).getId(), 2L);
-        assertEquals(listeRetourne.get(0).getNom(), "Albert");
-        assertEquals(listeRetourne.get(1).getId(), 3L);
-        assertEquals(listeRetourne.get(1).getNom(), "Newton");
+        verify(ficheEvaluationStagiaireRepositoryMock, times(1)).findAllEtudiantWhereNotEvaluated(employeurId, Etudiant.ContractStatus.ACTIVE, pageRequest);
+        assertEquals(listeRetourne.getContent().size(), 2);
+        assertEquals(listeRetourne.getContent().get(0).getId(), 2L);
+        assertEquals(listeRetourne.getContent().get(0).getNom(), "Albert");
+        assertEquals(listeRetourne.getContent().get(1).getId(), 3L);
+        assertEquals(listeRetourne.getContent().get(1).getNom(), "Newton");
     }
 
     @Test
@@ -506,7 +563,7 @@ public class EmployeurServiceTest {
         // Act
 
         AuthenticationException exception = assertThrows(AuthenticationException.class, () ->
-                employeurService.getAllEtudiantsNonEvalues(employeurId)
+                employeurService.getAllEtudiantsNonEvalues(employeurId, 1)
         );
 
         // Assert
@@ -522,11 +579,11 @@ public class EmployeurServiceTest {
         employeur.setId(employeurId);
 
         when(utilisateurService.getMeUtilisateur()).thenReturn(employeur);
-        when(ficheEvaluationStagiaireRepositoryMock.findAllEtudiantWhereNotEvaluated(employeurId, Etudiant.ContractStatus.ACTIVE)).thenReturn(Optional.empty());
+        when(ficheEvaluationStagiaireRepositoryMock.findAllEtudiantWhereNotEvaluated(eq(employeurId), eq(Etudiant.ContractStatus.ACTIVE), any(PageRequest.class))).thenReturn(Page.empty());
 
         // Act
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () ->
-                employeurService.getAllEtudiantsNonEvalues(employeurId)
+                employeurService.getAllEtudiantsNonEvalues(employeurId, 1)
         );
 
         // Assert

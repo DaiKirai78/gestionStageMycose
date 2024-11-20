@@ -111,7 +111,7 @@ public class EmployeurService {
     }
 
     @Transactional
-    public void enregistrerFicheEvaluationStagiaire(FicheEvaluationStagiaireDTO ficheEvaluationStagiaireDTO, Long etudiantId) {
+    public void enregistrerFicheEvaluationStagiaire(FicheEvaluationStagiaireDTO ficheEvaluationStagiaireDTO, Long etudiantId, MultipartFile signatureEmployeur) {
         Utilisateur utilisateur = null;
 
         try {
@@ -130,8 +130,22 @@ public class EmployeurService {
 
         FicheEvaluationStagiaire ficheEvaluationStagiaire = modelMapper.map(ficheEvaluationStagiaireDTO, FicheEvaluationStagiaire.class);
 
+        Optional<Contrat> contratOpt = contratRepository.findContratActiveOfEtudiantAndEmployeur(etudiantId, employeur.getId(), Etudiant.ContractStatus.ACTIVE);
+        if(contratOpt.isEmpty()) {
+            throw new ResourceNotFoundException("Contrat de l'étudiant non trouvé");
+        }
+
+        Contrat contrat = contratOpt.get();
+
         ficheEvaluationStagiaire.setEmployeur(employeur);
         ficheEvaluationStagiaire.setEtudiant(etudiant);
+        ficheEvaluationStagiaire.setContrat(contrat);
+
+        try {
+            ficheEvaluationStagiaire.setSignatureSuperviseur(signatureEmployeur.getBytes());
+        } catch (IOException e) {
+            throw new SignaturePersistenceException("Error while saving employeur signature");
+        }
 
         ficheEvaluationStagiaireRepository.save(ficheEvaluationStagiaire);
     }
@@ -150,7 +164,8 @@ public class EmployeurService {
         return etudiant;
     }
 
-    public List<EtudiantDTO> getAllEtudiantsNonEvalues(Long employeurId) {
+    public Page<EtudiantDTO> getAllEtudiantsNonEvalues(Long employeurId, int page) {
+        PageRequest pageRequest = PageRequest.of(page, LIMIT_PER_PAGE);
 
         try {
             utilisateurService.getMeUtilisateur();
@@ -158,14 +173,13 @@ public class EmployeurService {
             throw new AuthenticationException(HttpStatus.UNAUTHORIZED, "Problème d'authentification");
         }
 
-        Optional<List<Etudiant>> listeEtudiantsOpt = ficheEvaluationStagiaireRepository.findAllEtudiantWhereNotEvaluated(employeurId, Etudiant.ContractStatus.ACTIVE);
+        Page<Etudiant> pageEtudiants = ficheEvaluationStagiaireRepository.findAllEtudiantWhereNotEvaluated(employeurId, Etudiant.ContractStatus.ACTIVE, pageRequest);
 
-        if(listeEtudiantsOpt.isEmpty())
+        if(pageEtudiants.isEmpty())
             throw new ResourceNotFoundException("Aucun Étudiant Trouvé");
 
-        List<Etudiant> listeAEnvoyer = listeEtudiantsOpt.get();
-        return listeAEnvoyer.stream().map(
-                etudiant -> modelMapper.map(etudiant, EtudiantDTO.class)).toList();
+        return pageEtudiants.map(
+                etudiant -> modelMapper.map(etudiant, EtudiantDTO.class));
     }
 
 }

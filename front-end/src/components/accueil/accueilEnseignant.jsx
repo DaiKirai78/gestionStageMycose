@@ -38,9 +38,7 @@ const AccueilEnseignant = ({ setSelectedStudent, userInfo }) => {
             }
             
             const data = await response.json();
-            
-            console.log(data);
-            
+                        
             setPages((prev) => ({
                 ...prev,
                 maxPages: data.totalPages

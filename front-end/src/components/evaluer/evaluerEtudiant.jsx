@@ -3,16 +3,19 @@ import { useTranslation } from 'react-i18next';
 import EvaluerListEtudiant from './evaluerListEtudiant';
 import PageTitle from '../pageTitle';
 import PageIsLoading from '../pageIsLoading';
+import BoutonAvancerReculer from '../listeOffreEmployeur/boutonAvancerReculer';
 
 const EvaluerEtudiant = ({ setSelectedStudent, userInfo }) => {
     const { t } = useTranslation();
     const [students, setStudents] = useState();
     const [isFetching, setIsFetching] = useState(true);
+    const [pages, setPages] = useState({minPages: 1, maxPages: null, currentPage: 1});
+
 
     useEffect(() => {
         fetchStudents();
         setIsFetching(false);
-    }, [])
+    }, [pages.currentPage])
 
     async function fetchStudents() {
         setIsFetching(true);
@@ -22,7 +25,7 @@ const EvaluerEtudiant = ({ setSelectedStudent, userInfo }) => {
             const token = localStorage.getItem("token");
 
             const response = await fetch(
-                `http://localhost:8080/entreprise/getAllEtudiantsNonEvalues?employeurId=${userInfo.id}`,
+                `http://localhost:8080/entreprise/getAllEtudiantsNonEvalues?employeurId=${userInfo.id}&pageNumber=${pages.currentPage - 1}`,
                     {
                         method: "GET",
                         headers: {
@@ -32,11 +35,18 @@ const EvaluerEtudiant = ({ setSelectedStudent, userInfo }) => {
             );
     
             if (!response.ok) {
-                Error("Aucun étudiant trouvé")
+                throw Error("Aucun étudiant trouvé")
             }
             
             const data = await response.json();
-            setStudents(data);
+            
+            console.log(data);
+            
+            setPages((prev) => ({
+                ...prev,
+                maxPages: data.totalPages
+            }));
+            setStudents(data.content);
             
         } catch (e) {
             console.log("Une erreur est survenu lors de l'envoie du formulaire: " + e);
@@ -57,7 +67,11 @@ const EvaluerEtudiant = ({ setSelectedStudent, userInfo }) => {
         <div className='flex flex-1 flex-col items-center bg-orange-light p-8'>
             <PageTitle title={t("evaluerEtudiant")} />
             {
-                students && students.length > 0 ? <EvaluerListEtudiant students={students} setSelectedStudent={setSelectedStudent} destination={"/evaluer/formulaire"} /> 
+                students && students.length > 0 ? 
+                <>
+                    <EvaluerListEtudiant students={students} setSelectedStudent={setSelectedStudent} destination={"/evaluer/formulaire"} /> 
+                    <BoutonAvancerReculer pages={pages} setPages={setPages} margins={"my-10"} />
+                </>
                 :
                 <p>{t("noStudentToEvaluate")}</p>
             }
