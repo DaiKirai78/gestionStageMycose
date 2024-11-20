@@ -1,6 +1,8 @@
 package com.projet.mycose.controller;
 
 import com.projet.mycose.dto.*;
+import com.projet.mycose.exceptions.GlobalExceptionHandler;
+import com.projet.mycose.exceptions.ResourceNotFoundException;
 import com.projet.mycose.modele.*;
 import com.projet.mycose.modele.auth.Credentials;
 import com.projet.mycose.modele.auth.Role;
@@ -11,15 +13,29 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.server.ResponseStatusException;
 
+
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+
+import static org.hamcrest.Matchers.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ApplicationStageControllerTest {
@@ -29,6 +45,8 @@ public class ApplicationStageControllerTest {
     @InjectMocks
     private ApplicationStageController applicationStageController;
 
+    private MockMvc mockMvc;
+
     private Long id;
     private Long offreStageId;
     private Etudiant etudiant;
@@ -36,6 +54,7 @@ public class ApplicationStageControllerTest {
     private ApplicationStageDTO applicationStageDTO;
     private ApplicationStage applicationStage;
     private ApplicationStageAvecInfosDTO applicationStageAvecInfosDTO;
+    private ApplicationStageAvecInfosDTO applicationStageAvecInfosDTO2;
     private List<ApplicationStageAvecInfosDTO> applicationStageAvecInfosDTOList;
     private AnswerSummonDTO answerSummonDTO;
 
@@ -50,6 +69,7 @@ public class ApplicationStageControllerTest {
         // Initialize fields of applicationStageDTO as needed
 
         applicationStageAvecInfosDTO = new ApplicationStageAvecInfosDTO();
+        applicationStageAvecInfosDTO2 = new ApplicationStageAvecInfosDTO();
         // Initialize fields of applicationStageAvecInfosDTO as needed
 
         etudiant = new Etudiant();
@@ -79,6 +99,10 @@ public class ApplicationStageControllerTest {
         applicationStageAvecInfosDTOList = List.of(applicationStageAvecInfosDTO);
 
         answerSummonDTO = new AnswerSummonDTO("I accept the summon.", Convocation.ConvocationStatus.ACCEPTED);
+
+        mockMvc = MockMvcBuilders.standaloneSetup(applicationStageController)
+                .setControllerAdvice(new GlobalExceptionHandler())
+                .build();
     }
 
     @Test
@@ -301,5 +325,247 @@ public class ApplicationStageControllerTest {
 
         assertEquals("400 BAD_REQUEST \"Invalid status\"", exception.getMessage());
         verify(applicationStageService, times(1)).answerSummon(id, answerSummonDTO);
+    }
+
+    @Test
+    public void testGetApplicationsByEtudiantId_Success() throws Exception {
+        applicationStageAvecInfosDTO.setId(101L);
+        applicationStageAvecInfosDTO.setEtudiant_id(1L);
+        applicationStageAvecInfosDTO.setEntrepriseName("Entreprise 1");
+        applicationStageAvecInfosDTO.setStatus(ApplicationStage.ApplicationStatus.PENDING);
+
+        applicationStageAvecInfosDTO2.setId(102L);
+        applicationStageAvecInfosDTO2.setEtudiant_id(1L);
+        applicationStageAvecInfosDTO2.setEntrepriseName("Entreprise 2");
+        applicationStageAvecInfosDTO2.setStatus(ApplicationStage.ApplicationStatus.ACCEPTED);
+
+
+
+        Long etudiantId = 1L;
+        List<ApplicationStageAvecInfosDTO> applications = Arrays.asList(
+                applicationStageAvecInfosDTO,
+                applicationStageAvecInfosDTO2
+        );
+
+        when(applicationStageService.getApplicationsByEtudiant(etudiantId)).thenReturn(applications);
+
+        mockMvc.perform(get("/api/application-stage/get/etudiant/{id}", etudiantId)
+                        .with(csrf()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].id", is(101)))
+                .andExpect(jsonPath("$[0].etudiant_id", is(1)))
+                .andExpect(jsonPath("$[0].entrepriseName", is("Entreprise 1")))
+                .andExpect(jsonPath("$[0].status", is("PENDING")))
+                .andExpect(jsonPath("$[1].id", is(102)))
+                .andExpect(jsonPath("$[1].etudiant_id", is(1)))
+                .andExpect(jsonPath("$[1].entrepriseName", is("Entreprise 2")))
+                .andExpect(jsonPath("$[1].status", is("ACCEPTED")));
+    }
+
+    @Test
+    public void testGetApplicationsByEtudiantId_EmptyList() throws Exception {
+        Long etudiantId = 2L;
+        List<ApplicationStageAvecInfosDTO> applications = Collections.emptyList();
+
+        when(applicationStageService.getApplicationsByEtudiant(etudiantId)).thenReturn(applications);
+
+        mockMvc.perform(get("/api/application-stage/get/etudiant/{id}", etudiantId)
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", hasSize(0)));
+    }
+
+    @Test
+    public void testGetApplicationsByEtudiantId_ServiceException() throws Exception {
+        Long etudiantId = 3L;
+
+        when(applicationStageService.getApplicationsByEtudiant(etudiantId))
+                .thenThrow(new RuntimeException("Service unavailable"));
+
+        mockMvc.perform(get("/api/application-stage/get/etudiant/{id}", etudiantId)
+                        .with(csrf()))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message", is("Service unavailable")))
+                .andExpect(jsonPath("$.status", is(500)))
+                .andExpect(jsonPath("$.timestamp").isNumber());
+    }
+
+    // Test for getApplicationsWithStatus
+    @Test
+    public void testGetApplicationsWithStatus_Success() throws Exception {
+        applicationStageAvecInfosDTO.setId(201L);
+        applicationStageAvecInfosDTO.setEtudiant_id(1L);
+        applicationStageAvecInfosDTO.setEntrepriseName("Entreprise 1");
+        applicationStageAvecInfosDTO.setStatus(ApplicationStage.ApplicationStatus.ACCEPTED);
+
+        applicationStageAvecInfosDTO2.setId(202L);
+        applicationStageAvecInfosDTO2.setEtudiant_id(2L);
+        applicationStageAvecInfosDTO2.setEntrepriseName("Entreprise 2");
+        applicationStageAvecInfosDTO2.setStatus(ApplicationStage.ApplicationStatus.ACCEPTED);
+
+        ApplicationStage.ApplicationStatus status = ApplicationStage.ApplicationStatus.ACCEPTED;
+        List<ApplicationStageAvecInfosDTO> applications = Arrays.asList(
+                applicationStageAvecInfosDTO,
+                applicationStageAvecInfosDTO2
+        );
+
+        when(applicationStageService.getApplicationsWithStatus(status)).thenReturn(applications);
+
+        mockMvc.perform(get("/api/application-stage/status/{status}", status)
+                        .with(csrf()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].id", is(201)))
+                .andExpect(jsonPath("$[0].etudiant_id", is(1)))
+                .andExpect(jsonPath("$[0].entrepriseName", is("Entreprise 1")))
+                .andExpect(jsonPath("$[0].status", is("ACCEPTED")))
+                .andExpect(jsonPath("$[1].id", is(202)))
+                .andExpect(jsonPath("$[1].etudiant_id", is(2)))
+                .andExpect(jsonPath("$[1].entrepriseName", is("Entreprise 2")))
+                .andExpect(jsonPath("$[1].status", is("ACCEPTED")));
+    }
+
+    @Test
+    public void testGetApplicationsWithStatus_EmptyList() throws Exception {
+        ApplicationStage.ApplicationStatus status = ApplicationStage.ApplicationStatus.REJECTED;
+        List<ApplicationStageAvecInfosDTO> applications = Collections.emptyList();
+
+        when(applicationStageService.getApplicationsWithStatus(status)).thenReturn(applications);
+
+        mockMvc.perform(get("/api/application-stage/status/{status}", status)
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", hasSize(0)));
+    }
+
+    @Test
+    public void testGetApplicationsWithStatus_ServiceException() throws Exception {
+        ApplicationStage.ApplicationStatus status = ApplicationStage.ApplicationStatus.PENDING;
+
+        when(applicationStageService.getApplicationsWithStatus(status))
+                .thenThrow(new RuntimeException("Service failure"));
+
+        mockMvc.perform(get("/api/application-stage/status/{status}", status)
+                        .with(csrf()))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message", is("Service failure")))
+                .andExpect(jsonPath("$.status", is(500)))
+                .andExpect(jsonPath("$.timestamp").isNumber());
+    }
+
+    // Test for getEtudiantFromApplication
+    @Test
+    public void testGetEtudiantFromApplication_Success() throws Exception {
+        Long applicationId = 301L;
+        EtudiantDTO etudiantDTO1 = new EtudiantDTO();
+        etudiantDTO1.setId(1L);
+        etudiantDTO1.setNom("John");
+        etudiantDTO1.setPrenom("Doe");
+        etudiantDTO1.setCourriel("eliescrummaster@gmail.com");
+
+        when(applicationStageService.getEtudiantFromApplicationId(applicationId)).thenReturn(etudiantDTO1);
+
+        mockMvc.perform(get("/api/application-stage/getEtudiant/{applicationId}", applicationId)
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id", is(1)))
+                .andExpect(jsonPath("$.nom", is("John")))
+                .andExpect(jsonPath("$.prenom", is("Doe")))
+                .andExpect(jsonPath("$.courriel", is("eliescrummaster@gmail.com")));
+    }
+
+    @Test
+    public void testGetEtudiantFromApplication_NotFound() throws Exception {
+        Long applicationId = 302L;
+
+        when(applicationStageService.getEtudiantFromApplicationId(applicationId))
+                .thenThrow(new ResourceNotFoundException("Application not found"));
+
+        mockMvc.perform(get("/api/application-stage/getEtudiant/{applicationId}", applicationId)
+                        .with(csrf()))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message", is("Application not found")))
+                .andExpect(jsonPath("$.status", is(404)))
+                .andExpect(jsonPath("$.timestamp").isNumber());
+    }
+
+    @Test
+    public void testGetEtudiantFromApplication_ServiceException() throws Exception {
+        Long applicationId = 303L;
+
+        when(applicationStageService.getEtudiantFromApplicationId(applicationId))
+                .thenThrow(new RuntimeException("Service error"));
+
+        mockMvc.perform(get("/api/application-stage/getEtudiant/{applicationId}", applicationId)
+                        .with(csrf()))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message", is("Service error")))
+                .andExpect(jsonPath("$.status", is(500)))
+                .andExpect(jsonPath("$.timestamp").isNumber());
+    }
+
+    // Test for getOffreStageFromApplication
+    @Test
+    public void testGetOffreStageFromApplication_Success() throws Exception {
+        Long applicationId = 401L;
+
+        OffreStageDTO offreStageDTO1 = new OffreStageDTO();
+        offreStageDTO1.setId(10L);
+        offreStageDTO1.setTitle("Offre 1");
+        offreStageDTO1.setEntrepriseName("Entreprise 1");
+
+        when(applicationStageService.getOffreStageFromApplicationId(applicationId)).thenReturn(offreStageDTO1);
+
+        mockMvc.perform(get("/api/application-stage/getOffreStage/{applicationId}", applicationId)
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id", is(10)))
+                .andExpect(jsonPath("$.title", is("Offre 1")))
+                .andExpect(jsonPath("$.entrepriseName", is("Entreprise 1")));
+    }
+
+    @Test
+    public void testGetOffreStageFromApplication_NotFound() throws Exception {
+        Long applicationId = 402L;
+
+        when(applicationStageService.getOffreStageFromApplicationId(applicationId))
+                .thenThrow(new ResourceNotFoundException("Application not found"));
+
+        mockMvc.perform(get("/api/application-stage/getOffreStage/{applicationId}", applicationId)
+                        .with(csrf()))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message", is("Application not found")))
+                .andExpect(jsonPath("$.status", is(404)))
+                .andExpect(jsonPath("$.timestamp").isNumber());
+    }
+
+    @Test
+    public void testGetOffreStageFromApplication_ServiceException() throws Exception {
+        Long applicationId = 403L;
+
+        when(applicationStageService.getOffreStageFromApplicationId(applicationId))
+                .thenThrow(new RuntimeException("Service error"));
+
+        mockMvc.perform(get("/api/application-stage/getOffreStage/{applicationId}", applicationId)
+                        .with(csrf()))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message", is("Service error")))
+                .andExpect(jsonPath("$.status", is(500)))
+                .andExpect(jsonPath("$.timestamp").isNumber());
     }
 }
