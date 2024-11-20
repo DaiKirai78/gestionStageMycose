@@ -130,8 +130,16 @@ public class EmployeurService {
 
         FicheEvaluationStagiaire ficheEvaluationStagiaire = modelMapper.map(ficheEvaluationStagiaireDTO, FicheEvaluationStagiaire.class);
 
+        Optional<Contrat> contratOpt = contratRepository.findContratActiveOfEtudiantAndEmployeur(etudiantId, employeur.getId(), Etudiant.ContractStatus.ACTIVE);
+        if(contratOpt.isEmpty()) {
+            throw new ResourceNotFoundException("Contrat de l'étudiant non trouvé");
+        }
+
+        Contrat contrat = contratOpt.get();
+
         ficheEvaluationStagiaire.setEmployeur(employeur);
         ficheEvaluationStagiaire.setEtudiant(etudiant);
+        ficheEvaluationStagiaire.setContrat(contrat);
 
         ficheEvaluationStagiaireRepository.save(ficheEvaluationStagiaire);
     }

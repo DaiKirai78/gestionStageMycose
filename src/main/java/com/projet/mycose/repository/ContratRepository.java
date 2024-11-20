@@ -1,6 +1,7 @@
 package com.projet.mycose.repository;
 
 import com.projet.mycose.modele.Contrat;
+import com.projet.mycose.modele.Etudiant;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ContratRepository extends JpaRepository<Contrat, Long> {
@@ -31,9 +33,11 @@ public interface ContratRepository extends JpaRepository<Contrat, Long> {
             "ORDER BY DATE(created_at) ASC", nativeQuery = true)
     List<Date> findDistinctCreatedAtForSignedContrats();
 
-
-
-
+    @Query("SELECT c FROM Contrat c " +
+            "WHERE c.etudiant.id = :etudiantId " +
+            "AND c.employeur.id = :employeurId " +
+            "AND c.etudiant.contractStatus = :contractStatus")
+    Optional<Contrat> findContratActiveOfEtudiantAndEmployeur(Long etudiantId, Long employeurId, Etudiant.ContractStatus contractStatus);
 
     Page<Contrat> findContratsBySignatureEtudiantIsNullAndEtudiant_Id(Long etudiantId, Pageable pageable);
 
