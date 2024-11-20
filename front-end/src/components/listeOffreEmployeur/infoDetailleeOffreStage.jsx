@@ -4,10 +4,12 @@ import { BsX } from "react-icons/bs";
 import InfoDetailleeEtudiant from './infoDetailleeEtudiant';
 import axios from 'axios';
 import PageIsLoading from '../pageIsLoading';
+import ModifierOffreModal from "./modifierOffreModal.jsx";
 
 const InfoDetailleeOffreStage = ({ setActiveOffer, activeOffer, getColorOffreStatus, setVoirPdf, voirPdf }) => {
     const [listeEtudiantsAppliques, setListeEtudiantsAppliques] = useState([]);
     const [isModalCandidatureOpen, setIsModalCandidatureOpen] = useState(false);
+    const [isModifierOffreModalOpen, setIsModifierOffreModalOpen] = useState(false);
     const [selectedEtudiant, setSelectedEtudiant] = useState(null);
     const [summonMessage, setSummonMessage] = useState('');
     const [studentInfo, setStudentInfo] = useState(null);
@@ -17,6 +19,11 @@ const InfoDetailleeOffreStage = ({ setActiveOffer, activeOffer, getColorOffreSta
     const { t } = useTranslation();
 
     const format = getFormat();
+
+    const handleUpdate = (updatedOffer) => {
+        console.log("Offer updated:", updatedOffer);
+        setActiveOffer(updatedOffer);
+    };
 
     useEffect(() => {
         fetchCandidatures();
@@ -252,6 +259,20 @@ const InfoDetailleeOffreStage = ({ setActiveOffer, activeOffer, getColorOffreSta
                             >
                                 {t("seePDF")}</button>
                         }
+                        <div>
+                            <button
+                                className="bg-orange px-4 py-2 rounded text-white"
+                                onClick={() => setIsModifierOffreModalOpen(true)}
+                            >
+                                Modifier l'offre
+                            </button>
+                            <ModifierOffreModal
+                                offer={activeOffer}
+                                isOpen={isModifierOffreModalOpen}
+                                onClose={() => setIsModifierOffreModalOpen(false)}
+                                onUpdate={handleUpdate}
+                            />
+                        </div>
                         <div className='flex flex-col w-full mt-7'>
                             <select
                                 className='bg-orange px-4 py-2 rounded text-white mt-3'
@@ -259,7 +280,7 @@ const InfoDetailleeOffreStage = ({ setActiveOffer, activeOffer, getColorOffreSta
                                 defaultValue="default"
                                 onChange={(e) => ouvrirModal(e.target.value)}
                             >
-                                <option value="default">
+                            <option value="default">
                                     --- {t("voir")} ({listeEtudiantsAppliques.length}) {t("candidatures")} ---
                                 </option>
                                 {listeEtudiantsAppliques.map((etudiant) => (

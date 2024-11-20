@@ -1,11 +1,8 @@
 package com.projet.mycose.controller;
 
-import com.projet.mycose.dto.ContratDTO;
+import com.projet.mycose.dto.*;
 import com.projet.mycose.modele.OffreStage;
 import com.projet.mycose.service.EmployeurService;
-import com.projet.mycose.dto.EmployeurDTO;
-import com.projet.mycose.dto.OffreStageDTO;
-import com.projet.mycose.dto.RegisterEmployeurDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -55,6 +52,22 @@ public class EmployeurController {
     public ResponseEntity<Integer> getAmountOfPagesOfCandidaturesNonSignees() {
             return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
                     employeurService.getAmountOfPagesOfContractNonSignees());
+    }
+
+    @PostMapping("/saveFicheEvaluation")
+    public ResponseEntity<HttpStatus> enregistrerFicheEvaluationStagiaire(
+            @RequestBody FicheEvaluationStagiaireDTO ficheEvaluationStagiaireDTO,
+            @RequestParam Long etudiantId
+    ) {
+        employeurService.enregistrerFicheEvaluationStagiaire(ficheEvaluationStagiaireDTO, etudiantId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/getAllEtudiantsNonEvalues")
+    public ResponseEntity<List<EtudiantDTO>> getAllEtudiantsNonEvalues(@RequestParam Long employeurId) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(employeurService.getAllEtudiantsNonEvalues(employeurId));
     }
 }
 

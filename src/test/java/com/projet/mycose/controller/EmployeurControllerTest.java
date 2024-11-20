@@ -3,7 +3,9 @@ package com.projet.mycose.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.projet.mycose.dto.*;
 import com.projet.mycose.exceptions.GlobalExceptionHandler;
+import com.projet.mycose.exceptions.ResourceNotFoundException;
 import com.projet.mycose.exceptions.SignaturePersistenceException;
+import com.projet.mycose.exceptions.UserNotFoundException;
 import com.projet.mycose.modele.Contrat;
 import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.service.EmployeurService;
@@ -206,4 +208,90 @@ public class EmployeurControllerTest {
                 .enregistrerSignature(any(), eq(password), eq(contratId));
     }
 
+    @Test
+    public void testEnregistrerFicheEvaluationStagiaire_Success() throws Exception {
+        // Arrange
+        Long etudiantId = 2L;
+
+        FicheEvaluationStagiaireDTO ficheEvaluationStagiaireDTOMock = new FicheEvaluationStagiaireDTO();
+        ficheEvaluationStagiaireDTOMock.setId(1L);
+        ficheEvaluationStagiaireDTOMock.setNumeroTelephone("555-444-3333");
+        ficheEvaluationStagiaireDTOMock.setFonctionSuperviseur("Manager");
+
+        doNothing().when(employeurService).enregistrerFicheEvaluationStagiaire(any(FicheEvaluationStagiaireDTO.class), eq(etudiantId));
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String ficheEvaluationJson = objectMapper.writeValueAsString(ficheEvaluationStagiaireDTOMock);
+
+        // Act & Assert
+        mockMvc.perform(post("/entreprise/saveFicheEvaluation")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(ficheEvaluationJson)
+                        .param("etudiantId", etudiantId.toString()))
+                .andExpect(status().isOk());
+        verify(employeurService, times(1)).enregistrerFicheEvaluationStagiaire(any(FicheEvaluationStagiaireDTO.class), eq(etudiantId));
+    }
+
+    @Test
+    public void testEnregistrerFicheEvaluationStagiaire_Error() throws Exception {
+        //Arrange
+        FicheEvaluationStagiaireDTO ficheEvaluationStagiaireDTOMock = new FicheEvaluationStagiaireDTO();
+
+        doNothing().when(employeurService).enregistrerFicheEvaluationStagiaire(ficheEvaluationStagiaireDTOMock, 2L);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String ficheEvaluationJson = objectMapper.writeValueAsString(ficheEvaluationStagiaireDTOMock);
+
+        //Act & Assert
+        mockMvc.perform(post("/entreprise/saveFicheEvaluation")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ficheEvaluationJson)
+                .param("etudiantId", String.valueOf(2L)))
+                .andExpect(status().isInternalServerError());
+        verify(employeurService, times(0)).enregistrerFicheEvaluationStagiaire(ficheEvaluationStagiaireDTOMock, 2L);
+    }
+
+    @Test
+    public void testGetAllEtudiantsNonEvalues_Success() throws Exception {
+        // Arrange
+        Long employeurId = 1L;
+        EtudiantDTO etudiant1 = new EtudiantDTO();
+        etudiant1.setId(2L);
+        etudiant1.setNom("Potter");
+
+        EtudiantDTO etudiant2 = new EtudiantDTO();
+        etudiant2.setId(3L);
+        etudiant2.setNom("Sheldon");
+
+        List<EtudiantDTO> listeRetourne = new ArrayList<>();
+        listeRetourne.add(etudiant1);
+        listeRetourne.add(etudiant2);
+
+        when(employeurService.getAllEtudiantsNonEvalues(employeurId)).thenReturn(listeRetourne);
+
+        // Act & Assert
+        mockMvc.perform(get("/entreprise/getAllEtudiantsNonEvalues")
+                .param("employeurId", String.valueOf(employeurId)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].id").value(2L))
+                .andExpect(jsonPath("$[0].nom").value("Potter"))
+                .andExpect(jsonPath("$[1].id").value(3L))
+                .andExpect(jsonPath("$[1].nom").value("Sheldon"));
+    }
+
+    @Test
+    public void testGetAllEtudiantsNonEvalues_UserNotFound() throws Exception {
+        // Arrange
+        Long employeurId = 1L;
+
+        when(employeurService.getAllEtudiantsNonEvalues(employeurId)).thenThrow(new UserNotFoundException());
+
+        // Act & Assert
+        mockMvc.perform(get("/entreprise/getAllEtudiantsNonEvalues")
+                        .param("employeurId", String.valueOf(employeurId)))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Utilisateur not found"))
+                .andExpect(jsonPath("$.status").value(404));
+    }
 }

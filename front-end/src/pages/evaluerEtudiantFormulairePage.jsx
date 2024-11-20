@@ -4,12 +4,16 @@ import TokenPageContainer from './tokenPageContainer';
 import EvaluerEtudiantFormulairesList from '../components/evaluer/evaluerEtudiantFormulairesList';
 
 const evaluerEtudiantFormulairePage = () => {
-    const {setUserInfo, selectedStudent, setSelectedStudent} = useOutletContext();
+    const { userInfo, setUserInfo, selectedStudent, setSelectedStudent} = useOutletContext();
 
     return (
         
         <TokenPageContainer role={["EMPLOYEUR", "ENSEIGNANT"]} setUserInfo={setUserInfo}>
-            <EvaluerEtudiantFormulairesList selectedStudent={selectedStudent} setSelectedStudent={setSelectedStudent}/>
+            <EvaluerEtudiantFormulairesList 
+                            selectedStudent={selectedStudent} 
+                            setSelectedStudent={setSelectedStudent}
+                            userInfo={userInfo}
+                            />
         </TokenPageContainer>
     );
 };

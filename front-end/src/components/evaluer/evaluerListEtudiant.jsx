@@ -9,13 +9,13 @@ const EvaluerListEtudiant = ({ students, setSelectedStudent, destination }) => {
 
     return (
         
-        students.map((student, index) => <EvaluerListEtudiantCard 
-                                                    key={index} 
-                                                    student={student} 
-                                                    nomPrenom={getNomPrenom(student)} 
-                                                    setSelectedStudent={setSelectedStudent}
-                                                    destination={destination} />)
-        
+        students.map((student, index) => 
+        <EvaluerListEtudiantCard 
+            key={index} 
+            student={student} 
+            nomPrenom={getNomPrenom(student)} 
+            setSelectedStudent={setSelectedStudent}
+            destination={destination} />)
     );
 };
 
