@@ -6,6 +6,7 @@ import com.projet.mycose.dto.EnseignantDTO;
 import com.projet.mycose.dto.RegisterEnseignantDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -31,9 +32,9 @@ public class EnseignantController {
     }
 
     @GetMapping("/getAllEtudiantsAEvaluer")
-    public ResponseEntity<List<EtudiantDTO>> getAllEtudiantsAEvaluerParProf(@RequestParam Long enseignantId) {
+    public ResponseEntity<Page<EtudiantDTO>> getAllEtudiantsAEvaluerParProf(@RequestParam Long enseignantId, @RequestParam int pageNumber) {
         return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(enseignantService.getAllEtudiantsAEvaluerParProf(enseignantId));
+                .body(enseignantService.getAllEtudiantsAEvaluerParProf(enseignantId, pageNumber));
     }
 }
