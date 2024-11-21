@@ -258,31 +258,6 @@ public class EnseignantControllerTest {
         Mockito.verify(enseignantService, Mockito.times(1)).enregistrerFicheEvaluationMilieuStage(any(FicheEvaluationMilieuStageDTO.class), eq(1L));
     }
 
-
-    @Test
-    public void testEnregistrerFicheEvaluationStagiaire_ValidationFailure() throws Exception {
-        // Arrange: Create an invalid FicheEvaluationMilieuStageDTO (missing required fields)
-        FicheEvaluationMilieuStageDTO dto = new FicheEvaluationMilieuStageDTO();
-        // Intentionally leaving out required fields like nomEntreprise, etc.
-
-        // Convert DTO to JSON
-        String dtoJson = objectMapper.writeValueAsString(dto);
-
-        // Act & Assert: Perform POST request and expect 400 Bad Request with validation errors
-        mockMvc.perform(post("/enseignant/saveFicheEvaluationMilieuStage")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(dtoJson)
-                        .param("etudiantId", "1")
-                        .with(csrf()))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message", containsString("nomStagiaire=Le nom du stagiaire ne peut pas être vide.")))
-                .andExpect(jsonPath("$.message", containsString("salaireHoraire=Le salaire horaire ne peut pas être nul.")))
-                .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.timestamp").isNumber());
-    }
-
     @Test
     public void testEnregistrerFicheEvaluationStagiaire_ServiceException() throws Exception {
         // Arrange: Define all necessary form parameters

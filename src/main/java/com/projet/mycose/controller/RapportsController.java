@@ -3,6 +3,7 @@ package com.projet.mycose.controller;
 
 import com.projet.mycose.dto.EtudiantDTO;
 import com.projet.mycose.dto.OffreStageDTO;
+import com.projet.mycose.service.EmployeurService;
 import com.projet.mycose.service.EtudiantService;
 import com.projet.mycose.service.OffreStageService;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ public class RapportsController {
 
     private final OffreStageService offreStageService;
     private final EtudiantService etudiantService;
+    private final EmployeurService employeurService;
 
     @GetMapping("/offres-non-validees")
     public ResponseEntity<List<OffreStageDTO>> rapportOffresNonValidees() {
@@ -60,5 +62,10 @@ public class RapportsController {
     @GetMapping("/etudiants-interviewed")
     public ResponseEntity<List<EtudiantDTO>> rapportEtudiantsInterviewed() {
         return ResponseEntity.status(HttpStatus.OK).body(etudiantService.getEtudiantsInterviewed());
+    }
+
+    @GetMapping("/etudiants-non-evalues")
+    public ResponseEntity<List<EtudiantDTO>> rapportsEtudiantsNonEvalues() {
+        return ResponseEntity.status(HttpStatus.OK).body(employeurService.getAllEtudiantsNonEvalues());
     }
 }

@@ -3,7 +3,6 @@ package com.projet.mycose.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.projet.mycose.dto.*;
-import com.projet.mycose.modele.OffreStage;
 import com.projet.mycose.service.EmployeurService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -75,7 +73,7 @@ public class EmployeurController {
     public ResponseEntity<Page<EtudiantDTO>> getAllEtudiantsNonEvalues(@RequestParam Long employeurId, @RequestParam int pageNumber) {
         return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(employeurService.getAllEtudiantsNonEvalues(employeurId, pageNumber));
+                .body(employeurService.getAllEtudiantsNonEvaluesByEmployeeID(employeurId, pageNumber));
     }
 }
 

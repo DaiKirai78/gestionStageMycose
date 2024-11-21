@@ -3,7 +3,6 @@ package com.projet.mycose.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.projet.mycose.dto.*;
 import com.projet.mycose.exceptions.GlobalExceptionHandler;
-import com.projet.mycose.exceptions.ResourceNotFoundException;
 import com.projet.mycose.exceptions.SignaturePersistenceException;
 import com.projet.mycose.exceptions.UserNotFoundException;
 import com.projet.mycose.modele.Contrat;
@@ -18,19 +17,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -294,7 +289,7 @@ public class EmployeurControllerTest {
         PageRequest pageRequest = PageRequest.of(1, 10);
         Page<EtudiantDTO> pageEtudiants = new PageImpl<>(listeRetourne, pageRequest, 2);
 
-        when(employeurService.getAllEtudiantsNonEvalues(employeurId, 1)).thenReturn(pageEtudiants);
+        when(employeurService.getAllEtudiantsNonEvaluesByEmployeeID(employeurId, 1)).thenReturn(pageEtudiants);
 
         // Act & Assert
         mockMvc.perform(get("/entreprise/getAllEtudiantsNonEvalues")
@@ -313,7 +308,7 @@ public class EmployeurControllerTest {
         // Arrange
         Long employeurId = 1L;
 
-        when(employeurService.getAllEtudiantsNonEvalues(employeurId,1)).thenThrow(new UserNotFoundException());
+        when(employeurService.getAllEtudiantsNonEvaluesByEmployeeID(employeurId,1)).thenThrow(new UserNotFoundException());
 
         // Act & Assert
         mockMvc.perform(get("/entreprise/getAllEtudiantsNonEvalues")

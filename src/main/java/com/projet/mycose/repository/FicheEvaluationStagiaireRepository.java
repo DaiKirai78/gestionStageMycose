@@ -9,7 +9,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface FicheEvaluationStagiaireRepository extends JpaRepository<FicheEvaluationStagiaire, Long> {
@@ -20,6 +19,13 @@ public interface FicheEvaluationStagiaireRepository extends JpaRepository<FicheE
             "SELECT c.etudiant FROM Contrat c " +
             "WHERE c.employeur.id = :employeurId " +
             "AND c NOT IN (SELECT f.contrat FROM FicheEvaluationStagiaire f))")
-    Page<Etudiant> findAllEtudiantWhereNotEvaluated(Long employeurId, Etudiant.ContractStatus contractStatus, Pageable pageable);
+    Page<Etudiant> findAllEtudiantWhereNotEvaluatedByEmployeeID(Long employeurId, Etudiant.ContractStatus contractStatus, Pageable pageable);
 
+    @Query("SELECT e FROM Etudiant e " +
+            "WHERE e.contractStatus = 'ACTIVE' " +
+            "AND e IN (" +
+            "SELECT c.etudiant FROM Contrat c " +
+            "WHERE c NOT IN (SELECT f.contrat FROM FicheEvaluationStagiaire f)" +
+            ")")
+    List<Etudiant> findAllEtudiantWhereNotEvaluated();
 }

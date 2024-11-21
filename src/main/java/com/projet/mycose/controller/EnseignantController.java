@@ -36,7 +36,7 @@ public class EnseignantController {
                 .body(enseignantService.getAllEtudiantsAEvaluerParProf(enseignantId, pageNumber));
     }
 
-    @PostMapping("/saveFicheEvaluationMilieuStage")
+    @PostMapping(value = "/saveFicheEvaluationMilieuStage", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public ResponseEntity<HttpStatus> enregistrerFicheEvaluationStagiaire(
             @Valid @ModelAttribute FicheEvaluationMilieuStageDTO ficheEvaluationMilieuStageDTO,
             @RequestParam Long etudiantId

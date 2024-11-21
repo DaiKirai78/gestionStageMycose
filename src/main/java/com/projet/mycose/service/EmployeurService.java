@@ -8,11 +8,11 @@ import com.projet.mycose.exceptions.UserNotFoundException;
 import com.projet.mycose.modele.*;
 import com.projet.mycose.repository.*;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.User;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -23,7 +23,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -35,7 +34,6 @@ public class EmployeurService {
     private final UtilisateurRepository utilisateurRepository;
     private final PasswordEncoder passwordEncoder;
     private final UtilisateurService utilisateurService;
-    private final OffreStageRepository offreStageRepository;
     private final ContratRepository contratRepository;
     private final AuthenticationManager authenticationManager;
     private final ModelMapper modelMapper;
@@ -164,7 +162,7 @@ public class EmployeurService {
         return etudiant;
     }
 
-    public Page<EtudiantDTO> getAllEtudiantsNonEvalues(Long employeurId, int page) {
+    public Page<EtudiantDTO> getAllEtudiantsNonEvaluesByEmployeeID(Long employeurId, int page) {
         PageRequest pageRequest = PageRequest.of(page, LIMIT_PER_PAGE);
 
         try {
@@ -173,7 +171,7 @@ public class EmployeurService {
             throw new AuthenticationException(HttpStatus.UNAUTHORIZED, "Problème d'authentification");
         }
 
-        Page<Etudiant> pageEtudiants = ficheEvaluationStagiaireRepository.findAllEtudiantWhereNotEvaluated(employeurId, Etudiant.ContractStatus.ACTIVE, pageRequest);
+        Page<Etudiant> pageEtudiants = ficheEvaluationStagiaireRepository.findAllEtudiantWhereNotEvaluatedByEmployeeID(employeurId, Etudiant.ContractStatus.ACTIVE, pageRequest);
 
         if(pageEtudiants.isEmpty())
             throw new ResourceNotFoundException("Aucun Étudiant Trouvé");
@@ -182,4 +180,10 @@ public class EmployeurService {
                 etudiant -> modelMapper.map(etudiant, EtudiantDTO.class));
     }
 
+    @PreAuthorize("hasAuthority('GESTIONNAIRE_STAGE')")
+    public List<EtudiantDTO> getAllEtudiantsNonEvalues() {
+        return ficheEvaluationStagiaireRepository.findAllEtudiantWhereNotEvaluated().stream()
+                .map(etudiant -> modelMapper.map(etudiant, EtudiantDTO.class))
+                .toList();
+    }
 }
