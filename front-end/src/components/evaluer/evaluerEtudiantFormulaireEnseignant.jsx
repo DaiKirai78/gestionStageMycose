@@ -227,15 +227,14 @@ const EvaluerEtudiantFormulaireEnseignant = ({ selectedStudent, setSelectedStude
                 formDataToSend.append(key, body[key]);
             });
 
-            console.log("formDataToSend", formDataToSend);
+            console.log("body", body);
 
             const response = await axios.post("http://localhost:8080/enseignant/saveFicheEvaluationMilieuStage", formDataToSend, {
                 params: {
-                    etudiantID: selectedStudent.id
+                    etudiantId: selectedStudent.id
                 },
                 headers: {
                     Authorization: `Bearer ${token}`,
-                    "Content-Type": "multipart/form-data",
                 },
             });
 
@@ -273,9 +272,8 @@ const EvaluerEtudiantFormulaireEnseignant = ({ selectedStudent, setSelectedStude
                 if (key === 'evalQHours') {
                     continue;
                 } else if (key.startsWith('quart')) {
-                    if (formData.observationsGenerales.quartsVariables === "oui") {
+                    if (formData.observationsGenerales.quartsVariables === "OUI") {
                         if (!value.de || !value.a) {
-                            console.log(`Champ vide détecté : ${key}`, value);
                             if (!firstToHaveAnErrorId) {
                                 firstToHaveAnErrorId = key;
                             }
@@ -283,9 +281,17 @@ const EvaluerEtudiantFormulaireEnseignant = ({ selectedStudent, setSelectedStude
                             newValue = getFormValue("", true);
                         }
                     }
+                } else if (key === 'telephoneEntreprise' || key === 'telecopieurEntreprise') {
+                    if (value && value.value && !/^\d+$/.test(value.value)) {
+                        if (!firstToHaveAnErrorId) {
+                            firstToHaveAnErrorId = key;
+                        }
+                        hasError = true;
+                        newValue = getFormValue(value.value, true);
+                    }
+
                 } else if (key === 'milieuStage' || key === 'nombreStagiaires' || key === 'prochainStage' || key === 'quartsVariables') {
                     if (!value) {
-                        console.log(`Champ vide détecté : ${key}`, value);
                         if (!firstToHaveAnErrorId) {
                             firstToHaveAnErrorId = key;
                         }
@@ -294,7 +300,6 @@ const EvaluerEtudiantFormulaireEnseignant = ({ selectedStudent, setSelectedStude
                     }
                 } else if (!value.value) {
                     // Validation générale pour les autres champs
-                    console.log(`Champ vide détecté : ${key}`, value);
                     if (!firstToHaveAnErrorId) {
                         firstToHaveAnErrorId = key;
                     }

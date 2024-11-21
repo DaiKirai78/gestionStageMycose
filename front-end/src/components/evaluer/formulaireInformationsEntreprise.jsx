@@ -17,7 +17,7 @@ const FormulaireInformationsEntreprise = ({ formData, handleChange }) => {
                 { id: "codePostalEntreprise", label: "codePostalEntreprise" },
                 { id: "telephoneEntreprise", label: "telephoneEntreprise" },
                 { id: "telecopieurEntreprise", label: "telecopieurEntreprise" },
-                { id: "dateDebutStage", label: "dateDebutStage", type: "date" },
+                { id: "dateDebutStage", label: "dateDebutStage", type: "datetime-local" },
             ].map((field) => (
                 <div key={field.id} className="mb-4">
                     <label htmlFor={field.id} className="block font-medium mb-1">
