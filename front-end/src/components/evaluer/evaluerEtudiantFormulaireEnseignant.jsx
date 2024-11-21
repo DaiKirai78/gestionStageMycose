@@ -1,65 +1,37 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PageTitle from '../pageTitle';
 import { useTranslation } from 'react-i18next';
 import EvaluerFormulaire from './evaluerFormulaire';
-import AppreciacionFormulaire from './autreInformationsFormulaire';
+import EvaluerFormulaireObsGenerales from './evaluerFormulaireObsGenerales';
 
 const forms = [
     {
-        id: 'prod',
-        title: 'productivite',
-        description: 'prodDescription',
+        id: 'eval',
+        title: 'evaluation',
         criteria: [
-            { id: 'prodQA', label: 'prodQA' },
-            { id: 'prodQB', label: 'prodQB' },
-            { id: 'prodQC', label: 'prodQC' },
-            { id: 'prodQD', label: 'prodQD' },
-            { id: 'prodQE', label: 'prodQE' }
-        ]
-    },
-    {
-        id: 'qualTravail',
-        title: 'qualiteDuTravail',
-        description: 'qualTravailDescription',
-        criteria: [
-            { id: 'qualTravailQA', label: 'qualTravailQA' },
-            { id: 'qualTravailQB', label: 'qualTravailQB' },
-            { id: 'qualTravailQC', label: 'qualTravailQC' },
-            { id: 'qualTravailQD', label: 'qualTravailQD' },
-            { id: 'qualTravailQE', label: 'qualTravailQE' }
-        ]
-    },
-    {
-        id: 'qualRel',
-        title: 'qualiteRelationInterperso',
-        description: 'qualRelDescription',
-        criteria: [
-            { id: 'qualRelQA', label: 'qualRelQA' },
-            { id: 'qualRelQB', label: 'qualRelQB' },
-            { id: 'qualRelQC', label: 'qualRelQC' },
-            { id: 'qualRelQD', label: 'qualRelQD' },
-            { id: 'qualRelQE', label: 'qualRelQE' },
-            { id: 'qualRelQF', label: 'qualRelQF' }
-        ]
-    },
-    {
-        id: 'habPers',
-        title: 'habilitePerso',
-        description: 'habPersDescription',
-        criteria: [
-            { id: 'habPersQA', label: 'habPersQA' },
-            { id: 'habPersQB', label: 'habPersQB' },
-            { id: 'habPersQC', label: 'habPersQC' },
-            { id: 'habPersQD', label: 'habPersQD' },
-            { id: 'habPersQE', label: 'habPersQE' },
-            { id: 'habPersQF', label: 'habPersQF' }
+            { id: 'evalQA', label: 'evalQA' },
+            { id: 'evalQB', label: 'evalQB' },
+            { id: 'evalQC', label: 'evalQC' },
+            {
+                id: 'evalQHours',
+                label: 'evalQHours',
+                inputType: 'number',
+                months: ['firstMonth', 'secondMonth', 'thirdMonth']
+            },
+            { id: 'evalQD', label: 'evalQD' },
+            { id: 'evalQE', label: 'evalQE' },
+            { id: 'evalQF', label: 'evalQF' },
+            { id: 'evalQG', label: 'evalQG' },
+            { id: 'evalQH', label: 'evalQH' },
+            { id: 'evalQI', label: 'evalQI' },
+            { id: 'evalQJ', label: 'evalQJ' }
         ]
     }
 ];
 
 
-const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent, userInfo }) => {
+const EvaluerEtudiantFormulaireEnseignant = ({ selectedStudent, setSelectedStudent, userInfo }) => {
     const navigate = useNavigate();
     const { t } = useTranslation();
     const [formData, setFormData] = useState(getAllFormCritere());
@@ -71,10 +43,6 @@ const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent, u
     const [hoursTotal, setHoursTotal] = useState(getFormValue())
     const [futureInternship, setFutureInternship] = useState(getFormValue())
     const [formationGoodEnough, setFormationGoodEnough] = useState(getFormValue())
-
-    const canvasRef = useRef();
-    const [errorKeySignature, setErrorKeySignature]= useState("");
-    const [drewSomething, setDrewSomething] = useState(false);
 
     useEffect(() => {
         if (!selectedStudent) {
@@ -88,16 +56,32 @@ const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent, u
 
     function getAllFormCritere() {
         const formDataTemp = {};
-    
-        for (let form of forms) {            
+
+        for (let form of forms) {
             formDataTemp[form.id] = {};
-            
+
             for (let critere of form.criteria) {
                 formDataTemp[form.id][critere.id] = getFormValue();
+
+                if (critere.id === 'evalQHours') {
+                    critere.months.forEach((month, index) => {
+                        formDataTemp[form.id][`evalQHoursMonth${index + 1}`] = getFormValue();
+                    });
+                }
             }
             formDataTemp[form.id][form.id + "Commentaires"] = getFormValue();
         }
-        
+
+        formDataTemp.observationsGenerales = {
+            milieuStage: "",
+            nombreStagiaires: "",
+            prochainStage: "",
+            quartsVariables: "",
+            quart1: { de: "", a: "" },
+            quart2: { de: "", a: "" },
+            quart3: { de: "", a: "" },
+        };
+
         return formDataTemp;
     }
 
@@ -111,12 +95,12 @@ const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent, u
         "TOTALEMENT_EN_ACCORD",
         "PLUTOT_EN_ACCORD",
         "PLUTOT_EN_DESACCORD",
-        "TOTALEMENT_EN_DESACCORD",
-        "NA"
+        "TOTALEMENT_EN_DESACCORD*",
+        "IMPOSSIBLE_DE_SE_PRONONCER"
     ];
-    
 
-    function handleRadioChange(formId, criterionId, value) {        
+
+    function handleRadioChange(formId, criterionId, value) {
         setFormData(prev => ({
             ...prev,
             [formId]: {
@@ -136,9 +120,20 @@ const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent, u
         }));
     }
 
+    function handleNumberChange(formId, fieldId, value) {
+        const numericValue = value !== '' ? parseFloat(value) : '';
+        setFormData(prev => ({
+            ...prev,
+            [formId]: {
+                ...prev[formId],
+                [fieldId]: getFormValue(numericValue)
+            }
+        }));
+    }
+
     function getUriStartString() {
         if (!userInfo.role) Error("Role est null");
-             
+
         switch (userInfo.role) {
             case "EMPLOYEUR":
                 return "entreprise";
@@ -170,30 +165,20 @@ const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent, u
         return modifiedFormData;
     }
 
-    function getBase64CanvasPng() {
-        return canvasRef.current
-            .exportImage("png")
-            .then(data => {
-                return data
-            })
-            .catch(e => {
-                console.log(e);
-            });
-    }
-
     async function sendForm() {
         let [hasError, firstToHaveAnErrorId] = allChampsValide();
-    
+
         if (hasError) {
-            scrollToId(firstToHaveAnErrorId);
+            scrollToId(firstToHaveAnErrorId)
             return;
         }
-    
+
         setIsFetching(true);
-    
+
         try {
+
             const token = localStorage.getItem("token");
-    
+
             const body = getFormsWithOnlyValue();
             body.appreciationGlobale = rating.value;
             body.precisionAppreciationReponse = appreciation.value;
@@ -201,43 +186,41 @@ const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent, u
             body.heuresAccordeStagiaireReponse = hoursTotal.value;
             body.aimeraitAccueillirProchainStage = futureInternship.value;
             body.formationSuffisanteReponse = formationGoodEnough.value;
-    
+
+
+
             body.nomEtudiant = selectedStudent.prenom + " " + selectedStudent.nom;
             body.programmeEtude = selectedStudent.programme;
             body.nomEntreprise = userInfo.entrepriseName;
             body.numeroTelephone = userInfo.numeroDeTelephone.replaceAll("-", "");
             body.nomSuperviseur = userInfo.prenom + " " + userInfo.nom;
             body.fonctionSuperviseur = "Employeur";
-    
-            const signaturePngBase64 = await getBase64CanvasPng();
-    
-            const signatureBlob = await fetch(signaturePngBase64).then(res => res.blob());
-    
-            const formData = new FormData();
-            formData.append("ficheEvaluationStagiaireDTO", JSON.stringify(body));
-            formData.append("signature", signatureBlob, "signature.png");
-    
+
             const response = await fetch(
                 `http://localhost:8080/${getUriStartString()}/saveFicheEvaluation?etudiantId=${selectedStudent.id}`,
                 {
                     method: "POST",
                     headers: {
-                        Authorization: `Bearer ${token}`
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json"
                     },
-                    body: formData
+                    body: JSON.stringify(body)
                 }
             );
-    
+
             if (response.ok) {
                 setSelectedStudent(null);
             } else {
-                console.log("Erreur lors de l'envoi.");
+                console.log("erreur");
             }
+
         } catch (e) {
-            console.log("Une erreur est survenue lors de l'envoi du formulaire : " + e);
+            console.log("Une erreur est survenu lors de l'envoie du formulaire: " + e);
         } finally {
             setIsFetching(false);
         }
+
+
     }
 
     function allChampsValide() {
@@ -248,14 +231,14 @@ const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent, u
         for (const [formKey, form] of Object.entries(formData)) {
             let newForm = {}
             for (const [key, value] of Object.entries(form)) {
-                
+
                 if (key.toLowerCase().includes("commentaires")) {
 
                     newForm = {
                         ...newForm,
                         [key]: value
                     }
-                    
+
                     continue;
                 }
 
@@ -287,7 +270,7 @@ const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent, u
             {getter: formationGoodEnough, setter: setFormationGoodEnough, id: "input_goodEnough"},
         ];
 
-        for (const champ of allOtherChamps) {            
+        for (const champ of allOtherChamps) {
             if (!champ.getter.value) {
                 if (!firstToHaveAnErrorId) {
                     firstToHaveAnErrorId = champ.id
@@ -305,79 +288,65 @@ const EvaluerEtudiantFormulairesList = ({ selectedStudent, setSelectedStudent, u
             setDiscussion(getFormValue("", true))
         }
 
-        if (!drewSomething) {
-            if (!firstToHaveAnErrorId) {
-                firstToHaveAnErrorId = ""
-            }
-            hasError = true;
-            setErrorKeySignature("erreurNoSignature");
-        }
-        
         setFormData(modifiedFormData);
         return [hasError, firstToHaveAnErrorId];
     }
 
     function scrollToId(id) {
         const element = document.getElementById(id);
-    
+
         if (!element) {
             return;
         }
-    
+
         const elementRect = element.getBoundingClientRect();
         const offset = (window.innerHeight / 2) - (elementRect.height / 2);
-    
+
         window.scrollTo({
             top: window.scrollY + elementRect.top - offset,
             behavior: "smooth"
         });
     }
-    
+
 
     return (
         <div className='flex flex-col flex-1 items-start sm:items-center bg-orange-light p-8 overflow-x-auto'>
             <PageTitle title={t("remplirFormulaireDe") + getNomPrenom()} />
 
             {forms.map((form) =>
-                <EvaluerFormulaire key={form.id} form={form} 
-                    handleCommentChange={handleCommentChange} 
-                    handleRadioChange={handleRadioChange}
-                    ratingOptions={ratingOptions}
-                    formData={formData}
-                    role={userInfo.role} />
+                <EvaluerFormulaire key={form.id} form={form}
+                                   handleCommentChange={handleCommentChange}
+                                   handleNumberChange={handleNumberChange}
+                                   handleRadioChange={handleRadioChange}
+                                   ratingOptions={ratingOptions}
+                                   formData={formData}
+                                   role={userInfo.role} />
             )}
 
-            <AppreciacionFormulaire
-                rating={rating} 
-                appreciation={appreciation} 
-                discussion={discussion} 
-                setRating={setRating} 
-                setAppreciation={setAppreciation} 
-                setDiscussion={setDiscussion} 
-                hoursTotal={hoursTotal}
-                setHoursTotal={setHoursTotal}
-                futureInternship={futureInternship}
-                setFutureInternship={setFutureInternship}
-                formationGoodEnough={formationGoodEnough}
-                setFormationGoodEnough={setFormationGoodEnough}
-                getFormValue={getFormValue}
-                canvasRef={canvasRef}
-                errorKeySignature={errorKeySignature}
-                setDrewSomething={setDrewSomething}
-                setErrorKeySignature={setErrorKeySignature}
-            />
+            {userInfo.role === "ENSEIGNANT" && (
+                <EvaluerFormulaireObsGenerales
+                    formData={formData.observationsGenerales || {}}
+                    handleChange={(field, value) =>
+                        setFormData((prev) => ({
+                            ...prev,
+                            observationsGenerales: {
+                                ...prev.observationsGenerales,
+                                [field]: value,
+                            },
+                        }))
+                    }
+                />
+            )}
 
-            
-            
             <button
                 onClick={sendForm}
                 className='bg-orange py-3 px-5 rounded text-white disabled:bg-deep-orange-500 disabled:cursor-default'
                 disabled={isFetching}
-                >
+            >
                 {t("sendForm")}
             </button>
         </div>
     );
 };
 
-export default EvaluerEtudiantFormulairesList;
+export default EvaluerEtudiantFormulaireEnseignant;
