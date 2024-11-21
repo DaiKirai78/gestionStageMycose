@@ -23,8 +23,8 @@ const EvaluerFormulaireObsGenerales = ({ formData, handleChange }) => {
                             className={`mr-2 ${hasError(formData.milieuStage) ? 'border-red-500' : ''}`}
                             type="radio"
                             name="milieuStage"
-                            value="premierStage"
-                            checked={formData.milieuStage === "premierStage"}
+                            value="PREMIER_STAGE"
+                            checked={formData.milieuStage === "PREMIER_STAGE"}
                             onChange={(e) => handleChange("milieuStage", e.target.value)}
                         />
                         {t("firstInternship")}
@@ -34,8 +34,8 @@ const EvaluerFormulaireObsGenerales = ({ formData, handleChange }) => {
                             className={`mr-2 ${hasError(formData.milieuStage) ? 'border-red-500' : ''}`}
                             type="radio"
                             name="milieuStage"
-                            value="deuxiemeStage"
-                            checked={formData.milieuStage === "deuxiemeStage"}
+                            value="DEUXIEME_STAGE"
+                            checked={formData.milieuStage === "DEUXIEME_STAGE"}
                             onChange={(e) => handleChange("milieuStage", e.target.value)}
                         />
                         {t("secondInternship")}
@@ -56,8 +56,8 @@ const EvaluerFormulaireObsGenerales = ({ formData, handleChange }) => {
                             className={`mr-2 ${hasError(formData.nombreStagiaires) ? 'border-red-500' : ''}`}
                             type="radio"
                             name="nombreStagiaires"
-                            value="un"
-                            checked={formData.nombreStagiaires === "un"}
+                            value="UN"
+                            checked={formData.nombreStagiaires === "UN"}
                             onChange={(e) => handleChange("nombreStagiaires", e.target.value)}
                         />
                         {t("oneIntern")}
@@ -67,8 +67,8 @@ const EvaluerFormulaireObsGenerales = ({ formData, handleChange }) => {
                             className={`mr-2 ${hasError(formData.nombreStagiaires) ? 'border-red-500' : ''}`}
                             type="radio"
                             name="nombreStagiaires"
-                            value="deux"
-                            checked={formData.nombreStagiaires === "deux"}
+                            value="DEUX"
+                            checked={formData.nombreStagiaires === "DEUX"}
                             onChange={(e) => handleChange("nombreStagiaires", e.target.value)}
                         />
                         {t("twoInterns")}
@@ -78,8 +78,8 @@ const EvaluerFormulaireObsGenerales = ({ formData, handleChange }) => {
                             className={`mr-2 ${hasError(formData.nombreStagiaires) ? 'border-red-500' : ''}`}
                             type="radio"
                             name="nombreStagiaires"
-                            value="trois"
-                            checked={formData.nombreStagiaires === "trois"}
+                            value="TROIS"
+                            checked={formData.nombreStagiaires === "TROIS"}
                             onChange={(e) => handleChange("nombreStagiaires", e.target.value)}
                         />
                         {t("threeInterns")}
@@ -89,8 +89,8 @@ const EvaluerFormulaireObsGenerales = ({ formData, handleChange }) => {
                             className={`mr-2 ${hasError(formData.nombreStagiaires) ? 'border-red-500' : ''}`}
                             type="radio"
                             name="nombreStagiaires"
-                            value="plusDeTrois"
-                            checked={formData.nombreStagiaires === "plusDeTrois"}
+                            value="PLUS_DE_TROIS"
+                            checked={formData.nombreStagiaires === "PLUS_DE_TROIS"}
                             onChange={(e) => handleChange("nombreStagiaires", e.target.value)}
                         />
                         {t("moreThanThreeInterns")}
@@ -111,8 +111,8 @@ const EvaluerFormulaireObsGenerales = ({ formData, handleChange }) => {
                             className={`mr-2 ${hasError(formData.prochainStage) ? 'border-red-500' : ''}`}
                             type="radio"
                             name="prochainStage"
-                            value="oui"
-                            checked={formData.prochainStage === "oui"}
+                            value="OUI"
+                            checked={formData.prochainStage === "OUI"}
                             onChange={(e) => handleChange("prochainStage", e.target.value)}
                         />
                         {t("OUI")}
@@ -122,8 +122,8 @@ const EvaluerFormulaireObsGenerales = ({ formData, handleChange }) => {
                             className={`mr-2 ${hasError(formData.prochainStage) ? 'border-red-500' : ''}`}
                             type="radio"
                             name="prochainStage"
-                            value="non"
-                            checked={formData.prochainStage === "non"}
+                            value="NON"
+                            checked={formData.prochainStage === "NON"}
                             onChange={(e) => handleChange("prochainStage", e.target.value)}
                         />
                         {t("NON")}
@@ -144,8 +144,8 @@ const EvaluerFormulaireObsGenerales = ({ formData, handleChange }) => {
                             className={`mr-2 ${hasError(formData.quartsVariables) ? 'border-red-500' : ''}`}
                             type="radio"
                             name="quartsVariables"
-                            value="oui"
-                            checked={formData.quartsVariables === "oui"}
+                            value="OUI"
+                            checked={formData.quartsVariables === "OUI"}
                             onChange={(e) => handleChange("quartsVariables", e.target.value)}
                         />
                         {t("OUI")}
@@ -155,8 +155,8 @@ const EvaluerFormulaireObsGenerales = ({ formData, handleChange }) => {
                             className={`mr-2 ${hasError(formData.quartsVariables) ? 'border-red-500' : ''}`}
                             type="radio"
                             name="quartsVariables"
-                            value="non"
-                            checked={formData.quartsVariables === "non"}
+                            value="NON"
+                            checked={formData.quartsVariables === "NON"}
                             onChange={(e) => handleChange("quartsVariables", e.target.value)}
                         />
                         {t("NON")}
@@ -173,7 +173,7 @@ const EvaluerFormulaireObsGenerales = ({ formData, handleChange }) => {
                             <div key={index} className="flex items-center gap-4">
                                 <span>De</span>
                                 <input
-                                    type="time"
+                                    type="datetime-local"
                                     value={formData[quart]?.de || ""}
                                     onChange={(e) =>
                                         handleChange(quart, {...formData[quart], de: e.target.value})
@@ -182,7 +182,7 @@ const EvaluerFormulaireObsGenerales = ({ formData, handleChange }) => {
                                 />
                                 <span>à</span>
                                 <input
-                                    type="time"
+                                    type="datetime-local"
                                     value={formData[quart]?.a || ""}
                                     onChange={(e) =>
                                         handleChange(quart, {...formData[quart], a: e.target.value})
