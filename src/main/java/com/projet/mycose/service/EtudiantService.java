@@ -207,4 +207,9 @@ public class EtudiantService {
         List<Etudiant> etudiants = etudiantRepository.findEtudiantsWithApplicationStatusEquals(ApplicationStage.ApplicationStatus.INTERVIEWED);
         return etudiants.stream().map(EtudiantDTO::toDTO).collect(Collectors.toList());
     }
+
+    public List<EtudiantDTO> getEtudiantsOntStage() {
+        List<Etudiant> etudiants = etudiantRepository.findAllEtudiantsAvecContratActif();
+        return etudiants.stream().map(EtudiantDTO::toDTO).collect(Collectors.toList());
+    }
 }

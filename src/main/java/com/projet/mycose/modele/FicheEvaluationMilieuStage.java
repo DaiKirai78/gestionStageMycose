@@ -32,8 +32,9 @@ public class FicheEvaluationMilieuStage {
     @JoinColumn(name = "contrat_id", unique = true)
     private Contrat contrat;
     //Pourrait être nul dans le futur si on veut permettre des stages créés par les gestionnaires de stage d'être évalués
+    //TODO: ENLEVER LE NULLABLE LORSQUE LE CONTRAT SERA ASSOCIÉ À UN STAGE
     @ManyToOne
-    @JoinColumn(name = "employeur_id", nullable = false)
+    @JoinColumn(name = "employeur_id", nullable = true)
     private Employeur employeur;
 
     @Column(columnDefinition = "BYTEA")

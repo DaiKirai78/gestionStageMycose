@@ -75,4 +75,9 @@ public class RapportsController {
     public ResponseEntity<List<EtudiantDTO>> rapportsEtudiantsAEvaluerMilieuDeStage() {
         return ResponseEntity.status(HttpStatus.OK).body(enseignantService.getAllEtudiantsAEvaluerMilieuDeStage());
     }
+
+    @GetMapping("/etudiants-ont-stage")
+    public ResponseEntity<List<EtudiantDTO>> rapportsEtudiantsOntStage() {
+        return ResponseEntity.status(HttpStatus.OK).body(etudiantService.getEtudiantsOntStage());
+    }
 }

@@ -45,4 +45,8 @@ public interface EtudiantRepository extends JpaRepository<Etudiant, Long> {
 
     @Query("SELECT DISTINCT e FROM Etudiant e JOIN e.applications a WHERE a.status = :status")
     List<Etudiant> findEtudiantsWithApplicationStatusEquals(@Param("status") ApplicationStage.ApplicationStatus status);
+
+    @Query("SELECT e FROM Etudiant e " +
+            "WHERE e.contractStatus = 'ACTIVE'")
+    List<Etudiant> findAllEtudiantsAvecContratActif();
 }
