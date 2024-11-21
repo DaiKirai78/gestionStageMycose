@@ -59,15 +59,15 @@ public class FicheEvaluationMilieuStageDTO {
 
     // Question a) Les tâches confiées au stagiaire sont conformes aux tâches annoncées dans l’entente de stage.
     @NotNull(message = "L'évaluation QA ne peut pas être nulle.")
-    private EvaluationMilieuStageReponses evaluationQA;
+    private EvaluationMilieuStageReponses evalQA;
 
     // Question b) Des mesures d’accueil facilitent l’intégration du nouveau stagiaire.
     @NotNull(message = "L'évaluation QB ne peut pas être nulle.")
-    private EvaluationMilieuStageReponses evaluationQB;
+    private EvaluationMilieuStageReponses evalQB;
 
     // Question c) Le temps réel consacré à l’encadrement du stagiaire est suffisant.
     @NotNull(message = "L'évaluation QC ne peut pas être nulle.")
-    private EvaluationMilieuStageReponses evaluationQC;
+    private EvaluationMilieuStageReponses evalQC;
 
     // Nombre d'heures par semaine pour les 3 mois sous question C
     @NotNull(message = "Le nombre d'heures par semaine du premier mois ne peut pas être nul.")
@@ -81,19 +81,19 @@ public class FicheEvaluationMilieuStageDTO {
 
     // Question d) L’environnement de travail respecte les normes d’hygiène et de sécurité au travail.
     @NotNull(message = "L'évaluation QD ne peut pas être nulle.")
-    private EvaluationMilieuStageReponses evaluationQD;
+    private EvaluationMilieuStageReponses evalQD;
 
     // Question e) Le climat de travail est agréable.
     @NotNull(message = "L'évaluation QE ne peut pas être nulle.")
-    private EvaluationMilieuStageReponses evaluationQE;
+    private EvaluationMilieuStageReponses evalQE;
 
     // Question f) Le milieu de stage est accessible par transport en commun.
     @NotNull(message = "L'évaluation QF ne peut pas être nulle.")
-    private EvaluationMilieuStageReponses evaluationQF;
+    private EvaluationMilieuStageReponses evalQF;
 
     // Question g) Le salaire offert est intéressant pour le stagiaire.
     @NotNull(message = "L'évaluation QG ne peut pas être nulle.")
-    private EvaluationMilieuStageReponses evaluationQG;
+    private EvaluationMilieuStageReponses evalQG;
 
     // Salaire horaire lié à la question G
     @NotNull(message = "Le salaire horaire ne peut pas être nul.")
@@ -101,15 +101,15 @@ public class FicheEvaluationMilieuStageDTO {
 
     // Question h) La communication avec le superviseur de stage facilite le déroulement du stage.
     @NotNull(message = "L'évaluation QH ne peut pas être nulle.")
-    private EvaluationMilieuStageReponses evaluationQH;
+    private EvaluationMilieuStageReponses evalQH;
 
     // Question i) L’équipement fourni est adéquat pour réaliser les tâches confiées.
     @NotNull(message = "L'évaluation QI ne peut pas être nulle.")
-    private EvaluationMilieuStageReponses evaluationQI;
+    private EvaluationMilieuStageReponses evalQI;
 
     // Question j) Le volume de travail est acceptable.
     @NotNull(message = "L'évaluation QJ ne peut pas être nulle.")
-    private EvaluationMilieuStageReponses evaluationQJ;
+    private EvaluationMilieuStageReponses evalQJ;
 
     // Commentaires additionnels
     @NotBlank(message = "Les commentaires ne peuvent pas être vides.")
