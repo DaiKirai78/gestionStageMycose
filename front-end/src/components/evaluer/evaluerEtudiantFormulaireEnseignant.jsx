@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import EvaluerFormulaire from './evaluerFormulaire';
 import EvaluerFormulaireObsGenerales from './evaluerFormulaireObsGenerales';
 import FormulaireInformationsEntreprise from "./formulaireInformationsEntreprise.jsx";
+import axios from "axios";
 
 const forms = [
     {
@@ -24,6 +25,11 @@ const forms = [
             { id: 'evalQE', label: 'evalQE' },
             { id: 'evalQF', label: 'evalQF' },
             { id: 'evalQG', label: 'evalQG' },
+            {
+                id: 'salaireHoraire',
+                label: 'salaireHoraire',
+                inputType: 'number'
+            },
             { id: 'evalQH', label: 'evalQH' },
             { id: 'evalQI', label: 'evalQI' },
             { id: 'evalQJ', label: 'evalQJ' }
@@ -127,7 +133,6 @@ const EvaluerEtudiantFormulaireEnseignant = ({ selectedStudent, setSelectedStude
     }
 
     function handleNumberChange(formId, fieldId, value) {
-        console.log(`Changing number for ${formId} -> ${fieldId} to value:`, value);
         const numericValue = value !== '' && !isNaN(value) ? parseFloat(value) : 0;
         setFormData(prev => ({
             ...prev,
@@ -147,7 +152,7 @@ const EvaluerEtudiantFormulaireEnseignant = ({ selectedStudent, setSelectedStude
             for (const [key, value] of Object.entries(form)) {
                 if (key.startsWith('evalQHoursMonth')) {
                     const monthIndex = key.replace('evalQHoursMonth', '') - 1;
-                    const newKey = `nombreHeuresParSemaineMois${monthIndex + 1}`;  // Nouveau nom de clé
+                    const newKey = `nombreHeuresParSemaineMois${monthIndex + 1}`;
                     newForm[newKey] = value.value;
                 } else {
                     newForm[key] = value.value;
@@ -173,11 +178,25 @@ const EvaluerEtudiantFormulaireEnseignant = ({ selectedStudent, setSelectedStude
 
             const token = localStorage.getItem("token");
 
+            const formDataToSend = new FormData();
+
             const body = getFormsWithOnlyValue();
 
             body.nombreHeuresParSemainePremierMois = formData.eval.evalQHoursMonth1.value;
             body.nombreHeuresParSemaineDeuxiemeMois = formData.eval.evalQHoursMonth2.value;
             body.nombreHeuresParSemaineTroisiemeMois = formData.eval.evalQHoursMonth3.value;
+            body.evalQA = formData.eval.evalQA.value;
+            body.evalQB = formData.eval.evalQB.value;
+            body.evalQC = formData.eval.evalQC.value;
+            body.evalQD = formData.eval.evalQD.value;
+            body.evalQE = formData.eval.evalQE.value;
+            body.evalQF = formData.eval.evalQF.value;
+            body.evalQG = formData.eval.evalQG.value;
+            body.salaireHoraire = formData.eval.salaireHoraire.value;
+            body.evalQH = formData.eval.evalQH.value;
+            body.evalQI = formData.eval.evalQI.value;
+            body.evalQJ = formData.eval.evalQJ.value;
+            body.commentaires = formData.eval.evalCommentaires.value;
 
             body.nomEntreprise = formData.informationsEntreprise.nomEntreprise.value;
             body.nomPersonneContact = formData.informationsEntreprise.nomPersonneContact.value;
@@ -204,19 +223,21 @@ const EvaluerEtudiantFormulaireEnseignant = ({ selectedStudent, setSelectedStude
             body.dateDebutStage = formData.informationsEntreprise.dateDebutStage.value;
             body.numeroStage = formData.informationsEntreprise.numeroStage.value;
 
-            console.log("body", body);
+            Object.keys(body).forEach(key => {
+                formDataToSend.append(key, body[key]);
+            });
 
-            const response = await fetch(
-                `http://localhost:8080/enseignant/saveFicheEvaluationMilieuStage?etudiantId=${selectedStudent.id}`,
-                {
-                    method: "POST",
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "application/x-www-form-urlencoded"
-                    },
-                    body: body
-                }
-            );
+            console.log("formDataToSend", formDataToSend);
+
+            const response = await axios.post("http://localhost:8080/enseignant/saveFicheEvaluationMilieuStage", formDataToSend, {
+                params: {
+                    etudiantID: selectedStudent.id
+                },
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "multipart/form-data",
+                },
+            });
 
             if (response.ok) {
                 setSelectedStudent(null);
@@ -335,7 +356,6 @@ const EvaluerEtudiantFormulaireEnseignant = ({ selectedStudent, setSelectedStude
                                    role={userInfo.role} />
             )}
 
-
             <EvaluerFormulaireObsGenerales
                     formData={formData.observationsGenerales || {}}
                     handleChange={(field, value) =>
@@ -348,7 +368,6 @@ const EvaluerEtudiantFormulaireEnseignant = ({ selectedStudent, setSelectedStude
                         }))
                     }
             />
-
 
             <button
                 onClick={sendForm}

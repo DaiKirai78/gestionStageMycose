@@ -408,5 +408,6 @@
     "dateDebutStage": "Internship start date",
     "informationsEntreprise": "Company informations",
     "errorStageNumber": "Please select the course number.",
-    "remplirFormulaireDeMilieuxStage": "Internship environment form of"
+    "remplirFormulaireDeMilieuxStage": "Internship environment form of",
+    "salaireHoraire": "Specify the hourly wage"
 }
