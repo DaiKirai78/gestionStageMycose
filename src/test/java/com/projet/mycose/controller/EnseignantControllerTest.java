@@ -26,8 +26,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.LocalDate;
@@ -169,10 +171,7 @@ public class EnseignantControllerTest {
 
     @Test
     public void testEnregistrerFicheEvaluationStagiaire_Success() throws Exception {
-        // Arrange: Create a sample FicheEvaluationMilieuStageDTO
-        // (Not necessary to serialize the DTO to JSON since we're sending form data)
-
-        // Define all necessary form parameters
+        // Arrange: Define all necessary form parameters
         String nomEntreprise = "Entreprise Exemple";
         String nomPersonneContact = "Jean Dupont";
         String adresseEntreprise = "123 Rue Principale";
@@ -209,12 +208,20 @@ public class EnseignantControllerTest {
         String quartTravailDebut3 = "2024-05-03T09:00:00";
         String quartTravailFin3 = "2024-05-03T17:00:00";
 
+        // Create a MockMultipartFile for 'signatureEnseignant'
+        MockMultipartFile signatureEnseignant = new MockMultipartFile(
+                "signatureEnseignant",            // Name of the form field
+                "signature.png",                  // Original filename
+                MediaType.IMAGE_PNG_VALUE,        // Content type
+                "FakeImageContent".getBytes()     // File content
+        );
+
         // Mock the service method to do nothing (void method)
         Mockito.doNothing().when(enseignantService).enregistrerFicheEvaluationMilieuStage(any(FicheEvaluationMilieuStageDTO.class), eq(1L));
 
-        // Act & Assert: Perform POST request and expect 200 OK
-        mockMvc.perform(post("/enseignant/saveFicheEvaluationMilieuStage")
-                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+        // Act & Assert: Perform multipart POST request and expect 200 OK
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/enseignant/saveFicheEvaluationMilieuStage")
+                        .file(signatureEnseignant) // Attach the file
                         .param("etudiantId", "1")
                         .param("nomEntreprise", nomEntreprise)
                         .param("nomPersonneContact", nomPersonneContact)
@@ -251,7 +258,7 @@ public class EnseignantControllerTest {
                         .param("quartTravailFin2", quartTravailFin2)
                         .param("quartTravailDebut3", quartTravailDebut3)
                         .param("quartTravailFin3", quartTravailFin3)
-                        .with(SecurityMockMvcRequestPostProcessors.csrf()))
+                        .with(SecurityMockMvcRequestPostProcessors.csrf())) // Include CSRF token
                 .andExpect(status().isOk());
 
         // Verify that the service method was called once with the correct parameters
@@ -297,56 +304,67 @@ public class EnseignantControllerTest {
         String quartTravailDebut3 = "2024-05-03T09:00:00";
         String quartTravailFin3 = "2024-05-03T17:00:00";
 
+        // Create a MockMultipartFile for 'signatureEnseignant'
+        MockMultipartFile signatureEnseignant = new MockMultipartFile(
+                "signatureEnseignant",            // Form field name
+                "signature.png",                  // Original filename
+                MediaType.IMAGE_PNG_VALUE,        // Content type
+                "FakeImageContent".getBytes()     // File content
+        );
+
         // Mock the service method to throw a RuntimeException
         Mockito.doThrow(new RuntimeException("Service error"))
                 .when(enseignantService)
                 .enregistrerFicheEvaluationMilieuStage(any(FicheEvaluationMilieuStageDTO.class), eq(1L));
 
-        // Act & Assert: Perform POST request with form data and expect 500 Internal Server Error
-        mockMvc.perform(post("/enseignant/saveFicheEvaluationMilieuStage")
-                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                        .param("etudiantId", "1")
-                        .param("nomEntreprise", nomEntreprise)
-                        .param("nomPersonneContact", nomPersonneContact)
-                        .param("adresseEntreprise", adresseEntreprise)
-                        .param("villeEntreprise", villeEntreprise)
-                        .param("codePostalEntreprise", codePostalEntreprise)
-                        .param("telephoneEntreprise", telephoneEntreprise)
-                        .param("telecopieurEntreprise", telecopieurEntreprise)
-                        .param("nomStagiaire", nomStagiaire)
-                        .param("dateDebutStage", dateDebutStage)
-                        .param("numeroStage", numeroStage)
-                        .param("evalQA", evalQA)
-                        .param("evalQB", evalQB)
-                        .param("evalQC", evalQC)
-                        .param("nombreHeuresParSemainePremierMois", nombreHeuresParSemainePremierMois)
-                        .param("nombreHeuresParSemaineDeuxiemeMois", nombreHeuresParSemaineDeuxiemeMois)
-                        .param("nombreHeuresParSemaineTroisiemeMois", nombreHeuresParSemaineTroisiemeMois)
-                        .param("evalQD", evalQD)
-                        .param("evalQE", evalQE)
-                        .param("evalQF", evalQF)
-                        .param("evalQG", evalQG)
-                        .param("salaireHoraire", salaireHoraire)
-                        .param("evalQH", evalQH)
-                        .param("evalQI", evalQI)
-                        .param("evalQJ", evalQJ)
-                        .param("commentaires", commentaires)
-                        .param("milieuAPrivilegier", milieuAPrivilegier)
-                        .param("milieuPretAAccueillirNombreStagiaires", milieuPretAAccueillirNombreStagiaires)
-                        .param("milieuDesireAccueillirMemeStagiaire", milieuDesireAccueillirMemeStagiaire)
-                        .param("millieuOffreQuartsTravailVariables", millieuOffreQuartsTravailVariables)
-                        .param("quartTravailDebut1", quartTravailDebut1)
-                        .param("quartTravailFin1", quartTravailFin1)
-                        .param("quartTravailDebut2", quartTravailDebut2)
-                        .param("quartTravailFin2", quartTravailFin2)
-                        .param("quartTravailDebut3", quartTravailDebut3)
-                        .param("quartTravailFin3", quartTravailFin3)
-                        .with(SecurityMockMvcRequestPostProcessors.user("user").password("password").roles("USER"))
-                        .with(SecurityMockMvcRequestPostProcessors.csrf()))
-                .andDo(print())
+        // Act & Assert: Perform multipart POST request and expect 500 Internal Server Error
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/enseignant/saveFicheEvaluationMilieuStage")
+                                .file(signatureEnseignant) // Attach the 'signatureEnseignant' file
+                                .param("etudiantId", "1")
+                                .param("nomEntreprise", nomEntreprise)
+                                .param("nomPersonneContact", nomPersonneContact)
+                                .param("adresseEntreprise", adresseEntreprise)
+                                .param("villeEntreprise", villeEntreprise)
+                                .param("codePostalEntreprise", codePostalEntreprise)
+                                .param("telephoneEntreprise", telephoneEntreprise)
+                                .param("telecopieurEntreprise", telecopieurEntreprise)
+                                .param("nomStagiaire", nomStagiaire)
+                                .param("dateDebutStage", dateDebutStage)
+                                .param("numeroStage", numeroStage)
+                                .param("evalQA", evalQA)
+                                .param("evalQB", evalQB)
+                                .param("evalQC", evalQC)
+                                .param("nombreHeuresParSemainePremierMois", nombreHeuresParSemainePremierMois)
+                                .param("nombreHeuresParSemaineDeuxiemeMois", nombreHeuresParSemaineDeuxiemeMois)
+                                .param("nombreHeuresParSemaineTroisiemeMois", nombreHeuresParSemaineTroisiemeMois)
+                                .param("evalQD", evalQD)
+                                .param("evalQE", evalQE)
+                                .param("evalQF", evalQF)
+                                .param("evalQG", evalQG)
+                                .param("salaireHoraire", salaireHoraire)
+                                .param("evalQH", evalQH)
+                                .param("evalQI", evalQI)
+                                .param("evalQJ", evalQJ)
+                                .param("commentaires", commentaires)
+                                .param("milieuAPrivilegier", milieuAPrivilegier)
+                                .param("milieuPretAAccueillirNombreStagiaires", milieuPretAAccueillirNombreStagiaires)
+                                .param("milieuDesireAccueillirMemeStagiaire", milieuDesireAccueillirMemeStagiaire)
+                                .param("millieuOffreQuartsTravailVariables", millieuOffreQuartsTravailVariables)
+                                .param("quartTravailDebut1", quartTravailDebut1)
+                                .param("quartTravailFin1", quartTravailFin1)
+                                .param("quartTravailDebut2", quartTravailDebut2)
+                                .param("quartTravailFin2", quartTravailFin2)
+                                .param("quartTravailDebut3", quartTravailDebut3)
+                                .param("quartTravailFin3", quartTravailFin3)
+                                .with(SecurityMockMvcRequestPostProcessors.csrf())
+                )
                 .andExpect(status().isInternalServerError())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.message").value("Service error"))
-                .andExpect(jsonPath("$.status").value(500));
+                .andExpect(jsonPath("$.status").value(500))
+                .andExpect(jsonPath("$.timestamp").isNumber());
+
+        // Verify that the service method was called once with the correct parameters
+        Mockito.verify(enseignantService, Mockito.times(1)).enregistrerFicheEvaluationMilieuStage(any(FicheEvaluationMilieuStageDTO.class), eq(1L));
     }
 }

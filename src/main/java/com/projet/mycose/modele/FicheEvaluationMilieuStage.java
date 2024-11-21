@@ -36,6 +36,9 @@ public class FicheEvaluationMilieuStage {
     @JoinColumn(name = "employeur_id", nullable = false)
     private Employeur employeur;
 
+    @Column(columnDefinition = "BYTEA")
+    private byte[] signatureEnseignant;
+
     //Section sur l'identification de l'entreprise
     private String nomEntreprise;
     private String nomPersonneContact;

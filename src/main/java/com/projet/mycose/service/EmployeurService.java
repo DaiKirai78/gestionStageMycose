@@ -39,6 +39,7 @@ public class EmployeurService {
     private final ModelMapper modelMapper;
     private final FicheEvaluationStagiaireRepository ficheEvaluationStagiaireRepository;
     private final int LIMIT_PER_PAGE = 10;
+    private final EtudiantRepository etudiantRepository;
 
     public EmployeurDTO creationDeCompte(String prenom, String nom, String numeroTelephone, String courriel, String motDePasse, String nomOrganisation) {
         if (!utilisateurService.credentialsDejaPris(courriel, numeroTelephone))
@@ -110,7 +111,7 @@ public class EmployeurService {
 
     @Transactional
     public void enregistrerFicheEvaluationStagiaire(FicheEvaluationStagiaireDTO ficheEvaluationStagiaireDTO, Long etudiantId, MultipartFile signatureEmployeur) {
-        Utilisateur utilisateur = null;
+        Utilisateur utilisateur;
 
         try {
             utilisateur = utilisateurService.getMeUtilisateur();
@@ -119,12 +120,12 @@ public class EmployeurService {
         }
 
         Employeur employeur = getValidatedEmployeur(utilisateur);
-        Optional<Utilisateur> etudiantOpt = utilisateurRepository.findUtilisateurById(etudiantId);
-
-        if(etudiantOpt.isEmpty())
+        Etudiant etudiant;
+        try {
+            etudiant = etudiantRepository.findEtudiantById(etudiantId);
+        } catch (NullPointerException e) {
             throw new UserNotFoundException();
-
-        Etudiant etudiant = getValidatedEtudiant(etudiantOpt.get());
+        }
 
         FicheEvaluationStagiaire ficheEvaluationStagiaire = modelMapper.map(ficheEvaluationStagiaireDTO, FicheEvaluationStagiaire.class);
 
@@ -133,7 +134,7 @@ public class EmployeurService {
             throw new ResourceNotFoundException("Contrat de l'étudiant non trouvé");
         }
 
-        Contrat contrat = contratOpt.get();
+        Contrat contrat = contratRepository.findContratActiveOfEtudiantAndEmployeur(etudiantId, employeur.getId(), Etudiant.ContractStatus.ACTIVE).orElseThrow(() -> new ResourceNotFoundException("Contrat de l'étudiant non trouvé"));
 
         ficheEvaluationStagiaire.setEmployeur(employeur);
         ficheEvaluationStagiaire.setEtudiant(etudiant);
@@ -153,13 +154,6 @@ public class EmployeurService {
             throw new AuthenticationException(HttpStatus.FORBIDDEN, "User is not an Employeur.");
         }
         return employeur;
-    }
-
-    private Etudiant getValidatedEtudiant(Utilisateur utilisateur) {
-        if (!(utilisateur instanceof Etudiant etudiant)) {
-            throw new AuthenticationException(HttpStatus.FORBIDDEN, "User is not an Etudiant.");
-        }
-        return etudiant;
     }
 
     public Page<EtudiantDTO> getAllEtudiantsNonEvaluesByEmployeeID(Long employeurId, int page) {

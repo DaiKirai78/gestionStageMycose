@@ -214,7 +214,7 @@ public class EnseignantServiceTest {
         Page<Etudiant> pageFind = new PageImpl<>(listeFind, pageRequest, 2);
 
         when(utilisateurService.getMeUtilisateur()).thenReturn(employeur);
-        when(ficheEvaluationMilieuStageRepository.findAllEtudiantsNonEvaluesByProf(enseignantId, Etudiant.ContractStatus.ACTIVE, pageRequest)).thenReturn(pageFind);
+        when(ficheEvaluationMilieuStageRepository.findAllEtudiantsNonEvaluesByProf(enseignantId, pageRequest)).thenReturn(pageFind);
 
         when(modelMapperMock.map(etudiant1, EtudiantDTO.class))
                 .thenReturn(dto1);
@@ -225,7 +225,7 @@ public class EnseignantServiceTest {
         Page<EtudiantDTO> listeRetourne = enseignantService.getAllEtudiantsAEvaluerParProf(enseignantId, 1);
 
         //Assert
-        verify(ficheEvaluationMilieuStageRepository, times(1)).findAllEtudiantsNonEvaluesByProf(enseignantId, Etudiant.ContractStatus.ACTIVE, pageRequest);
+        verify(ficheEvaluationMilieuStageRepository, times(1)).findAllEtudiantsNonEvaluesByProf(enseignantId, pageRequest);
         assertEquals(listeRetourne.getContent().size(), 2);
         assertEquals(listeRetourne.getContent().get(0).getId(), 2L);
         assertEquals(listeRetourne.getContent().get(0).getNom(), "Albert");
@@ -259,7 +259,7 @@ public class EnseignantServiceTest {
         employeur.setId(employeurId);
 
         when(utilisateurService.getMeUtilisateur()).thenReturn(employeur);
-        when(ficheEvaluationMilieuStageRepository.findAllEtudiantsNonEvaluesByProf(eq(employeurId), eq(Etudiant.ContractStatus.ACTIVE), any(PageRequest.class))).thenReturn(Page.empty());
+        when(ficheEvaluationMilieuStageRepository.findAllEtudiantsNonEvaluesByProf(eq(employeurId), any(PageRequest.class))).thenReturn(Page.empty());
 
         // Act
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () ->
