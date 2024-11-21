@@ -26,6 +26,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -169,61 +170,94 @@ public class EnseignantControllerTest {
     @Test
     public void testEnregistrerFicheEvaluationStagiaire_Success() throws Exception {
         // Arrange: Create a sample FicheEvaluationMilieuStageDTO
-        FicheEvaluationMilieuStageDTO dto = new FicheEvaluationMilieuStageDTO();
-        dto.setId(1L);
-        dto.setNomEntreprise("Entreprise Exemple");
-        dto.setNomPersonneContact("Jean Dupont");
-        dto.setAdresseEntreprise("123 Rue Principale");
-        dto.setVilleEntreprise("Paris");
-        dto.setCodePostalEntreprise("75001");
-        dto.setTelephoneEntreprise("0123456789");
-        dto.setTelecopieurEntreprise("0987654321");
-        dto.setNomStagiaire("Marie Curie");
-        dto.setDateDebutStage(LocalDateTime.of(2024, 5, 1, 9, 0));
-        dto.setNumeroStage(1);
-        dto.setEvaluationQA(FicheEvaluationMilieuStage.EvaluationMilieuStageReponses.TOTALEMENT_EN_ACCORD);
-        dto.setEvaluationQB(EvaluationMilieuStageReponses.PLUTOT_EN_ACCORD);
-        dto.setEvaluationQC(EvaluationMilieuStageReponses.PLUTOT_EN_DESACCORD);
-        dto.setNombreHeuresParSemainePremierMois(35.0f);
-        dto.setNombreHeuresParSemaineDeuxiemeMois(35.0f);
-        dto.setNombreHeuresParSemaineTroisiemeMois(35.0f);
-        dto.setEvaluationQD(EvaluationMilieuStageReponses.TOTALEMENT_EN_ACCORD);
-        dto.setEvaluationQE(EvaluationMilieuStageReponses.PLUTOT_EN_ACCORD);
-        dto.setEvaluationQF(EvaluationMilieuStageReponses.PLUTOT_EN_DESACCORD);
-        dto.setEvaluationQG(EvaluationMilieuStageReponses.IMPOSSIBLE_DE_SE_PRONONCER);
-        dto.setSalaireHoraire(15.5f);
-        dto.setEvaluationQH(EvaluationMilieuStageReponses.TOTALEMENT_EN_ACCORD);
-        dto.setEvaluationQI(EvaluationMilieuStageReponses.PLUTOT_EN_ACCORD);
-        dto.setEvaluationQJ(EvaluationMilieuStageReponses.PLUTOT_EN_DESACCORD);
-        dto.setCommentaires("Bon stage.");
-        dto.setMilieuAPrivilegier(MilieuAPrivilegierReponses.PREMIER_STAGE);
-        dto.setMilieuPretAAccueillirNombreStagiaires(MilieuPretAAccueillirNombreStagiairesReponses.DEUX);
-        dto.setMilieuDesireAccueillirMemeStagiaire(OuiNonReponses.OUI);
-        dto.setMillieuOffreQuartsTravailVariables(OuiNonReponses.NON);
-        dto.setQuartTravailDebut1(LocalDateTime.of(2024, 5, 1, 9, 0));
-        dto.setQuartTravailFin1(LocalDateTime.of(2024, 5, 1, 17, 0));
-        dto.setQuartTravailDebut2(LocalDateTime.of(2024, 5, 2, 9, 0));
-        dto.setQuartTravailFin2(LocalDateTime.of(2024, 5, 2, 17, 0));
-        dto.setQuartTravailDebut3(LocalDateTime.of(2024, 5, 3, 9, 0));
-        dto.setQuartTravailFin3(LocalDateTime.of(2024, 5, 3, 17, 0));
+        // (Not necessary to serialize the DTO to JSON since we're sending form data)
+
+        // Define all necessary form parameters
+        String nomEntreprise = "Entreprise Exemple";
+        String nomPersonneContact = "Jean Dupont";
+        String adresseEntreprise = "123 Rue Principale";
+        String villeEntreprise = "Paris";
+        String codePostalEntreprise = "75001";
+        String telephoneEntreprise = "0123456789";
+        String telecopieurEntreprise = "0987654321";
+        String nomStagiaire = "Marie Curie";
+        String dateDebutStage = "2024-05-01T09:00:00"; // ISO format
+        String numeroStage = "1";
+        String evaluationQA = "TOTALEMENT_EN_ACCORD"; // Assuming enum values as strings
+        String evaluationQB = "PLUTOT_EN_ACCORD";
+        String evaluationQC = "PLUTOT_EN_DESACCORD";
+        String nombreHeuresParSemainePremierMois = "35.0";
+        String nombreHeuresParSemaineDeuxiemeMois = "35.0";
+        String nombreHeuresParSemaineTroisiemeMois = "35.0";
+        String evaluationQD = "TOTALEMENT_EN_ACCORD";
+        String evaluationQE = "PLUTOT_EN_ACCORD";
+        String evaluationQF = "PLUTOT_EN_DESACCORD";
+        String evaluationQG = "IMPOSSIBLE_DE_SE_PRONONCER";
+        String salaireHoraire = "15.5";
+        String evaluationQH = "TOTALEMENT_EN_ACCORD";
+        String evaluationQI = "PLUTOT_EN_ACCORD";
+        String evaluationQJ = "PLUTOT_EN_DESACCORD";
+        String commentaires = "Bon stage.";
+        String milieuAPrivilegier = "PREMIER_STAGE";
+        String milieuPretAAccueillirNombreStagiaires = "DEUX";
+        String milieuDesireAccueillirMemeStagiaire = "OUI";
+        String millieuOffreQuartsTravailVariables = "NON";
+        String quartTravailDebut1 = "2024-05-01T09:00:00";
+        String quartTravailFin1 = "2024-05-01T17:00:00";
+        String quartTravailDebut2 = "2024-05-02T09:00:00";
+        String quartTravailFin2 = "2024-05-02T17:00:00";
+        String quartTravailDebut3 = "2024-05-03T09:00:00";
+        String quartTravailFin3 = "2024-05-03T17:00:00";
 
         // Mock the service method to do nothing (void method)
         Mockito.doNothing().when(enseignantService).enregistrerFicheEvaluationMilieuStage(any(FicheEvaluationMilieuStageDTO.class), eq(1L));
 
-        // Convert DTO to JSON
-        String dtoJson = objectMapper.writeValueAsString(dto);
-
         // Act & Assert: Perform POST request and expect 200 OK
         mockMvc.perform(post("/enseignant/saveFicheEvaluationMilieuStage")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(dtoJson)
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                         .param("etudiantId", "1")
-                        .with(csrf()))
+                        .param("nomEntreprise", nomEntreprise)
+                        .param("nomPersonneContact", nomPersonneContact)
+                        .param("adresseEntreprise", adresseEntreprise)
+                        .param("villeEntreprise", villeEntreprise)
+                        .param("codePostalEntreprise", codePostalEntreprise)
+                        .param("telephoneEntreprise", telephoneEntreprise)
+                        .param("telecopieurEntreprise", telecopieurEntreprise)
+                        .param("nomStagiaire", nomStagiaire)
+                        .param("dateDebutStage", dateDebutStage)
+                        .param("numeroStage", numeroStage)
+                        .param("evaluationQA", evaluationQA)
+                        .param("evaluationQB", evaluationQB)
+                        .param("evaluationQC", evaluationQC)
+                        .param("nombreHeuresParSemainePremierMois", nombreHeuresParSemainePremierMois)
+                        .param("nombreHeuresParSemaineDeuxiemeMois", nombreHeuresParSemaineDeuxiemeMois)
+                        .param("nombreHeuresParSemaineTroisiemeMois", nombreHeuresParSemaineTroisiemeMois)
+                        .param("evaluationQD", evaluationQD)
+                        .param("evaluationQE", evaluationQE)
+                        .param("evaluationQF", evaluationQF)
+                        .param("evaluationQG", evaluationQG)
+                        .param("salaireHoraire", salaireHoraire)
+                        .param("evaluationQH", evaluationQH)
+                        .param("evaluationQI", evaluationQI)
+                        .param("evaluationQJ", evaluationQJ)
+                        .param("commentaires", commentaires)
+                        .param("milieuAPrivilegier", milieuAPrivilegier)
+                        .param("milieuPretAAccueillirNombreStagiaires", milieuPretAAccueillirNombreStagiaires)
+                        .param("milieuDesireAccueillirMemeStagiaire", milieuDesireAccueillirMemeStagiaire)
+                        .param("millieuOffreQuartsTravailVariables", millieuOffreQuartsTravailVariables)
+                        .param("quartTravailDebut1", quartTravailDebut1)
+                        .param("quartTravailFin1", quartTravailFin1)
+                        .param("quartTravailDebut2", quartTravailDebut2)
+                        .param("quartTravailFin2", quartTravailFin2)
+                        .param("quartTravailDebut3", quartTravailDebut3)
+                        .param("quartTravailFin3", quartTravailFin3)
+                        .with(SecurityMockMvcRequestPostProcessors.csrf()))
                 .andExpect(status().isOk());
 
         // Verify that the service method was called once with the correct parameters
         Mockito.verify(enseignantService, Mockito.times(1)).enregistrerFicheEvaluationMilieuStage(any(FicheEvaluationMilieuStageDTO.class), eq(1L));
     }
+
 
     @Test
     public void testEnregistrerFicheEvaluationStagiaire_ValidationFailure() throws Exception {
@@ -251,58 +285,93 @@ public class EnseignantControllerTest {
 
     @Test
     public void testEnregistrerFicheEvaluationStagiaire_ServiceException() throws Exception {
-        // Arrange: Create a valid FicheEvaluationMilieuStageDTO
-        FicheEvaluationMilieuStageDTO dto = new FicheEvaluationMilieuStageDTO();
-        dto.setId(1L);
-        dto.setNomEntreprise("Entreprise Exemple");
-        dto.setNomPersonneContact("Jean Dupont");
-        dto.setAdresseEntreprise("123 Rue Principale");
-        dto.setVilleEntreprise("Paris");
-        dto.setCodePostalEntreprise("75001");
-        dto.setTelephoneEntreprise("0123456789");
-        dto.setTelecopieurEntreprise("0987654321");
-        dto.setNomStagiaire("Marie Curie");
-        dto.setDateDebutStage(LocalDateTime.of(2024, 5, 1, 9, 0));
-        dto.setNumeroStage(1);
-        dto.setEvaluationQA(EvaluationMilieuStageReponses.TOTALEMENT_EN_ACCORD);
-        dto.setEvaluationQB(EvaluationMilieuStageReponses.PLUTOT_EN_ACCORD);
-        dto.setEvaluationQC(EvaluationMilieuStageReponses.PLUTOT_EN_DESACCORD);
-        dto.setNombreHeuresParSemainePremierMois(35.0f);
-        dto.setNombreHeuresParSemaineDeuxiemeMois(35.0f);
-        dto.setNombreHeuresParSemaineTroisiemeMois(35.0f);
-        dto.setEvaluationQD(EvaluationMilieuStageReponses.TOTALEMENT_EN_ACCORD);
-        dto.setEvaluationQE(EvaluationMilieuStageReponses.PLUTOT_EN_ACCORD);
-        dto.setEvaluationQF(EvaluationMilieuStageReponses.PLUTOT_EN_DESACCORD);
-        dto.setEvaluationQG(EvaluationMilieuStageReponses.IMPOSSIBLE_DE_SE_PRONONCER);
-        dto.setSalaireHoraire(15.5f);
-        dto.setEvaluationQH(EvaluationMilieuStageReponses.TOTALEMENT_EN_ACCORD);
-        dto.setEvaluationQI(EvaluationMilieuStageReponses.PLUTOT_EN_ACCORD);
-        dto.setEvaluationQJ(EvaluationMilieuStageReponses.PLUTOT_EN_DESACCORD);
-        dto.setCommentaires("Bon stage.");
-        dto.setMilieuAPrivilegier(MilieuAPrivilegierReponses.PREMIER_STAGE);
-        dto.setMilieuPretAAccueillirNombreStagiaires(MilieuPretAAccueillirNombreStagiairesReponses.DEUX);
-        dto.setMilieuDesireAccueillirMemeStagiaire(OuiNonReponses.OUI);
-        dto.setMillieuOffreQuartsTravailVariables(OuiNonReponses.NON);
-        dto.setQuartTravailDebut1(LocalDateTime.of(2024, 5, 1, 9, 0));
-        dto.setQuartTravailFin1(LocalDateTime.of(2024, 5, 1, 17, 0));
-        dto.setQuartTravailDebut2(LocalDateTime.of(2024, 5, 2, 9, 0));
-        dto.setQuartTravailFin2(LocalDateTime.of(2024, 5, 2, 17, 0));
-        dto.setQuartTravailDebut3(LocalDateTime.of(2024, 5, 3, 9, 0));
-        dto.setQuartTravailFin3(LocalDateTime.of(2024, 5, 3, 17, 0));
+        // Arrange: Define all necessary form parameters
+        String nomEntreprise = "Entreprise Exemple";
+        String nomPersonneContact = "Jean Dupont";
+        String adresseEntreprise = "123 Rue Principale";
+        String villeEntreprise = "Paris";
+        String codePostalEntreprise = "75001";
+        String telephoneEntreprise = "0123456789";
+        String telecopieurEntreprise = "0987654321";
+        String nomStagiaire = "Marie Curie";
+        String dateDebutStage = "2024-05-01T09:00:00"; // ISO format
+        String numeroStage = "1";
+        String evaluationQA = "TOTALEMENT_EN_ACCORD"; // Assuming enum values as strings
+        String evaluationQB = "PLUTOT_EN_ACCORD";
+        String evaluationQC = "PLUTOT_EN_DESACCORD";
+        String nombreHeuresParSemainePremierMois = "35.0";
+        String nombreHeuresParSemaineDeuxiemeMois = "35.0";
+        String nombreHeuresParSemaineTroisiemeMois = "35.0";
+        String evaluationQD = "TOTALEMENT_EN_ACCORD";
+        String evaluationQE = "PLUTOT_EN_ACCORD";
+        String evaluationQF = "PLUTOT_EN_DESACCORD";
+        String evaluationQG = "IMPOSSIBLE_DE_SE_PRONONCER";
+        String salaireHoraire = "15.5";
+        String evaluationQH = "TOTALEMENT_EN_ACCORD";
+        String evaluationQI = "PLUTOT_EN_ACCORD";
+        String evaluationQJ = "PLUTOT_EN_DESACCORD";
+        String commentaires = "Bon stage.";
+        String milieuAPrivilegier = "PREMIER_STAGE";
+        String milieuPretAAccueillirNombreStagiaires = "DEUX";
+        String milieuDesireAccueillirMemeStagiaire = "OUI";
+        String millieuOffreQuartsTravailVariables = "NON";
+        String quartTravailDebut1 = "2024-05-01T09:00:00";
+        String quartTravailFin1 = "2024-05-01T17:00:00";
+        String quartTravailDebut2 = "2024-05-02T09:00:00";
+        String quartTravailFin2 = "2024-05-02T17:00:00";
+        String quartTravailDebut3 = "2024-05-03T09:00:00";
+        String quartTravailFin3 = "2024-05-03T17:00:00";
 
-        // Mock the service method to throw an exception
-        Mockito.doThrow(new RuntimeException("Service error")).when(enseignantService).enregistrerFicheEvaluationMilieuStage(any(FicheEvaluationMilieuStageDTO.class), eq(1L));
+        // Mock the service method to throw a RuntimeException
+        Mockito.doThrow(new RuntimeException("Service error"))
+                .when(enseignantService)
+                .enregistrerFicheEvaluationMilieuStage(any(FicheEvaluationMilieuStageDTO.class), eq(1L));
 
-        // Convert DTO to JSON
-        String dtoJson = objectMapper.writeValueAsString(dto);
-
-        // Act & Assert: Perform POST request and expect 500 Internal Server Error
+        // Act & Assert: Perform POST request with form data and expect 500 Internal Server Error
         mockMvc.perform(post("/enseignant/saveFicheEvaluationMilieuStage")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(dtoJson)
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                         .param("etudiantId", "1")
-                        .with(csrf()))
+                        .param("nomEntreprise", nomEntreprise)
+                        .param("nomPersonneContact", nomPersonneContact)
+                        .param("adresseEntreprise", adresseEntreprise)
+                        .param("villeEntreprise", villeEntreprise)
+                        .param("codePostalEntreprise", codePostalEntreprise)
+                        .param("telephoneEntreprise", telephoneEntreprise)
+                        .param("telecopieurEntreprise", telecopieurEntreprise)
+                        .param("nomStagiaire", nomStagiaire)
+                        .param("dateDebutStage", dateDebutStage)
+                        .param("numeroStage", numeroStage)
+                        .param("evaluationQA", evaluationQA)
+                        .param("evaluationQB", evaluationQB)
+                        .param("evaluationQC", evaluationQC)
+                        .param("nombreHeuresParSemainePremierMois", nombreHeuresParSemainePremierMois)
+                        .param("nombreHeuresParSemaineDeuxiemeMois", nombreHeuresParSemaineDeuxiemeMois)
+                        .param("nombreHeuresParSemaineTroisiemeMois", nombreHeuresParSemaineTroisiemeMois)
+                        .param("evaluationQD", evaluationQD)
+                        .param("evaluationQE", evaluationQE)
+                        .param("evaluationQF", evaluationQF)
+                        .param("evaluationQG", evaluationQG)
+                        .param("salaireHoraire", salaireHoraire)
+                        .param("evaluationQH", evaluationQH)
+                        .param("evaluationQI", evaluationQI)
+                        .param("evaluationQJ", evaluationQJ)
+                        .param("commentaires", commentaires)
+                        .param("milieuAPrivilegier", milieuAPrivilegier)
+                        .param("milieuPretAAccueillirNombreStagiaires", milieuPretAAccueillirNombreStagiaires)
+                        .param("milieuDesireAccueillirMemeStagiaire", milieuDesireAccueillirMemeStagiaire)
+                        .param("millieuOffreQuartsTravailVariables", millieuOffreQuartsTravailVariables)
+                        .param("quartTravailDebut1", quartTravailDebut1)
+                        .param("quartTravailFin1", quartTravailFin1)
+                        .param("quartTravailDebut2", quartTravailDebut2)
+                        .param("quartTravailFin2", quartTravailFin2)
+                        .param("quartTravailDebut3", quartTravailDebut3)
+                        .param("quartTravailFin3", quartTravailFin3)
+                        .with(SecurityMockMvcRequestPostProcessors.user("user").password("password").roles("USER"))
+                        .with(SecurityMockMvcRequestPostProcessors.csrf()))
+                .andDo(print())
                 .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.message").value("Service error"));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Service error"))
+                .andExpect(jsonPath("$.status").value(500));
     }
 }
