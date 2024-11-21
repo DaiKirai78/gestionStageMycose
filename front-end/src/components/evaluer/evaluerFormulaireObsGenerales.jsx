@@ -4,18 +4,23 @@ import { useTranslation } from 'react-i18next';
 const EvaluerFormulaireObsGenerales = ({ formData, handleChange }) => {
     const { t } = useTranslation();
 
+    // Fonction pour vérifier les erreurs
+    function hasError(critere) {
+        return critere && critere.hasError;
+    }
+
     return (
         <div className="w-full max-w-4xl bg-white rounded-lg shadow-md p-10 mb-8">
             <h2 className="text-xl font-bold">{t("generalObservations")}</h2>
-            <hr className="mt-3 mb-4"/>
+            <hr className="mt-3 mb-4" />
 
             {/* Stage à privilégier */}
             <div className="mb-4">
                 <label className="font-medium">{t("environmentPreferredFor")} :</label>
-                <div className="flex gap-4 mt-2 ">
+                <div className="flex gap-4 mt-2">
                     <label>
                         <input
-                            className="mr-2"
+                            className={`mr-2 ${hasError(formData.milieuStage) ? 'border-red-500' : ''}`}
                             type="radio"
                             name="milieuStage"
                             value="premierStage"
@@ -26,7 +31,7 @@ const EvaluerFormulaireObsGenerales = ({ formData, handleChange }) => {
                     </label>
                     <label>
                         <input
-                            className="mr-2"
+                            className={`mr-2 ${hasError(formData.milieuStage) ? 'border-red-500' : ''}`}
                             type="radio"
                             name="milieuStage"
                             value="deuxiemeStage"
@@ -36,8 +41,11 @@ const EvaluerFormulaireObsGenerales = ({ formData, handleChange }) => {
                         {t("secondInternship")}
                     </label>
                 </div>
+                {hasError(formData.milieuStage) && (
+                    <div className="text-red-500 text-sm mt-1">{t("fieldRequired")}</div>
+                )}
             </div>
-            <hr className="my-6 border-gray-300"/>
+            <hr className="my-6 border-gray-300" />
 
             {/* Nombre de stagiaires */}
             <div className="mb-4">
@@ -45,7 +53,7 @@ const EvaluerFormulaireObsGenerales = ({ formData, handleChange }) => {
                 <div className="flex flex-wrap gap-4 mt-2">
                     <label>
                         <input
-                            className="mr-2"
+                            className={`mr-2 ${hasError(formData.nombreStagiaires) ? 'border-red-500' : ''}`}
                             type="radio"
                             name="nombreStagiaires"
                             value="un"
@@ -56,7 +64,7 @@ const EvaluerFormulaireObsGenerales = ({ formData, handleChange }) => {
                     </label>
                     <label>
                         <input
-                            className="mr-2"
+                            className={`mr-2 ${hasError(formData.nombreStagiaires) ? 'border-red-500' : ''}`}
                             type="radio"
                             name="nombreStagiaires"
                             value="deux"
@@ -67,7 +75,7 @@ const EvaluerFormulaireObsGenerales = ({ formData, handleChange }) => {
                     </label>
                     <label>
                         <input
-                            className="mr-2"
+                            className={`mr-2 ${hasError(formData.nombreStagiaires) ? 'border-red-500' : ''}`}
                             type="radio"
                             name="nombreStagiaires"
                             value="trois"
@@ -78,7 +86,7 @@ const EvaluerFormulaireObsGenerales = ({ formData, handleChange }) => {
                     </label>
                     <label>
                         <input
-                            className="mr-2"
+                            className={`mr-2 ${hasError(formData.nombreStagiaires) ? 'border-red-500' : ''}`}
                             type="radio"
                             name="nombreStagiaires"
                             value="plusDeTrois"
@@ -88,8 +96,11 @@ const EvaluerFormulaireObsGenerales = ({ formData, handleChange }) => {
                         {t("moreThanThreeInterns")}
                     </label>
                 </div>
+                {hasError(formData.nombreStagiaires) && (
+                    <div className="text-red-500 text-sm mt-1">{t("fieldRequired")}</div>
+                )}
             </div>
-            <hr className="my-6 border-gray-300"/>
+            <hr className="my-6 border-gray-300" />
 
             {/* Prochain stage */}
             <div className="mb-4">
@@ -97,7 +108,7 @@ const EvaluerFormulaireObsGenerales = ({ formData, handleChange }) => {
                 <div className="flex gap-4 mt-2">
                     <label>
                         <input
-                            className="mr-2"
+                            className={`mr-2 ${hasError(formData.prochainStage) ? 'border-red-500' : ''}`}
                             type="radio"
                             name="prochainStage"
                             value="oui"
@@ -108,7 +119,7 @@ const EvaluerFormulaireObsGenerales = ({ formData, handleChange }) => {
                     </label>
                     <label>
                         <input
-                            className="mr-2"
+                            className={`mr-2 ${hasError(formData.prochainStage) ? 'border-red-500' : ''}`}
                             type="radio"
                             name="prochainStage"
                             value="non"
@@ -118,17 +129,19 @@ const EvaluerFormulaireObsGenerales = ({ formData, handleChange }) => {
                         {t("NON")}
                     </label>
                 </div>
+                {hasError(formData.prochainStage) && (
+                    <div className="text-red-500 text-sm mt-1">{t("fieldRequired")}</div>
+                )}
             </div>
-            <hr className="my-6 border-gray-300"/>
+            <hr className="my-6 border-gray-300" />
 
             {/* Quarts de travail variables */}
             <div className="mb-4">
                 <label className="font-medium">{t("variableWorkShifts")} :</label>
-                {/* Réponse Oui/Non */}
                 <div className="flex gap-4 mt-2">
                     <label>
                         <input
-                            className="mr-2"
+                            className={`mr-2 ${hasError(formData.quartsVariables) ? 'border-red-500' : ''}`}
                             type="radio"
                             name="quartsVariables"
                             value="oui"
@@ -139,7 +152,7 @@ const EvaluerFormulaireObsGenerales = ({ formData, handleChange }) => {
                     </label>
                     <label>
                         <input
-                            className="mr-2"
+                            className={`mr-2 ${hasError(formData.quartsVariables) ? 'border-red-500' : ''}`}
                             type="radio"
                             name="quartsVariables"
                             value="non"
@@ -149,6 +162,9 @@ const EvaluerFormulaireObsGenerales = ({ formData, handleChange }) => {
                         {t("NON")}
                     </label>
                 </div>
+                {hasError(formData.quartsVariables) && (
+                    <div className="text-red-500 text-sm mt-1">{t("fieldRequired")}</div>
+                )}
 
                 {/* Affichage des plages horaires si "Oui" */}
                 {formData.quartsVariables === "oui" && (
@@ -162,7 +178,7 @@ const EvaluerFormulaireObsGenerales = ({ formData, handleChange }) => {
                                     onChange={(e) =>
                                         handleChange(quart, {...formData[quart], de: e.target.value})
                                     }
-                                    className="border rounded px-2 py-1"
+                                    className={`border rounded px-2 py-1 ${hasError(formData[quart]) ? 'border-red-500' : ''}`}
                                 />
                                 <span>à</span>
                                 <input
@@ -171,7 +187,7 @@ const EvaluerFormulaireObsGenerales = ({ formData, handleChange }) => {
                                     onChange={(e) =>
                                         handleChange(quart, {...formData[quart], a: e.target.value})
                                     }
-                                    className="border rounded px-2 py-1"
+                                    className={`border rounded px-2 py-1 ${hasError(formData[quart]) ? 'border-red-500' : ''}`}
                                 />
                             </div>
                         ))}

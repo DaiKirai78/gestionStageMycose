@@ -4,6 +4,7 @@ import PageTitle from '../pageTitle';
 import { useTranslation } from 'react-i18next';
 import EvaluerFormulaire from './evaluerFormulaire';
 import EvaluerFormulaireObsGenerales from './evaluerFormulaireObsGenerales';
+import FormulaireInformationsEntreprise from "./formulaireInformationsEntreprise.jsx";
 
 const forms = [
     {
@@ -37,13 +38,6 @@ const EvaluerEtudiantFormulaireEnseignant = ({ selectedStudent, setSelectedStude
     const [formData, setFormData] = useState(getAllFormCritere());
     const [isFetching, setIsFetching] = useState(false);
 
-    const [rating, setRating] = useState(getFormValue())
-    const [discussion, setDiscussion] = useState(getFormValue())
-    const [appreciation, setAppreciation] = useState(getFormValue())
-    const [hoursTotal, setHoursTotal] = useState(getFormValue())
-    const [futureInternship, setFutureInternship] = useState(getFormValue())
-    const [formationGoodEnough, setFormationGoodEnough] = useState(getFormValue())
-
     useEffect(() => {
         if (!selectedStudent) {
             navigate("/evaluer");
@@ -65,22 +59,34 @@ const EvaluerEtudiantFormulaireEnseignant = ({ selectedStudent, setSelectedStude
 
                 if (critere.id === 'evalQHours') {
                     critere.months.forEach((month, index) => {
-                        formDataTemp[form.id][`evalQHoursMonth${index + 1}`] = getFormValue();
+                        formDataTemp[form.id][`evalQHoursMonth${index + 1}`] = getFormValue(0);
                     });
                 }
             }
             formDataTemp[form.id][form.id + "Commentaires"] = getFormValue();
         }
 
+        formDataTemp.informationsEntreprise = {
+            nomEntreprise: getFormValue(),
+            nomPersonneContact: getFormValue(),
+            adresseEntreprise: getFormValue(),
+            villeEntreprise: getFormValue(),
+            codePostalEntreprise: getFormValue(),
+            telephoneEntreprise: getFormValue(),
+            telecopieurEntreprise: getFormValue(),
+            dateDebutStage: getFormValue(),
+            numeroStage: getFormValue()
+        }
+
         formDataTemp.observationsGenerales = {
-            milieuStage: "",
-            nombreStagiaires: "",
-            prochainStage: "",
-            quartsVariables: "",
             quart1: { de: "", a: "" },
             quart2: { de: "", a: "" },
             quart3: { de: "", a: "" },
-        };
+            milieuStage: "",
+            nombreStagiaires: "",
+            prochainStage: "",
+            quartsVariables: ""
+        }
 
         return formDataTemp;
     }
@@ -121,7 +127,8 @@ const EvaluerEtudiantFormulaireEnseignant = ({ selectedStudent, setSelectedStude
     }
 
     function handleNumberChange(formId, fieldId, value) {
-        const numericValue = value !== '' ? parseFloat(value) : '';
+        console.log(`Changing number for ${formId} -> ${fieldId} to value:`, value);
+        const numericValue = value !== '' && !isNaN(value) ? parseFloat(value) : 0;
         setFormData(prev => ({
             ...prev,
             [formId]: {
@@ -131,35 +138,22 @@ const EvaluerEtudiantFormulaireEnseignant = ({ selectedStudent, setSelectedStude
         }));
     }
 
-    function getUriStartString() {
-        if (!userInfo.role) Error("Role est null");
-
-        switch (userInfo.role) {
-            case "EMPLOYEUR":
-                return "entreprise";
-            case "ENSEIGNANT":
-                return "enseignant";
-            default:
-                Error("Mauvais role")
-        }
-    }
-
     function getFormsWithOnlyValue() {
-        let modifiedFormData = {}
+        let modifiedFormData = {};
 
         for (const [formKey, form] of Object.entries(formData)) {
-            let newForm = {}
-            for (const [key, value] of Object.entries(form)) {
+            let newForm = {};
 
-                newForm = {
-                    ...newForm,
-                    [key]: value.value
+            for (const [key, value] of Object.entries(form)) {
+                if (key.startsWith('evalQHoursMonth')) {
+                    const monthIndex = key.replace('evalQHoursMonth', '') - 1;
+                    const newKey = `nombreHeuresParSemaineMois${monthIndex + 1}`;  // Nouveau nom de clé
+                    newForm[newKey] = value.value;
+                } else {
+                    newForm[key] = value.value;
                 }
             }
-            modifiedFormData = {
-                ...modifiedFormData,
-                ...newForm
-            }
+            modifiedFormData[formKey] = { ...newForm };
         }
 
         return modifiedFormData;
@@ -180,31 +174,47 @@ const EvaluerEtudiantFormulaireEnseignant = ({ selectedStudent, setSelectedStude
             const token = localStorage.getItem("token");
 
             const body = getFormsWithOnlyValue();
-            body.appreciationGlobale = rating.value;
-            body.precisionAppreciationReponse = appreciation.value;
-            body.discuteeStagiaireReponse = discussion.value;
-            body.heuresAccordeStagiaireReponse = hoursTotal.value;
-            body.aimeraitAccueillirProchainStage = futureInternship.value;
-            body.formationSuffisanteReponse = formationGoodEnough.value;
 
+            body.nombreHeuresParSemainePremierMois = formData.eval.evalQHoursMonth1.value;
+            body.nombreHeuresParSemaineDeuxiemeMois = formData.eval.evalQHoursMonth2.value;
+            body.nombreHeuresParSemaineTroisiemeMois = formData.eval.evalQHoursMonth3.value;
 
+            body.nomEntreprise = formData.informationsEntreprise.nomEntreprise.value;
+            body.nomPersonneContact = formData.informationsEntreprise.nomPersonneContact.value;
+            body.adresseEntreprise = formData.informationsEntreprise.adresseEntreprise.value;
+            body.villeEntreprise = formData.informationsEntreprise.villeEntreprise.value;
+            body.codePostalEntreprise = formData.informationsEntreprise.codePostalEntreprise.value;
+            body.telephoneEntreprise = formData.informationsEntreprise.telephoneEntreprise.value;
+            body.telecopieurEntreprise = formData.informationsEntreprise.telecopieurEntreprise.value;
 
-            body.nomEtudiant = selectedStudent.prenom + " " + selectedStudent.nom;
-            body.programmeEtude = selectedStudent.programme;
-            body.nomEntreprise = userInfo.entrepriseName;
-            body.numeroTelephone = userInfo.numeroDeTelephone.replaceAll("-", "");
-            body.nomSuperviseur = userInfo.prenom + " " + userInfo.nom;
-            body.fonctionSuperviseur = "Employeur";
+            body.nomStagiaire = selectedStudent.prenom + " " + selectedStudent.nom;
+
+            body.quartTravailDebut1 = formData.observationsGenerales.quart1.de || "";
+            body.quartTravailFin1 = formData.observationsGenerales.quart1.a || "";
+            body.quartTravailDebut2 = formData.observationsGenerales.quart2.de || "";
+            body.quartTravailFin2 = formData.observationsGenerales.quart2.a || "";
+            body.quartTravailDebut3 = formData.observationsGenerales.quart3.de || "";
+            body.quartTravailFin3 = formData.observationsGenerales.quart3.a || "";
+
+            body.milieuAPrivilegier = formData.observationsGenerales.milieuStage || "";
+            body.milieuPretAAccueillirNombreStagiaires = formData.observationsGenerales.nombreStagiaires || "";
+            body.milieuDesireAccueillirMemeStagiaire = formData.observationsGenerales.prochainStage || "";
+            body.millieuOffreQuartsTravailVariables = formData.observationsGenerales.quartsVariables || "";
+
+            body.dateDebutStage = formData.informationsEntreprise.dateDebutStage.value;
+            body.numeroStage = formData.informationsEntreprise.numeroStage.value;
+
+            console.log("body", body);
 
             const response = await fetch(
-                `http://localhost:8080/${getUriStartString()}/saveFicheEvaluation?etudiantId=${selectedStudent.id}`,
+                `http://localhost:8080/enseignant/saveFicheEvaluationMilieuStage?etudiantId=${selectedStudent.id}`,
                 {
                     method: "POST",
                     headers: {
                         Authorization: `Bearer ${token}`,
-                        "Content-Type": "application/json"
+                        "Content-Type": "application/x-www-form-urlencoded"
                     },
-                    body: JSON.stringify(body)
+                    body: body
                 }
             );
 
@@ -219,73 +229,61 @@ const EvaluerEtudiantFormulaireEnseignant = ({ selectedStudent, setSelectedStude
         } finally {
             setIsFetching(false);
         }
-
-
     }
 
     function allChampsValide() {
         let hasError = false;
-        let modifiedFormData = {...formData}
+        let modifiedFormData = { ...formData };
         let firstToHaveAnErrorId = null;
 
         for (const [formKey, form] of Object.entries(formData)) {
-            let newForm = {}
+            let newForm = {};
+
             for (const [key, value] of Object.entries(form)) {
-
+                // Ignorer les champs commentaires
                 if (key.toLowerCase().includes("commentaires")) {
-
-                    newForm = {
-                        ...newForm,
-                        [key]: value
-                    }
-
+                    newForm[key] = value;
                     continue;
                 }
 
                 let newValue = value;
-                if (!value.value.trim()) {
+
+                // Validation spécifique pour les mois de `evalQHours`
+                if (key === 'evalQHours') {
+                    continue;
+                } else if (key.startsWith('quart')) {
+                    if (formData.observationsGenerales.quartsVariables === "oui") {
+                        if (!value.de || !value.a) {
+                            console.log(`Champ vide détecté : ${key}`, value);
+                            if (!firstToHaveAnErrorId) {
+                                firstToHaveAnErrorId = key;
+                            }
+                            hasError = true;
+                            newValue = getFormValue("", true);
+                        }
+                    }
+                } else if (key === 'milieuStage' || key === 'nombreStagiaires' || key === 'prochainStage' || key === 'quartsVariables') {
+                    if (!value) {
+                        console.log(`Champ vide détecté : ${key}`, value);
+                        if (!firstToHaveAnErrorId) {
+                            firstToHaveAnErrorId = key;
+                        }
+                        hasError = true;
+                        newValue = getFormValue("", true);
+                    }
+                } else if (!value.value) {
+                    // Validation générale pour les autres champs
+                    console.log(`Champ vide détecté : ${key}`, value);
                     if (!firstToHaveAnErrorId) {
-                        firstToHaveAnErrorId = key
+                        firstToHaveAnErrorId = key;
                     }
                     hasError = true;
-                    newValue = getFormValue("", true)
+                    newValue = getFormValue("", true);
                 }
 
-                newForm = {
-                    ...newForm,
-                    [key]: newValue
-                }
+                newForm[key] = newValue;
             }
-            modifiedFormData = {
-                ...modifiedFormData,
-                [formKey]: {...newForm}
-            }
-        }
-
-        const allOtherChamps = [
-            {getter: rating, setter: setRating, id: "input_ratings"},
-            {getter: appreciation, setter: setAppreciation, id: "input_appreciation"},
-            {getter: hoursTotal, setter: setHoursTotal, id: "input_hourTotal"},
-            {getter: futureInternship, setter: setFutureInternship, id: "input_futureInternship"},
-            {getter: formationGoodEnough, setter: setFormationGoodEnough, id: "input_goodEnough"},
-        ];
-
-        for (const champ of allOtherChamps) {
-            if (!champ.getter.value) {
-                if (!firstToHaveAnErrorId) {
-                    firstToHaveAnErrorId = champ.id
-                }
-                hasError = true;
-                champ.setter(getFormValue("", true))
-            }
-        }
-
-        if (discussion.value !== true && discussion.value !== false) {
-            if (!firstToHaveAnErrorId) {
-                firstToHaveAnErrorId = "input_discussion"
-            }
-            hasError = true;
-            setDiscussion(getFormValue("", true))
+            modifiedFormData[formKey] = { ...newForm };
         }
 
         setFormData(modifiedFormData);
@@ -311,7 +309,21 @@ const EvaluerEtudiantFormulaireEnseignant = ({ selectedStudent, setSelectedStude
 
     return (
         <div className='flex flex-col flex-1 items-start sm:items-center bg-orange-light p-8 overflow-x-auto'>
-            <PageTitle title={t("remplirFormulaireDe") + getNomPrenom()} />
+            <PageTitle title={t("remplirFormulaireDeMilieuxStage") + getNomPrenom()} />
+
+            <FormulaireInformationsEntreprise
+                formData={formData.informationsEntreprise}
+                handleChange={(field, value) =>
+                    setFormData((prev) => ({
+                        ...prev,
+                        informationsEntreprise: {
+                            ...prev.informationsEntreprise,
+                            [field]: getFormValue(value)
+                        }
+                    }))
+                }
+            />
+
 
             {forms.map((form) =>
                 <EvaluerFormulaire key={form.id} form={form}
@@ -323,8 +335,8 @@ const EvaluerEtudiantFormulaireEnseignant = ({ selectedStudent, setSelectedStude
                                    role={userInfo.role} />
             )}
 
-            {userInfo.role === "ENSEIGNANT" && (
-                <EvaluerFormulaireObsGenerales
+
+            <EvaluerFormulaireObsGenerales
                     formData={formData.observationsGenerales || {}}
                     handleChange={(field, value) =>
                         setFormData((prev) => ({
@@ -335,8 +347,8 @@ const EvaluerEtudiantFormulaireEnseignant = ({ selectedStudent, setSelectedStude
                             },
                         }))
                     }
-                />
-            )}
+            />
+
 
             <button
                 onClick={sendForm}

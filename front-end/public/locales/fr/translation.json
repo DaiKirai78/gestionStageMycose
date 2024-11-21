@@ -396,5 +396,16 @@
     "secondInternship": "Deuxième stage",
     "firstMonth": "Premier mois",
     "secondMonth": "Deuxième mois",
-    "thirdMonth": "Troisième mois"
+    "thirdMonth": "Troisième mois",
+    "nomEntreprise": "Nom de l'entreprise",
+    "nomPersonneContact": "Nom de la personne contact",
+    "adresseEntreprise": "Adresse de l'entreprise",
+    "villeEntreprise": "Ville de l'entreprise",
+    "codePostalEntreprise": "Code postal de l'entreprise",
+    "telephoneEntreprise": "Téléphone de l'entreprise",
+    "telecopieurEntreprise": "Télécopieur de l'entreprise",
+    "dateDebutStage": "Date de début du stage",
+    "informationsEntreprise": "Informations de l'entreprise",
+    "errorStageNumber": "Veuillez sélectionner le numéro du stage.",
+    "remplirFormulaireDeMilieuxStage": "Formulaire de milieux de stage de"
 }

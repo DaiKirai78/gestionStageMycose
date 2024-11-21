@@ -40,7 +40,6 @@ public class FicheEvaluationMilieuStageDTO {
     @Pattern(regexp = "^[0-9]+$", message = "Le numéro de téléphone doit contenir uniquement des chiffres.")
     private String telephoneEntreprise;
 
-    @NotBlank(message = "Le télécopieur de l'entreprise ne peut pas être vide.")
     @Pattern(regexp = "^[0-9]+$", message = "Le numéro de télécopieur doit contenir uniquement des chiffres.")
     private String telecopieurEntreprise;
 
