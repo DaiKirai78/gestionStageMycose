@@ -188,6 +188,7 @@ public class OffreStageController {
 
     @PatchMapping("/update-formulaire")
     public ResponseEntity<FormulaireOffreStageDTO> updateFormulaireOffreStage(
+            //On ne @Valid pas car on veut pouvoir changer seulement les champs qu'on veut
             @ModelAttribute FormulaireOffreStageDTO formulaireOffreStageDTO,
             @RequestParam Long offreStageId) throws AccessDeniedException {
         FormulaireOffreStageDTO savedForm = offreStageService.updateOffreStage(formulaireOffreStageDTO, offreStageId);

@@ -1,5 +1,7 @@
 package com.projet.mycose.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.projet.mycose.dto.*;
 import com.projet.mycose.exceptions.GlobalExceptionHandler;
 import com.projet.mycose.modele.ApplicationStage;
@@ -23,6 +25,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -54,6 +57,8 @@ public class OffreStageControllerTest {
     @InjectMocks
     private OffreStageController offreStageController;
 
+    private ObjectMapper objectMapper;
+
     private Long id;
     private UploadFicherOffreStageDTO uploadFicherOffreStageDTO;
     private FichierOffreStageDTO fichierOffreStageDTO;
@@ -69,6 +74,10 @@ public class OffreStageControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(offreStageController)
                 .setControllerAdvice(new GlobalExceptionHandler())
                 .build();
+
+        objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
         id = 1L;
 
@@ -119,7 +128,6 @@ public class OffreStageControllerTest {
                         .file(mockFile)
                         .param("title", "Title")
                         .contentType(MediaType.MULTIPART_FORM_DATA))
-                .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andReturn();
@@ -777,4 +785,243 @@ public class OffreStageControllerTest {
                 .andExpect(jsonPath("$.status", is(500)))
                 .andExpect(jsonPath("$.timestamp").isNumber());
     }
+
+    @Test
+    public void testUpdateFichierOffreStage_Success() throws Exception {
+        // Arrange
+        Long offreStageId = 1L;
+
+        // Create MockMultipartFile for 'fichier'
+        MockMultipartFile fichierFile = new MockMultipartFile(
+                "fichier",
+                "fichier.pdf",
+                MediaType.APPLICATION_PDF_VALUE,
+                "Dummy PDF Content".getBytes()
+        );
+
+        // Create MockMultipartFile for 'uploadFicherOffreStageDTO'
+        UploadFicherOffreStageDTO uploadFicherDTO = new UploadFicherOffreStageDTO();
+        uploadFicherDTO.setTitle("value");
+        String uploadFicherJson = objectMapper.writeValueAsString(uploadFicherDTO);
+        MockMultipartFile uploadFicherData = new MockMultipartFile(
+                "uploadFicherOffreStageDTO",
+                "uploadFicherOffreStageDTO.json",
+                MediaType.APPLICATION_JSON_VALUE,
+                uploadFicherJson.getBytes()
+        );
+
+        // Create a sample FichierOffreStageDTO to be returned by the service
+        FichierOffreStageDTO savedFichierDTO = new FichierOffreStageDTO();
+        savedFichierDTO.setId(offreStageId);
+        savedFichierDTO.setFilename("fichier.pdf");
+        savedFichierDTO.setFileData(Base64.getEncoder().encodeToString("Dummy PDF Content".getBytes()));
+        // Set other necessary fields
+
+        // Mock the service method
+        when(offreStageService.updateOffreStage(any(UploadFicherOffreStageDTO.class), eq(offreStageId)))
+                .thenReturn(savedFichierDTO);
+
+        // Act & Assert
+        mockMvc.perform(multipart("/api/offres-stages/update-fichier")
+                        .file(fichierFile)
+                        .file(uploadFicherData)
+                        .param("offreStageId", offreStageId.toString())
+                        .with(SecurityMockMvcRequestPostProcessors.user("user").password("password").roles("USER"))
+                        .with(SecurityMockMvcRequestPostProcessors.csrf())
+                        .with(request -> { // Override the HTTP method to PATCH
+                            request.setMethod("PATCH");
+                            return request;
+                        }))
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(offreStageId))
+                .andExpect(jsonPath("$.filename").value("fichier.pdf"));
+
+        // Verify that the service method was called once
+        verify(offreStageService, times(1)).updateOffreStage(any(UploadFicherOffreStageDTO.class), eq(offreStageId));
+    }
+
+    @Test
+    public void testUpdateFichierOffreStage_ServiceException() throws Exception {
+        // Arrange
+        Long offreStageId = 1L;
+
+        MockMultipartFile fichierFile = new MockMultipartFile(
+                "fichier",
+                "fichier.pdf",
+                MediaType.APPLICATION_PDF_VALUE,
+                "Dummy PDF Content".getBytes()
+        );
+
+        UploadFicherOffreStageDTO uploadFicherDTO = new UploadFicherOffreStageDTO();
+        uploadFicherDTO.setTitle("value");
+        String uploadFicherJson = objectMapper.writeValueAsString(uploadFicherDTO);
+        MockMultipartFile uploadFicherData = new MockMultipartFile(
+                "uploadFicherOffreStageDTO",
+                "uploadFicherOffreStageDTO.json",
+                MediaType.APPLICATION_JSON_VALUE,
+                uploadFicherJson.getBytes()
+        );
+
+        // Mock the service method to throw an exception
+        when(offreStageService.updateOffreStage(any(UploadFicherOffreStageDTO.class), eq(offreStageId)))
+                .thenThrow(new IOException("Failed to save file"));
+
+        // Act & Assert
+        mockMvc.perform(multipart("/api/offres-stages/update-fichier")
+                        .file(fichierFile)
+                        .file(uploadFicherData)
+                        .param("offreStageId", offreStageId.toString())
+                        .with(SecurityMockMvcRequestPostProcessors.user("user").password("password").roles("USER"))
+                        .with(SecurityMockMvcRequestPostProcessors.csrf())
+                        .with(request -> { // Override the HTTP method to PATCH
+                            request.setMethod("PATCH");
+                            return request;
+                        }))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("An unexpected error occurred: Failed to save file"))
+                .andExpect(jsonPath("$.status").value(500))
+                .andExpect(jsonPath("$.timestamp").isNumber());
+
+        // Verify that the service method was called once
+        verify(offreStageService, times(1)).updateOffreStage(any(UploadFicherOffreStageDTO.class), eq(offreStageId));
+    }
+
+    @Test
+    public void testUpdateFichierOffreStage_InvalidOffreStageId() throws Exception {
+        // Arrange
+        String invalidOffreStageId = "invalid-id"; // Non-numeric
+
+        MockMultipartFile fichierFile = new MockMultipartFile(
+                "fichier",
+                "fichier.pdf",
+                MediaType.APPLICATION_PDF_VALUE,
+                "Dummy PDF Content".getBytes()
+        );
+
+        UploadFicherOffreStageDTO uploadFicherDTO = new UploadFicherOffreStageDTO();
+        uploadFicherDTO.setTitle("value");
+        String uploadFicherJson = objectMapper.writeValueAsString(uploadFicherDTO);
+        MockMultipartFile uploadFicherData = new MockMultipartFile(
+                "uploadFicherOffreStageDTO",
+                "uploadFicherOffreStageDTO.json",
+                MediaType.APPLICATION_JSON_VALUE,
+                uploadFicherJson.getBytes()
+        );
+
+        // Act & Assert
+        mockMvc.perform(multipart("/api/offres-stages/update-fichier")
+                        .file(fichierFile)
+                        .file(uploadFicherData)
+                        .param("offreStageId", invalidOffreStageId)
+                        .with(SecurityMockMvcRequestPostProcessors.csrf())
+                        .with(request -> { // Override the HTTP method to PATCH
+                            request.setMethod("PATCH");
+                            return request;
+                        }))
+                .andDo(print())
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message", containsString("Failed to convert value of type 'java.lang.String' to required type 'java.lang.Long';")))
+                .andExpect(jsonPath("$.status", is(500)))
+                .andExpect(jsonPath("$.timestamp").isNumber());
+
+        // Verify that the service method was never called
+        verify(offreStageService, never()).updateOffreStage((UploadFicherOffreStageDTO) any(), anyLong());
+    }
+
+    @Test
+    public void testUpdateFormulaireOffreStage_Success() throws Exception {
+        // Arrange
+        Long offreStageId = 1L;
+
+        // Create FormulaireOffreStageDTO object with necessary fields
+        FormulaireOffreStageDTO formulaireDTO = new FormulaireOffreStageDTO();
+        formulaireDTO.setTitle("value1");
+        formulaireDTO.setEmployerName("value2");
+        // Set other required fields
+
+        // Mock the service method to return a saved DTO
+        FormulaireOffreStageDTO savedFormulaireDTO = new FormulaireOffreStageDTO();
+        savedFormulaireDTO.setId(offreStageId);
+        savedFormulaireDTO.setTitle("value1");
+        savedFormulaireDTO.setEmployerName("value2");
+        // Set other fields as necessary
+
+        when(offreStageService.updateOffreStage(any(FormulaireOffreStageDTO.class), eq(offreStageId)))
+                .thenReturn(savedFormulaireDTO);
+
+        // Act & Assert
+        mockMvc.perform(patch("/api/offres-stages/update-formulaire")
+                        .param("offreStageId", offreStageId.toString())
+                        .param("field1", "value1")
+                        .param("field2", "value2")
+                        .with(SecurityMockMvcRequestPostProcessors.csrf()))
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(offreStageId))
+                .andExpect(jsonPath("$.title").value("value1"))
+                .andExpect(jsonPath("$.employerName").value("value2"));
+
+        // Verify that the service method was called once
+        verify(offreStageService, times(1)).updateOffreStage(any(FormulaireOffreStageDTO.class), eq(offreStageId));
+    }
+
+    @Test
+    public void testUpdateFormulaireOffreStage_ServiceException() throws Exception {
+        // Arrange
+        Long offreStageId = 1L;
+
+        // Create FormulaireOffreStageDTO object with necessary fields
+        FormulaireOffreStageDTO formulaireDTO = new FormulaireOffreStageDTO();
+        formulaireDTO.setTitle("value1");
+        formulaireDTO.setEntrepriseName("value2");
+        // Set other required fields
+
+        // Mock the service method to throw an exception
+        when(offreStageService.updateOffreStage(any(FormulaireOffreStageDTO.class), eq(offreStageId)))
+                .thenThrow(new AccessDeniedException("Access denied"));
+
+        // Act & Assert
+        mockMvc.perform(patch("/api/offres-stages/update-formulaire")
+                        .param("offreStageId", offreStageId.toString())
+                        .param("field1", "value1")
+                        .param("field2", "value2")
+                        // Add other form fields as needed
+                        .with(SecurityMockMvcRequestPostProcessors.user("user").password("password").roles("USER"))
+                        .with(SecurityMockMvcRequestPostProcessors.csrf()))
+                .andDo(print())
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("An unexpected error occurred: Access denied"))
+                .andExpect(jsonPath("$.status").value(500));
+
+        // Verify that the service method was called once
+        verify(offreStageService, times(1)).updateOffreStage(any(FormulaireOffreStageDTO.class), eq(offreStageId));
+    }
+
+    @Test
+    public void testUpdateFormulaireOffreStage_InvalidOffreStageId() throws Exception {
+        // Arrange
+        String invalidOffreStageId = "invalid-id"; // Non-numeric
+
+        // Act & Assert
+        mockMvc.perform(patch("/api/offres-stages/update-formulaire")
+                        .param("offreStageId", invalidOffreStageId)
+                        .param("field1", "value1")
+                        .param("field2", "value2")
+                        // Add other form fields as needed
+                        .with(SecurityMockMvcRequestPostProcessors.user("user").password("password").roles("USER"))
+                        .with(SecurityMockMvcRequestPostProcessors.csrf()))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message", containsString("Failed to convert value of type 'java.lang.String' to required type 'java.lang.Long';")))
+                .andExpect(jsonPath("$.status", is(500)));
+
+        // Verify that the service method was never called
+        verify(offreStageService, never()).updateOffreStage((FormulaireOffreStageDTO) any(), anyLong());
+    }
+
 }
