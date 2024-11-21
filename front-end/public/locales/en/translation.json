@@ -397,5 +397,16 @@
     "secondInternship": "Second internship",
     "firstMonth": "First month",
     "secondMonth": "Second month",
-    "thirdMonth": "Third month"
+    "thirdMonth": "Third month",
+    "nomEntreprise": "Company name",
+    "nomPersonneContact": "Contact person's name",
+    "adresseEntreprise": "Company address",
+    "villeEntreprise": "Company city",
+    "codePostalEntreprise": "Company postal code",
+    "telephoneEntreprise": "Company phone number",
+    "telecopieurEntreprise": "Company fax number",
+    "dateDebutStage": "Internship start date",
+    "informationsEntreprise": "Company informations",
+    "errorStageNumber": "Please select the course number.",
+    "remplirFormulaireDeMilieuxStage": "Internship environment form of"
 }

@@ -49,20 +49,21 @@ const EvaluerFormulaire = ({ form, ratingOptions, handleRadioChange, handleComme
                             </div>
 
                             {criterion.id === 'evalQHours' ? (
-                                <div className="grid grid-cols-3 gap-4 w-full">
+                                <>
                                     {criterion.months.map((month, index) => (
                                         <div key={month} className="flex items-center space-x-2">
                                             <label htmlFor={`hoursMonth${index + 1}`} className="block text-sm">{t(month)}</label>
                                             <input
                                                 type="number"
                                                 id={`hoursMonth${index + 1}`}
+                                                placeholder="0"
                                                 value={formData[form.id][`evalQHoursMonth${index + 1}`]?.value || ''}
                                                 onChange={(e) => handleNumberChange(form.id, `evalQHoursMonth${index + 1}`, e.target.value)}
-                                                className="w-12 p-2 border rounded"
+                                                className={`w-12 p-2 border rounded ${formData[form.id][`evalQHoursMonth${index + 1}`]?.hasError ? 'border-red-500' : ''}`}
                                             />
                                         </div>
                                     ))}
-                                </div>
+                                </>
                             ) : (
                                 ratingOptions.map((option) => (
                                     <label key={option}
