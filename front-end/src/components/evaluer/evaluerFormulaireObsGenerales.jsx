@@ -1,7 +1,10 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import SignerContratCanvas from "../signerContrats/signerContratCanvas.jsx";
+import InputErrorMessage from "../inputErrorMesssage.jsx";
+import {IoCloseSharp} from "react-icons/io5";
 
-const EvaluerFormulaireObsGenerales = ({ formData, handleChange }) => {
+const EvaluerFormulaireObsGenerales = ({ formData, handleChange, setErrorKeySignature, errorKeySignature, setDrewSomething, canvasRef }) => {
     const { t } = useTranslation();
 
     // Fonction pour vérifier les erreurs
@@ -12,7 +15,7 @@ const EvaluerFormulaireObsGenerales = ({ formData, handleChange }) => {
     return (
         <div className="w-full max-w-4xl bg-white rounded-lg shadow-md p-10 mb-8">
             <h2 className="text-xl font-bold">{t("generalObservations")}</h2>
-            <hr className="mt-3 mb-4" />
+            <hr className="mt-3 mb-4"/>
 
             {/* Stage à privilégier */}
             <div className="mb-4">
@@ -45,7 +48,7 @@ const EvaluerFormulaireObsGenerales = ({ formData, handleChange }) => {
                     <div className="text-red-500 text-sm mt-1">{t("fieldRequired")}</div>
                 )}
             </div>
-            <hr className="my-6 border-gray-300" />
+            <hr className="my-6 border-gray-300"/>
 
             {/* Nombre de stagiaires */}
             <div className="mb-4">
@@ -100,7 +103,7 @@ const EvaluerFormulaireObsGenerales = ({ formData, handleChange }) => {
                     <div className="text-red-500 text-sm mt-1">{t("fieldRequired")}</div>
                 )}
             </div>
-            <hr className="my-6 border-gray-300" />
+            <hr className="my-6 border-gray-300"/>
 
             {/* Prochain stage */}
             <div className="mb-4">
@@ -133,7 +136,7 @@ const EvaluerFormulaireObsGenerales = ({ formData, handleChange }) => {
                     <div className="text-red-500 text-sm mt-1">{t("fieldRequired")}</div>
                 )}
             </div>
-            <hr className="my-6 border-gray-300" />
+            <hr className="my-6 border-gray-300"/>
 
             {/* Quarts de travail variables */}
             <div className="mb-4">
@@ -193,6 +196,28 @@ const EvaluerFormulaireObsGenerales = ({ formData, handleChange }) => {
                         ))}
                     </div>
                 )}
+            </div>
+            <div className='flex flex-col items-center mt-5'>
+                <h1 className='mb-2'>{t("signature")} :</h1>
+                <SignerContratCanvas
+                    canvasRef={canvasRef}
+                    setDrewSomething={setDrewSomething}
+                    errorKeySignature={errorKeySignature}
+                    setErrorKeySignature={setErrorKeySignature}/>
+                <div className='w-full'>
+                    <InputErrorMessage messageKey={errorKeySignature}/>
+                </div>
+                <button
+                    className="p-2 bg-orange hover:bg-opacity-90 text-white rounded mt-3 mb-5"
+                    onClick={(e) => {
+                        e.preventDefault()
+                        canvasRef.current.clearCanvas();
+                        setDrewSomething(false);
+                        setErrorKeySignature("");
+                    }}
+                >
+                    <IoCloseSharp/>
+                </button>
             </div>
         </div>
     );

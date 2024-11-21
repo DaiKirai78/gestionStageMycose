@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import PageTitle from '../pageTitle';
 import { useTranslation } from 'react-i18next';
@@ -43,6 +43,9 @@ const EvaluerEtudiantFormulaireEnseignant = ({ selectedStudent, setSelectedStude
     const { t } = useTranslation();
     const [formData, setFormData] = useState(getAllFormCritere());
     const [isFetching, setIsFetching] = useState(false);
+    const canvasRef = useRef();
+    const [errorKeySignature, setErrorKeySignature]= useState("");
+    const [drewSomething, setDrewSomething] = useState(false);
 
     useEffect(() => {
         if (!selectedStudent) {
@@ -227,6 +230,10 @@ const EvaluerEtudiantFormulaireEnseignant = ({ selectedStudent, setSelectedStude
                 formDataToSend.append(key, body[key]);
             });
 
+            const base64CanvasPng = await getBase64CanvasPng();
+            const signatureBlob = await fetch(base64CanvasPng).then(res => res.blob());
+            formDataToSend.append("signatureEnseignant", signatureBlob, "signature.png");
+
             console.log("body", body);
 
             const response = await axios.post("http://localhost:8080/enseignant/saveFicheEvaluationMilieuStage", formDataToSend, {
@@ -312,6 +319,14 @@ const EvaluerEtudiantFormulaireEnseignant = ({ selectedStudent, setSelectedStude
             modifiedFormData[formKey] = { ...newForm };
         }
 
+        if (!drewSomething) {
+            if (!firstToHaveAnErrorId) {
+                firstToHaveAnErrorId = ""
+            }
+            hasError = true;
+            setErrorKeySignature("erreurNoSignature");
+        }
+
         setFormData(modifiedFormData);
         return [hasError, firstToHaveAnErrorId];
     }
@@ -332,6 +347,16 @@ const EvaluerEtudiantFormulaireEnseignant = ({ selectedStudent, setSelectedStude
         });
     }
 
+    function getBase64CanvasPng() {
+        return canvasRef.current
+            .exportImage("png")
+            .then(data => {
+                return data
+            })
+            .catch(e => {
+                console.log(e);
+            });
+    }
 
     return (
         <div className='flex flex-col flex-1 items-start sm:items-center bg-orange-light p-8 overflow-x-auto'>
@@ -362,16 +387,20 @@ const EvaluerEtudiantFormulaireEnseignant = ({ selectedStudent, setSelectedStude
             )}
 
             <EvaluerFormulaireObsGenerales
-                    formData={formData.observationsGenerales || {}}
-                    handleChange={(field, value) =>
-                        setFormData((prev) => ({
-                            ...prev,
-                            observationsGenerales: {
-                                ...prev.observationsGenerales,
-                                [field]: value,
-                            },
-                        }))
-                    }
+                canvasRef={canvasRef}
+                errorKeySignature={errorKeySignature}
+                setDrewSomething={setDrewSomething}
+                setErrorKeySignature={setErrorKeySignature}
+                formData={formData.observationsGenerales || {}}
+                handleChange={(field, value) =>
+                    setFormData((prev) => ({
+                        ...prev,
+                        observationsGenerales: {
+                            ...prev.observationsGenerales,
+                            [field]: value,
+                        },
+                    }))
+            }
             />
 
             <button
