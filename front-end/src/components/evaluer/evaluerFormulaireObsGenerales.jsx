@@ -170,7 +170,7 @@ const EvaluerFormulaireObsGenerales = ({ formData, handleChange, setErrorKeySign
                 )}
 
                 {/* Affichage des plages horaires si "Oui" */}
-                {formData.quartsVariables === "oui" && (
+                {formData.quartsVariables === "OUI" && (
                     <div className="mt-4 space-y-2">
                         {["quart1", "quart2", "quart3"].map((quart, index) => (
                             <div key={index} className="flex items-center gap-4">

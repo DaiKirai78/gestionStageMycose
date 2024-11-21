@@ -281,7 +281,7 @@ const EvaluerEtudiantFormulaireEnseignant = ({ selectedStudent, setSelectedStude
                     continue;
                 } else if (key.startsWith('quart')) {
                     if (formData.observationsGenerales.quartsVariables === "OUI") {
-                        if (!value.de || !value.a) {
+                        if (!value) {
                             if (!firstToHaveAnErrorId) {
                                 firstToHaveAnErrorId = key;
                             }
