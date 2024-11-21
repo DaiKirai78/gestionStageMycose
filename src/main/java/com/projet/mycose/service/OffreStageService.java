@@ -545,6 +545,7 @@ public class OffreStageService {
 
         //TODO: Ajouter les nouvelles variables de Sam
         //TODO: FINIR LES TESTS QUAND SAM AURA FINI SA PARTIE
+        //TODO: FAIRE LA VALIDATION DES CHAMPS DE FORMULAIRE LORSQU'ON MODIFIE CELUI-CI
 
         return convertToDTO(formulaireOffreStageRepository.save(formulaireOffreStage));
     }
