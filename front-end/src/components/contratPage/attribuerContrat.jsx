@@ -150,15 +150,22 @@ const AttribuerContrat = () => {
         if (etudiant !== null)
             setLoading(false);
     }
-
     const handleFileUpload = async () => {
         const formData = new FormData();
-        console.log(gestionnaire);
         formData.append("etudiantId", applications[currentPage - 1].etudiant_id);
         formData.append("employeurId", offresStage.createur_id);
         formData.append("gestionnaireStageId", gestionnaire.id);
+        formData.append("offreStageId", offresStage.id);
+
+        console.log("form data : " + JSON.stringify(formData));
+        console.log("ETUDIANT ID: " + applications[currentPage - 1].etudiant_id);
+        console.log("EMPLOYEUR ID: " + offresStage.createur_id);
+        console.log("GESTIONNAIRE ID : " + gestionnaire.id);
+        console.log("OFFRE STAGE ID: " + offresStage.id);
+
 
         try {
+            console.log("form data : " + JSON.stringify(formData));
             const token = localStorage.getItem("token");
             setLoading(true);
             const response = await axios.post(localhost + apiUrlUploadContract, formData,

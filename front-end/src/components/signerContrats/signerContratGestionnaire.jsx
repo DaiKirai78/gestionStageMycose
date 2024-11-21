@@ -247,10 +247,10 @@ function SignerContratGestionnaire({setSelectedContract}) {
         }
     };
 
-    const fetchOffreStage = async (employeurId) => {
+    const fetchOffreStage = async (offreStageId) => {
         try {
             const token = localStorage.getItem("token");
-            const response = await axios.get(`http://localhost:8080/api/offres-stages/getOffreStage/${employeurId}`, {
+            const response = await axios.get(`http://localhost:8080/api/offres-stages/id/${offreStageId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json'

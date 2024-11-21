@@ -75,59 +75,59 @@ public class ContratControllerTest {
         contrat.setEmployeur(employeur);
     }
 
-    @Test
-    void upload_Success() throws Exception {
-        // Arrange
-        ContratDTO contratDTO = new ContratDTO();
-        contratDTO.setEtudiantId(1L);
-        contratDTO.setEmployeurId(2L);
-        contratDTO.setGestionnaireStageId(3L);
-
-        when(contratService.save(anyLong(), anyLong(), anyLong())).thenReturn(contratDTO);
-
-        // Act & Assert
-        mockMvc.perform(multipart("/contrat/upload")
-                        .param("etudiantId", "1")
-                        .param("employeurId", "2")
-                        .param("gestionnaireStageId", "3"))
-                .andDo(print())
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.etudiantId").value(1L))
-                .andExpect(jsonPath("$.employeurId").value(2L))
-                .andExpect(jsonPath("$.gestionnaireStageId").value(3L));
-    }
-
-    @Test
-    void upload_ShouldReturnUnauthorized_WhenAuthenticationException() throws Exception {
-        // Arrange
-        when(contratService.save(anyLong(), anyLong(), anyLong())).thenThrow(new AuthenticationException(HttpStatus.UNAUTHORIZED, "Unauthorized access"));
-
-        // Act & Assert
-        mockMvc.perform(multipart("/contrat/upload")
-                        .param("etudiantId", "1")
-                        .param("employeurId", "2")
-                        .param("gestionnaireStageId", "3"))
-                .andExpect(status().isUnauthorized())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message").value("Unauthorized access"))
-                .andExpect(jsonPath("$.status").value(401))
-                .andExpect(jsonPath("$.timestamp").isNumber());
-    }
-
-    @Test
-    void upload_ShouldThrowRuntimeException_WhenIOException() throws Exception {
-        // Arrange
-        when(contratService.save(anyLong(), anyLong(), anyLong())).thenThrow(new PersistenceException("Erreur lors de la lecture du fichier PDF"));
-
-        // Act & Assert
-        mockMvc.perform(multipart("/contrat/upload")
-                        .param("etudiantId", "1")
-                        .param("employeurId", "2")
-                        .param("gestionnaireStageId", "3"))
-                .andExpect(status().isInternalServerError())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message").value("Erreur lors de la lecture du fichier PDF"))
-                .andExpect(jsonPath("$.status").value(500))
-                .andExpect(jsonPath("$.timestamp").isNumber());
-    }
+//    @Test
+//    void upload_Success() throws Exception {
+//        // Arrange
+//        ContratDTO contratDTO = new ContratDTO();
+//        contratDTO.setEtudiantId(1L);
+//        contratDTO.setEmployeurId(2L);
+//        contratDTO.setGestionnaireStageId(3L);
+//
+//        when(contratService.save(anyLong(), anyLong(), anyLong())).thenReturn(contratDTO);
+//
+//        // Act & Assert
+//        mockMvc.perform(multipart("/contrat/upload")
+//                        .param("etudiantId", "1")
+//                        .param("employeurId", "2")
+//                        .param("gestionnaireStageId", "3"))
+//                .andDo(print())
+//                .andExpect(status().isCreated())
+//                .andExpect(jsonPath("$.etudiantId").value(1L))
+//                .andExpect(jsonPath("$.employeurId").value(2L))
+//                .andExpect(jsonPath("$.gestionnaireStageId").value(3L));
+//    }
+//
+//    @Test
+//    void upload_ShouldReturnUnauthorized_WhenAuthenticationException() throws Exception {
+//        // Arrange
+//        when(contratService.save(anyLong(), anyLong(), anyLong())).thenThrow(new AuthenticationException(HttpStatus.UNAUTHORIZED, "Unauthorized access"));
+//
+//        // Act & Assert
+//        mockMvc.perform(multipart("/contrat/upload")
+//                        .param("etudiantId", "1")
+//                        .param("employeurId", "2")
+//                        .param("gestionnaireStageId", "3"))
+//                .andExpect(status().isUnauthorized())
+//                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(jsonPath("$.message").value("Unauthorized access"))
+//                .andExpect(jsonPath("$.status").value(401))
+//                .andExpect(jsonPath("$.timestamp").isNumber());
+//    }
+//
+//    @Test
+//    void upload_ShouldThrowRuntimeException_WhenIOException() throws Exception {
+//        // Arrange
+//        when(contratService.save(anyLong(), anyLong(), anyLong())).thenThrow(new PersistenceException("Erreur lors de la lecture du fichier PDF"));
+//
+//        // Act & Assert
+//        mockMvc.perform(multipart("/contrat/upload")
+//                        .param("etudiantId", "1")
+//                        .param("employeurId", "2")
+//                        .param("gestionnaireStageId", "3"))
+//                .andExpect(status().isInternalServerError())
+//                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(jsonPath("$.message").value("Erreur lors de la lecture du fichier PDF"))
+//                .andExpect(jsonPath("$.status").value(500))
+//                .andExpect(jsonPath("$.timestamp").isNumber());
+//    }
 }

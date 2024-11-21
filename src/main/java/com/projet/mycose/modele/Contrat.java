@@ -55,6 +55,8 @@ public class Contrat {
     @JoinColumn(name = "gestionnaire_id")
     private GestionnaireStage gestionnaireStage;
 
+    private Long offreStageid;
+
 
     @Override
     public String toString() {
@@ -68,6 +70,7 @@ public class Contrat {
                 ", etudiant=" + etudiant +
                 ", employeur=" + employeur +
                 ", gestionnaireStage=" + gestionnaireStage +
+                ", offreStage=" + offreStage +
                 '}';
     }
 }

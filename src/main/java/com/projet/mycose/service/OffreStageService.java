@@ -466,8 +466,4 @@ public class OffreStageService {
         Long createurId = utilisateurService.getMyUserId();
         return offreStageRepository.findDistinctSemesterAndYearByCreateurId(createurId);
     }
-
-    public OffreStageDTO getOffreStageByEmployeurId(Long employeurId) {
-        return OffreStageDTO.toOffreStageInstanceDTOAll(offreStageRepository.findOffreStageByCreateurId(employeurId));
-    }
 }

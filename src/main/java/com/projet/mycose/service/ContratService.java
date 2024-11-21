@@ -1,15 +1,14 @@
 package com.projet.mycose.service;
 
 import com.projet.mycose.dto.ContratDTO;
+import com.projet.mycose.dto.EmployeurDTO;
+import com.projet.mycose.dto.EtudiantDTO;
 import com.projet.mycose.exceptions.ResourceConflictException;
 import com.projet.mycose.exceptions.ResourceNotFoundException;
 import com.projet.mycose.exceptions.UserNotFoundException;
 import com.projet.mycose.modele.Contrat;
 import com.projet.mycose.modele.Etudiant;
-import com.projet.mycose.repository.ContratRepository;
-import com.projet.mycose.repository.EmployeurRepository;
-import com.projet.mycose.repository.EtudiantRepository;
-import com.projet.mycose.repository.GestionnaireStageRepository;
+import com.projet.mycose.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,20 +26,24 @@ public class ContratService {
     private final EtudiantRepository etudiantRepository;
     private final EmployeurRepository employeurRepository;
     private final GestionnaireStageRepository gestionnaireStageRepository;
+    private final OffreStageRepository offreStageRepository;
     private final UtilisateurService utilisateurService;
+    private final OffreStageService offreStageService;
 
     @Transactional
     @PreAuthorize("hasAuthority('GESTIONNAIRE_STAGE')")
-    public ContratDTO save(Long etudiantId, Long employeurId, Long gestionnaireStageId) {
+    public ContratDTO save(Long etudiantId, Long employeurId, Long gestionnaireStageId, Long offreStageId) {
         if (utilisateurService.getEtudiantDTO(etudiantId) == null
                 || utilisateurService.getEmployeurDTO(employeurId) == null
-                || utilisateurService.getGestionnaireDTO(gestionnaireStageId) == null)
+                || utilisateurService.getGestionnaireDTO(gestionnaireStageId) == null
+        || offreStageService.getOffreStageWithUtilisateurInfo(offreStageId) == null)
             throw new UserNotFoundException();
 
         ContratDTO contratDTO = new ContratDTO();
         contratDTO.setEtudiantId(etudiantId);
         contratDTO.setEmployeurId(employeurId);
         contratDTO.setGestionnaireStageId(gestionnaireStageId);
+        contratDTO.setOffreStageId(offreStageId);
         changeContractStatusToActive(etudiantId);
         return convertToDTO(contratRepository.save(convertToEntity(contratDTO)));
     }
@@ -62,19 +65,29 @@ public class ContratService {
         ContratDTO contratDTO = modelMapper.map(contrat, ContratDTO.class);
 
         contratDTO.setEtudiantId(contrat.getEtudiant().getId());
+        System.out.println("contratDTO : " + contratDTO);
         contratDTO.setEmployeurId(contrat.getEmployeur().getId());
+        System.out.println("contratDTO : " + contratDTO);
         contratDTO.setGestionnaireStageId(contrat.getGestionnaireStage().getId());
-
+        System.out.println("contratDTO : " + contratDTO);
+        contratDTO.setOffreStageId(contrat.getOffreStage().getId());
+        System.out.println("contratDTO : " + contratDTO);
         return contratDTO;
     }
 
     public Contrat convertToEntity(ContratDTO dto) {
-        Contrat contrat = modelMapper.map(dto, Contrat.class);
+        Contrat contrat = new Contrat();
+        contrat.setEtudiant(EtudiantDTO.toEntity(utilisateurService.getEtudiantDTO(dto.getEtudiantId())));
+        contrat.setEmployeur(EmployeurDTO.(utilisateurService.getEmployeurDTO(dto.getEmployeurId())));
 
         contrat.setEtudiant(etudiantRepository.findById(dto.getEtudiantId()).orElseThrow(() -> new ResourceNotFoundException("Étudiant non trouvé")));
+        System.out.println("contrat : " + contrat);
         contrat.setEmployeur(employeurRepository.findById(dto.getEmployeurId()).orElseThrow(() -> new ResourceNotFoundException("Employeur non trouvé")));
+        System.out.println("contrat : " + contrat);
         contrat.setGestionnaireStage(gestionnaireStageRepository.findById(dto.getGestionnaireStageId()).orElseThrow(() -> new ResourceNotFoundException("Gestionnaire de stage non trouvé")));
-
+        System.out.println("contrat : " + contrat);
+        contrat.setOffreStage(offreStageRepository.findById(dto.getOffreStageId()).orElseThrow(() -> new ResourceNotFoundException("Offre de stage non trouvée")));
+        System.out.println("contrat : " + contrat);
         return contrat;
     }
 

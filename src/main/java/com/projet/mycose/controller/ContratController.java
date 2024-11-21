@@ -25,8 +25,8 @@ public class ContratController {
     private final ContratService contratService;
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> upload(@RequestParam Long etudiantId, @RequestParam Long employeurId, @RequestParam Long gestionnaireStageId) {
-        ContratDTO contratDTO = contratService.save(etudiantId, employeurId, gestionnaireStageId);
+    public ResponseEntity<?> upload(@RequestParam Long etudiantId, @RequestParam Long employeurId, @RequestParam Long gestionnaireStageId, @RequestParam Long offreStageId) {
+        ContratDTO contratDTO = contratService.save(etudiantId, employeurId, gestionnaireStageId, offreStageId);
         return ResponseEntity.status(HttpStatus.CREATED).body(contratDTO);
     }
 

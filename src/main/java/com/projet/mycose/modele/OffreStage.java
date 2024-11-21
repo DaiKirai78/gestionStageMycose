@@ -66,6 +66,10 @@ public abstract class OffreStage {
 
     private Year annee;
 
+    @OneToOne
+    private Contrat contrat;
+
+
     @PrePersist
     public void prePersist() {
         if (status == null) {

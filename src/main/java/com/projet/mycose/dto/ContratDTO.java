@@ -1,6 +1,7 @@
 package com.projet.mycose.dto;
 
 import com.projet.mycose.modele.Contrat;
+import com.projet.mycose.modele.OffreStage;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
@@ -52,6 +53,11 @@ public class ContratDTO {
             message = "Must be a number.")
     private Long gestionnaireStageId;
 
+    @NotBlank(message = "Internship offer is required.")
+    @Pattern(regexp = "^[0-9]*$",
+            message = "Must be a number.")
+    private Long offreStageId;
+
     public static ContratDTO toDTO(Contrat contrat) {
         return new ContratDTO(
                 contrat.getId(),
@@ -63,7 +69,8 @@ public class ContratDTO {
                 contrat.getDateSignatureGestionnaire() != null ? contrat.getDateSignatureGestionnaire() : null,
                 contrat.getEtudiant() != null ? contrat.getEtudiant().getId() : null,
                 contrat.getEmployeur() != null ? contrat.getEmployeur().getId() : null,
-                contrat.getGestionnaireStage() != null ? contrat.getGestionnaireStage().getId() : null
+                contrat.getGestionnaireStage() != null ? contrat.getGestionnaireStage().getId() : null,
+                contrat.getOffreStageid() != null ? contrat.getOffreStageid() : null
         );
     }
 }
