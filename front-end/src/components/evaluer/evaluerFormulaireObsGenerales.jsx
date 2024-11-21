@@ -19,12 +19,13 @@ const EvaluerFormulaireObsGenerales = ({ formData, handleChange, setErrorKeySign
 
             {/* Stage à privilégier */}
             <div className="mb-4">
-                <label className="font-medium">{t("environmentPreferredFor")} :</label>
+                <label htmlFor="milieuStage" className="font-medium">{t("environmentPreferredFor")} :</label>
                 <div className="flex gap-4 mt-2">
                     <label>
                         <input
                             className={`mr-2 ${hasError(formData.milieuStage) ? 'border-red-500' : ''}`}
                             type="radio"
+                            id="milieuStage"
                             name="milieuStage"
                             value="PREMIER_STAGE"
                             checked={formData.milieuStage === "PREMIER_STAGE"}
@@ -32,10 +33,11 @@ const EvaluerFormulaireObsGenerales = ({ formData, handleChange, setErrorKeySign
                         />
                         {t("firstInternship")}
                     </label>
-                    <label>
+                    <label htmlFor="milieuStage">
                         <input
                             className={`mr-2 ${hasError(formData.milieuStage) ? 'border-red-500' : ''}`}
                             type="radio"
+                            id="milieuStage"
                             name="milieuStage"
                             value="DEUXIEME_STAGE"
                             checked={formData.milieuStage === "DEUXIEME_STAGE"}
@@ -52,12 +54,13 @@ const EvaluerFormulaireObsGenerales = ({ formData, handleChange, setErrorKeySign
 
             {/* Nombre de stagiaires */}
             <div className="mb-4">
-                <label className="font-medium">{t("openToWelcoming")} :</label>
+                <label htmlFor="nombreStagiaires" className="font-medium">{t("openToWelcoming")} :</label>
                 <div className="flex flex-wrap gap-4 mt-2">
-                    <label>
+                    <label htmlFor="nombreStagiaires">
                         <input
                             className={`mr-2 ${hasError(formData.nombreStagiaires) ? 'border-red-500' : ''}`}
                             type="radio"
+                            id="nombreStagiaires"
                             name="nombreStagiaires"
                             value="UN"
                             checked={formData.nombreStagiaires === "UN"}
@@ -65,10 +68,11 @@ const EvaluerFormulaireObsGenerales = ({ formData, handleChange, setErrorKeySign
                         />
                         {t("oneIntern")}
                     </label>
-                    <label>
+                    <label htmlFor="nombreStagiaires">
                         <input
                             className={`mr-2 ${hasError(formData.nombreStagiaires) ? 'border-red-500' : ''}`}
                             type="radio"
+                            id="nombreStagiaires"
                             name="nombreStagiaires"
                             value="DEUX"
                             checked={formData.nombreStagiaires === "DEUX"}
@@ -76,10 +80,11 @@ const EvaluerFormulaireObsGenerales = ({ formData, handleChange, setErrorKeySign
                         />
                         {t("twoInterns")}
                     </label>
-                    <label>
+                    <label htmlFor="nombreStagiaires">
                         <input
                             className={`mr-2 ${hasError(formData.nombreStagiaires) ? 'border-red-500' : ''}`}
                             type="radio"
+                            id="nombreStagiaires"
                             name="nombreStagiaires"
                             value="TROIS"
                             checked={formData.nombreStagiaires === "TROIS"}
@@ -87,10 +92,11 @@ const EvaluerFormulaireObsGenerales = ({ formData, handleChange, setErrorKeySign
                         />
                         {t("threeInterns")}
                     </label>
-                    <label>
+                    <label htmlFor="nombreStagiaires">
                         <input
                             className={`mr-2 ${hasError(formData.nombreStagiaires) ? 'border-red-500' : ''}`}
                             type="radio"
+                            id="nombreStagiaires"
                             name="nombreStagiaires"
                             value="PLUS_DE_TROIS"
                             checked={formData.nombreStagiaires === "PLUS_DE_TROIS"}
@@ -109,10 +115,11 @@ const EvaluerFormulaireObsGenerales = ({ formData, handleChange, setErrorKeySign
             <div className="mb-4">
                 <label className="font-medium">{t("moreInternsInTheFuture")} :</label>
                 <div className="flex gap-4 mt-2">
-                    <label>
+                    <label htmlFor="prochainStage">
                         <input
                             className={`mr-2 ${hasError(formData.prochainStage) ? 'border-red-500' : ''}`}
                             type="radio"
+                            id="prochainStage"
                             name="prochainStage"
                             value="OUI"
                             checked={formData.prochainStage === "OUI"}
@@ -120,10 +127,11 @@ const EvaluerFormulaireObsGenerales = ({ formData, handleChange, setErrorKeySign
                         />
                         {t("OUI")}
                     </label>
-                    <label>
+                    <label htmlFor="prochainStage">
                         <input
                             className={`mr-2 ${hasError(formData.prochainStage) ? 'border-red-500' : ''}`}
                             type="radio"
+                            id="prochainStage"
                             name="prochainStage"
                             value="NON"
                             checked={formData.prochainStage === "NON"}
@@ -140,12 +148,13 @@ const EvaluerFormulaireObsGenerales = ({ formData, handleChange, setErrorKeySign
 
             {/* Quarts de travail variables */}
             <div className="mb-4">
-                <label className="font-medium">{t("variableWorkShifts")} :</label>
+                <label htmlFor="quartsVariables" className="font-medium">{t("variableWorkShifts")} :</label>
                 <div className="flex gap-4 mt-2">
                     <label>
                         <input
                             className={`mr-2 ${hasError(formData.quartsVariables) ? 'border-red-500' : ''}`}
                             type="radio"
+                            id="quartsVariables"
                             name="quartsVariables"
                             value="OUI"
                             checked={formData.quartsVariables === "OUI"}
@@ -153,10 +162,11 @@ const EvaluerFormulaireObsGenerales = ({ formData, handleChange, setErrorKeySign
                         />
                         {t("OUI")}
                     </label>
-                    <label>
+                    <label htmlFor="quartsVariables">
                         <input
                             className={`mr-2 ${hasError(formData.quartsVariables) ? 'border-red-500' : ''}`}
                             type="radio"
+                            id="quartsVariables"
                             name="quartsVariables"
                             value="NON"
                             checked={formData.quartsVariables === "NON"}
@@ -174,8 +184,9 @@ const EvaluerFormulaireObsGenerales = ({ formData, handleChange, setErrorKeySign
                     <div className="mt-4 space-y-2">
                         {["quart1", "quart2", "quart3"].map((quart, index) => (
                             <div key={index} className="flex items-center gap-4">
-                                <span>De</span>
+                                <label htmlFor="startTime">De</label>
                                 <input
+                                    id="startTime"
                                     type="datetime-local"
                                     value={formData[quart]?.de || ""}
                                     onChange={(e) =>
@@ -183,8 +194,9 @@ const EvaluerFormulaireObsGenerales = ({ formData, handleChange, setErrorKeySign
                                     }
                                     className={`border rounded px-2 py-1 ${hasError(formData[quart]) ? 'border-red-500' : ''}`}
                                 />
-                                <span>à</span>
+                                <label htmlFor="endTime">à</label>
                                 <input
+                                    id="endTime"
                                     type="datetime-local"
                                     value={formData[quart]?.a || ""}
                                     onChange={(e) =>
@@ -208,6 +220,7 @@ const EvaluerFormulaireObsGenerales = ({ formData, handleChange, setErrorKeySign
                     <InputErrorMessage messageKey={errorKeySignature}/>
                 </div>
                 <button
+                    id="clearCanvas"
                     className="p-2 bg-orange hover:bg-opacity-90 text-white rounded mt-3 mb-5"
                     onClick={(e) => {
                         e.preventDefault()
