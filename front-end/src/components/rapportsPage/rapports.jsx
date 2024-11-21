@@ -46,6 +46,9 @@ const Rapports = () => {
                         <option value="etudiants-avec-convocation">{t("studentsWithSummon")}</option>
                         <option value="etudiants-sans-convocation">{t("studentsWithoutSummon")}</option>
                         <option value="etudiants-interviewed">{t("interviewedStudents")}</option>
+                        <option value="etudiants-non-evalues">{t("studentsNotEvaluated")}</option>
+                        <option value="etudiants-a-evaluer-milieu-de-stage">{t("studentsToEvaluateMilieuStage")}</option>
+                        <option value="etudiants-ont-stage">{t("studentsWithInternship")}</option>
                         <option value="offres-validees">{t("approvedInternships")}</option>
                         <option value="offres-non-validees">{t("unapprovedInternships")}</option>
                     </select>

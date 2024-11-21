@@ -409,5 +409,8 @@
     "informationsEntreprise": "Company informations",
     "errorStageNumber": "Please select the course number.",
     "remplirFormulaireDeMilieuxStage": "Internship environment form of",
-    "salaireHoraire": "Specify the hourly wage"
+    "salaireHoraire": "Specify the hourly wage",
+    "studentsNotEvaluated": "Students not evaluated",
+    "studentsToEvaluateMilieuStage": "Students to evaluate for the internship environment",
+    "studentsWithInternship": "Students with an internship"
 }

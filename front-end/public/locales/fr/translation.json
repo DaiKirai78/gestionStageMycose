@@ -408,5 +408,8 @@
     "informationsEntreprise": "Informations de l'entreprise",
     "errorStageNumber": "Veuillez sélectionner le numéro du stage.",
     "remplirFormulaireDeMilieuxStage": "Formulaire de milieux de stage de",
-    "salaireHoraire": "Préciser le salaire horaire"
+    "salaireHoraire": "Préciser le salaire horaire",
+    "studentsNotEvaluated": "Étudiants non évalués",
+    "studentsToEvaluateMilieuStage": "Étudiants à évaluer pour le milieu de stage",
+    "studentsWithInternship": "Étudiants avec un stage"
 }
