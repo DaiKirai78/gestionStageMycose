@@ -4,6 +4,7 @@ import com.projet.mycose.dto.EtudiantDTO;
 import com.projet.mycose.dto.FicheEvaluationMilieuStageDTO;
 import com.projet.mycose.exceptions.AuthenticationException;
 import com.projet.mycose.exceptions.ResourceNotFoundException;
+import com.projet.mycose.exceptions.SignaturePersistenceException;
 import com.projet.mycose.exceptions.UserNotFoundException;
 import com.projet.mycose.modele.*;
 import com.projet.mycose.repository.EnseignantRepository;
@@ -20,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.Optional;
@@ -95,6 +97,12 @@ public class EnseignantService {
 
         ficheEvaluationMilieuStage.setEnseignant(enseignant);
         ficheEvaluationMilieuStage.setEtudiant(etudiant);
+
+        try {
+            ficheEvaluationMilieuStage.setSignatureEnseignant(ficheEvaluationMilieuStageDTO.getSignatureEnseignant().getBytes());
+        } catch (IOException e) {
+            throw new SignaturePersistenceException("Erreur lors de la sauvegarde de la signature de l'enseignant");
+        }
 
         ficheEvaluationMilieuStageRepository.save(ficheEvaluationMilieuStage);
 

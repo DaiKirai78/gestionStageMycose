@@ -10,8 +10,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -19,6 +19,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class FicheEvaluationMilieuStageDTO {
     private long id;
+
+    @NotNull(message = "La signature de l'enseignant est manquante.")
+    private MultipartFile signatureEnseignant;
 
     // Identification de l'entreprise
     @NotBlank(message = "Le nom de l'entreprise ne peut pas être vide.")
