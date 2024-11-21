@@ -9,11 +9,8 @@ import com.projet.mycose.exceptions.UserNotFoundException;
 import com.projet.mycose.modele.*;
 import com.projet.mycose.modele.auth.Credentials;
 import com.projet.mycose.modele.auth.Role;
-import com.projet.mycose.repository.ContratRepository;
-import com.projet.mycose.repository.EmployeurRepository;
+import com.projet.mycose.repository.*;
 import com.projet.mycose.dto.EmployeurDTO;
-import com.projet.mycose.repository.FicheEvaluationStagiaireRepository;
-import com.projet.mycose.repository.UtilisateurRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -59,6 +56,9 @@ public class EmployeurServiceTest {
 
     @Mock
     private UtilisateurRepository utilisateurRepository;
+
+    @Mock
+    private EtudiantRepository etudiantRepository;
 
     @Mock
     AuthenticationManager authenticationManager;
@@ -394,7 +394,7 @@ public class EmployeurServiceTest {
         ficheEvaluationStagiaireDTO.setFonctionSuperviseur("Manager");
 
         when(utilisateurService.getMeUtilisateur()).thenReturn(employeur);
-        when(utilisateurRepository.findUtilisateurById(etudiantId)).thenReturn(Optional.of(etudiant));
+        when(etudiantRepository.findEtudiantById(etudiantId)).thenReturn(etudiant);
         when(modelMapperMock.map(ficheEvaluationStagiaireDTO, FicheEvaluationStagiaire.class))
                 .thenReturn(new FicheEvaluationStagiaire());
         when(contratRepositoryMock.findContratActiveOfEtudiantAndEmployeur(etudiantId, employeurId, Etudiant.ContractStatus.ACTIVE)).thenReturn(Optional.of(contrat));
@@ -406,7 +406,7 @@ public class EmployeurServiceTest {
 
         // Assert
         verify(utilisateurService, times(1)).getMeUtilisateur();
-        verify(utilisateurRepository, times(1)).findUtilisateurById(etudiantId);
+        verify(etudiantRepository, times(1)).findEtudiantById(etudiantId);
         verify(ficheEvaluationStagiaireRepositoryMock, times(1)).save(ficheCaptor.capture());
 
         FicheEvaluationStagiaire ficheSaved = ficheCaptor.getValue();
@@ -457,7 +457,7 @@ public class EmployeurServiceTest {
         ficheEvaluationStagiaireDTO.setFonctionSuperviseur("Manager");
 
         when(utilisateurService.getMeUtilisateur()).thenReturn(employeur);
-        when(utilisateurRepository.findUtilisateurById(etudiantId)).thenReturn(Optional.empty());
+        when(etudiantRepository.findEtudiantById(etudiantId)).thenThrow(new NullPointerException());
 
         // Act
         UserNotFoundException exception = assertThrows(UserNotFoundException.class, () ->
@@ -487,7 +487,7 @@ public class EmployeurServiceTest {
         ficheEvaluationStagiaireDTO.setFonctionSuperviseur("Manager");
 
         when(utilisateurService.getMeUtilisateur()).thenReturn(employeur);
-        when(utilisateurRepository.findUtilisateurById(etudiantId)).thenReturn(Optional.of(etudiant));
+        when(etudiantRepository.findEtudiantById(etudiantId)).thenReturn(etudiant);
         when(modelMapperMock.map(ficheEvaluationStagiaireDTO, FicheEvaluationStagiaire.class))
                 .thenReturn(new FicheEvaluationStagiaire());
         when(contratRepositoryMock.findContratActiveOfEtudiantAndEmployeur(etudiantId, employeur.getId(), Etudiant.ContractStatus.ACTIVE)).thenReturn(Optional.empty());
