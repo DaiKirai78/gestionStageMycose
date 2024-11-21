@@ -20,4 +20,12 @@ public interface FicheEvaluationMilieuStageRepository extends JpaRepository<Fich
             "    SELECT f.contrat FROM FicheEvaluationMilieuStage f" +
             ")")
     Page<Etudiant> findAllEtudiantsNonEvaluesByProf(Long enseignantId, Etudiant.ContractStatus contractStatus, Pageable pageable);
+
+    @Query("SELECT e FROM Etudiant e " +
+            "JOIN e.contrat c " +
+            "WHERE e.contractStatus = 'ACTIVE' " +
+            "AND c NOT IN (" +
+            "    SELECT f.contrat FROM FicheEvaluationMilieuStage f" +
+            ")")
+    List<Etudiant> findAllEtudiantsNonEvaluesMilieuDeStage();
 }
