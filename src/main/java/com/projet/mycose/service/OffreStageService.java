@@ -41,7 +41,7 @@ public class OffreStageService {
     private final UtilisateurRepository utilisateurRepository;
     private final FormulaireOffreStageRepository formulaireOffreStageRepository;
     private final FichierOffreStageRepository ficherOffreStageRepository;
-    private static final int LIMIT_PER_PAGE = 10;
+    static final int LIMIT_PER_PAGE = 10;
     private final EtudiantRepository etudiantRepository;
     private final EtudiantOffreStagePriveeRepository etudiantOffreStagePriveeRepository;
     private final FichierOffreStageRepository fichierOffreStageRepository;
@@ -380,20 +380,6 @@ public class OffreStageService {
         return etudiantDTOList;
     }
 
-    @Deprecated
-    public List<String> getSessions() {
-        return new ArrayList<>(Arrays.stream(OffreStage.SessionEcole.values())
-                .map(OffreStage.SessionEcole::toString)
-                .toList());
-    }
-
-    @Deprecated
-    public List<Integer> getFutureYears() {
-        return Stream.of(Year.now(), Year.now().plusYears(1), Year.now().plusYears(2), Year.now().plusYears(3), Year.now().plusYears(4))
-                .map(Year::getValue)
-                .toList();
-    }
-
     private List<OffreStageDTO> listeOffreStageToDTO(List<OffreStage> listeAMapper) {
         List<OffreStageDTO> listeMappee = new ArrayList<>();
         for(OffreStage offreStage : listeAMapper) {
@@ -440,7 +426,7 @@ public class OffreStageService {
         return nombrePages;
     }
 
-    private static void checkAnneeAndSessionTogether(Integer annee, OffreStage.SessionEcole session) {
+    static void checkAnneeAndSessionTogether(Integer annee, OffreStage.SessionEcole session) {
         if ((annee != null && session == null) || (annee == null && session != null)) {
             throw new IllegalArgumentException("Session and year must be provided together");
         }

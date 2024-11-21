@@ -19,6 +19,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.nio.file.AccessDeniedException;
@@ -26,8 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
@@ -269,6 +269,45 @@ public class EnseignantServiceTest {
         // Assert
         assertEquals("Aucun Étudiant Trouvé", exception.getMessage());
         verify(ficheEvaluationMilieuStageRepository, never()).save(any(FicheEvaluationMilieuStage.class));
+    }
+
+    @Test
+    void getValidatedEnseignant_WithEnseignant_ReturnsEnseignant() {
+        // Arrange
+        Enseignant enseignant = new Enseignant();
+        enseignant.setId(1L);
+        // Act
+        Enseignant result = enseignantService.getValidatedEnseignant(enseignant);
+
+        // Assert
+        assertNotNull(result, "The returned Enseignant should not be null.");
+        assertEquals(enseignant, result, "The returned Enseignant should be the same as the input.");
+    }
+
+    @Test
+    void getValidatedEnseignant_WithNonEnseignant_ThrowsAuthenticationException() {
+        // Arrange
+        Utilisateur utilisateur = new Etudiant();
+        utilisateur.setId(2L);
+
+        // Act & Assert
+        AuthenticationException exception = assertThrows(AuthenticationException.class, () ->
+                        enseignantService.getValidatedEnseignant(utilisateur),
+                "Expected getValidatedEnseignant to throw, but it didn't.");
+
+        assertEquals(HttpStatus.FORBIDDEN, exception.getStatus(), "Exception should have status FORBIDDEN.");
+        assertEquals("User is not an Enseignant.", exception.getMessage(), "Exception message should match.");
+    }
+
+    @Test
+    void getValidatedEnseignant_WithNull_ThrowsAuthenticationException() {
+        // Act & Assert
+        AuthenticationException exception = assertThrows(AuthenticationException.class, () ->
+                        enseignantService.getValidatedEnseignant(null),
+                "Expected getValidatedEnseignant to throw, but it didn't.");
+
+        assertEquals(HttpStatus.FORBIDDEN, exception.getStatus(), "Exception should have status FORBIDDEN.");
+        assertEquals("User is not an Enseignant.", exception.getMessage(), "Exception message should match.");
     }
 
 }

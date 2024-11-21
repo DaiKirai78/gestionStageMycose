@@ -61,7 +61,7 @@ public class EnseignantService {
         );
     }
 
-    private Enseignant getValidatedEnseignant(Utilisateur utilisateur) {
+    Enseignant getValidatedEnseignant(Utilisateur utilisateur) {
         if (!(utilisateur instanceof Enseignant enseignant)) {
             throw new AuthenticationException(HttpStatus.FORBIDDEN, "User is not an Enseignant.");
         }
@@ -90,5 +90,6 @@ public class EnseignantService {
         ficheEvaluationMilieuStageRepository.save(ficheEvaluationMilieuStage);
 
         //TODO: AJOUTER LE CONTRAT POUR ASSOCIER L'ÉTUDIANT ET L'ENSEIGNANT À UN STAGE
+        //TODO: FAIRE LE TEST QUAND SAM AURA FINI
     }
 }

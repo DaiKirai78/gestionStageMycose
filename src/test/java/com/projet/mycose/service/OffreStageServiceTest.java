@@ -6,11 +6,13 @@ import com.projet.mycose.exceptions.ResourceNotFoundException;
 import com.projet.mycose.modele.*;
 import com.projet.mycose.modele.auth.Credentials;
 import com.projet.mycose.modele.auth.Role;
+import com.projet.mycose.modele.utils.SessionEcoleUtil;
 import com.projet.mycose.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
+import org.hibernate.Session;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,11 +24,13 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import java.time.Clock;
+import java.time.LocalDateTime;
 import java.time.Year;
 import java.util.*;
 
@@ -155,6 +159,9 @@ public class OffreStageServiceTest {
                 .motDePasse("securePass!")
                 .entrepriseName("TechCorp")
                 .build();
+
+        formulaireOffreStage.setCreateur(employeur);
+        fichierOffreStage.setCreateur(employeur);
 
         gestionnaire = GestionnaireStage.builder()
                 .id(2L)
@@ -1112,22 +1119,6 @@ public class OffreStageServiceTest {
     }
 
     @Test
-    public void testGetSessions_ReturnsCorrectSessionNames() {
-        // Arrange
-        List<String> expectedSessions = Arrays.stream(OffreStage.SessionEcole.values())
-                .map(Enum::toString)
-                .toList();
-
-        // Act
-        List<String> actualSessions = offreStageService.getSessions();
-
-        // Assert
-        assertNotNull(actualSessions, "The returned session list should not be null.");
-        assertEquals(expectedSessions.size(), actualSessions.size(), "The size of the session lists should match.");
-        assertTrue(actualSessions.containsAll(expectedSessions), "The session list should contain all expected session names.");
-    }
-
-    @Test
     void getOffreStageWithUtilisateurInfo_Success() {
         // Arrange
         Long offreStageId = 1L;
@@ -1471,5 +1462,717 @@ public class OffreStageServiceTest {
 
         assertEquals("Aucun employeur associé à l'offre de stage id " + offreStageId + " n'existe.", exception.getMessage());
         verify(offreStageRepository, times(1)).findEmployeurByOffreStageId(offreStageId);
+    }
+
+    @Test
+    void getNextSession_ReturnsSessionInfoDTO() {
+        // Arrange
+        SessionInfoDTO expectedSessionInfo = new SessionInfoDTO(OffreStage.SessionEcole.ETE, Year.of(2024));
+
+        try (MockedStatic<SessionEcoleUtil> mockedStatic = mockStatic(SessionEcoleUtil.class)) {
+            mockedStatic.when(() -> SessionEcoleUtil.getSessionInfo(any(LocalDateTime.class)))
+                    .thenReturn(expectedSessionInfo);
+
+            // Act
+            SessionInfoDTO actualSessionInfo = offreStageService.getNextSession();
+
+            // Assert
+            mockedStatic.verify(() -> SessionEcoleUtil.getSessionInfo(any(LocalDateTime.class)), times(1));
+            assertNotNull(actualSessionInfo, "Returned SessionInfoDTO should not be null.");
+            assertEquals(expectedSessionInfo, actualSessionInfo, "Returned SessionInfoDTO should match the expected value.");
+        }
+    }
+
+    @Test
+    void getAllSessions_ReturnsListOfSessionInfoDTO() {
+        // Arrange
+        List<SessionInfoDTO> expectedSessions = Arrays.asList(
+                new SessionInfoDTO(OffreStage.SessionEcole.AUTOMNE, Year.of(2024)),
+                new SessionInfoDTO(OffreStage.SessionEcole.HIVER, Year.of(2025))
+        );
+
+
+        when(offreStageRepository.findDistinctSemesterAndYearAll()).thenReturn(expectedSessions);
+
+        // Act
+        List<SessionInfoDTO> actualSessions = offreStageService.getAllSessions();
+
+        // Assert
+        verify(offreStageRepository, times(1)).findDistinctSemesterAndYearAll();
+        assertEquals(expectedSessions, actualSessions, "The returned list should match the expected sessions.");
+    }
+
+    @Test
+    void getAllSessions_ReturnsEmptyList() {
+        // Arrange
+        List<SessionInfoDTO> expectedSessions = Collections.emptyList();
+
+        when(offreStageRepository.findDistinctSemesterAndYearAll()).thenReturn(expectedSessions);
+
+        // Act
+        List<SessionInfoDTO> actualSessions = offreStageService.getAllSessions();
+
+        // Assert
+        verify(offreStageRepository, times(1)).findDistinctSemesterAndYearAll();
+        assertTrue(actualSessions.isEmpty(), "The returned list should be empty.");
+    }
+
+    // --------------------- Tests for getSessionsForCreateur ---------------------
+
+    @Test
+    void getSessionsForCreateur_ReturnsListOfSessionInfoDTO() {
+        // Arrange
+        Long createurId = 1L;
+        List<SessionInfoDTO> expectedSessions = Arrays.asList(
+                new SessionInfoDTO(OffreStage.SessionEcole.AUTOMNE, Year.of(2024)),
+                new SessionInfoDTO(OffreStage.SessionEcole.HIVER, Year.of(2025))
+        );
+
+        when(utilisateurService.getMyUserId()).thenReturn(createurId);
+        when(offreStageRepository.findDistinctSemesterAndYearByCreateurId(createurId)).thenReturn(expectedSessions);
+
+        // Act
+        List<SessionInfoDTO> actualSessions = offreStageService.getSessionsForCreateur();
+
+        // Assert
+        verify(utilisateurService, times(1)).getMyUserId();
+        verify(offreStageRepository, times(1)).findDistinctSemesterAndYearByCreateurId(createurId);
+        assertEquals(expectedSessions, actualSessions, "The returned list should match the expected sessions.");
+    }
+
+    @Test
+    void getSessionsForCreateur_NoSessionsFound_ReturnsEmptyList() {
+        // Arrange
+        Long createurId = 2L;
+        List<SessionInfoDTO> expectedSessions = Collections.emptyList();
+
+        when(utilisateurService.getMyUserId()).thenReturn(createurId);
+        when(offreStageRepository.findDistinctSemesterAndYearByCreateurId(createurId)).thenReturn(expectedSessions);
+
+        // Act
+        List<SessionInfoDTO> actualSessions = offreStageService.getSessionsForCreateur();
+
+        // Assert
+        verify(utilisateurService, times(1)).getMyUserId();
+        verify(offreStageRepository, times(1)).findDistinctSemesterAndYearByCreateurId(createurId);
+        assertTrue(actualSessions.isEmpty(), "The returned list should be empty.");
+    }
+
+    // --------------------- Tests for getAllOffreStagesForEtudiantFiltered ---------------------
+
+    @Test
+    void getAllOffreStagesForEtudiantFiltered_WithValidInput_ReturnsPageOfOffreStageDTO() throws AccessDeniedException {
+        // Arrange
+        int pageNumber = 0;
+        Integer annee = 2024;
+        OffreStage.SessionEcole sessionEcole = OffreStage.SessionEcole.AUTOMNE;
+        String title = "Software Engineer";
+
+        EtudiantDTO etudiantDTO = new EtudiantDTO();
+        etudiantDTO.setId(1L);
+        etudiantDTO.setProgramme(Programme.GENIE_LOGICIEL);
+
+        PageRequest pageRequest = PageRequest.of(pageNumber, OffreStageService.LIMIT_PER_PAGE);
+
+        List<OffreStage> offreStages = Arrays.asList(fichierOffreStage, formulaireOffreStage);
+        Page<OffreStage> offreStagePage = new PageImpl<>(offreStages, pageRequest, offreStages.size());
+
+        when(utilisateurService.getMe()).thenReturn(etudiantDTO);
+        when(offreStageRepository.findAllByEtudiantFilteredWithTitle(
+                etudiantDTO.getId(),
+                etudiantDTO.getProgramme(),
+                Year.of(annee),
+                sessionEcole,
+                title,
+                pageRequest
+        )).thenReturn(offreStagePage);
+
+        when(modelMapper.map(fichierOffreStage, FichierOffreStageDTO.class)).thenReturn(fichierOffreStageDTO);
+        when(modelMapper.map(formulaireOffreStage, FormulaireOffreStageDTO.class)).thenReturn(formulaireOffreStageDTO);
+
+        // Act
+        Page<OffreStageDTO> actualPage = offreStageService.getAllOffreStagesForEtudiantFiltered(pageNumber, annee, sessionEcole, title);
+
+        // Assert
+        verify(utilisateurService, times(1)).getMe();
+        verify(offreStageRepository, times(1)).findAllByEtudiantFilteredWithTitle(
+                etudiantDTO.getId(),
+                etudiantDTO.getProgramme(),
+                Year.of(annee),
+                sessionEcole,
+                title,
+                pageRequest
+        );
+        assertNotNull(actualPage, "Returned Page should not be null.");
+        assertEquals(2, actualPage.getContent().size(), "Page should contain 2 OffreStageDTOs.");
+        // Additional assertions can be made on the content
+    }
+
+    @Test
+    void getAllOffreStagesForEtudiantFiltered_WithNullAnneeAndSession_ReturnsAllSessions() throws AccessDeniedException {
+        // Arrange
+        int pageNumber = 1;
+        Integer annee = null;
+        OffreStage.SessionEcole sessionEcole = null;
+        String title = null; // Should default to empty string
+
+        EtudiantDTO etudiantDTO = new EtudiantDTO();
+        etudiantDTO.setId(2L);
+        etudiantDTO.setProgramme(Programme.GENIE_LOGICIEL);
+
+        PageRequest pageRequest = PageRequest.of(pageNumber, OffreStageService.LIMIT_PER_PAGE);
+
+        List<OffreStage> offreStages = Collections.singletonList(fichierOffreStage);
+        Page<OffreStage> offreStagePage = new PageImpl<>(offreStages, pageRequest, offreStages.size());
+
+        when(utilisateurService.getMe()).thenReturn(etudiantDTO);
+        when(offreStageRepository.findAllByEtudiantFilteredWithTitle(
+                etudiantDTO.getId(),
+                etudiantDTO.getProgramme(),
+                null,
+                null,
+                "",
+                pageRequest
+        )).thenReturn(offreStagePage);
+
+        when(modelMapper.map(fichierOffreStage, FichierOffreStageDTO.class)).thenReturn(fichierOffreStageDTO);
+
+        // Act
+        Page<OffreStageDTO> actualPage = offreStageService.getAllOffreStagesForEtudiantFiltered(pageNumber, annee, sessionEcole, title);
+
+        // Assert
+        verify(utilisateurService, times(1)).getMe();
+        verify(offreStageRepository, times(1)).findAllByEtudiantFilteredWithTitle(
+                etudiantDTO.getId(),
+                etudiantDTO.getProgramme(),
+                null,
+                null,
+                "",
+                pageRequest
+        );
+        assertNotNull(actualPage, "Returned Page should not be null.");
+        assertEquals(1, actualPage.getContent().size(), "Page should contain 1 OffreStageDTO.");
+    }
+
+    @Test
+    void getAllOffreStagesForEtudiantFiltered_UserAccessDenied_ThrowsAuthenticationException() throws AccessDeniedException {
+        // Arrange
+        int pageNumber = 0;
+        Integer annee = 2023;
+        OffreStage.SessionEcole sessionEcole = OffreStage.SessionEcole.AUTOMNE;
+        String title = "Data Analyst";
+
+        when(utilisateurService.getMe()).thenThrow(new AccessDeniedException("Access denied"));
+
+        // Act & Assert
+        AuthenticationException exception = assertThrows(AuthenticationException.class, () ->
+                        offreStageService.getAllOffreStagesForEtudiantFiltered(pageNumber, annee, sessionEcole, title),
+                "Expected AuthenticationException to be thrown.");
+
+        assertEquals(HttpStatus.FORBIDDEN, exception.getStatus(), "Exception status should be FORBIDDEN.");
+        assertEquals("Authentication error", exception.getMessage(), "Exception message should match.");
+    }
+
+    @Test
+    void updateOffreStage_WithValidData_ReturnsUpdatedFichierOffreStageDTO() throws IOException {
+        // Arrange
+        Long offreStageId = 1001L;
+
+        // Create a valid UploadFicherOffreStageDTO
+        UploadFicherOffreStageDTO uploadDTO = new UploadFicherOffreStageDTO();
+        uploadDTO.setEntrepriseName("New Entreprise");
+        uploadDTO.setTitle("Senior Developer");
+        MockMultipartFile file = new MockMultipartFile(
+                "file",
+                "resume.pdf",
+                "application/pdf",
+                "Dummy PDF Content".getBytes()
+        );
+        uploadDTO.setFile(file);
+
+        // Mock UtilisateurService.getMe()
+        UtilisateurDTO utilisateurDTO = new GestionnaireStageDTO();
+        utilisateurDTO.setId(10L);
+        when(utilisateurService.getMe()).thenReturn(utilisateurDTO);
+
+        // Mock FicherOffreStageRepository.findById()
+        FichierOffreStage existingFichier = new FichierOffreStage();
+        existingFichier.setId(offreStageId);
+        Enseignant createur = new Enseignant();
+        createur.setId(utilisateurDTO.getId());
+        existingFichier.setCreateur(createur);
+        existingFichier.setEntrepriseName("Old Entreprise");
+        existingFichier.setTitle("Developer");
+        existingFichier.setFilename("old_resume.pdf");
+        existingFichier.setData("Old PDF Content".getBytes());
+
+        when(ficherOffreStageRepository.findById(offreStageId)).thenReturn(Optional.of(existingFichier));
+
+        // Mock FicherOffreStageRepository.save()
+        FichierOffreStage savedFichier = new FichierOffreStage();
+        savedFichier.setId(offreStageId);
+        savedFichier.setCreateur(createur);
+        savedFichier.setEntrepriseName(uploadDTO.getEntrepriseName());
+        savedFichier.setTitle(uploadDTO.getTitle());
+        savedFichier.setFilename(file.getOriginalFilename());
+        savedFichier.setData(file.getBytes());
+
+        when(ficherOffreStageRepository.save(any(FichierOffreStage.class))).thenReturn(savedFichier);
+
+        // Spy the service to mock convertToDTO
+        OffreStageService spyService = Mockito.spy(offreStageService);
+        FichierOffreStageDTO expectedDTO = new FichierOffreStageDTO();
+        expectedDTO.setId(offreStageId);
+        expectedDTO.setEntrepriseName(uploadDTO.getEntrepriseName());
+        expectedDTO.setTitle(uploadDTO.getTitle());
+        expectedDTO.setFilename(file.getOriginalFilename());
+        expectedDTO.setFileData(Base64.getEncoder().encodeToString(file.getBytes()));
+
+        doReturn(expectedDTO).when(spyService).convertToDTO(savedFichier);
+
+        // Act
+        FichierOffreStageDTO actualDTO = spyService.updateOffreStage(uploadDTO, offreStageId);
+
+        // Assert
+        verify(utilisateurService, times(1)).getMe();
+        verify(ficherOffreStageRepository, times(1)).findById(offreStageId);
+        verify(ficherOffreStageRepository, times(1)).save(existingFichier);
+        verify(spyService, times(1)).convertToDTO(savedFichier);
+
+        assertNotNull(actualDTO, "Returned FichierOffreStageDTO should not be null.");
+        assertEquals(uploadDTO.getEntrepriseName(), actualDTO.getEntrepriseName(), "EntrepriseName should be updated.");
+        assertEquals(uploadDTO.getTitle(), actualDTO.getTitle(), "Title should be updated.");
+        assertEquals(file.getOriginalFilename(), actualDTO.getFilename(), "Filename should be updated.");
+        assertEquals(Base64.getEncoder().encodeToString(file.getBytes()), actualDTO.getFileData(), "File data should be updated.");
+    }
+
+    @Test
+    void updateOffreStage_FichierOffreStageNotFound_ThrowsResourceNotFoundException() throws IOException {
+        // Arrange
+        Long offreStageId = 2002L;
+
+        UploadFicherOffreStageDTO uploadDTO = new UploadFicherOffreStageDTO();
+        uploadDTO.setEntrepriseName("New Entreprise");
+        uploadDTO.setTitle("Senior Developer");
+
+        // Mock UtilisateurService.getMe()
+        UtilisateurDTO utilisateurDTO = new GestionnaireStageDTO();
+        utilisateurDTO.setId(20L);
+        when(utilisateurService.getMe()).thenReturn(utilisateurDTO);
+
+        // Mock FicherOffreStageRepository.findById() to return empty
+        when(ficherOffreStageRepository.findById(offreStageId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () ->
+                        offreStageService.updateOffreStage(uploadDTO, offreStageId),
+                "Expected ResourceNotFoundException to be thrown.");
+
+        assertEquals("FichierOffreStage not found with ID: " + offreStageId, exception.getMessage(), "Exception message should match.");
+        verify(utilisateurService, times(1)).getMe();
+        verify(ficherOffreStageRepository, times(1)).findById(offreStageId);
+        verify(ficherOffreStageRepository, never()).save(any(FichierOffreStage.class));
+    }
+
+    @Test
+    void updateOffreStage_UserNotCreateur_ThrowsAccessDeniedException() throws IOException {
+        // Arrange
+        Long offreStageId = 3003L;
+
+        UploadFicherOffreStageDTO uploadDTO = new UploadFicherOffreStageDTO();
+        uploadDTO.setEntrepriseName("New Entreprise");
+
+        // Mock UtilisateurService.getMe()
+        UtilisateurDTO utilisateurDTO = new GestionnaireStageDTO();
+        utilisateurDTO.setId(30L);
+        when(utilisateurService.getMe()).thenReturn(utilisateurDTO);
+
+        // Mock FicherOffreStageRepository.findById()
+        FichierOffreStage existingFichier = new FichierOffreStage();
+        existingFichier.setId(offreStageId);
+        Enseignant createur = new Enseignant();
+        createur.setId(999L); // Different from utilisateurDTO.getId()
+        existingFichier.setCreateur(createur);
+        existingFichier.setEntrepriseName("Old Entreprise");
+
+        when(ficherOffreStageRepository.findById(offreStageId)).thenReturn(Optional.of(existingFichier));
+
+        // Act & Assert
+        AccessDeniedException exception = assertThrows(AccessDeniedException.class, () ->
+                        offreStageService.updateOffreStage(uploadDTO, offreStageId),
+                "Expected AccessDeniedException to be thrown.");
+
+        assertEquals("Vous n'avez pas les droits pour modifier cette offre de stage", exception.getMessage(), "Exception message should match.");
+        verify(utilisateurService, times(1)).getMe();
+        verify(ficherOffreStageRepository, times(1)).findById(offreStageId);
+        verify(ficherOffreStageRepository, never()).save(any(FichierOffreStage.class));
+    }
+
+    @Test
+    void updateOffreStage_WithNullFields_DoesNotUpdateNullFields() throws IOException {
+        // Arrange
+        Long offreStageId = 4004L;
+
+        // Create UploadFicherOffreStageDTO with some null fields
+        UploadFicherOffreStageDTO uploadDTO = new UploadFicherOffreStageDTO();
+        uploadDTO.setEntrepriseName(null); // Should not update
+        uploadDTO.setTitle("Lead Developer");
+        uploadDTO.setFile(null); // Should not update
+
+        // Mock UtilisateurService.getMe()
+        UtilisateurDTO utilisateurDTO = new GestionnaireStageDTO();
+        utilisateurDTO.setId(40L);
+        when(utilisateurService.getMe()).thenReturn(utilisateurDTO);
+
+        // Mock FicherOffreStageRepository.findById()
+        FichierOffreStage existingFichier = new FichierOffreStage();
+        existingFichier.setId(offreStageId);
+        Enseignant createur = new Enseignant();
+        createur.setId(utilisateurDTO.getId());
+        existingFichier.setCreateur(createur);
+        existingFichier.setEntrepriseName("Old Entreprise");
+        existingFichier.setTitle("Developer");
+        existingFichier.setFilename("old_resume.pdf");
+        existingFichier.setData("Old PDF Content".getBytes());
+
+        when(ficherOffreStageRepository.findById(offreStageId)).thenReturn(Optional.of(existingFichier));
+
+        // Mock FicherOffreStageRepository.save()
+        FichierOffreStage savedFichier = new FichierOffreStage();
+        savedFichier.setId(offreStageId);
+        savedFichier.setCreateur(createur);
+        savedFichier.setEntrepriseName(existingFichier.getEntrepriseName()); // Should remain unchanged
+        savedFichier.setTitle(uploadDTO.getTitle()); // Updated
+        savedFichier.setFilename(existingFichier.getFilename()); // Should remain unchanged
+        savedFichier.setData(existingFichier.getData()); // Should remain unchanged
+
+        when(ficherOffreStageRepository.save(existingFichier)).thenReturn(savedFichier);
+
+        // Spy the service to mock convertToDTO
+        OffreStageService spyService = Mockito.spy(offreStageService);
+        FichierOffreStageDTO expectedDTO = new FichierOffreStageDTO();
+        expectedDTO.setId(offreStageId);
+        expectedDTO.setEntrepriseName(existingFichier.getEntrepriseName());
+        expectedDTO.setTitle(uploadDTO.getTitle());
+        expectedDTO.setFilename(existingFichier.getFilename());
+        expectedDTO.setFileData(Base64.getEncoder().encodeToString(existingFichier.getData()));
+
+        doReturn(expectedDTO).when(spyService).convertToDTO(savedFichier);
+
+        // Act
+        FichierOffreStageDTO actualDTO = spyService.updateOffreStage(uploadDTO, offreStageId);
+
+        // Assert
+        verify(utilisateurService, times(1)).getMe();
+        verify(ficherOffreStageRepository, times(1)).findById(offreStageId);
+        verify(ficherOffreStageRepository, times(1)).save(existingFichier);
+        verify(spyService, times(1)).convertToDTO(savedFichier);
+
+        assertNotNull(actualDTO, "Returned FichierOffreStageDTO should not be null.");
+        assertEquals(existingFichier.getEntrepriseName(), actualDTO.getEntrepriseName(), "EntrepriseName should remain unchanged.");
+        assertEquals(uploadDTO.getTitle(), actualDTO.getTitle(), "Title should be updated.");
+        assertEquals(existingFichier.getFilename(), actualDTO.getFilename(), "Filename should remain unchanged.");
+        assertEquals(Base64.getEncoder().encodeToString(existingFichier.getData()), actualDTO.getFileData(), "File data should remain unchanged.");
+    }
+
+    @Test
+    void updateOffreStage_WithEmptyFile_DoesNotUpdateFile() throws IOException {
+        // Arrange
+        Long offreStageId = 5005L;
+
+        // Create UploadFicherOffreStageDTO with empty file
+        UploadFicherOffreStageDTO uploadDTO = new UploadFicherOffreStageDTO();
+        uploadDTO.setEntrepriseName("Updated Entreprise");
+        uploadDTO.setTitle("Project Manager");
+        MockMultipartFile emptyFile = new MockMultipartFile(
+                "file",
+                "",
+                "application/pdf",
+                new byte[0]
+        );
+        uploadDTO.setFile(emptyFile);
+
+        // Mock UtilisateurService.getMe()
+        UtilisateurDTO utilisateurDTO = new GestionnaireStageDTO();
+        utilisateurDTO.setId(50L);
+        when(utilisateurService.getMe()).thenReturn(utilisateurDTO);
+
+        // Mock FicherOffreStageRepository.findById()
+        FichierOffreStage existingFichier = new FichierOffreStage();
+        existingFichier.setId(offreStageId);
+        Enseignant createur = new Enseignant();
+        createur.setId(utilisateurDTO.getId());
+        existingFichier.setCreateur(createur);
+        existingFichier.setEntrepriseName("Old Entreprise");
+        existingFichier.setTitle("Developer");
+        existingFichier.setFilename("resume.pdf");
+        existingFichier.setData("Existing PDF Content".getBytes());
+
+        when(ficherOffreStageRepository.findById(offreStageId)).thenReturn(Optional.of(existingFichier));
+
+        // Mock FicherOffreStageRepository.save()
+        FichierOffreStage savedFichier = new FichierOffreStage();
+        savedFichier.setId(offreStageId);
+        savedFichier.setCreateur(createur);
+        savedFichier.setEntrepriseName(uploadDTO.getEntrepriseName());
+        savedFichier.setTitle(uploadDTO.getTitle());
+        savedFichier.setFilename(existingFichier.getFilename()); // Should remain unchanged
+        savedFichier.setData(existingFichier.getData()); // Should remain unchanged
+
+        when(ficherOffreStageRepository.save(existingFichier)).thenReturn(savedFichier);
+
+        // Spy the service to mock convertToDTO
+        OffreStageService spyService = Mockito.spy(offreStageService);
+        FichierOffreStageDTO expectedDTO = new FichierOffreStageDTO();
+        expectedDTO.setId(offreStageId);
+        expectedDTO.setEntrepriseName(uploadDTO.getEntrepriseName());
+        expectedDTO.setTitle(uploadDTO.getTitle());
+        expectedDTO.setFilename(existingFichier.getFilename());
+        expectedDTO.setFileData(Base64.getEncoder().encodeToString(existingFichier.getData()));
+
+        doReturn(expectedDTO).when(spyService).convertToDTO(savedFichier);
+
+        // Act
+        FichierOffreStageDTO actualDTO = spyService.updateOffreStage(uploadDTO, offreStageId);
+
+        // Assert
+        verify(utilisateurService, times(1)).getMe();
+        verify(ficherOffreStageRepository, times(1)).findById(offreStageId);
+        verify(ficherOffreStageRepository, times(1)).save(existingFichier);
+        verify(spyService, times(1)).convertToDTO(savedFichier);
+
+        assertNotNull(actualDTO, "Returned FichierOffreStageDTO should not be null.");
+        assertEquals(uploadDTO.getEntrepriseName(), actualDTO.getEntrepriseName(), "EntrepriseName should be updated.");
+        assertEquals(uploadDTO.getTitle(), actualDTO.getTitle(), "Title should be updated.");
+        assertEquals(existingFichier.getFilename(), actualDTO.getFilename(), "Filename should remain unchanged.");
+        assertEquals(Base64.getEncoder().encodeToString(existingFichier.getData()), actualDTO.getFileData(), "File data should remain unchanged.");
+    }
+
+    @Test
+    void checkAnneeSession_WithValidData_ThrowsArgument() {
+        // Arrange
+        Integer annee = 2024;
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                        offreStageService.checkAnneeAndSessionTogether(annee, null),
+                "Expected IllegalArgumentException to be thrown.");
+    }
+
+    @Test
+    void getAmountOfPagesForEtudiantFiltered_WithValidInput_ReturnsCorrectPageCount() throws AccessDeniedException {
+        // Arrange
+        Integer annee = 2024;
+        OffreStage.SessionEcole sessionEcole = OffreStage.SessionEcole.AUTOMNE;
+        String title = "Software Engineer";
+
+        EtudiantDTO etudiantDTO = new EtudiantDTO();
+        etudiantDTO.setId(1L);
+        etudiantDTO.setProgramme(Programme.GENIE_LOGICIEL);
+
+        when(utilisateurService.getMe()).thenReturn(etudiantDTO);
+
+        // Assume LIMIT_PER_PAGE is 10
+        int limitPerPage = OffreStageService.LIMIT_PER_PAGE; // 10
+
+        // Mock countByEtudiantIdNotAppliedFilteredWithTitle
+        when(offreStageRepository.countByEtudiantIdNotAppliedFilteredWithTitle(
+                etudiantDTO.getId(),
+                etudiantDTO.getProgramme(),
+                Year.of(annee),
+                sessionEcole,
+                title
+        )).thenReturn(25L); // Expecting 3 pages (25 / 10 = 2.5 => 3)
+
+        // Act
+        int actualPageCount = offreStageService.getAmountOfPagesForEtudiantFiltered(annee, sessionEcole, title);
+
+        // Assert
+        verify(utilisateurService, times(1)).getMe();
+        verify(offreStageRepository, times(1)).countByEtudiantIdNotAppliedFilteredWithTitle(
+                etudiantDTO.getId(),
+                etudiantDTO.getProgramme(),
+                Year.of(annee),
+                sessionEcole,
+                title
+        );
+        assertEquals(3, actualPageCount, "Page count should be 3.");
+    }
+
+    @Test
+    void getAmountOfPagesForEtudiantFiltered_WithExactMultiple_ReturnsExactPageCount() throws AccessDeniedException {
+        // Arrange
+        Integer annee = 2023;
+        OffreStage.SessionEcole sessionEcole = OffreStage.SessionEcole.AUTOMNE;
+        String title = "Data Analyst";
+
+        EtudiantDTO etudiantDTO = new EtudiantDTO();
+        etudiantDTO.setId(2L);
+        etudiantDTO.setProgramme(Programme.GENIE_LOGICIEL);
+
+        when(utilisateurService.getMe()).thenReturn(etudiantDTO);
+
+        // Assume LIMIT_PER_PAGE is 10
+        int limitPerPage = OffreStageService.LIMIT_PER_PAGE; // 10
+
+        // Mock countByEtudiantIdNotAppliedFilteredWithTitle
+        when(offreStageRepository.countByEtudiantIdNotAppliedFilteredWithTitle(
+                etudiantDTO.getId(),
+                etudiantDTO.getProgramme(),
+                Year.of(annee),
+                sessionEcole,
+                title
+        )).thenReturn(30L); // Expecting 3 pages (30 / 10 = 3)
+
+        // Act
+        int actualPageCount = offreStageService.getAmountOfPagesForEtudiantFiltered(annee, sessionEcole, title);
+
+        // Assert
+        verify(utilisateurService, times(1)).getMe();
+        verify(offreStageRepository, times(1)).countByEtudiantIdNotAppliedFilteredWithTitle(
+                etudiantDTO.getId(),
+                etudiantDTO.getProgramme(),
+                Year.of(annee),
+                sessionEcole,
+                title
+        );
+        assertEquals(3, actualPageCount, "Page count should be 3.");
+    }
+
+    @Test
+    void getAmountOfPagesForEtudiantFiltered_WithZeroRows_ReturnsZeroPages() throws AccessDeniedException {
+        // Arrange
+        Integer annee = 2025;
+        OffreStage.SessionEcole sessionEcole = OffreStage.SessionEcole.AUTOMNE;
+        String title = "Project Manager";
+
+        EtudiantDTO etudiantDTO = new EtudiantDTO();
+        etudiantDTO.setId(3L);
+        etudiantDTO.setProgramme(Programme.GENIE_LOGICIEL);
+
+        when(utilisateurService.getMe()).thenReturn(etudiantDTO);
+
+        // Mock countByEtudiantIdNotAppliedFilteredWithTitle
+        when(offreStageRepository.countByEtudiantIdNotAppliedFilteredWithTitle(
+                etudiantDTO.getId(),
+                etudiantDTO.getProgramme(),
+                Year.of(annee),
+                sessionEcole,
+                title
+        )).thenReturn(0L); // Expecting 0 pages
+
+        // Act
+        int actualPageCount = offreStageService.getAmountOfPagesForEtudiantFiltered(annee, sessionEcole, title);
+
+        // Assert
+        verify(utilisateurService, times(1)).getMe();
+        verify(offreStageRepository, times(1)).countByEtudiantIdNotAppliedFilteredWithTitle(
+                etudiantDTO.getId(),
+                etudiantDTO.getProgramme(),
+                Year.of(annee),
+                sessionEcole,
+                title
+        );
+        assertEquals(0, actualPageCount, "Page count should be 0.");
+    }
+
+    @Test
+    void getAmountOfPagesForEtudiantFiltered_UserAccessDenied_ThrowsAuthenticationException() throws AccessDeniedException {
+        // Arrange
+        Integer annee = 2024;
+        OffreStage.SessionEcole sessionEcole = OffreStage.SessionEcole.AUTOMNE;
+        String title = "Software Engineer";
+
+        when(utilisateurService.getMe()).thenThrow(new AccessDeniedException("Access denied"));
+
+        // Act & Assert
+        AuthenticationException exception = assertThrows(AuthenticationException.class, () ->
+                        offreStageService.getAmountOfPagesForEtudiantFiltered(annee, sessionEcole, title),
+                "Expected AuthenticationException to be thrown.");
+
+        assertEquals(HttpStatus.FORBIDDEN, exception.getStatus(), "Exception status should be FORBIDDEN.");
+        assertEquals("Authentication error", exception.getMessage(), "Exception message should match.");
+
+        verify(utilisateurService, times(1)).getMe();
+        verifyNoMoreInteractions(offreStageRepository);
+    }
+
+    // --------------------- Tests for getWaitingOffreStage ---------------------
+
+    @Test
+    void getWaitingOffreStage_WithExistingWaitingOffres_ReturnsListOfOffreStageDTO() {
+        fichierOffreStage.setTitle("Developer");
+
+        // Arrange
+        List<OffreStage> waitingOffres = Arrays.asList(
+                fichierOffreStage,
+                formulaireOffreStage
+        );
+
+        when(offreStageRepository.getOffreStagesByStatusEquals(OffreStage.Status.WAITING))
+                .thenReturn(Optional.of(waitingOffres));
+
+        // Act
+        List<OffreStageDTO> result = offreStageService.getWaitingOffreStage();
+
+        // Assert
+        verify(offreStageRepository, times(1)).getOffreStagesByStatusEquals(OffreStage.Status.WAITING);
+        assertNotNull(result, "Resulting list should not be null.");
+        assertEquals(2, result.size(), "List should contain 2 OffreStageDTOs.");
+
+        // Additional assertions can be added to verify the content of each DTO
+        assertEquals("Sample Entreprise", result.get(0).getEntrepriseName(), "First OffreStageDTO should have EntrepriseName 'Company A'.");
+        assertEquals("Developer", result.get(0).getTitle(), "First OffreStageDTO should have title 'Developer'.");
+    }
+
+    @Test
+    void getWaitingOffreStage_WithNoWaitingOffres_ReturnsEmptyList() {
+        // Arrange
+        when(offreStageRepository.getOffreStagesByStatusEquals(OffreStage.Status.WAITING))
+                .thenReturn(Optional.empty());
+
+        // Act
+        List<OffreStageDTO> result = offreStageService.getWaitingOffreStage();
+
+        // Assert
+        verify(offreStageRepository, times(1)).getOffreStagesByStatusEquals(OffreStage.Status.WAITING);
+        assertNotNull(result, "Resulting list should not be null.");
+        assertTrue(result.isEmpty(), "List should be empty.");
+    }
+
+    // --------------------- Tests for getAcceptedOffreStage ---------------------
+
+    @Test
+    void getAcceptedOffreStage_WithExistingAcceptedOffres_ReturnsListOfOffreStageDTO() {
+        // Arrange
+        List<OffreStage> acceptedOffres = Arrays.asList(
+                formulaireOffreStage,
+                fichierOffreStage
+        );
+
+        when(offreStageRepository.getOffreStagesByStatusEquals(OffreStage.Status.ACCEPTED))
+                .thenReturn(Optional.of(acceptedOffres));
+
+        // Act
+        List<OffreStageDTO> result = offreStageService.getAcceptedOffreStage();
+
+        // Assert
+        verify(offreStageRepository, times(1)).getOffreStagesByStatusEquals(OffreStage.Status.ACCEPTED);
+        assertNotNull(result, "Resulting list should not be null.");
+        assertEquals(2, result.size(), "List should contain 2 OffreStageDTOs.");
+    }
+
+    @Test
+    void getAcceptedOffreStage_WithNoAcceptedOffres_ReturnsEmptyList() {
+        // Arrange
+        when(offreStageRepository.getOffreStagesByStatusEquals(OffreStage.Status.ACCEPTED))
+                .thenReturn(Optional.empty());
+
+        // Act
+        List<OffreStageDTO> result = offreStageService.getAcceptedOffreStage();
+
+        // Assert
+        verify(offreStageRepository, times(1)).getOffreStagesByStatusEquals(OffreStage.Status.ACCEPTED);
+        assertNotNull(result, "Resulting list should not be null.");
+        assertTrue(result.isEmpty(), "List should be empty.");
     }
 }
