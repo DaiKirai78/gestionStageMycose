@@ -14,6 +14,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,16 +25,19 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
+import java.time.Year;
 import java.util.*;
 
+import static org.hamcrest.Matchers.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -421,5 +428,353 @@ public class OffreStageControllerTest {
                 .andExpect(jsonPath("$.id").value(10L))
                 .andExpect(jsonPath("$.nom").value("Dupont"))
                 .andExpect(jsonPath("$.prenom").value("Jean"));
+    }
+
+    @Test
+    public void testGetNextSession_Success() throws Exception {
+        SessionInfoDTO nextSession = new SessionInfoDTO(OffreStage.SessionEcole.AUTOMNE, Year.of(2024));
+
+        when(offreStageService.getNextSession()).thenReturn(nextSession);
+
+        mockMvc.perform(get("/api/offres-stages/get-next-session")
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.session", is("AUTOMNE")))
+                .andExpect(jsonPath("$.annee", is(2024)));
+    }
+
+    @Test
+    public void testGetNextSession_ServiceException() throws Exception {
+        when(offreStageService.getNextSession()).thenThrow(new RuntimeException("Service unavailable"));
+
+        mockMvc.perform(get("/api/offres-stages/get-next-session")
+                        .with(csrf()))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message", is("Service unavailable")))
+                .andExpect(jsonPath("$.status", is(500)))
+                .andExpect(jsonPath("$.timestamp").isNumber());
+    }
+
+    @Test
+    public void testGetAllSessions_Success() throws Exception {
+        List<SessionInfoDTO> sessions = Arrays.asList(
+                new SessionInfoDTO(OffreStage.SessionEcole.ETE, Year.of(2023)),
+                new SessionInfoDTO(OffreStage.SessionEcole.AUTOMNE, Year.of(2024))
+        );
+
+        when(offreStageService.getAllSessions()).thenReturn(sessions);
+
+        mockMvc.perform(get("/api/offres-stages/get-all-sessions")
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].session", is("ETE")))
+                .andExpect(jsonPath("$[0].annee", is(2023)))
+                .andExpect(jsonPath("$[1].session", is("AUTOMNE")))
+                .andExpect(jsonPath("$[1].annee", is(2024)));
+    }
+
+    @Test
+    public void testGetAllSessions_EmptyList() throws Exception {
+        List<SessionInfoDTO> sessions = Collections.emptyList();
+
+        when(offreStageService.getAllSessions()).thenReturn(sessions);
+
+        mockMvc.perform(get("/api/offres-stages/get-all-sessions")
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", hasSize(0)));
+    }
+
+    @Test
+    public void testGetAllSessions_ServiceException() throws Exception {
+        when(offreStageService.getAllSessions()).thenThrow(new RuntimeException("Service error"));
+
+        mockMvc.perform(get("/api/offres-stages/get-all-sessions")
+                        .with(csrf()))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message", is("Service error")))
+                .andExpect(jsonPath("$.status", is(500)))
+                .andExpect(jsonPath("$.timestamp").isNumber());
+    }
+
+    @Test
+    public void testGetSessionsForCreateur_Success() throws Exception {
+        List<SessionInfoDTO> sessions = List.of(
+                new SessionInfoDTO(OffreStage.SessionEcole.HIVER, Year.of(2025))
+        );
+
+        when(offreStageService.getSessionsForCreateur()).thenReturn(sessions);
+
+        mockMvc.perform(get("/api/offres-stages/get-sessions-for-createur")
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].session", is("HIVER")))
+                .andExpect(jsonPath("$[0].annee", is(2025)));
+    }
+
+    @Test
+    public void testGetSessionsForCreateur_EmptyList() throws Exception {
+        List<SessionInfoDTO> sessions = Collections.emptyList();
+
+        when(offreStageService.getSessionsForCreateur()).thenReturn(sessions);
+
+        mockMvc.perform(get("/api/offres-stages/get-sessions-for-createur")
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", hasSize(0)));
+    }
+
+    @Test
+    public void testGetSessionsForCreateur_ServiceException() throws Exception {
+        when(offreStageService.getSessionsForCreateur()).thenThrow(new RuntimeException("Service failure"));
+
+        mockMvc.perform(get("/api/offres-stages/get-sessions-for-createur")
+                        .with(csrf()))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message", is("Service failure")))
+                .andExpect(jsonPath("$.status", is(500)))
+                .andExpect(jsonPath("$.timestamp").isNumber());
+    }
+
+    @Test
+    public void testGetAmountOfPagesForMyOffres_Success_AllParams() throws Exception {
+        Integer year = 2024;
+        OffreStage.SessionEcole sessionEcole = OffreStage.SessionEcole.AUTOMNE;
+        String title = "Java Developer";
+        Integer expectedPages = 10;
+
+        when(offreStageService.getAmountOfPagesForEtudiantFiltered(year, sessionEcole, title))
+                .thenReturn(expectedPages);
+
+        mockMvc.perform(get("/api/offres-stages/my-offres-pages")
+                        .param("year", year.toString())
+                        .param("sessionEcole", sessionEcole.name())
+                        .param("title", title)
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().string(expectedPages.toString()));
+    }
+
+    @Test
+    public void testGetAmountOfPagesForMyOffres_Success_SomeParamsMissing() throws Exception {
+        // Only 'title' is provided
+        String title = "Python Developer";
+        Integer expectedPages = 5;
+
+        when(offreStageService.getAmountOfPagesForEtudiantFiltered(null, null, title))
+                .thenReturn(expectedPages);
+
+        mockMvc.perform(get("/api/offres-stages/my-offres-pages")
+                        .param("title", title)
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().string(expectedPages.toString()));
+    }
+
+    @Test
+    public void testGetAmountOfPagesForMyOffres_Success_NoParams() throws Exception {
+        Integer expectedPages = 8;
+
+        when(offreStageService.getAmountOfPagesForEtudiantFiltered(null, null, ""))
+                .thenReturn(expectedPages);
+
+        mockMvc.perform(get("/api/offres-stages/my-offres-pages")
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().string(expectedPages.toString()));
+    }
+
+    @Test
+    public void testGetAmountOfPagesForMyOffres_ServiceException() throws Exception {
+        Integer year = 2023;
+        OffreStage.SessionEcole sessionEcole = OffreStage.SessionEcole.HIVER;
+        String title = "Backend Engineer";
+
+        when(offreStageService.getAmountOfPagesForEtudiantFiltered(year, sessionEcole, title))
+                .thenThrow(new RuntimeException("Database error"));
+
+        mockMvc.perform(get("/api/offres-stages/my-offres-pages")
+                        .param("year", year.toString())
+                        .param("sessionEcole", sessionEcole.name())
+                        .param("title", title)
+                        .with(csrf()))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message", is("Database error")))
+                .andExpect(jsonPath("$.status", is(500)))
+                .andExpect(jsonPath("$.timestamp").isNumber());
+    }
+
+    @Test
+    public void testGetMyOffresByYearAndSessionEcoleAll_Success_AllParams() throws Exception {
+        Integer year = 2024;
+        OffreStage.SessionEcole sessionEcole = OffreStage.SessionEcole.AUTOMNE;
+        String title = "Java Developer";
+        int pageNumber = 0;
+        int pageSize = 10;
+
+        OffreStageDTO offreStageDTO1 = new OffreStageDTO();
+        offreStageDTO1.setId(1L);
+        offreStageDTO1.setTitle("Java Developer");
+        offreStageDTO1.setEntrepriseName("Oracle");
+
+        OffreStageDTO offreStageDTO2 = new OffreStageDTO();
+        offreStageDTO2.setId(2L);
+        offreStageDTO2.setTitle("Senior Flutter (trash language) Developer");
+        offreStageDTO2.setEntrepriseName("Google");
+
+        List<OffreStageDTO> offreStages = Arrays.asList(
+                offreStageDTO1,
+                offreStageDTO2
+        );
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<OffreStageDTO> page = new PageImpl<>(offreStages, pageable, offreStages.size());
+
+        when(offreStageService.getAllOffreStagesForEtudiantFiltered(pageNumber, year, sessionEcole, title))
+                .thenReturn(page);
+
+        mockMvc.perform(get("/api/offres-stages/my-offres-all")
+                        .param("year", year.toString())
+                        .param("sessionEcole", sessionEcole.name())
+                        .param("title", title)
+                        .param("pageNumber", String.valueOf(pageNumber))
+                        .with(csrf()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                // Validate page content
+                .andExpect(jsonPath("$.content", hasSize(2)))
+                .andExpect(jsonPath("$.content[0].id", is(1)))
+                .andExpect(jsonPath("$.content[0].title", is("Java Developer")))
+                .andExpect(jsonPath("$.content[0].entrepriseName", is("Oracle")))
+                .andExpect(jsonPath("$.content[1].id", is(2)))
+                .andExpect(jsonPath("$.content[1].title", is("Senior Flutter (trash language) Developer")))
+                .andExpect(jsonPath("$.content[1].entrepriseName", is("Google")))
+                // Validate page metadata
+                .andExpect(jsonPath("$.number", is(pageNumber)))
+                .andExpect(jsonPath("$.size", is(pageSize)))
+                .andExpect(jsonPath("$.totalElements", is(offreStages.size())))
+                .andExpect(jsonPath("$.totalPages", is(1)));
+    }
+
+    @Test
+    public void testGetMyOffresByYearAndSessionEcoleAll_Success_SomeParamsMissing() throws Exception {
+        int pageSize = 10;
+        int pageNumber = 0;
+
+        OffreStageDTO offreStageDTO1 = new OffreStageDTO();
+        offreStageDTO1.setId(3L);
+        offreStageDTO1.setTitle("Senior Flutter (trash language) Developer");
+        offreStageDTO1.setEntrepriseName("Google");
+
+        List<OffreStageDTO> offreStages = List.of(
+                offreStageDTO1
+        );
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<OffreStageDTO> page = new PageImpl<>(offreStages, pageable, offreStages.size());
+
+        when(offreStageService.getAllOffreStagesForEtudiantFiltered(pageNumber, null, null, ""))
+                .thenReturn(page);
+
+        mockMvc.perform(get("/api/offres-stages/my-offres-all")
+                        .param("pageNumber", String.valueOf(pageNumber))
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                // Validate page content
+                .andExpect(jsonPath("$.content", hasSize(1)))
+                .andExpect(jsonPath("$.content[0].id", is(3)))
+                .andExpect(jsonPath("$.content[0].title", is("Senior Flutter (trash language) Developer")))
+                .andExpect(jsonPath("$.content[0].entrepriseName", is("Google")))
+                // Validate page metadata
+                .andExpect(jsonPath("$.number", is(pageNumber)))
+                .andExpect(jsonPath("$.size", is(pageSize)))
+                .andExpect(jsonPath("$.totalElements", is(offreStages.size())))
+                .andExpect(jsonPath("$.totalPages", is(1)));
+    }
+
+    @Test
+    public void testGetMyOffresByYearAndSessionEcoleAll_Success_NoParams() throws Exception {
+        int pageNumber = 2;
+        int pageSize = 1;
+
+        List<OffreStageDTO> offreStages = Collections.emptyList();
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<OffreStageDTO> page = new PageImpl<>(offreStages, pageable, 0);
+
+        when(offreStageService.getAllOffreStagesForEtudiantFiltered(pageNumber, null, null, ""))
+                .thenReturn(page);
+
+        mockMvc.perform(get("/api/offres-stages/my-offres-all")
+                        .param("pageNumber", String.valueOf(pageNumber))
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                // Validate page content
+                .andExpect(jsonPath("$.content", hasSize(0)))
+                // Validate page metadata
+                .andExpect(jsonPath("$.number", is(pageNumber)))
+                .andExpect(jsonPath("$.size", is(pageSize)))
+                .andExpect(jsonPath("$.totalElements", is(0)))
+                .andExpect(jsonPath("$.totalPages", is(0)));
+    }
+
+    @Test
+    public void testGetMyOffresByYearAndSessionEcoleAll_ServiceException() throws Exception {
+        Integer year = 2023;
+        OffreStage.SessionEcole sessionEcole = OffreStage.SessionEcole.AUTOMNE;
+        String title = "Frontend Developer";
+        int pageNumber = 0;
+
+        when(offreStageService.getAllOffreStagesForEtudiantFiltered(pageNumber, year, sessionEcole, title))
+                .thenThrow(new RuntimeException("Database connection failed"));
+
+        mockMvc.perform(get("/api/offres-stages/my-offres-all")
+                        .param("year", year.toString())
+                        .param("sessionEcole", sessionEcole.name())
+                        .param("title", title)
+                        .param("pageNumber", String.valueOf(pageNumber))
+                        .with(csrf()))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message", is("Database connection failed")))
+                .andExpect(jsonPath("$.status", is(500)))
+                .andExpect(jsonPath("$.timestamp").isNumber());
+    }
+
+    @Test
+    public void testGetAmountOfPagesForMyOffres_InvalidParameters() throws Exception {
+        // 'year' is invalid (non-numeric)
+        String invalidYear = "two thousand twenty-four";
+        OffreStage.SessionEcole sessionEcole = OffreStage.SessionEcole.AUTOMNE;
+        String title = "Java Developer";
+
+        mockMvc.perform(get("/api/offres-stages/my-offres-pages")
+                        .param("year", invalidYear)
+                        .param("sessionEcole", sessionEcole.name())
+                        .param("title", title)
+                        .with(csrf()))
+                .andDo(print())
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message", containsString("Failed to convert value of type 'java.lang.String' to required type 'java.lang.Integer';")))
+                .andExpect(jsonPath("$.status", is(500)))
+                .andExpect(jsonPath("$.timestamp").isNumber());
     }
 }
