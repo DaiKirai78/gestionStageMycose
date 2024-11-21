@@ -245,8 +245,9 @@ const EvaluerEtudiantFormulaireEnseignant = ({ selectedStudent, setSelectedStude
                 },
             });
 
-            if (response.ok) {
+            if (response.status === 200) {
                 setSelectedStudent(null);
+                navigate("/evaluer");
             } else {
                 console.log("erreur");
             }
