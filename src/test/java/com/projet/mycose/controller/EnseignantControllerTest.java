@@ -183,20 +183,20 @@ public class EnseignantControllerTest {
         String nomStagiaire = "Marie Curie";
         String dateDebutStage = "2024-05-01T09:00:00"; // ISO format
         String numeroStage = "1";
-        String evaluationQA = "TOTALEMENT_EN_ACCORD"; // Assuming enum values as strings
-        String evaluationQB = "PLUTOT_EN_ACCORD";
-        String evaluationQC = "PLUTOT_EN_DESACCORD";
+        String evalQA = "TOTALEMENT_EN_ACCORD"; // Assuming enum values as strings
+        String evalQB = "PLUTOT_EN_ACCORD";
+        String evalQC = "PLUTOT_EN_DESACCORD";
         String nombreHeuresParSemainePremierMois = "35.0";
         String nombreHeuresParSemaineDeuxiemeMois = "35.0";
         String nombreHeuresParSemaineTroisiemeMois = "35.0";
-        String evaluationQD = "TOTALEMENT_EN_ACCORD";
-        String evaluationQE = "PLUTOT_EN_ACCORD";
-        String evaluationQF = "PLUTOT_EN_DESACCORD";
-        String evaluationQG = "IMPOSSIBLE_DE_SE_PRONONCER";
+        String evalQD = "TOTALEMENT_EN_ACCORD";
+        String evalQE = "PLUTOT_EN_ACCORD";
+        String evalQF = "PLUTOT_EN_DESACCORD";
+        String evalQG = "IMPOSSIBLE_DE_SE_PRONONCER";
         String salaireHoraire = "15.5";
-        String evaluationQH = "TOTALEMENT_EN_ACCORD";
-        String evaluationQI = "PLUTOT_EN_ACCORD";
-        String evaluationQJ = "PLUTOT_EN_DESACCORD";
+        String evalQH = "TOTALEMENT_EN_ACCORD";
+        String evalQI = "PLUTOT_EN_ACCORD";
+        String evalQJ = "PLUTOT_EN_DESACCORD";
         String commentaires = "Bon stage.";
         String milieuAPrivilegier = "PREMIER_STAGE";
         String milieuPretAAccueillirNombreStagiaires = "DEUX";
@@ -226,20 +226,20 @@ public class EnseignantControllerTest {
                         .param("nomStagiaire", nomStagiaire)
                         .param("dateDebutStage", dateDebutStage)
                         .param("numeroStage", numeroStage)
-                        .param("evaluationQA", evaluationQA)
-                        .param("evaluationQB", evaluationQB)
-                        .param("evaluationQC", evaluationQC)
+                        .param("evalQA", evalQA)
+                        .param("evalQB", evalQB)
+                        .param("evalQC", evalQC)
                         .param("nombreHeuresParSemainePremierMois", nombreHeuresParSemainePremierMois)
                         .param("nombreHeuresParSemaineDeuxiemeMois", nombreHeuresParSemaineDeuxiemeMois)
                         .param("nombreHeuresParSemaineTroisiemeMois", nombreHeuresParSemaineTroisiemeMois)
-                        .param("evaluationQD", evaluationQD)
-                        .param("evaluationQE", evaluationQE)
-                        .param("evaluationQF", evaluationQF)
-                        .param("evaluationQG", evaluationQG)
+                        .param("evalQD", evalQD)
+                        .param("evalQE", evalQE)
+                        .param("evalQF", evalQF)
+                        .param("evalQG", evalQG)
                         .param("salaireHoraire", salaireHoraire)
-                        .param("evaluationQH", evaluationQH)
-                        .param("evaluationQI", evaluationQI)
-                        .param("evaluationQJ", evaluationQJ)
+                        .param("evalQH", evalQH)
+                        .param("evalQI", evalQI)
+                        .param("evalQJ", evalQJ)
                         .param("commentaires", commentaires)
                         .param("milieuAPrivilegier", milieuAPrivilegier)
                         .param("milieuPretAAccueillirNombreStagiaires", milieuPretAAccueillirNombreStagiaires)
@@ -271,20 +271,20 @@ public class EnseignantControllerTest {
         String nomStagiaire = "Marie Curie";
         String dateDebutStage = "2024-05-01T09:00:00"; // ISO format
         String numeroStage = "1";
-        String evaluationQA = "TOTALEMENT_EN_ACCORD"; // Assuming enum values as strings
-        String evaluationQB = "PLUTOT_EN_ACCORD";
-        String evaluationQC = "PLUTOT_EN_DESACCORD";
+        String evalQA = "TOTALEMENT_EN_ACCORD"; // Assuming enum values as strings
+        String evalQB = "PLUTOT_EN_ACCORD";
+        String evalQC = "PLUTOT_EN_DESACCORD";
         String nombreHeuresParSemainePremierMois = "35.0";
         String nombreHeuresParSemaineDeuxiemeMois = "35.0";
         String nombreHeuresParSemaineTroisiemeMois = "35.0";
-        String evaluationQD = "TOTALEMENT_EN_ACCORD";
-        String evaluationQE = "PLUTOT_EN_ACCORD";
-        String evaluationQF = "PLUTOT_EN_DESACCORD";
-        String evaluationQG = "IMPOSSIBLE_DE_SE_PRONONCER";
+        String evalQD = "TOTALEMENT_EN_ACCORD";
+        String evalQE = "PLUTOT_EN_ACCORD";
+        String evalQF = "PLUTOT_EN_DESACCORD";
+        String evalQG = "IMPOSSIBLE_DE_SE_PRONONCER";
         String salaireHoraire = "15.5";
-        String evaluationQH = "TOTALEMENT_EN_ACCORD";
-        String evaluationQI = "PLUTOT_EN_ACCORD";
-        String evaluationQJ = "PLUTOT_EN_DESACCORD";
+        String evalQH = "TOTALEMENT_EN_ACCORD";
+        String evalQI = "PLUTOT_EN_ACCORD";
+        String evalQJ = "PLUTOT_EN_DESACCORD";
         String commentaires = "Bon stage.";
         String milieuAPrivilegier = "PREMIER_STAGE";
         String milieuPretAAccueillirNombreStagiaires = "DEUX";
@@ -316,20 +316,20 @@ public class EnseignantControllerTest {
                         .param("nomStagiaire", nomStagiaire)
                         .param("dateDebutStage", dateDebutStage)
                         .param("numeroStage", numeroStage)
-                        .param("evaluationQA", evaluationQA)
-                        .param("evaluationQB", evaluationQB)
-                        .param("evaluationQC", evaluationQC)
+                        .param("evalQA", evalQA)
+                        .param("evalQB", evalQB)
+                        .param("evalQC", evalQC)
                         .param("nombreHeuresParSemainePremierMois", nombreHeuresParSemainePremierMois)
                         .param("nombreHeuresParSemaineDeuxiemeMois", nombreHeuresParSemaineDeuxiemeMois)
                         .param("nombreHeuresParSemaineTroisiemeMois", nombreHeuresParSemaineTroisiemeMois)
-                        .param("evaluationQD", evaluationQD)
-                        .param("evaluationQE", evaluationQE)
-                        .param("evaluationQF", evaluationQF)
-                        .param("evaluationQG", evaluationQG)
+                        .param("evalQD", evalQD)
+                        .param("evalQE", evalQE)
+                        .param("evalQF", evalQF)
+                        .param("evalQG", evalQG)
                         .param("salaireHoraire", salaireHoraire)
-                        .param("evaluationQH", evaluationQH)
-                        .param("evaluationQI", evaluationQI)
-                        .param("evaluationQJ", evaluationQJ)
+                        .param("evalQH", evalQH)
+                        .param("evalQI", evalQI)
+                        .param("evalQJ", evalQJ)
                         .param("commentaires", commentaires)
                         .param("milieuAPrivilegier", milieuAPrivilegier)
                         .param("milieuPretAAccueillirNombreStagiaires", milieuPretAAccueillirNombreStagiaires)
