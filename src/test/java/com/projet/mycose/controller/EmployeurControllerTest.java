@@ -227,16 +227,18 @@ public class EmployeurControllerTest {
         ficheEvaluationStagiaireDTOMock.setNumeroTelephone("555-444-3333");
         ficheEvaluationStagiaireDTOMock.setFonctionSuperviseur("Manager");
 
-        doNothing().when(employeurService).enregistrerFicheEvaluationStagiaire(any(FicheEvaluationStagiaireDTO.class), eq(etudiantId), eq(signatureFile));
-
+        // Convertir l'objet DTO en JSON
         ObjectMapper objectMapper = new ObjectMapper();
         String ficheEvaluationJson = objectMapper.writeValueAsString(ficheEvaluationStagiaireDTOMock);
+
+        // Simuler l'enregistrement de la fiche
+        doNothing().when(employeurService).enregistrerFicheEvaluationStagiaire(any(FicheEvaluationStagiaireDTO.class), eq(etudiantId), eq(signatureFile));
 
         // Act & Assert
         mockMvc.perform(multipart("/entreprise/saveFicheEvaluation")
                         .file(signatureFile)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(ficheEvaluationJson)
+                        .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)  // Changer à multipart/form-data
+                        .param("ficheEvaluationStagiaireDTO", ficheEvaluationJson)  // Passer le DTO JSON en paramètre
                         .param("etudiantId", etudiantId.toString()))
                 .andExpect(status().isOk());
         verify(employeurService, times(1)).enregistrerFicheEvaluationStagiaire(any(FicheEvaluationStagiaireDTO.class), eq(etudiantId), eq(signatureFile));
@@ -244,7 +246,8 @@ public class EmployeurControllerTest {
 
     @Test
     public void testEnregistrerFicheEvaluationStagiaire_Error() throws Exception {
-        //Arrange
+        // Arrange
+        Long etudiantId = 2L;
         MockMultipartFile signatureFile = new MockMultipartFile(
                 "signature",
                 "signature.png",
@@ -254,19 +257,23 @@ public class EmployeurControllerTest {
 
         FicheEvaluationStagiaireDTO ficheEvaluationStagiaireDTOMock = new FicheEvaluationStagiaireDTO();
 
-        doNothing().when(employeurService).enregistrerFicheEvaluationStagiaire(ficheEvaluationStagiaireDTOMock, 2L, signatureFile);
+        // Convertir l'objet DTO en JSON
         ObjectMapper objectMapper = new ObjectMapper();
         String ficheEvaluationJson = objectMapper.writeValueAsString(ficheEvaluationStagiaireDTOMock);
 
-        //Act & Assert
+        // Simuler l'enregistrement de la fiche
+        doNothing().when(employeurService).enregistrerFicheEvaluationStagiaire(ficheEvaluationStagiaireDTOMock, etudiantId, signatureFile);
+
+        // Act & Assert
         mockMvc.perform(multipart("/entreprise/saveFicheEvaluation")
                         .file(signatureFile)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(ficheEvaluationJson)
-                .param("etudiantId", String.valueOf(2L)))
+                        .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)  // Changer à multipart/form-data
+                        .param("ficheEvaluationStagiaireDTO", ficheEvaluationJson)  // Passer le DTO JSON en paramètre
+                        .param("etudiantId", String.valueOf(etudiantId)))
                 .andExpect(status().isInternalServerError());
-        verify(employeurService, times(0)).enregistrerFicheEvaluationStagiaire(ficheEvaluationStagiaireDTOMock, 2L, signatureFile);
+        verify(employeurService, times(0)).enregistrerFicheEvaluationStagiaire(ficheEvaluationStagiaireDTOMock, etudiantId, signatureFile);
     }
+
 
     @Test
     public void testGetAllEtudiantsNonEvalues_Success() throws Exception {
