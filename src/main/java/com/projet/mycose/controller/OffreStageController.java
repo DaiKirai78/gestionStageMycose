@@ -2,6 +2,7 @@ package com.projet.mycose.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.projet.mycose.dto.*;
+import com.projet.mycose.modele.FormulaireOffreStage;
 import com.projet.mycose.modele.OffreStage;
 import com.projet.mycose.service.ApplicationStageService;
 import com.projet.mycose.service.OffreStageService;
@@ -95,6 +96,12 @@ public class OffreStageController {
     @GetMapping("/id/{id}")
     public ResponseEntity<OffreStageAvecUtilisateurInfoDTO> getOffreStage(@PathVariable Long id) {
         OffreStageAvecUtilisateurInfoDTO offreStageDTO = offreStageService.getOffreStageWithUtilisateurInfo(id);
+        return ResponseEntity.status(HttpStatus.OK).body(offreStageDTO);
+    }
+
+    @GetMapping("form/id/{id}")
+    public ResponseEntity<FormulaireOffreStageDTO> getOffreStageForm(@PathVariable Long id) {
+        FormulaireOffreStageDTO offreStageDTO = offreStageService.getOffreStageFormulaire(id);
         return ResponseEntity.status(HttpStatus.OK).body(offreStageDTO);
     }
 

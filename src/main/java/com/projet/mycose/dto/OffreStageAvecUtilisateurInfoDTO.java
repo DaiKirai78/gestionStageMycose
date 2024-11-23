@@ -26,6 +26,8 @@ public class OffreStageAvecUtilisateurInfoDTO {
     private String location;
     private String salary;
     private String description;
+    private String session;
+    private String year;
     private String filename;
     private String fileData;
     private LocalDateTime createdAt;

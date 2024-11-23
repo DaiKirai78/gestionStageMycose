@@ -1,9 +1,11 @@
 package com.projet.mycose.service;
 
+import com.projet.mycose.exceptions.ResourceConflictException;
 import com.projet.mycose.modele.Enseignant;
 import com.projet.mycose.modele.auth.Role;
 import com.projet.mycose.repository.EnseignantRepository;
 import com.projet.mycose.dto.EnseignantDTO;
+import com.projet.mycose.repository.UtilisateurRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,9 +13,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
@@ -40,6 +45,7 @@ public class EnseignantServiceTest {
 
         Enseignant enseignant = new Enseignant(1L, "Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$");
         when(enseignantRepositoryMock.save(any(Enseignant.class))).thenReturn(enseignant);
+        when(passwordEncoder.encode(eq("Mimi123$"))).thenReturn("mot de passe encodé");
 
         //Act
         EnseignantDTO enseignantDTO = enseignantService.creationDeCompte("Karim", "Mihoubi", "438-532-2729", "mihoubi@gmail.com", "Mimi123$");
@@ -152,12 +158,16 @@ public class EnseignantServiceTest {
     @Test
     public void testCredentialsDejaPris_CourrielPris() {
         // Arrange
-        when(utilisateurService.credentialsDejaPris("mihoubi@gmail.com", "450-691-0000")).thenReturn(true);
+        when(utilisateurService.credentialsDejaPris("mihoubi@gmail.com", "450-389-2628")).thenReturn(true);
 
         // Act
-        EnseignantDTO result = enseignantService.creationDeCompte("Karim", "Mihoubi", "450-691-0000", "mihoubi@gmail.com", "Mimi123$");
+        ResourceConflictException exception = Assertions.assertThrows(
+                ResourceConflictException.class,
+                () -> enseignantService.creationDeCompte("Karim", "Mihoubi", "450-389-2628", "mihoubi@gmail.com", "Mimi123$")
+        );
 
         // Assert
-        Assertions.assertNull(result);
+        assertEquals(HttpStatus.CONFLICT, exception.getStatus());
+        assertEquals("Un enseignant avec ces credentials existe déjà", exception.getMessage());
     }
 }

@@ -49,10 +49,10 @@ function SignerContratGestionnaire({setSelectedContract}) {
 
 
     useEffect(() => {
-        if (employeur && employeur.id) {
-            fetchOffreStage(employeur.id);
+        if (contrat && contrat.offreStageId) {
+            fetchOffreStage(contrat.offreStageId);
         }
-    }, [employeur]);
+    }, [contrat]);
 
     useEffect(() => {
         imprimer(contrat);
@@ -185,7 +185,6 @@ function SignerContratGestionnaire({setSelectedContract}) {
 
     async function fetchContratsSignes() {
         const token = localStorage.getItem("token");
-        console.log(filtreAnnee);
 
         try {
             const response = await fetch(`http://localhost:8080/gestionnaire/contrats/signes?page=${pages.currentPage - 1}&annee=${filtreAnnee}`, {
@@ -250,7 +249,7 @@ function SignerContratGestionnaire({setSelectedContract}) {
     const fetchOffreStage = async (offreStageId) => {
         try {
             const token = localStorage.getItem("token");
-            const response = await axios.get(`http://localhost:8080/api/offres-stages/id/${offreStageId}`, {
+            const response = await axios.get(`http://localhost:8080/api/offres-stages/form/id/${offreStageId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -301,15 +300,15 @@ function SignerContratGestionnaire({setSelectedContract}) {
                 {title: 'ENDROIT DU STAGE', content: `Adresse: ${offreStage.location || "Non spécifiée"}`},
                 {
                     title: 'DURÉE DU STAGE',
-                    content: `Dates: ${dureeStage(offreStage.session, offreStage.annee)} \nNombre total de semaines: ${nombreDeSemaine(offreStage.session)}`,
+                    content: `Dates: ${dureeStage(offreStage.session, offreStage.annee) || "Non spécifiées"} \nNombre total de semaines: ${nombreDeSemaine(offreStage.session) || "Non spécifié"}`,
                 },
                 {
                     title: 'HORAIRE DE TRAVAIL',
-                    content: `Horaire de travail: ${offreStage.horaireJournee} \nNombre total d’heures par semaine: ${offreStage.heuresParSemaine}`,
+                    content: `Horaire de travail: ${offreStage.horaireJournee || "Non spécifié"} \nNombre total d’heures par semaine: ${offreStage.heuresParSemaine || "Non spécifié"}`,
                 },
                 {
                     title: 'SALAIRE',
-                    content: `Salaire horaire: ${offreStage.salary}$`,
+                    content: `Salaire horaire: ${offreStage.salary || "Non spécifié"}$`,
                 },
             ];
 
@@ -367,15 +366,15 @@ function SignerContratGestionnaire({setSelectedContract}) {
                 size: 12
             })
 
-            page2.drawText(`Le gestionnaire de stage : ${gestionnaire.prenom + " " + gestionnaire.nom}`, {
+            page2.drawText(`Le gestionnaire de stage : ${gestionnaire.prenom + " " + gestionnaire.nom || "Non spécifié"}`, {
                 x: 175,
                 y: 690,
                 size: 12
             });
             page2.drawText("et", {x: 300, y: 640, size: 12, font: boldFont})
-            page2.drawText(`L'employeur : ${employeur.prenom + " " + employeur.nom}`, {x: 235, y: 595, size: 12});
+            page2.drawText(`L'employeur : ${employeur.prenom + " " + employeur.nom || "Non spécifié"}`, {x: 235, y: 595, size: 12});
             page2.drawText("et", {x: 300, y: 550, size: 12, font: boldFont})
-            page2.drawText(`L'étudiant : ${getNomEtudiant(contrat)}`, {x: 235, y: 510, size: 12});
+            page2.drawText(`L'étudiant : ${getNomEtudiant(contrat) || "Non spécifié"}`, {x: 235, y: 510, size: 12});
             page2.drawText("Conviennent des conditions de stage suivantes :", {x: 180, y: 460, size: 12});
 
             startY = 780;

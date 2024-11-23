@@ -245,6 +245,12 @@ public class OffreStageService {
         return OffreStageAvecUtilisateurInfoDTO.toDto(offreStage);
     }
 
+    public FormulaireOffreStageDTO getOffreStageFormulaire(Long id) {
+        FormulaireOffreStage offreStage = formulaireOffreStageRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("OffreStage not found with ID: " + id));
+        return FormulaireOffreStageDTO.toDTO(offreStage);
+    }
+
+
     public List<OffreStageDTO> getAvailableOffreStagesForEtudiantFiltered(int page, Integer annee, OffreStage.SessionEcole session, String title) {
         checkAnneeAndSessionTogether(annee, session);
         EtudiantDTO etudiantDTO;

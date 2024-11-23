@@ -1181,38 +1181,38 @@ public class OffreStageServiceTest {
         verify(offreStageRepository, times(1)).findById(nonExistentId);
     }
 
-//    @Test
-//    public void testGetStages_Success() {
-//        // Arrange
-//        String token = "unTokenValide";
-//        Long createurId = 1L;
-//        int page = 0;
-//        PageRequest pageRequest = PageRequest.of(page, 10);
-//        Employeur createur = new Employeur(2L, "unPrenom", "unNom", "514-222-0385", "courriel@courriel.com", "123123123", "uneEntreprise");
-//
-//        FormulaireOffreStage mockFormulaireOffreStage = new FormulaireOffreStage("unTitreForm", "uneEntreprise", "unEmployeur", "unEmail@mail.com", "unsite.com", "uneLocalisation", "1000", "uneDescription", createur, OffreStage.Visibility.PUBLIC, null, OffreStage.Status.ACCEPTED, OffreStage.SessionEcole.AUTOMNE, Year.of(2021));
-//        FichierOffreStage mockFichierOffreStage = new FichierOffreStage("unTitreFichier", "uneEntreprise", "nom.pdf", "data".getBytes(), createur, OffreStage.Visibility.PUBLIC, null, OffreStage.Status.ACCEPTED, OffreStage.SessionEcole.AUTOMNE, Year.of(2021));
-//        List<OffreStage> mockOffresListe = new ArrayList<>();
-//        mockOffresListe.add(mockFormulaireOffreStage);
-//        mockOffresListe.add(mockFichierOffreStage);
-//
-//        Page<OffreStage> offresPage = new PageImpl<>(mockOffresListe, pageRequest, 2);
-//
-//        when(utilisateurService.getMyUserId()).thenReturn(createurId);
-//        when(offreStageRepository.findOffreStageByCreateurIdFiltered(createurId, null, null, pageRequest)).thenReturn(offresPage);
-//
-//        // Act
-//        List<OffreStageDTO> result = offreStageService.getStagesFiltered(page, null, null);
-//
-//        // Assert
-//        assertNotNull(result);
-//        assertEquals(2, result.size());
-//        assertEquals("unTitreForm", result.get(0).getTitle());
-//        assertEquals("unTitreFichier", result.get(1).getTitle());
-//
-//        verify(utilisateurService, times(1)).getMyUserId();
-//        verify(offreStageRepository, times(1)).findOffreStageByCreateurIdFiltered(createurId, null, null, pageRequest);
-//    }
+    @Test
+    public void testGetStages_Success() {
+        // Arrange
+        String token = "unTokenValide";
+        Long createurId = 1L;
+        int page = 0;
+        PageRequest pageRequest = PageRequest.of(page, 10);
+        Employeur createur = new Employeur(2L, "unPrenom", "unNom", "514-222-0385", "courriel@courriel.com", "123123123", "uneEntreprise");
+
+        FormulaireOffreStage mockFormulaireOffreStage = new FormulaireOffreStage("unTitreForm", "uneEntreprise", "unEmployeur", "unEmail@mail.com", "unsite.com", "uneLocalisation", "1000", "uneDescription", createur, OffreStage.Visibility.PUBLIC, null, OffreStage.Status.ACCEPTED, OffreStage.SessionEcole.AUTOMNE, Year.of(2021), "09h00-17h00", "40");
+        FichierOffreStage mockFichierOffreStage = new FichierOffreStage("unTitreFichier", "uneEntreprise", "nom.pdf", "data".getBytes(), createur, OffreStage.Visibility.PUBLIC, null, OffreStage.Status.ACCEPTED, OffreStage.SessionEcole.AUTOMNE, Year.of(2021));
+        List<OffreStage> mockOffresListe = new ArrayList<>();
+        mockOffresListe.add(mockFormulaireOffreStage);
+        mockOffresListe.add(mockFichierOffreStage);
+
+        Page<OffreStage> offresPage = new PageImpl<>(mockOffresListe, pageRequest, 2);
+
+        when(utilisateurService.getMyUserId()).thenReturn(createurId);
+        when(offreStageRepository.findOffreStageByCreateurIdFiltered(createurId, null, null, pageRequest)).thenReturn(offresPage);
+
+        // Act
+        List<OffreStageDTO> result = offreStageService.getStagesFiltered(page, null, null);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals("unTitreForm", result.get(0).getTitle());
+        assertEquals("unTitreFichier", result.get(1).getTitle());
+
+        verify(utilisateurService, times(1)).getMyUserId();
+        verify(offreStageRepository, times(1)).findOffreStageByCreateurIdFiltered(createurId, null, null, pageRequest);
+    }
 
     @Test
     public void testGetStages_Null() {

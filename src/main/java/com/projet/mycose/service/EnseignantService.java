@@ -1,5 +1,6 @@
 package com.projet.mycose.service;
 
+import com.projet.mycose.exceptions.ResourceConflictException;
 import com.projet.mycose.modele.Enseignant;
 import com.projet.mycose.repository.EnseignantRepository;
 import com.projet.mycose.dto.EnseignantDTO;
@@ -19,6 +20,6 @@ public class EnseignantService {
         if (!utilisateurService.credentialsDejaPris(courriel, numeroTelephone))
             return EnseignantDTO.toDTO(enseignantRepository.save(new Enseignant(prenom, nom, numeroTelephone, courriel, passwordEncoder.encode(motDePasse))));
         else
-            return null;
+            throw new ResourceConflictException("Un enseignant avec ces credentials existe déjà");
     }
 }

@@ -83,17 +83,14 @@ class GestionnaireStageServiceTest {
         String motDePasse = "password123";
         String encodedPassword = "encodedPassword123";
 
-        // Mock the behavior of utilisateurService to indicate credentials are not taken
         when(utilisateurService.credentialsDejaPris(courriel, numeroTelephone)).thenReturn(false);
 
-        // Mock the behavior of passwordEncoder to return an encoded password
         when(passwordEncoder.encode(motDePasse)).thenReturn(encodedPassword);
 
         // Act
         gestionnaireStageService.creationDeCompte(prenom, nom, numeroTelephone, courriel, motDePasse);
 
         // Assert
-        // Capture the GestionnaireStage object passed to the save method
         ArgumentCaptor<GestionnaireStage> gestionnaireStageCaptor = ArgumentCaptor.forClass(GestionnaireStage.class);
         verify(gestionnaireStageRepository, times(1)).save(gestionnaireStageCaptor.capture());
 
@@ -115,7 +112,6 @@ class GestionnaireStageServiceTest {
         String courriel = "jane.smith@example.com";
         String motDePasse = "securePassword";
 
-        // Mock the behavior of utilisateurService to indicate credentials are already taken
         when(utilisateurService.credentialsDejaPris(courriel, numeroTelephone)).thenReturn(true);
 
         // Act

@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -33,6 +34,7 @@ public class ContratControllerTest {
     private Employeur employeur;
     private Etudiant etudiant;
     private GestionnaireStage gestionnaireStage;
+    private OffreStage offreStage;
 
     @Mock
     private ContratService contratService;
@@ -46,88 +48,96 @@ public class ContratControllerTest {
 
         etudiant = new Etudiant();
         etudiant.setId(1L);
-        etudiant.setPrenom("Roberto");
-        etudiant.setNom("Berrios");
-        Credentials credentials = new Credentials("roby@gmail.com", "passw0rd", Role.ETUDIANT);
-        etudiant.setCredentials(credentials);
-        etudiant.setProgramme(Programme.GENIE_LOGICIEL);
-        etudiant.setContractStatus(Etudiant.ContractStatus.PENDING);
 
         employeur = new Employeur();
         employeur.setId(2L);
-        employeur.setPrenom("Jean");
-        employeur.setNom("Tremblay");
-        employeur.setEntrepriseName("McDonald");
-        Credentials credentials2 = new Credentials("jean@gmail.com", "passw0rd", Role.EMPLOYEUR);
-        employeur.setCredentials(credentials2);
-        employeur.setNumeroDeTelephone("450-374-3783");
 
         gestionnaireStage = new GestionnaireStage();
         gestionnaireStage.setId(3L);
-        gestionnaireStage.setPrenom("Patrice");
-        gestionnaireStage.setNom("Brodeur");
-        Credentials credentials3 = new Credentials("patrice@gmail.com", "passw0rd", Role.GESTIONNAIRE_STAGE);
-        gestionnaireStage.setCredentials(credentials3);
-        gestionnaireStage.setNumeroDeTelephone("438-646-3245");
+
+        offreStage = new FormulaireOffreStage();
+        offreStage.setId(1L);
 
         contrat = new Contrat();
+        contrat.setId(1L);
         contrat.setEtudiant(etudiant);
         contrat.setEmployeur(employeur);
+        contrat.setGestionnaireStage(gestionnaireStage);
+        contrat.setOffreStageid(offreStage.getId());
     }
 
-//    @Test
-//    void upload_Success() throws Exception {
-//        // Arrange
-//        ContratDTO contratDTO = new ContratDTO();
-//        contratDTO.setEtudiantId(1L);
-//        contratDTO.setEmployeurId(2L);
-//        contratDTO.setGestionnaireStageId(3L);
-//
-//        when(contratService.save(anyLong(), anyLong(), anyLong())).thenReturn(contratDTO);
-//
-//        // Act & Assert
-//        mockMvc.perform(multipart("/contrat/upload")
-//                        .param("etudiantId", "1")
-//                        .param("employeurId", "2")
-//                        .param("gestionnaireStageId", "3"))
-//                .andDo(print())
-//                .andExpect(status().isCreated())
-//                .andExpect(jsonPath("$.etudiantId").value(1L))
-//                .andExpect(jsonPath("$.employeurId").value(2L))
-//                .andExpect(jsonPath("$.gestionnaireStageId").value(3L));
-//    }
-//
-//    @Test
-//    void upload_ShouldReturnUnauthorized_WhenAuthenticationException() throws Exception {
-//        // Arrange
-//        when(contratService.save(anyLong(), anyLong(), anyLong())).thenThrow(new AuthenticationException(HttpStatus.UNAUTHORIZED, "Unauthorized access"));
-//
-//        // Act & Assert
-//        mockMvc.perform(multipart("/contrat/upload")
-//                        .param("etudiantId", "1")
-//                        .param("employeurId", "2")
-//                        .param("gestionnaireStageId", "3"))
-//                .andExpect(status().isUnauthorized())
-//                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(jsonPath("$.message").value("Unauthorized access"))
-//                .andExpect(jsonPath("$.status").value(401))
-//                .andExpect(jsonPath("$.timestamp").isNumber());
-//    }
-//
-//    @Test
-//    void upload_ShouldThrowRuntimeException_WhenIOException() throws Exception {
-//        // Arrange
-//        when(contratService.save(anyLong(), anyLong(), anyLong())).thenThrow(new PersistenceException("Erreur lors de la lecture du fichier PDF"));
-//
-//        // Act & Assert
-//        mockMvc.perform(multipart("/contrat/upload")
-//                        .param("etudiantId", "1")
-//                        .param("employeurId", "2")
-//                        .param("gestionnaireStageId", "3"))
-//                .andExpect(status().isInternalServerError())
-//                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(jsonPath("$.message").value("Erreur lors de la lecture du fichier PDF"))
-//                .andExpect(jsonPath("$.status").value(500))
-//                .andExpect(jsonPath("$.timestamp").isNumber());
-//    }
+    @Test
+    void upload_Success() throws Exception {
+        // Arrange
+        ContratDTO contratDTO = new ContratDTO();
+        contratDTO.setEtudiantId(etudiant.getId());
+        contratDTO.setEmployeurId(employeur.getId());
+        contratDTO.setGestionnaireStageId(gestionnaireStage.getId());
+        contratDTO.setOffreStageId(offreStage.getId());
+
+        when(contratService.save(anyLong(), anyLong(), anyLong(), anyLong())).thenReturn(contratDTO);
+
+        // Act & Assert
+        mockMvc.perform(multipart("/contrat/upload")
+                        .param("etudiantId", "1")
+                        .param("employeurId", "2")
+                        .param("gestionnaireStageId", "3")
+                        .param("offreStageId", "1"))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.etudiantId").value(1L))
+                .andExpect(jsonPath("$.employeurId").value(2L))
+                .andExpect(jsonPath("$.gestionnaireStageId").value(3L))
+                .andExpect(jsonPath("$.offreStageId").value(1L));
+    }
+
+    @Test
+    void upload_ShouldReturnUnauthorized_WhenAuthenticationException() throws Exception {
+        // Arrange
+        when(contratService.save(anyLong(), anyLong(), anyLong(), anyLong())).thenThrow(new AuthenticationException(HttpStatus.UNAUTHORIZED, "Unauthorized access"));
+
+        // Act & Assert
+        mockMvc.perform(multipart("/contrat/upload")
+                        .param("etudiantId", "1")
+                        .param("employeurId", "2")
+                        .param("gestionnaireStageId", "3")
+                        .param("offreStageId", "1"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Unauthorized access"))
+                .andExpect(jsonPath("$.status").value(401))
+                .andExpect(jsonPath("$.timestamp").isNumber());
+    }
+
+    @Test
+    void upload_ShouldThrowRuntimeException_WhenIOException() throws Exception {
+        // Arrange
+        when(contratService.save(anyLong(), anyLong(), anyLong(), anyLong())).thenThrow(new PersistenceException("Erreur lors de la lecture du fichier PDF"));
+
+        // Act & Assert
+        mockMvc.perform(multipart("/contrat/upload")
+                        .param("etudiantId", "1")
+                        .param("employeurId", "2")
+                        .param("gestionnaireStageId", "3")
+                        .param("offreStageId", "1"))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Erreur lors de la lecture du fichier PDF"))
+                .andExpect(jsonPath("$.status").value(500))
+                .andExpect(jsonPath("$.timestamp").isNumber());
+    }
+
+    @Test
+    void getContractByIdtest() throws Exception {
+        // Arrange
+        when(contratService.getContractById(1L)).thenReturn(ContratDTO.toDTO(contrat));
+
+        // Act & Assert
+        mockMvc.perform(get("/contrat/getContractById")
+                        .param("contratId", "1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.etudiantId").value(1L))
+                .andExpect(jsonPath("$.employeurId").value(2L))
+                .andExpect(jsonPath("$.gestionnaireStageId").value(3L))
+                .andExpect(jsonPath("$.offreStageId").value(1L));
+    }
 }

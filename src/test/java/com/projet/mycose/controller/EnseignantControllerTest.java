@@ -31,9 +31,6 @@ public class EnseignantControllerTest {
     @Mock
     private EnseignantService enseignantService;
 
-    @Mock
-    private UtilisateurService utilisateurService;
-
     @InjectMocks
     private EnseignantController enseignantController;
 

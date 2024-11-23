@@ -70,7 +70,7 @@ public class Contrat {
                 ", etudiant=" + etudiant +
                 ", employeur=" + employeur +
                 ", gestionnaireStage=" + gestionnaireStage +
-                ", offreStage=" + offreStage +
+                ", offreStage=" + offreStageid +
                 '}';
     }
 }

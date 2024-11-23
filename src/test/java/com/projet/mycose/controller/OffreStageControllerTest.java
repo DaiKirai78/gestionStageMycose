@@ -186,6 +186,18 @@ public class OffreStageControllerTest {
     }
 
     @Test
+    void getFormOffreStage_Success() {
+        when(offreStageService.getOffreStageFormulaire(id)).thenReturn(formulaireOffreStageDTO);
+
+        ResponseEntity<FormulaireOffreStageDTO> response = offreStageController.getOffreStageForm(id);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(formulaireOffreStageDTO, response.getBody());
+        verify(offreStageService, times(1)).getOffreStageFormulaire(id);
+    }
+
+    @Test
     void getMyOffres_Success() throws AccessDeniedException {
         when(offreStageService.getAvailableOffreStagesForEtudiantFiltered(1, null, null, null)).thenReturn(offreStageDTOList);
 
@@ -217,6 +229,16 @@ public class OffreStageControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(etudiantsList, response.getBody());
         verify(offreStageService, times(1)).getEtudiantsQuiOntAppliquesAUneOffre(applicationStageDTOList);
+    }
+
+    @Test
+    void getAllEtudiantQuiOntAppliquesAUneOffreTest_Echec() {
+        when(applicationStageService.getAllApplicationsPourUneOffreByIdPendingOrSummoned(1L)).thenThrow(new IllegalArgumentException());
+
+        ResponseEntity<List<EtudiantDTO>> response = offreStageController.getAllEtudiantQuiOntAppliquesAUneOffre(1L);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 
     @Test
@@ -338,45 +360,47 @@ public class OffreStageControllerTest {
     }
 
 
-//    @Test
-//    public void testGetStages_Success() throws Exception{
-//        //nouveau contructeur
-//
-//        FormulaireOffreStageDTO mockFormulaire = new FormulaireOffreStageDTO(
-//                1L,
-//                "unNomEntreprise",
-//                "unNomEmployeur",
-//                "unEmail@mail.com",
-//                "unSite.com",
-//                "unTitreStage",
-//                "uneLcalisation",
-//                "1000",
-//                "uneDescription",
-//                LocalDateTime.now(),
-//                LocalDateTime.now(),
-//                1L,
-//                OffreStage.Status.WAITING,
-//                Programme.TECHNIQUE_INFORMATIQUE,
-//                OffreStage.Visibility.PUBLIC,
-//                null,
-//                OffreStage.SessionEcole.AUTOMNE,
-//                2022
-//        );
-//
-//        List<OffreStageDTO> mockListeOffres = new ArrayList<>();
-//        mockListeOffres.add(mockFormulaire);
-//        when(offreStageService.getStagesFiltered(0, null, null)).thenReturn(mockListeOffres);
-//
-//        // Act & Assert
-//        mockMvc.perform(get("/api/offres-stages/getOffresPosted")
-//                        .param("pageNumber", String.valueOf(0))
-//                        .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isAccepted())
-//                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(jsonPath("$[0].id").value(1L))
-//                .andExpect(jsonPath("$[0].status").value("WAITING"));
-//
-//    }
+    @Test
+    public void testGetStages_Success() throws Exception{
+        //nouveau contructeur
+
+        FormulaireOffreStageDTO mockFormulaire = new FormulaireOffreStageDTO(
+                1L,
+                "unNomEntreprise",
+                "unNomEmployeur",
+                "unEmail@mail.com",
+                "unSite.com",
+                "unTitreStage",
+                "uneLcalisation",
+                "1000",
+                "uneDescription",
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                1L,
+                OffreStage.Status.WAITING,
+                Programme.TECHNIQUE_INFORMATIQUE,
+                OffreStage.Visibility.PUBLIC,
+                null,
+                OffreStage.SessionEcole.AUTOMNE,
+                2021,
+                "09h00-17h00",
+                "40"
+        );
+
+        List<OffreStageDTO> mockListeOffres = new ArrayList<>();
+        mockListeOffres.add(mockFormulaire);
+        when(offreStageService.getStagesFiltered(0, null, null)).thenReturn(mockListeOffres);
+
+        // Act & Assert
+        mockMvc.perform(get("/api/offres-stages/getOffresPosted")
+                        .param("pageNumber", String.valueOf(0))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isAccepted())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].id").value(1L))
+                .andExpect(jsonPath("$[0].status").value("WAITING"));
+
+    }
 
     @Test
     public void testGetAmountOfPagesForCreateur_Success() throws Exception {

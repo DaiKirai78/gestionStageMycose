@@ -1,8 +1,6 @@
 package com.projet.mycose.service;
 
 import com.projet.mycose.dto.ContratDTO;
-import com.projet.mycose.dto.EmployeurDTO;
-import com.projet.mycose.dto.EtudiantDTO;
 import com.projet.mycose.exceptions.ResourceConflictException;
 import com.projet.mycose.exceptions.ResourceNotFoundException;
 import com.projet.mycose.exceptions.UserNotFoundException;
@@ -35,9 +33,10 @@ public class ContratService {
     public ContratDTO save(Long etudiantId, Long employeurId, Long gestionnaireStageId, Long offreStageId) {
         if (utilisateurService.getEtudiantDTO(etudiantId) == null
                 || utilisateurService.getEmployeurDTO(employeurId) == null
-                || utilisateurService.getGestionnaireDTO(gestionnaireStageId) == null
-        || offreStageService.getOffreStageWithUtilisateurInfo(offreStageId) == null)
+                || utilisateurService.getGestionnaireDTO(gestionnaireStageId) == null)
             throw new UserNotFoundException();
+        if (offreStageService.getOffreStageWithUtilisateurInfo(offreStageId) == null)
+            throw new ResourceNotFoundException("Le contrat ne contient pas d'offre de stage");
 
         ContratDTO contratDTO = new ContratDTO();
         contratDTO.setEtudiantId(etudiantId);
@@ -70,15 +69,13 @@ public class ContratService {
         System.out.println("contratDTO : " + contratDTO);
         contratDTO.setGestionnaireStageId(contrat.getGestionnaireStage().getId());
         System.out.println("contratDTO : " + contratDTO);
-        contratDTO.setOffreStageId(contrat.getOffreStage().getId());
+        contratDTO.setOffreStageId(contrat.getOffreStageid());
         System.out.println("contratDTO : " + contratDTO);
         return contratDTO;
     }
 
     public Contrat convertToEntity(ContratDTO dto) {
-        Contrat contrat = new Contrat();
-        contrat.setEtudiant(EtudiantDTO.toEntity(utilisateurService.getEtudiantDTO(dto.getEtudiantId())));
-        contrat.setEmployeur(EmployeurDTO.(utilisateurService.getEmployeurDTO(dto.getEmployeurId())));
+        Contrat contrat = modelMapper.map(dto, Contrat.class);
 
         contrat.setEtudiant(etudiantRepository.findById(dto.getEtudiantId()).orElseThrow(() -> new ResourceNotFoundException("Étudiant non trouvé")));
         System.out.println("contrat : " + contrat);
@@ -86,7 +83,7 @@ public class ContratService {
         System.out.println("contrat : " + contrat);
         contrat.setGestionnaireStage(gestionnaireStageRepository.findById(dto.getGestionnaireStageId()).orElseThrow(() -> new ResourceNotFoundException("Gestionnaire de stage non trouvé")));
         System.out.println("contrat : " + contrat);
-        contrat.setOffreStage(offreStageRepository.findById(dto.getOffreStageId()).orElseThrow(() -> new ResourceNotFoundException("Offre de stage non trouvée")));
+        contrat.setOffreStageid(offreStageRepository.findById(dto.getOffreStageId()).orElseThrow(() -> new ResourceNotFoundException("Offre de stage non trouvée")).getId());
         System.out.println("contrat : " + contrat);
         return contrat;
     }
