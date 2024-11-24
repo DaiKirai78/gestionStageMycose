@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { ReactSketchCanvas } from "react-sketch-canvas";
 
 const SignerContratCanvas = ({ canvasRef, setDrewSomething, errorKeySignature, setErrorKeySignature }) => {

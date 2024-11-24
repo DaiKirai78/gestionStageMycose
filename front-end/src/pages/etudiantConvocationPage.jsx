@@ -4,7 +4,7 @@ import { useOutletContext } from 'react-router-dom';
 import ListeConvocations from "../components/etudiantConvocationPage/listeConvocations.jsx";
 
 function EtudiantConvocationPage() {
-    const [userInfo, setUserInfo] = useOutletContext();
+    const { setUserInfo } = useOutletContext();
 
     return (
         <TokenPageContainer role={["ETUDIANT"]} setUserInfo={setUserInfo}>

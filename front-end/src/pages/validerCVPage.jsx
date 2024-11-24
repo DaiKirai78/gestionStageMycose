@@ -4,7 +4,7 @@ import EtudiantsCV from "../components/validerCVPage/etudiantsCV.jsx";
 import { useOutletContext } from 'react-router-dom';
 
 const ValiderCVPage = () => {
-    const [userInfo, setUserInfo] = useOutletContext();
+    const { setUserInfo } = useOutletContext();
     return (
         <TokenPageContainer role={["GESTIONNAIRE_STAGE"]} setUserInfo={setUserInfo}>
             <EtudiantsCV />

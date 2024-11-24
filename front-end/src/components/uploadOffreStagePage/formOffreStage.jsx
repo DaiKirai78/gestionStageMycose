@@ -4,7 +4,7 @@ import {useTranslation} from "react-i18next";
 import InputMask from 'react-input-mask';
 
 function FormOffreStage() {
-    const {t} = useTranslation();
+    const { t } = useTranslation();
 
     const [formData, setFormData] = useState({
         entrepriseName: "",
@@ -16,8 +16,6 @@ function FormOffreStage() {
         salary: "",
         description: "",
         programme: "",
-        annee: "",
-        session: "",
         horaireJournee: "",
         heuresParSemaine: ""
     });
@@ -32,8 +30,6 @@ function FormOffreStage() {
         salary: "",
         description: "",
         programme: "",
-        annee: "",
-        session: "",
         horaireJournee: "",
         heuresParSemaine: ""
     });
@@ -44,8 +40,6 @@ function FormOffreStage() {
     const [role, setRole] = useState("");
     const [students, setStudents] = useState([]);
     const [selectedStudents, setSelectedStudents] = useState([]);
-    const [sessions, setSessions] = useState([]);
-    const [years, setYears] = useState([]);
     const [isPrivate, setIsPrivate] = useState(false);
 
     useEffect(() => {
@@ -61,32 +55,11 @@ function FormOffreStage() {
     }, []);
 
     useEffect(() => {
-        const fetchYears = async () => {
-            try {
-                const response = await axios.get("http://localhost:8080/api/offres-stages/years");
-                setYears(response.data);
-            } catch (error) {
-                console.error("Erreur lors de la récupération des années :", error);
-            }
-        };
-        const fetchSessions = async () => {
-            try {
-                const response = await axios.get("http://localhost:8080/api/offres-stages/sessions");
-                setSessions(response.data);
-            } catch (error) {
-                console.error("Erreur lors de la récupération des sessions :", error);
-            }
-        };
-        fetchYears();
-        fetchSessions();
-    }, []);
-
-    useEffect(() => {
         const fetchUserData = async () => {
             const token = localStorage.getItem("token");
             try {
                 const response = await axios.post("http://localhost:8080/utilisateur/me", {}, {
-                    headers: {Authorization: `Bearer ${token}`},
+                    headers: { Authorization: `Bearer ${token}` },
                 });
                 const userData = response.data;
                 setRole(userData.role);
@@ -106,7 +79,7 @@ function FormOffreStage() {
                     const response = await axios.get(
                         `http://localhost:8080/gestionnaire/getEtudiantsParProgramme?programme=${formData.programme}`,
                         {
-                            headers: {Authorization: `Bearer ${token}`},
+                            headers: { Authorization: `Bearer ${token}` },
                         }
                     );
                     const sortedStudents = response.data.sort((a, b) => {
@@ -144,8 +117,7 @@ function FormOffreStage() {
 
 
     const handleInputChange = (e) => {
-        const {name, value} = e.target;
-
+        const { name, value } = e.target;
         setFormData({
             ...formData,
             [e.target.name]: e.target.value,
@@ -175,8 +147,6 @@ function FormOffreStage() {
             salary: "",
             description: "",
             programme: "",
-            annee: "",
-            session: "",
             horaireJournee: "",
             heuresParSemaine: ""
         };
@@ -260,16 +230,6 @@ function FormOffreStage() {
             valid = false;
         }
 
-        if (!formData.annee) {
-            errors.annee = t("yearRequired");
-            valid = false;
-        }
-
-        if (!formData.session) {
-            errors.session = t("sessionRequired");
-            valid = false;
-        }
-
         if (!formData.horaireJournee) {
             errors.horaireJournee = t("horaireJourneeRequired");
             valid = false;
@@ -302,7 +262,7 @@ function FormOffreStage() {
                 {
                     ...formData,
                     etudiantsPrives: isPrivate ? selectedStudents : null,
-                    programme: !formData.programme ? "NOT_SPECIFIED" : formData.programme
+                    programme: !formData.programme ? "NOT_SPECIFIED" : formData.programme 
                 },
                 {
                     headers: {
@@ -324,8 +284,6 @@ function FormOffreStage() {
                 salary: "",
                 description: "",
                 programme: "",
-                annee: "",
-                session: "",
                 horaireJournee: "",
                 heuresParSemaine: ""
             });
@@ -478,47 +436,6 @@ function FormOffreStage() {
                     rows={10}
                 />
                 {error.description && <p className="text-red-500 text-sm mt-1">{error.description}</p>}
-            </div>
-
-            {/* Input et label pour l'année */}
-            <div>
-                <label htmlFor="annee" className="block text-sm font-medium text-black mt-4">{t("choisirAnnee")}</label>
-                <select
-                    id="annee"
-                    name="annee"
-                    className={`block w-full p-2 border border-black rounded-md ${error.annee ? 'border-red-500' : 'border-black'} bg-transparent`}
-                    value={formData.annee}
-                    onChange={handleInputChange}
-                >
-                    <option value="" className={"text-center"}>-- {t("choisirAnnee")} --</option>
-                    {years.map((year, index) => (
-                        <option key={index} value={year}>
-                            {year}
-                        </option>
-                    ))}
-                </select>
-                {error.annee && <p className="text-red-500 text-sm">{error.annee}</p>}
-            </div>
-
-            {/* Input et label pour la session */}
-            <div>
-                <label htmlFor="session"
-                       className="block text-sm font-medium text-black mt-4">{t("choisirSession")}</label>
-                <select
-                    id="session"
-                    name="session"
-                    className={`block w-full p-2 border border-black rounded-md ${error.session ? 'border-red-500' : 'border-black'} bg-transparent`}
-                    value={formData.session}
-                    onChange={handleInputChange}
-                >
-                    <option value="" className={"text-center"}>-- {t("choisirSession")} --</option>
-                    {sessions.map((session, index) => (
-                        <option key={index} value={session}>
-                            {t(session)}
-                        </option>
-                    ))}
-                </select>
-                {error.session && <p className="text-red-500 text-sm">{error.session}</p>}
             </div>
             <div>
                 <label htmlFor="horaireJournee" className="block text-sm font-medium text-black mt-4">

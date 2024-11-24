@@ -8,6 +8,7 @@ import com.projet.mycose.service.ApplicationStageService;
 import com.projet.mycose.service.OffreStageService;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +33,7 @@ public class OffreStageController {
 
 
     @PostMapping(value = "/upload-file", consumes = "multipart/form-data")
-    public ResponseEntity<?> uploadFile(@Valid @ModelAttribute UploadFicherOffreStageDTO uploadFicherOffreStageDTO) {
+    public ResponseEntity<FichierOffreStageDTO> uploadFile(@Valid @ModelAttribute UploadFicherOffreStageDTO uploadFicherOffreStageDTO) {
         try {
 
             FichierOffreStageDTO savedFileDTO = offreStageService.saveFile(uploadFicherOffreStageDTO);
@@ -43,7 +44,7 @@ public class OffreStageController {
             e.getConstraintViolations().forEach(violation ->
                     errors.put(violation.getPropertyPath().toString(), violation.getMessage()));
 
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+            throw new ConstraintViolationException(errors.toString(), e.getConstraintViolations());
 
         } catch (IOException e) {
             // Handle IOException for file-related issues
@@ -76,21 +77,21 @@ public class OffreStageController {
 
     @PatchMapping(value = "/accept")
     public ResponseEntity<?> acceptOffreStage(@Valid @RequestBody AcceptOffreDeStageDTO acceptOffreDeStageDTO) {
-            offreStageService.acceptOffreDeStage(acceptOffreDeStageDTO);
-            return ResponseEntity.ok().build();
+        offreStageService.acceptOffreDeStage(acceptOffreDeStageDTO);
+        return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/refuse")
     public ResponseEntity<?> refuseOffreStage(@RequestParam Long id, @RequestBody JsonNode jsonNode) {
-            JsonNode descriptionNode = jsonNode.get("commentaire");
+        JsonNode descriptionNode = jsonNode.get("commentaire");
 
-            if (descriptionNode == null || descriptionNode.isNull()) {
-                return ResponseEntity.badRequest().body("Description field is missing");
-            }
+        if (descriptionNode == null || descriptionNode.isNull()) {
+            return ResponseEntity.badRequest().body("Description field is missing");
+        }
 
-            String description = descriptionNode.asText();
-            offreStageService.refuseOffreDeStage(id, description);
-            return ResponseEntity.ok().build();
+        String description = descriptionNode.asText();
+        offreStageService.refuseOffreDeStage(id, description);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/id/{id}")
@@ -109,25 +110,8 @@ public class OffreStageController {
     // On passe le id de l'offre de stage
     @GetMapping("/offre-applications/{id}")
     public ResponseEntity<List<EtudiantDTO>> getAllEtudiantQuiOntAppliquesAUneOffre(@PathVariable Long id) {
-        try {
-            List<ApplicationStageAvecInfosDTO> applicationStageDTOList = applicationStageService.getAllApplicationsPourUneOffreByIdPendingOrSummoned(id);
-            return new ResponseEntity<>(offreStageService.getEtudiantsQuiOntAppliquesAUneOffre(applicationStageDTOList), HttpStatus.OK);
-        } catch (Exception e) {
-            System.err.println("Une erreur est survenue lors de la tentative de récupération des étudiants qui ont appliqués à une offre: " + e.getMessage());
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @Deprecated
-    @GetMapping("/sessions")
-    public List<String> getSessions() {
-        return offreStageService.getSessions();
-    }
-
-    @Deprecated
-    @GetMapping("/years")
-    public List<Integer> getYears() {
-        return offreStageService.getFutureYears();
+        List<ApplicationStageAvecInfosDTO> applicationStageDTOList = applicationStageService.getAllApplicationsPourUneOffreByIdPendingOrSummoned(id);
+        return new ResponseEntity<>(offreStageService.getEtudiantsQuiOntAppliquesAUneOffre(applicationStageDTOList), HttpStatus.OK);
     }
 
     //Pourra être utiliser pour que les étudiants regardent automatiquement la bonne session (la prochaine)
@@ -166,20 +150,31 @@ public class OffreStageController {
         return ResponseEntity.status(HttpStatus.OK).body(offreStageService.getAmountOfPagesForEtudiantFiltered(year, sessionEcole, title));
     }
 
+    @GetMapping("/my-offres-all")
+    public ResponseEntity<Page<OffreStageDTO>> getMyOffresByYearAndSessionEcoleAll(
+            @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) OffreStage.SessionEcole sessionEcole,
+            @RequestParam int pageNumber,
+            @RequestParam(value = "title", required = false, defaultValue = "") String title
+    ) {
+        Page<OffreStageDTO> offreStageDTOList = offreStageService.getAllOffreStagesForEtudiantFiltered(pageNumber, year, sessionEcole, title);
+        return ResponseEntity.status(HttpStatus.OK).body(offreStageDTOList);
+    }
+
     //Offres postées par un Gestionnaire ou un Employeur
-    @GetMapping( "/getOffresPosted")
+    @GetMapping("/getOffresPosted")
     public ResponseEntity<List<OffreStageDTO>> getOffresStagesPublieesFiltre(
-        @RequestParam int pageNumber,
-        @RequestParam(required = false) Integer annee,
-        @RequestParam(required = false) OffreStage.SessionEcole session) {
+            @RequestParam int pageNumber,
+            @RequestParam(required = false) Integer annee,
+            @RequestParam(required = false) OffreStage.SessionEcole session) {
         return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
                 offreStageService.getStagesFiltered(pageNumber, annee, session));
     }
 
     @GetMapping("/pagesForCreateur")
     public ResponseEntity<Integer> getAmountOfPagesForCreateurFiltered(
-        @RequestParam(required = false) Integer annee,
-        @RequestParam(required = false) OffreStage.SessionEcole session) {
+            @RequestParam(required = false) Integer annee,
+            @RequestParam(required = false) OffreStage.SessionEcole session) {
         return ResponseEntity.status(HttpStatus.ACCEPTED).contentType(MediaType.APPLICATION_JSON).body(
                 offreStageService.getAmountOfPagesForCreateurFiltered(annee, session));
     }
@@ -188,5 +183,22 @@ public class OffreStageController {
     public ResponseEntity<EmployeurDTO> getEmployeurFromOffreStage(@PathVariable Long offreStageId) {
         EmployeurDTO employeurDTO = offreStageService.getEmployeurByOffreStageId(offreStageId);
         return ResponseEntity.ok(employeurDTO);
+    }
+
+    @PatchMapping(value = "/update-fichier", consumes = "multipart/form-data")
+    public ResponseEntity<FichierOffreStageDTO> updateFichierOffreStage(
+            @ModelAttribute UploadFicherOffreStageDTO uploadFicherOffreStageDTO,
+            @RequestParam Long offreStageId) throws IOException {
+        FichierOffreStageDTO savedFileDTO = offreStageService.updateOffreStage(uploadFicherOffreStageDTO, offreStageId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedFileDTO);
+    }
+
+    @PatchMapping("/update-formulaire")
+    public ResponseEntity<FormulaireOffreStageDTO> updateFormulaireOffreStage(
+            //On ne @Valid pas car on veut pouvoir changer seulement les champs qu'on veut
+            @ModelAttribute FormulaireOffreStageDTO formulaireOffreStageDTO,
+            @RequestParam Long offreStageId) throws AccessDeniedException {
+        FormulaireOffreStageDTO savedForm = offreStageService.updateOffreStage(formulaireOffreStageDTO, offreStageId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedForm);
     }
 }

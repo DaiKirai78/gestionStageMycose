@@ -29,6 +29,11 @@ const navLinks = {
             "titre": "signerContrats",
             "lien": "/contrats",
             "autreLiens": ["/contrats/signer"]
+        },
+        {
+            "titre": "evaluerEtudiant",
+            "lien": "/evaluer",
+            "autreLiens": ["/evaluer/formulaire"]
         }
     ],
     "GESTIONNAIRE_STAGE": [
@@ -67,6 +72,10 @@ const navLinks = {
                 }
             ]
         },
+        {
+            "titre": "rapports",
+            "lien": "/rapports"
+        }
     ],
     "ENSEIGNANT": []
 }
@@ -189,7 +198,7 @@ const Navbar = ({ userInfo }) => {
                                                     {t(infoBtn["titre"])} <IoMdArrowDown />
                                                 </button>
                                                 {openDropdown === index && (
-                                                    <div className="absolute bg-white shadow-lg rounded mt-1">
+                                                    <div className="absolute bg-white shadow-lg rounded mt-1 z-30">
                                                         {infoBtn.sousLiens.map((sousLien, subIndex) => (
                                                             <button
                                                                 key={"sousNav" + subIndex}

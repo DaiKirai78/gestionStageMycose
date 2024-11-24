@@ -1,26 +1,18 @@
 package com.projet.mycose.service;
 
-import com.projet.mycose.dto.ContratDTO;
-import com.projet.mycose.dto.LoginDTO;
+import com.projet.mycose.dto.*;
 import com.projet.mycose.exceptions.AuthenticationException;
 import com.projet.mycose.exceptions.ResourceNotFoundException;
 import com.projet.mycose.exceptions.SignaturePersistenceException;
 import com.projet.mycose.exceptions.UserNotFoundException;
-import com.projet.mycose.modele.Contrat;
-import com.projet.mycose.modele.Employeur;
-import com.projet.mycose.modele.OffreStage;
-import com.projet.mycose.modele.Utilisateur;
-import com.projet.mycose.repository.ContratRepository;
-import com.projet.mycose.repository.EmployeurRepository;
-import com.projet.mycose.repository.OffreStageRepository;
-import com.projet.mycose.dto.EmployeurDTO;
-import com.projet.mycose.dto.OffreStageDTO;
-import com.projet.mycose.repository.UtilisateurRepository;
+import com.projet.mycose.modele.*;
+import com.projet.mycose.repository.*;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.User;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -31,7 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.nio.file.AccessDeniedException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -43,10 +35,12 @@ public class EmployeurService {
     private final UtilisateurRepository utilisateurRepository;
     private final PasswordEncoder passwordEncoder;
     private final UtilisateurService utilisateurService;
-    private final OffreStageRepository offreStageRepository;
     private final ContratRepository contratRepository;
     private final AuthenticationManager authenticationManager;
+    private final ModelMapper modelMapper;
+    private final FicheEvaluationStagiaireRepository ficheEvaluationStagiaireRepository;
     private final int LIMIT_PER_PAGE = 10;
+    private final EtudiantRepository etudiantRepository;
 
     public EmployeurDTO creationDeCompte(String prenom, String nom, String numeroTelephone, String courriel, String motDePasse, String nomOrganisation) {
         if (!utilisateurService.credentialsDejaPris(courriel, numeroTelephone))
@@ -117,4 +111,75 @@ public class EmployeurService {
         return nombrePages;
     }
 
+    @Transactional
+    public void enregistrerFicheEvaluationStagiaire(FicheEvaluationStagiaireDTO ficheEvaluationStagiaireDTO, Long etudiantId, MultipartFile signatureEmployeur) {
+        Utilisateur utilisateur;
+
+        try {
+            utilisateur = utilisateurService.getMeUtilisateur();
+        } catch (AccessDeniedException e) {
+            throw new AuthenticationException(HttpStatus.UNAUTHORIZED, "Problème d'authentification");
+        }
+
+        Employeur employeur = getValidatedEmployeur(utilisateur);
+        Etudiant etudiant;
+        try {
+            etudiant = etudiantRepository.findEtudiantById(etudiantId);
+        } catch (NullPointerException e) {
+            throw new UserNotFoundException();
+        }
+
+        FicheEvaluationStagiaire ficheEvaluationStagiaire = modelMapper.map(ficheEvaluationStagiaireDTO, FicheEvaluationStagiaire.class);
+
+        Optional<Contrat> contratOpt = contratRepository.findContratActiveOfEtudiantAndEmployeur(etudiantId, employeur.getId(), Etudiant.ContractStatus.ACTIVE);
+        if(contratOpt.isEmpty()) {
+            throw new ResourceNotFoundException("Contrat de l'étudiant non trouvé");
+        }
+
+        Contrat contrat = contratRepository.findContratActiveOfEtudiantAndEmployeur(etudiantId, employeur.getId(), Etudiant.ContractStatus.ACTIVE).orElseThrow(() -> new ResourceNotFoundException("Contrat de l'étudiant non trouvé"));
+
+        ficheEvaluationStagiaire.setEmployeur(employeur);
+        ficheEvaluationStagiaire.setEtudiant(etudiant);
+        ficheEvaluationStagiaire.setContrat(contrat);
+
+        try {
+            ficheEvaluationStagiaire.setSignatureSuperviseur(signatureEmployeur.getBytes());
+        } catch (IOException e) {
+            throw new SignaturePersistenceException("Error while saving employeur signature");
+        }
+
+        ficheEvaluationStagiaireRepository.save(ficheEvaluationStagiaire);
+    }
+
+    private Employeur getValidatedEmployeur(Utilisateur utilisateur) {
+        if (!(utilisateur instanceof Employeur employeur)) {
+            throw new AuthenticationException(HttpStatus.FORBIDDEN, "User is not an Employeur.");
+        }
+        return employeur;
+    }
+
+    public Page<EtudiantDTO> getAllEtudiantsNonEvaluesByEmployeeID(Long employeurId, int page) {
+        PageRequest pageRequest = PageRequest.of(page, LIMIT_PER_PAGE);
+
+        try {
+            utilisateurService.getMeUtilisateur();
+        } catch (AccessDeniedException e) {
+            throw new AuthenticationException(HttpStatus.UNAUTHORIZED, "Problème d'authentification");
+        }
+
+        Page<Etudiant> pageEtudiants = ficheEvaluationStagiaireRepository.findAllEtudiantWhereNotEvaluatedByEmployeeID(employeurId, Etudiant.ContractStatus.ACTIVE, pageRequest);
+
+        if(pageEtudiants.isEmpty())
+            throw new ResourceNotFoundException("Aucun Étudiant Trouvé");
+
+        return pageEtudiants.map(
+                etudiant -> modelMapper.map(etudiant, EtudiantDTO.class));
+    }
+
+    @PreAuthorize("hasAuthority('GESTIONNAIRE_STAGE')")
+    public List<EtudiantDTO> getAllEtudiantsNonEvalues() {
+        return ficheEvaluationStagiaireRepository.findAllEtudiantWhereNotEvaluated().stream()
+                .map(etudiant -> modelMapper.map(etudiant, EtudiantDTO.class))
+                .toList();
+    }
 }

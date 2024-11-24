@@ -105,8 +105,6 @@ public class FichierCVController {
         try {
             fichierCVService.deleteCurrentCV();
             return ResponseEntity.status(HttpStatus.OK).body("CV supprimé avec succès");
-        } catch (AuthenticationException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized access");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Fichier non trouvé");
         }
@@ -129,7 +127,6 @@ public class FichierCVController {
         if (descriptionNode == null || descriptionNode.isNull()) {
             return ResponseEntity.badRequest().body("Description field is missing");
         }
-
         String description = descriptionNode.asText();
         fichierCVService.changeStatus(id, FichierCV.Status.ACCEPTED, description);
         return ResponseEntity.ok().build();

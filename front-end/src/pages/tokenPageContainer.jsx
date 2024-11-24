@@ -36,7 +36,7 @@ const TokenPageContainer = ({children, role, setUserInfo}) => {
 
     function showContent() {
         if (isFetching) {
-            return  <p>Loading</p>
+            return  <div className='flex-1 bg-orange-light'>Loading</div>
         }
         
         return (

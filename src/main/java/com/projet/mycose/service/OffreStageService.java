@@ -41,9 +41,10 @@ public class OffreStageService {
     private final UtilisateurRepository utilisateurRepository;
     private final FormulaireOffreStageRepository formulaireOffreStageRepository;
     private final FichierOffreStageRepository ficherOffreStageRepository;
-    private static final int LIMIT_PER_PAGE = 10;
+    static final int LIMIT_PER_PAGE = 10;
     private final EtudiantRepository etudiantRepository;
     private final EtudiantOffreStagePriveeRepository etudiantOffreStagePriveeRepository;
+    private final FichierOffreStageRepository fichierOffreStageRepository;
 
     public OffreStageDTO convertToDTO(OffreStage offreStage){
         if (offreStage instanceof FormulaireOffreStage) {
@@ -385,20 +386,6 @@ public class OffreStageService {
         return etudiantDTOList;
     }
 
-    @Deprecated
-    public List<String> getSessions() {
-        return new ArrayList<>(Arrays.stream(OffreStage.SessionEcole.values())
-                .map(OffreStage.SessionEcole::toString)
-                .toList());
-    }
-
-    @Deprecated
-    public List<Integer> getFutureYears() {
-        return Stream.of(Year.now(), Year.now().plusYears(1), Year.now().plusYears(2), Year.now().plusYears(3), Year.now().plusYears(4))
-                .map(Year::getValue)
-                .toList();
-    }
-
     private List<OffreStageDTO> listeOffreStageToDTO(List<OffreStage> listeAMapper) {
         List<OffreStageDTO> listeMappee = new ArrayList<>();
         for(OffreStage offreStage : listeAMapper) {
@@ -445,7 +432,7 @@ public class OffreStageService {
         return nombrePages;
     }
 
-    private static void checkAnneeAndSessionTogether(Integer annee, OffreStage.SessionEcole session) {
+    static void checkAnneeAndSessionTogether(Integer annee, OffreStage.SessionEcole session) {
         if ((annee != null && session == null) || (annee == null && session != null)) {
             throw new IllegalArgumentException("Session and year must be provided together");
         }
@@ -471,5 +458,101 @@ public class OffreStageService {
     public List<SessionInfoDTO> getSessionsForCreateur() {
         Long createurId = utilisateurService.getMyUserId();
         return offreStageRepository.findDistinctSemesterAndYearByCreateurId(createurId);
+    }
+
+    public Page<OffreStageDTO> getAllOffreStagesForEtudiantFiltered(int pageNumber, Integer annee, OffreStage.SessionEcole sessionEcole, String title) {
+        checkAnneeAndSessionTogether(annee, sessionEcole);
+        EtudiantDTO etudiantDTO;
+        try {
+            etudiantDTO = (EtudiantDTO) utilisateurService.getMe();
+        } catch (AccessDeniedException e) {
+            throw new AuthenticationException(HttpStatus.FORBIDDEN, "Authentication error");
+        }
+        PageRequest pageRequest = PageRequest.of(pageNumber, LIMIT_PER_PAGE);
+
+        Year year = (annee != null) ? Year.of(annee) : null;
+
+        if (title == null) {
+            title = "";
+        }
+        return offreStageRepository.findAllByEtudiantFilteredWithTitle(etudiantDTO.getId(), etudiantDTO.getProgramme(), year, sessionEcole, title, pageRequest).map(this::convertToDTO);
+    }
+
+    @Transactional
+    public FichierOffreStageDTO updateOffreStage(UploadFicherOffreStageDTO uploadFicherOffreStageDTO, Long offreStageId) throws IOException {
+        UtilisateurDTO utilisateurDTO = utilisateurService.getMe();
+        Long createur_id = utilisateurDTO.getId();
+
+        Optional<FichierOffreStage> optionalFichierOffreStage = ficherOffreStageRepository.findById(offreStageId);
+       FichierOffreStage fichierOffreStage = optionalFichierOffreStage.orElseThrow(() -> new ResourceNotFoundException("FichierOffreStage not found with ID: " + offreStageId));
+
+        if (!fichierOffreStage.getCreateur().getId().equals(createur_id)) {
+            throw new AccessDeniedException("Vous n'avez pas les droits pour modifier cette offre de stage");
+        }
+
+        if (uploadFicherOffreStageDTO.getEntrepriseName() != null) {
+            fichierOffreStage.setEntrepriseName(uploadFicherOffreStageDTO.getEntrepriseName());
+        }
+
+        if (uploadFicherOffreStageDTO.getTitle() != null) {
+            fichierOffreStage.setTitle(uploadFicherOffreStageDTO.getTitle());
+        }
+        if (uploadFicherOffreStageDTO.getFile() != null && !uploadFicherOffreStageDTO.getFile().isEmpty()) {
+            fichierOffreStage.setData(uploadFicherOffreStageDTO.getFile().getBytes());
+            fichierOffreStage.setFilename(uploadFicherOffreStageDTO.getFile().getOriginalFilename());
+        }
+
+        return convertToDTO(fichierOffreStageRepository.save(fichierOffreStage));
+    }
+
+    public FormulaireOffreStageDTO updateOffreStage(FormulaireOffreStageDTO formulaireOffreStageDTO, Long offreStageId) throws AccessDeniedException {
+        UtilisateurDTO utilisateurDTO = utilisateurService.getMe();
+        Long createur_id = utilisateurDTO.getId();
+
+        Optional<FormulaireOffreStage> optionalFormulaireOffreStage = formulaireOffreStageRepository.findById(offreStageId);
+        FormulaireOffreStage formulaireOffreStage = optionalFormulaireOffreStage.orElseThrow(() -> new ResourceNotFoundException("FormulaireOffreStage not found with ID: " + offreStageId));
+
+        if (!formulaireOffreStage.getCreateur().getId().equals(createur_id)) {
+            throw new AccessDeniedException("Vous n'avez pas les droits pour modifier cette offre de stage");
+        }
+
+        if (formulaireOffreStageDTO.getEntrepriseName() != null) {
+            formulaireOffreStage.setEntrepriseName(formulaireOffreStageDTO.getEntrepriseName());
+        }
+
+        if (formulaireOffreStageDTO.getEmployerName() != null) {
+            formulaireOffreStage.setEmployerName(formulaireOffreStageDTO.getEmployerName());
+        }
+
+        if (formulaireOffreStageDTO.getEmail() != null) {
+            formulaireOffreStage.setEmail(formulaireOffreStageDTO.getEmail());
+        }
+
+        if (formulaireOffreStageDTO.getWebsite() != null) {
+            formulaireOffreStage.setWebsite(formulaireOffreStageDTO.getWebsite());
+        }
+
+
+        if (formulaireOffreStageDTO.getTitle() != null) {
+            formulaireOffreStage.setTitle(formulaireOffreStageDTO.getTitle());
+        }
+
+        if (formulaireOffreStageDTO.getLocation() != null) {
+            formulaireOffreStage.setLocation(formulaireOffreStageDTO.getLocation());
+        }
+
+        if (formulaireOffreStageDTO.getSalary() != null) {
+            formulaireOffreStage.setSalary(formulaireOffreStageDTO.getSalary());
+        }
+
+        if (formulaireOffreStageDTO.getDescription() != null) {
+            formulaireOffreStage.setDescription(formulaireOffreStageDTO.getDescription());
+        }
+
+        //TODO: Ajouter les nouvelles variables de Sam
+        //TODO: FINIR LES TESTS QUAND SAM AURA FINI SA PARTIE
+        //TODO: FAIRE LA VALIDATION DES CHAMPS DE FORMULAIRE LORSQU'ON MODIFIE CELUI-CI
+
+        return convertToDTO(formulaireOffreStageRepository.save(formulaireOffreStage));
     }
 }
