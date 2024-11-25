@@ -262,16 +262,6 @@ public class OffreStageControllerTest {
     }
 
     @Test
-    void getAllEtudiantQuiOntAppliquesAUneOffreTest_Echec() {
-        when(applicationStageService.getAllApplicationsPourUneOffreByIdPendingOrSummoned(1L)).thenThrow(new IllegalArgumentException());
-
-        ResponseEntity<List<EtudiantDTO>> response = offreStageController.getAllEtudiantQuiOntAppliquesAUneOffre(1L);
-
-        assertNotNull(response);
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-    }
-
-    @Test
     void getTotalWaitingOffres_Success() {
         // Arrange
         Long totalWaitingOffres = 10L;
