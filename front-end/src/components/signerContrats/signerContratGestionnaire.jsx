@@ -431,7 +431,7 @@ function SignerContratGestionnaire({setSelectedContract}) {
             ];
 
             responsibilities.forEach((responibility, index) => {
-                startY -= 30;
+                startY -= 20;
                 page3.drawText(responibility.titre, {
                     x: startX,
                     y: startY,
@@ -443,36 +443,30 @@ function SignerContratGestionnaire({setSelectedContract}) {
                     y: startY,
                     size: 10,
                 });
-                startY -= 40;
+                startY -= 50;
             });
 
             startY -= 40;
             page3.drawRectangle({
                 x: startX,
-                y: startY-30,
+                y: startY-5,
                 width: 500,
                 height: 20,
                 color: rgb(0.85, 0.85, 0.85),
             });
             page3.drawText('SIGNATURES', {
                 x: startX + 5,
-                y: startY - 25,
+                y: startY,
                 size: 12,
                 font: boldFont,
             });
 
-            startY -= 60;
-            page3.drawText(`Les parties s’engagent a respecter cette entente de stage`, {
+            startY -= 35;
+            page3.drawText(`Les parties s’engagent a respecter cette entente de stage en foi de quoi les parties ont signé,`, {
                 x: startX + 10,
-                y: startY + 12,
+                y: startY + 15,
                 size: 10,
                 font: boldFont,
-            });
-            startY -= 15;
-            page3.drawText("En foi de quoi les parties ont signé,", {
-                x: startX + 10,
-                y: startY + 12,
-                size: 10,
             });
 
             const signatureSections = [
@@ -496,7 +490,7 @@ function SignerContratGestionnaire({setSelectedContract}) {
                 },
             ];
 
-            startY -= 25;
+            startY -= 20;
             signatureSections.forEach((section) => {
                 page3.drawRectangle({
                     x: startX,
